@@ -55,7 +55,12 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--header-height) + 24px);
+  scrollbar-width: none;
   background: var(--surface);
+}
+
+html::-webkit-scrollbar {
+  display: none;
 }
 
 body {
