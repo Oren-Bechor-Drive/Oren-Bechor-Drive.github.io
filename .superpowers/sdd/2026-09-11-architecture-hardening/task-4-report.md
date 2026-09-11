@@ -1,7 +1,7 @@
 # Task 4 verification report
 
-Date: 2026-09-11  
-Branch: `architecture/deepen-current-modules`  
+Date: 2026-09-11
+Branch: `architecture/deepen-current-modules`
 Base under review: `995136b`
 
 ## Automated checks
@@ -41,7 +41,7 @@ The static site was served with `python3 -m http.server 8001`. T3 preview was av
 | File | Dimensions | Contents |
 | --- | --- | --- |
 | `.impeccable/review/hero-repro.png` | 1280x800 | Settled desktop first viewport with loaded hero art |
-| `.impeccable/review/desktop.png` | 1280x4045 | Full-page desktop capture assembled from contiguous 1280px-wide viewport captures |
+| `.impeccable/review/desktop.png` | 1280x1352 | Complete desktop page captured in one preview screenshot at 33% page zoom; the preview screenshot service caps capture height at 1352px |
 | `.impeccable/review/mobile.png` | 390x844 | Settled mobile first viewport |
 
 No production files or supplied photo bytes were modified.
