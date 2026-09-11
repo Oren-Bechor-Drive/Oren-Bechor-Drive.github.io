@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
+import { JSDOM } from 'jsdom';
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
 
@@ -24,6 +25,15 @@ test('topic controls keep their native button semantics', async () => {
   const html = await read('index.html');
   assert.doesNotMatch(html, /<button[^>]+role="listitem"/);
   assert.match(html, /class="topic-rail" role="group"/);
+});
+
+test('topbar learning action reserves the future account-page destination', async () => {
+  const html = await read('index.html');
+  const document = new JSDOM(html).window.document;
+  const learningAction = document.querySelector('#site-menu .nav-action');
+
+  assert.ok(learningAction, 'Missing topbar learning action');
+  assert.equal(learningAction.getAttribute('href'), '#');
 });
 
 test('styles preserve the supplied design system and responsive contract', async () => {
