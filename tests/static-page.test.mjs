@@ -37,7 +37,11 @@ test("topbar learning action reserves the future account-page destination", asyn
 });
 
 test("styles preserve the supplied design system and responsive contract", async () => {
-  const css = (await read("styles.css")).toLowerCase();
+  const document = new JSDOM(await read("index.html")).window.document;
+  const stylesheets = [...document.querySelectorAll('link[rel="stylesheet"]')];
+  assert.ok(stylesheets.length > 0, "Page must load its stylesheets");
+  const css = (await Promise.all(stylesheets.map((link) => read(link.getAttribute("href")))))
+    .join('\n').toLowerCase();
 
   for (const token of [
     "#6dcdd6",

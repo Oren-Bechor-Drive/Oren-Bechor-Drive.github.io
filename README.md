@@ -17,18 +17,17 @@ No installation or build step is required.
 ## Project files
 
 - `index.html` contains the Hebrew, right-to-left page content.
-- `styles.css` implements the system defined in `DESIGN.md`.
-- `script.js` adds the mobile menu and initializes page enhancements.
-- `topic-explorer.js` owns the topic preview interaction.
+- `css/base.css` defines design tokens, global defaults, and shared layout widths.
+- `css/components.css` styles the header and navigation.
+- `css/welcome.css` styles the welcome-page sections and their controls.
+- `css/responsive.css` contains interaction states, animations, breakpoints, and accessibility preferences. Load the four stylesheets in this order to preserve the cascade.
+- `js/script.js` adds the mobile menu and initializes page enhancements.
+- `js/topic-explorer.js` owns the topic preview interaction.
 - `scripts/road-media-integrity.mjs` audits marked road media during development.
-- `assets/` contains the current road media. Typography uses the system stack defined in `DESIGN.md`; no font files are bundled or downloaded.
+- `assets/images/` contains the current road media. Typography uses the system stack defined in `DESIGN.md`; no font files are bundled or downloaded.
+- `docs/reference/the-idea.pdf` is the supplied course brief.
+- `docs/superpowers/` preserves historical implementation plans and specifications; use this README for current paths.
 - `tests/` contains static page, behavior-level, and media-integrity tests.
-
-Run the tests with:
-
-```bash
-node --test tests/static-page.test.mjs
-```
 
 Development checks require Node.js and can be run with:
 

@@ -17,15 +17,15 @@ const rootDir = path.resolve(
 );
 const expectedHashes = new Map([
   [
-    "assets/learning-road.jpg",
+    "assets/images/learning-road.jpg",
     "bcb8095abd13e0f730ee6bc7977c8422d405d9367836dabd8d1d6095d43bb73f",
   ],
   [
-    "assets/source-road-000.jpg",
+    "assets/images/source-road-000.jpg",
     "692d892f7ac25af2a99ce24cd083bad11c8daad4092ef6a35888e3197d863cfb",
   ],
   [
-    "assets/source-road-001.jpg",
+    "assets/images/source-road-001.jpg",
     "804377c8a085a12e70a93b8523725bc6dbe43b3be92a2d67036ae7508e6e3e91",
   ],
 ]);
@@ -55,7 +55,7 @@ test("missing road media is reported while remaining images are audited", async 
     );
     await writeFile(
       path.join(temporaryRoot, "existing.jpg"),
-      await readFile(path.join(rootDir, "assets/source-road-000.jpg")),
+      await readFile(path.join(rootDir, "assets/images/source-road-000.jpg")),
     );
 
     const audit = await auditRoadMedia({ rootDir: temporaryRoot });
@@ -68,7 +68,7 @@ test("missing road media is reported while remaining images are audited", async 
 });
 
 test("image metadata supports JPEG and WebP", async () => {
-  const jpeg = await readFile(path.join(rootDir, "assets/source-road-000.jpg"));
+  const jpeg = await readFile(path.join(rootDir, "assets/images/source-road-000.jpg"));
   const webp = Buffer.alloc(30);
   webp.write("RIFF", 0);
   webp.writeUInt32LE(22, 4);
@@ -122,11 +122,11 @@ test("corrupt and unsupported images become issues while later images are audite
     );
     await writeFile(
       path.join(temporaryRoot, "metadata.jpg"),
-      await readFile(path.join(rootDir, "assets/source-road-000.jpg")),
+      await readFile(path.join(rootDir, "assets/images/source-road-000.jpg")),
     );
     await writeFile(
       path.join(temporaryRoot, "valid.jpg"),
-      await readFile(path.join(rootDir, "assets/source-road-000.jpg")),
+      await readFile(path.join(rootDir, "assets/images/source-road-000.jpg")),
     );
 
     const audit = await auditRoadMedia({ rootDir: temporaryRoot });

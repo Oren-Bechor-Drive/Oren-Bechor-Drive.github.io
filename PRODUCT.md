@@ -42,7 +42,7 @@ Visitors first learn what the course is, then browse a preview of topics such as
 
 ## Evidence on hand
 
-- `the-idea.pdf` contains the course introduction, instructor facts, lesson topics, explanations, and examples.
+- `docs/reference/the-idea.pdf` contains the course introduction, instructor facts, lesson topics, explanations, and examples.
 - `DESIGN.md` contains the complete Solar Serenity palette, typography, spacing, shapes, and component treatments.
 - No instructor portrait, testimonials, prices, enrollment URL, or performance claims were supplied. Future work must not invent them.
 

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { JSDOM } from "jsdom";
 
-import { initTopicExplorer } from "../topic-explorer.js";
+import { initTopicExplorer } from "../js/topic-explorer.js";
 
 function setup({ reducedMotion = true } = {}) {
   const dom = new JSDOM(
