@@ -2,7 +2,9 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import { imageSize } from 'image-size';
+// Import only supported parsers; unrelated container parsers are never loaded.
+import { JPG } from 'image-size/types/jpg';
+import { WEBP } from 'image-size/types/webp';
 import { JSDOM } from 'jsdom';
 
 const EXTENSION_FORMATS = new Map([
@@ -17,18 +19,16 @@ const FORMAT_MIMES = new Map([
 ]);
 
 export function inspectImage(buffer) {
+  const format = JPG.validate(buffer) ? 'jpeg' : WEBP.validate(buffer) ? 'webp' : undefined;
+  if (!format) throw new Error('unsupported image format');
   let metadata;
   try {
-    metadata = imageSize(buffer);
+    metadata = (format === 'jpeg' ? JPG : WEBP).calculate(buffer);
   } catch (error) {
     throw new Error('image metadata could not be read', { cause: error });
   }
 
-  const format = metadata.type === 'jpg' ? 'jpeg' : metadata.type;
   const mime = FORMAT_MIMES.get(format);
-  if (!mime) {
-    throw new Error('unsupported image format');
-  }
   return { format, mime, width: metadata.width, height: metadata.height };
 }
 

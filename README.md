@@ -40,6 +40,8 @@ npm run check:media
 
 ## Todo
 
+- Update `image-size` when a release fixes its ICNS/JXL/HEIF parser advisories. The audit imports only the JPEG and WebP parser subpaths, so the affected parsers are not loaded. `npm audit` still reports the package-level advisory.
+
 - Build the **Instructor-led welcome** direction around Oren Bachor's story and teaching approach.
 - Build the **Course-dashboard preview** direction with lesson modules and realistic course navigation.
 - Introduce a **shared course-content module** when the second runtime page creates a real seam between two page adapters.
