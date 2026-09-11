@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f0fbfe">
+    <meta
+      name="description"
+      content="קורס דיגיטלי לנהיגה נכונה שמחבר בין חוקי הדרך למצבים אמיתיים בכביש."
+    >
+    <title>א.ב נהיגה נכונה | ללמוד לקרוא את הכביש</title>
+    <link rel="preload" href="assets/noto-sans-hebrew-regular.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="assets/learning-road.webp" as="image" type="image/webp">
+    <link rel="stylesheet" href="styles.css?v=20260911">
+    <script src="script.js?v=20260911" defer></script>
+  </head>
+  <body>
+    <!--
+      THESIS: Learning to drive means learning to read the road, not memorizing a sales pitch.
+      OWN-WORLD: Solar cyan surfaces, amber guidance, coral caution, crisp charcoal type, and real road imagery.
+      STORY: A new visitor understands the course, previews its subjects, sees how theory meets practice, and meets Oren.
+      FIRST VIEWPORT: RTL copy occupies the right third while a sunlit roundabout fills the left; the topic action sits beside the title.
+      FORM: Code-led learning journey, selected from the approved three-direction set. Seed key: learning-road.
+      FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+    -->
+    <a class="skip-link" href="#main-content">דלגו לתוכן הראשי</a>
+
+    <header class="site-header">
+      <div class="nav-shell">
+        <a class="brand" href="#top" aria-label="א.ב נהיגה נכונה, דף הבית">
+          <span class="brand-mark" aria-hidden="true">א.ב</span>
+          <span class="brand-copy">
+            <strong>נהיגה נכונה</strong>
+            <small>עם אורן בכור</small>
+          </span>
+        </a>
+
+        <button
+          class="menu-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="site-menu"
+          data-menu-toggle
+        >
+          תפריט
+        </button>
+
+        <nav id="site-menu" class="site-menu" aria-label="ניווט ראשי" data-menu data-open="false">
+          <a href="#about">על הקורס</a>
+          <a href="#topics">נושאי לימוד</a>
+          <a href="#method">איך לומדים</a>
+          <a href="#instructor">אורן בכור</a>
+          <a class="nav-action" href="#topics">מתחילים ללמוד</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <section id="top" class="hero" aria-labelledby="hero-title">
+        <div class="hero-shell">
+          <div class="hero-copy">
+            <h1 id="hero-title">ללמוד לקרוא את הכביש</h1>
+            <p>קורס דיגיטלי שמחבר בין חוקי הדרך למצבים שפוגשים באמת בנהיגה.</p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="#topics" data-topics-link>לנושאי הלימוד</a>
+              <a class="text-link" href="#about">מה לומדים כאן?</a>
+            </div>
+          </div>
+
+          <figure class="hero-visual">
+            <img
+              src="assets/learning-road.webp"
+              width="1586"
+              height="992"
+              alt="כביש המתקרב למעגל תנועה בשעת בוקר בהירה"
+            >
+          </figure>
+        </div>
+      </section>
+
+      <section id="about" class="about section" aria-labelledby="about-title">
+        <div class="content-shell about-layout">
+          <div class="about-title-block">
+            <h2 id="about-title">להבין את החוק לפני הרגע שבו צריך לפעול</h2>
+          </div>
+          <div class="about-copy">
+            <p class="lead">
+              בשיעור הנהיגה מתרגלים את הפעולה. כאן עוצרים לרגע כדי להבין את ההיגיון שמאחוריה.
+            </p>
+            <p>
+              הקורס עוזר לחבר בין התיאוריה לבין מה שרואים דרך השמשה. הוא לא מחליף את מורה הנהיגה,
+              אלא נותן בסיס ברור יותר לתרגול המעשי בשיעור.
+            </p>
+          </div>
+          <aside class="road-question" aria-label="שאלה שמלווה את הלמידה">
+            <span>בכל מצב בדרך שואלים:</span>
+            <strong>מה אני רואה, למי יש זכות קדימה, ומה הפעולה הבטוחה עכשיו?</strong>
+          </aside>
+        </div>
+      </section>
+
+      <section id="topics" class="topics section" aria-labelledby="topics-title" tabindex="-1">
+        <div class="content-shell">
+          <div class="section-heading">
+            <h2 id="topics-title">הנושאים שילמדו אתכם לחשוב כמו נהגים</h2>
+            <p>בחרו נושא וקבלו הצצה למה שמפרקים ומתרגלים בקורס.</p>
+          </div>
+
+          <div class="topic-explorer">
+            <div class="topic-rail" role="group" aria-label="נושאי הקורס">
+              <button
+                class="topic-card"
+                type="button"
+                aria-expanded="true"
+                data-active="true"
+                data-topic-title="זכויות קדימה ופניות"
+                data-topic-description="לקרוא את מבנה הצומת, להבין את מדרג הציות ולדעת מתי ולאן אפשר לפנות בבטחה."
+              >
+                זכויות קדימה ופניות
+              </button>
+              <button
+                class="topic-card"
+                type="button"
+                aria-expanded="false"
+                data-topic-title="זיהוי כבישים ונתיבים"
+                data-topic-description="לזהות כביש חד־סטרי או דו־סטרי, לבחור נתיב נכון ולהבין לאן כל נתיב מוביל."
+              >
+                זיהוי כבישים ונתיבים
+              </button>
+              <button
+                class="topic-card"
+                type="button"
+                aria-expanded="false"
+                data-topic-title="מעגלי תנועה וצמתים"
+                data-topic-description="להתקרב נכון למעגל תנועה ולצומת, לסרוק את התנועה ולבחור את התזמון המתאים לכניסה."
+              >
+                מעגלי תנועה וצמתים
+              </button>
+              <button
+                class="topic-card"
+                type="button"
+                aria-expanded="false"
+                data-topic-title="תמרורים ומהירויות"
+                data-topic-description="להכיר תמרורים נפוצים, להבין מתי תמרור גובר על ברירת המחדל ולבחור מהירות שמתאימה לדרך."
+              >
+                תמרורים ומהירויות
+              </button>
+              <button
+                class="topic-card"
+                type="button"
+                aria-expanded="false"
+                data-topic-title="עקיפה ואיסורי עקיפה"
+                data-topic-description="להבין מתי עקיפה אפשרית, לזהות איסורים ולבדוק אם מרחק הראייה ותנאי הדרך מאפשרים אותה."
+              >
+                עקיפה ואיסורי עקיפה
+              </button>
+              <button
+                class="topic-card"
+                type="button"
+                aria-expanded="false"
+                data-topic-title="תכנון נסיעה"
+                data-topic-description="להביט רחוק, לזהות סיכונים מוקדם ולתכנן נתיב ומהירות לפני שמגיעים לנקודת ההחלטה."
+              >
+                תכנון נסיעה
+              </button>
+              <button
+                class="topic-card"
+                type="button"
+                aria-expanded="false"
+                data-topic-title="טעויות נפוצות בטסט"
+                data-topic-description="להכיר את המצבים שבהם תלמידים נכשלים ולתרגל הסתכלות, מיקום וקבלת החלטות לפני המבחן."
+              >
+                טעויות נפוצות בטסט
+              </button>
+            </div>
+
+            <div class="topic-panel" data-topic-panel aria-live="polite">
+              <div>
+                <h3 data-topic-panel-title>זכויות קדימה ופניות</h3>
+                <p data-topic-panel-description>
+                  לקרוא את מבנה הצומת, להבין את מדרג הציות ולדעת מתי ולאן אפשר לפנות בבטחה.
+                </p>
+              </div>
+              <p class="topic-note">ההסבר המלא מלווה בדוגמאות ובסרטונים ממצבי נהיגה אמיתיים.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="method" class="method section" aria-labelledby="method-title">
+        <div class="content-shell method-layout">
+          <div class="road-frames" aria-label="דוגמאות למצבי דרך מתוך חומרי הקורס">
+            <figure class="road-frame road-frame-main">
+              <img src="assets/source-road-001.jpg" width="272" height="185" alt="צומת רחב עם מספר נתיבים ורמזורים">
+            </figure>
+            <figure class="road-frame road-frame-secondary">
+              <img src="assets/source-road-000.jpg" width="276" height="182" alt="התקרבות לצומת מרומזר עם סימוני נתיבים">
+            </figure>
+          </div>
+
+          <div class="method-copy">
+            <h2 id="method-title">רואים מצב. מבינים את החוק. חוזרים לכביש מוכנים יותר.</h2>
+            <p>
+              כל נושא מתחיל בהסבר ברור וממשיך לסרטונים ממקרים שקרו באמת. כך אפשר לעצור,
+              להסתכל שוב וללמוד מהטעויות לפני שפוגשים מצב דומה בשיעור.
+            </p>
+            <ul class="method-list">
+              <li><strong>מפרקים את המצב</strong><span>מה רואים ומה דורש תשומת לב.</span></li>
+              <li><strong>מחברים לחוק</strong><span>איזה כלל קובע את סדר הפעולות.</span></li>
+              <li><strong>מתכוננים לתרגול</strong><span>עם שאלות טובות יותר למורה הנהיגה.</span></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="instructor" class="instructor section" aria-labelledby="instructor-title">
+        <div class="content-shell instructor-layout">
+          <div class="instructor-intro">
+            <span class="initials" aria-hidden="true">א.ב</span>
+            <div>
+              <h2 id="instructor-title">נעים להכיר, אורן בכור</h2>
+              <p>מורה נהיגה מוסמך מנתניה, עם יותר משמונה שנות ניסיון בהוראת נהיגה.</p>
+            </div>
+          </div>
+          <blockquote>
+            <p>
+              בניתי את הקורס כדי שאפשר יהיה להבין זכויות קדימה ונהיגה נכונה גם בתיאוריה וגם דרך מצבים אמיתיים.
+            </p>
+            <footer>אורן בכור, מנחה הקורס</footer>
+          </blockquote>
+        </div>
+      </section>
+
+      <section class="closing section" aria-labelledby="closing-title">
+        <div class="content-shell closing-shell">
+          <div>
+            <h2 id="closing-title">הדרך מתחילה בהבנה</h2>
+            <p>עברו על הנושאים ובחרו את המקום שבו תרצו להתחיל ללמוד.</p>
+          </div>
+          <a class="button button-secondary" href="#topics" data-topics-link>חזרה לנושאי הלימוד</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="content-shell footer-layout">
+        <p>א.ב נהיגה נכונה בע״מ</p>
+        <p>קורס דיגיטלי ללימוד נהיגה נכונה</p>
+      </div>
+    </footer>
+  </body>
+</html>
