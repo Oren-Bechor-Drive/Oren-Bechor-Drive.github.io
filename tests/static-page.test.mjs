@@ -43,9 +43,14 @@ test('styles preserve the supplied design system and responsive contract', async
 test('script progressively enhances navigation and topic details', async () => {
   const script = await read('script.js');
 
-  for (const hook of ['[data-menu-toggle]', '.topic-card', '[data-topic-panel]']) {
-    assert.ok(script.includes(hook), `Missing script hook: ${hook}`);
-  }
+  assert.match(script, /import\s+\{\s*initTopicExplorer\s*\}\s+from\s+'\.\/topic-explorer\.js'/);
+  assert.match(script, /initTopicExplorer\(topicExplorer\)/);
+  assert.doesNotMatch(script, /querySelectorAll\('\.topic-card'\)/);
+
+  const html = await read('index.html');
+  assert.match(html, /<script[^>]+src="script\.js\?v=20260911"[^>]+type="module"/);
+  assert.match(html, /class="topic-explorer"[^>]*data-topic-explorer/);
+  assert.doesNotMatch(html, /data-topic-title/);
 });
 
 test('README records the later welcome-page concepts', async () => {

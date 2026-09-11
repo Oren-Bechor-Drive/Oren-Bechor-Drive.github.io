@@ -12,7 +12,7 @@
     <link rel="preload" href="assets/noto-sans-hebrew-regular.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="preload" href="assets/learning-road.jpg" as="image" type="image/jpeg">
     <link rel="stylesheet" href="styles.css?v=20260911">
-    <script src="script.js?v=20260911" defer></script>
+    <script src="script.js?v=20260911" type="module"></script>
   </head>
   <body>
     <!--
@@ -107,14 +107,13 @@
             <p>בחרו נושא וקבלו הצצה למה שמפרקים ומתרגלים בקורס.</p>
           </div>
 
-          <div class="topic-explorer">
+          <div class="topic-explorer" data-topic-explorer>
             <div class="topic-rail" role="group" aria-label="נושאי הקורס">
               <button
                 class="topic-card"
                 type="button"
                 aria-expanded="true"
                 data-active="true"
-                data-topic-title="זכויות קדימה ופניות"
                 data-topic-description="לקרוא את מבנה הצומת, להבין את מדרג הציות ולדעת מתי ולאן אפשר לפנות בבטחה."
               >
                 זכויות קדימה ופניות
@@ -123,7 +122,6 @@
                 class="topic-card"
                 type="button"
                 aria-expanded="false"
-                data-topic-title="זיהוי כבישים ונתיבים"
                 data-topic-description="לזהות כביש חד־סטרי או דו־סטרי, לבחור נתיב נכון ולהבין לאן כל נתיב מוביל."
               >
                 זיהוי כבישים ונתיבים
@@ -132,7 +130,6 @@
                 class="topic-card"
                 type="button"
                 aria-expanded="false"
-                data-topic-title="מעגלי תנועה וצמתים"
                 data-topic-description="להתקרב נכון למעגל תנועה ולצומת, לסרוק את התנועה ולבחור את התזמון המתאים לכניסה."
               >
                 מעגלי תנועה וצמתים
@@ -141,7 +138,6 @@
                 class="topic-card"
                 type="button"
                 aria-expanded="false"
-                data-topic-title="תמרורים ומהירויות"
                 data-topic-description="להכיר תמרורים נפוצים, להבין מתי תמרור גובר על ברירת המחדל ולבחור מהירות שמתאימה לדרך."
               >
                 תמרורים ומהירויות
@@ -150,7 +146,6 @@
                 class="topic-card"
                 type="button"
                 aria-expanded="false"
-                data-topic-title="עקיפה ואיסורי עקיפה"
                 data-topic-description="להבין מתי עקיפה אפשרית, לזהות איסורים ולבדוק אם מרחק הראייה ותנאי הדרך מאפשרים אותה."
               >
                 עקיפה ואיסורי עקיפה
@@ -159,7 +154,6 @@
                 class="topic-card"
                 type="button"
                 aria-expanded="false"
-                data-topic-title="תכנון נסיעה"
                 data-topic-description="להביט רחוק, לזהות סיכונים מוקדם ולתכנן נתיב ומהירות לפני שמגיעים לנקודת ההחלטה."
               >
                 תכנון נסיעה
@@ -168,7 +162,6 @@
                 class="topic-card"
                 type="button"
                 aria-expanded="false"
-                data-topic-title="טעויות נפוצות בטסט"
                 data-topic-description="להכיר את המצבים שבהם תלמידים נכשלים ולתרגל הסתכלות, מיקום וקבלת החלטות לפני המבחן."
               >
                 טעויות נפוצות בטסט
