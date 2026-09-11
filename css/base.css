@@ -1,114 +1,115 @@
 :root {
-  color-scheme: light;
-  --surface: #f0fbfe;
-  --surface-low: #eaf6f8;
-  --surface-container: #e5f0f2;
-  --surface-high: #dfeaec;
-  --surface-highest: #d9e5e7;
-  --white: #ffffff;
-  --text: #131d1f;
-  --text-soft: #3e494a;
-  --text-muted: #687375;
-  --primary: #006970;
-  --primary-bright: #6dcdd6;
-  --primary-hover: #55bcc6;
-  --primary-wash: #ebf5f6;
-  --secondary: #705d00;
-  --secondary-bright: #f6db78;
-  --secondary-hover: #e5ca61;
-  --secondary-wash: #fffdf5;
-  --tertiary: #9e3f41;
-  --tertiary-bright: #d96c6c;
-  --tertiary-wash: #fdf3f3;
-  --border: #dfe7e8;
-  --border-strong: #c5d1d3;
-  --radius-control: 8px;
-  --radius-card: 16px;
-  --radius-large: 24px;
-  --shadow-one:
-    0 2px 8px -2px rgb(20 29 30 / 0.04), 0 1px 3px rgb(20 29 30 / 0.02);
-  --shadow-two:
-    0 12px 28px -6px rgb(20 29 30 / 0.07), 0 4px 10px -2px rgb(20 29 30 / 0.03);
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
-  --header-height: 72px;
+	color-scheme: light;
+	--surface: #f0fbfe;
+	--surface-low: #eaf6f8;
+	--surface-container: #e5f0f2;
+	--surface-high: #dfeaec;
+	--surface-highest: #d9e5e7;
+	--white: #ffffff;
+	--text: #131d1f;
+	--text-soft: #3e494a;
+	--text-muted: #687375;
+	--primary: #006970;
+	--primary-bright: #6dcdd6;
+	--primary-hover: #55bcc6;
+	--primary-wash: #ebf5f6;
+	--secondary: #705d00;
+	--secondary-bright: #f6db78;
+	--secondary-hover: #e5ca61;
+	--secondary-wash: #fffdf5;
+	--tertiary: #9e3f41;
+	--tertiary-bright: #d96c6c;
+	--tertiary-wash: #fdf3f3;
+	--border: #dfe7e8;
+	--border-strong: #c5d1d3;
+	--radius-control: 8px;
+	--radius-card: 16px;
+	--radius-large: 24px;
+	--shadow-one:
+		0 2px 8px -2px rgb(20 29 30 / 0.04), 0 1px 3px rgb(20 29 30 / 0.02);
+	--shadow-two:
+		0 12px 28px -6px rgb(20 29 30 / 0.07),
+		0 4px 10px -2px rgb(20 29 30 / 0.03);
+	--ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+	--ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+	--header-height: 72px;
 }
 
 * {
-  box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 html {
-  scroll-behavior: smooth;
-  scroll-padding-top: calc(var(--header-height) + 24px);
-  scrollbar-width: none;
-  background: var(--surface);
+	scroll-behavior: smooth;
+	scroll-padding-top: calc(var(--header-height) + 24px);
+	scrollbar-width: none;
+	background: var(--surface);
 }
 
 html::-webkit-scrollbar {
-  display: none;
+	display: none;
 }
 
 body {
-  margin: 0;
-  background: var(--surface);
-  color: var(--text);
-  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
-  font-size: 16px;
-  line-height: 1.625;
-  text-rendering: optimizeLegibility;
+	margin: 0;
+	background: var(--surface);
+	color: var(--text);
+	font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+	font-size: 16px;
+	line-height: 1.625;
+	text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background: var(--secondary-bright);
-  color: var(--text);
+	background: var(--secondary-bright);
+	color: var(--text);
 }
 
 img {
-  display: block;
-  max-width: 100%;
+	display: block;
+	max-width: 100%;
 }
 
 a {
-  color: inherit;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.22em;
+	color: inherit;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.22em;
 }
 
 button,
 a {
-  -webkit-tap-highlight-color: transparent;
+	-webkit-tap-highlight-color: transparent;
 }
 
 button {
-  font: inherit;
+	font: inherit;
 }
 
 :focus-visible {
-  outline: 3px solid rgb(109 205 214 / 0.7);
-  outline-offset: 4px;
+	outline: 3px solid rgb(109 205 214 / 0.7);
+	outline-offset: 4px;
 }
 
 .skip-link {
-  position: fixed;
-  inset-block-start: 12px;
-  inset-inline-start: 12px;
-  z-index: 20;
-  padding: 10px 16px;
-  border-radius: var(--radius-control);
-  background: var(--text);
-  color: var(--white);
-  transform: translateY(-160%);
-  transition: transform 180ms var(--ease-out);
+	position: fixed;
+	inset-block-start: 12px;
+	inset-inline-start: 12px;
+	z-index: 20;
+	padding: 10px 16px;
+	border-radius: var(--radius-control);
+	background: var(--text);
+	color: var(--white);
+	transform: translateY(-160%);
+	transition: transform 180ms var(--ease-out);
 }
 
 .skip-link:focus {
-  transform: translateY(0);
+	transform: translateY(0);
 }
 
 .content-shell,
 .nav-shell,
 .hero-shell {
-  width: min(1280px, calc(100% - 96px));
-  margin-inline: auto;
+	width: min(1280px, calc(100% - 96px));
+	margin-inline: auto;
 }

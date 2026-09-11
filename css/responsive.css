@@ -300,6 +300,115 @@
 	}
 }
 
+.topic-picker {
+	display: none;
+}
+
+@media (max-width: 639px) {
+	[data-topic-dropdown="true"] .topic-rail {
+		display: none;
+	}
+
+	.topic-picker {
+		position: relative;
+		display: grid;
+		gap: 8px;
+		color: var(--text-soft);
+		font-size: 15px;
+		font-weight: 600;
+	}
+
+	.topic-select {
+		width: 100%;
+		min-width: 0;
+		min-height: 52px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 20px;
+		padding: 14px 20px;
+		text-align: start;
+		border: 1px solid var(--border-strong);
+		border-radius: var(--radius-control);
+		background-color: var(--white);
+		color: var(--text);
+		font: inherit;
+		font-size: 16px;
+		cursor: pointer;
+	}
+
+	.topic-select::after {
+		content: "";
+		width: 9px;
+		height: 9px;
+		flex-shrink: 0;
+		margin-inline-end: 4px;
+		border-right: 2px solid var(--primary);
+		border-bottom: 2px solid var(--primary);
+		transform: translateY(-2px) rotate(45deg);
+		transition: transform 180ms var(--ease-out);
+	}
+
+	.topic-select[aria-expanded="true"] {
+		border-color: var(--primary-bright);
+		background: var(--primary-wash);
+	}
+
+	.topic-select[aria-expanded="true"]::after {
+		transform: translateY(2px) rotate(225deg);
+	}
+
+	.topic-options {
+		position: absolute;
+		inset-inline: 0;
+		inset-block-start: calc(100% + 8px);
+		z-index: 5;
+		max-height: min(360px, 50dvh);
+		overflow-y: auto;
+		scrollbar-width: none;
+		overscroll-behavior: contain;
+		padding: 6px;
+		border: 1px solid var(--border-strong);
+		border-radius: var(--radius-card);
+		background: var(--white);
+	}
+	.topic-options::-webkit-scrollbar {
+		display: none;
+	}
+
+	.topic-option {
+		display: block;
+		width: 100%;
+		min-height: 48px;
+		padding: 12px 14px;
+		border: 0;
+		border-radius: var(--radius-control);
+		background: transparent;
+		color: var(--text-soft);
+		font: inherit;
+		font-size: 16px;
+		text-align: start;
+		cursor: pointer;
+	}
+
+	.topic-option[aria-selected="true"] {
+		background: var(--primary-wash);
+		color: var(--primary);
+		font-weight: 700;
+	}
+
+	.topic-option:focus-visible {
+		outline-offset: -3px;
+	}
+
+	@media (hover: hover) {
+		.topic-option:hover {
+			background: var(--primary-wash);
+		}
+	}
+
+}
+
 @media (max-width: 440px) {
 	.content-shell,
 	.nav-shell,
