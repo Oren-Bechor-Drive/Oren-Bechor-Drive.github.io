@@ -21,7 +21,7 @@ No installation or build step is required.
 - `script.js` adds the mobile menu and initializes page enhancements.
 - `topic-explorer.js` owns the topic preview interaction.
 - `scripts/road-media-integrity.mjs` audits marked road media during development.
-- `assets/` contains the current road media and local fonts.
+- `assets/` contains the current road media. Typography uses the system stack defined in `DESIGN.md`; no font files are bundled or downloaded.
 - `tests/` contains static page, behavior-level, and media-integrity tests.
 
 Run the tests with:

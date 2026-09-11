@@ -27,7 +27,7 @@ The document and interface use Hebrew with `dir="rtl"`. The page follows this se
 The page follows `DESIGN.md` as the source of truth:
 
 - Soft cyan background surfaces, white content areas, dark charcoal text, cyan primary actions, amber highlights, and restrained coral accents.
-- Plus Jakarta Sans when available, with a Hebrew-friendly sans-serif fallback.
+- System fonts: Arial, "Helvetica Neue", Helvetica, sans-serif. This supersedes the original bundled-font direction.
 - A spacious 12-column desktop layout that collapses into a single-column mobile reading flow.
 - Eight-pixel controls, sixteen-pixel content containers, subtle borders, and soft tinted shadows.
 - A road-learning visual world rather than generic education graphics. The hero will use an original generated road image without showing an invented instructor.

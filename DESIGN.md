@@ -50,73 +50,73 @@ colors:
   surface-variant: '#d9e5e7'
 typography:
   display-lg:
-    fontFamily: Plus Jakarta Sans
+    fontFamily: Arial, "Helvetica Neue", Helvetica, sans-serif
     fontSize: 56px
     fontWeight: '700'
     lineHeight: 64px
     letterSpacing: -0.025em
   display-lg-mobile:
-    fontFamily: Plus Jakarta Sans
+    fontFamily: Arial, "Helvetica Neue", Helvetica, sans-serif
     fontSize: 36px
     fontWeight: '700'
     lineHeight: 44px
     letterSpacing: -0.02em
   headline-lg:
-    fontFamily: Plus Jakarta Sans
+    fontFamily: Arial, "Helvetica Neue", Helvetica, sans-serif
     fontSize: 36px
     fontWeight: '600'
     lineHeight: 44px
     letterSpacing: -0.02em
   headline-lg-mobile:
-    fontFamily: Plus Jakarta Sans
+    fontFamily: Arial, "Helvetica Neue", Helvetica, sans-serif
     fontSize: 28px
     fontWeight: '600'
     lineHeight: 36px
     letterSpacing: -0.015em
   headline-md:
-    fontFamily: Plus Jakarta Sans
+    fontFamily: Arial, "Helvetica Neue", Helvetica, sans-serif
     fontSize: 24px
     fontWeight: '600'
     lineHeight: 32px
     letterSpacing: -0.01em
   headline-sm:
-    fontFamily: Plus Jakarta Sans
+    fontFamily: Arial, "Helvetica Neue", Helvetica, sans-serif
     fontSize: 20px
     fontWeight: '600'
     lineHeight: 28px
     letterSpacing: -0.005em
   body-lg:
-    fontFamily: Plus Jakarta Sans
+    fontFamily: Arial, "Helvetica Neue", Helvetica, sans-serif
     fontSize: 18px
     fontWeight: '400'
     lineHeight: 28px
     letterSpacing: 0em
   body-md:
-    fontFamily: Plus Jakarta Sans
+    fontFamily: Arial, "Helvetica Neue", Helvetica, sans-serif
     fontSize: 16px
     fontWeight: '400'
     lineHeight: 26px
     letterSpacing: 0em
   body-sm:
-    fontFamily: Plus Jakarta Sans
+    fontFamily: Arial, "Helvetica Neue", Helvetica, sans-serif
     fontSize: 14px
     fontWeight: '400'
     lineHeight: 22px
     letterSpacing: 0em
   label-lg:
-    fontFamily: Plus Jakarta Sans
+    fontFamily: Arial, "Helvetica Neue", Helvetica, sans-serif
     fontSize: 15px
     fontWeight: '600'
     lineHeight: 20px
     letterSpacing: 0.01em
   label-md:
-    fontFamily: Plus Jakarta Sans
+    fontFamily: Arial, "Helvetica Neue", Helvetica, sans-serif
     fontSize: 13px
     fontWeight: '600'
     lineHeight: 18px
     letterSpacing: 0.02em
   label-sm:
-    fontFamily: Plus Jakarta Sans
+    fontFamily: Arial, "Helvetica Neue", Helvetica, sans-serif
     fontSize: 11px
     fontWeight: '600'
     lineHeight: 16px
@@ -174,10 +174,10 @@ A saturated, lively coral red that delivers punchy notifications, alerts, and cr
 
 ## Typography
 
-Plus Jakarta Sans provides geometric balance, generous apertures, and human warmth that naturally complement clean, light surfaces.
+Use `Arial, "Helvetica Neue", Helvetica, sans-serif` for Hebrew and Latin text. Fonts come from the visitor's device; no font files are bundled or downloaded. Rendering varies with the fonts installed on each device.
 
 ### Hierarchy & Typesetting
-- **Display & Headlines:** Tight negative tracking on large titles balances the open geometric counters of Plus Jakarta Sans, maintaining solid presence without appearing heavy.
+- **Display & Headlines:** Use the system stack at the documented sizes and weights, checking Hebrew line wrapping at desktop and mobile widths.
 - **Body & Continuous Text:** Retains an airy 1.55 to 1.65 line-height ratio, preventing reader fatigue and harmonizing with spacious layouts.
 - **Labels & Micro-copy:** Micro-typography shifts to semi-bold weights (`600`) with subtle positive tracking (`+0.01em` to `+0.03em`), guaranteeing crisp legibility in badges, buttons, and navigation tags.
 
