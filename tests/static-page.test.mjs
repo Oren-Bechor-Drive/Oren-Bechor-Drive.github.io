@@ -21,6 +21,21 @@ test("page exposes its Hebrew semantic structure", async () => {
 	}
 });
 
+test("course icon brands the header and browser tab", async () => {
+	const document = new JSDOM(await read("index.html")).window.document;
+	const iconPath = "assets/icons/course-icon.png";
+	const brandIcon = document.querySelector(".brand img");
+	const favicon = document.querySelector('link[rel="icon"]');
+
+	assert.ok(brandIcon, "Missing course icon from the header brand");
+	assert.equal(brandIcon.getAttribute("src"), iconPath);
+	assert.equal(brandIcon.getAttribute("width"), "42");
+	assert.equal(brandIcon.getAttribute("height"), "42");
+	assert.equal(brandIcon.getAttribute("alt"), "");
+	assert.equal(favicon?.getAttribute("href"), iconPath);
+	assert.equal(favicon?.getAttribute("type"), "image/png");
+});
+
 test("topic controls keep their native button semantics", async () => {
 	const html = await read("index.html");
 	assert.doesNotMatch(html, /<button[^>]+role="listitem"/);
