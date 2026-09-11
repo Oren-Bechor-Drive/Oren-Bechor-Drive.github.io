@@ -5,8 +5,6 @@ const menu = document.querySelector('[data-menu]');
 const topicExplorer = document.querySelector('[data-topic-explorer]');
 const topicSection = document.querySelector('#topics');
 
-if (topicExplorer) initTopicExplorer(topicExplorer);
-
 function setMenu(open) {
   if (!menuToggle || !menu) return;
 
@@ -39,3 +37,6 @@ document.querySelectorAll('[data-topics-link]').forEach((link) => {
     window.requestAnimationFrame(() => topicSection?.focus({ preventScroll: true }));
   });
 });
+
+// Register independent navigation before validating topic markup.
+if (topicExplorer) initTopicExplorer(topicExplorer);

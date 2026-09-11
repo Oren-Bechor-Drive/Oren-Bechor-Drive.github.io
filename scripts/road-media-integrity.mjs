@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+import { imageSize } from 'image-size';
 import { JSDOM } from 'jsdom';
 
 const EXTENSION_FORMATS = new Map([
@@ -15,70 +16,20 @@ const FORMAT_MIMES = new Map([
   ['webp', 'image/webp'],
 ]);
 
-const JPEG_START_OF_FRAME = new Set([
-  0xc0, 0xc1, 0xc2, 0xc3, 0xc5, 0xc6, 0xc7,
-  0xc9, 0xca, 0xcb, 0xcd, 0xce, 0xcf,
-]);
-
-function readJpegDimensions(buffer) {
-  let offset = 2;
-  while (offset + 8 < buffer.length) {
-    if (buffer[offset] !== 0xff) {
-      offset += 1;
-      continue;
-    }
-    const marker = buffer[offset + 1];
-    offset += 2;
-    if (marker === 0xd8 || marker === 0xd9) continue;
-    if (marker === 0xda) break;
-    const segmentLength = buffer.readUInt16BE(offset);
-    if (JPEG_START_OF_FRAME.has(marker)) {
-      return {
-        height: buffer.readUInt16BE(offset + 3),
-        width: buffer.readUInt16BE(offset + 5),
-      };
-    }
-    offset += segmentLength;
-  }
-  throw new Error('JPEG dimensions could not be read');
-}
-
-function readUint24LE(buffer, offset) {
-  return buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16);
-}
-
-function readWebpDimensions(buffer) {
-  const chunk = buffer.toString('ascii', 12, 16);
-  if (chunk === 'VP8X') {
-    return {
-      width: readUint24LE(buffer, 24) + 1,
-      height: readUint24LE(buffer, 27) + 1,
-    };
-  }
-  if (chunk === 'VP8L') {
-    const bits = buffer.readUInt32LE(21);
-    return {
-      width: (bits & 0x3fff) + 1,
-      height: ((bits >>> 14) & 0x3fff) + 1,
-    };
-  }
-  if (chunk === 'VP8 ') {
-    return {
-      width: buffer.readUInt16LE(26) & 0x3fff,
-      height: buffer.readUInt16LE(28) & 0x3fff,
-    };
-  }
-  throw new Error(`Unsupported WebP chunk: ${chunk}`);
-}
-
 export function inspectImage(buffer) {
-  if (buffer[0] === 0xff && buffer[1] === 0xd8) {
-    return { format: 'jpeg', mime: 'image/jpeg', ...readJpegDimensions(buffer) };
+  let metadata;
+  try {
+    metadata = imageSize(buffer);
+  } catch (error) {
+    throw new Error('image metadata could not be read', { cause: error });
   }
-  if (buffer.toString('ascii', 0, 4) === 'RIFF' && buffer.toString('ascii', 8, 12) === 'WEBP') {
-    return { format: 'webp', mime: 'image/webp', ...readWebpDimensions(buffer) };
+
+  const format = metadata.type === 'jpg' ? 'jpeg' : metadata.type;
+  const mime = FORMAT_MIMES.get(format);
+  if (!mime) {
+    throw new Error('unsupported image format');
   }
-  throw new Error('Unsupported image format');
+  return { format, mime, width: metadata.width, height: metadata.height };
 }
 
 function cleanReference(reference) {
@@ -99,17 +50,15 @@ export async function auditRoadMedia({ rootDir, htmlPath = 'index.html' }) {
     try {
       inspected = inspectImage(await readFile(absoluteImagePath));
     } catch (error) {
-      if (error.code === 'ENOENT') {
-        issues.push(`${source}: file does not exist`);
-        continue;
-      }
-      throw error;
+      issues.push(`${source}: ${error.code === 'ENOENT' ? 'file does not exist' : error.message}`);
+      continue;
     }
     const declaredFormat = EXTENSION_FORMATS.get(path.extname(source).toLowerCase());
     const declaredWidth = Number(image.getAttribute('width'));
     const declaredHeight = Number(image.getAttribute('height'));
     const alt = image.getAttribute('alt')?.trim() ?? '';
-    const preload = document.querySelector(`link[rel="preload"][as="image"][href="${source}"]`);
+    const preload = [...document.querySelectorAll('link[rel="preload"][as="image"]')]
+      .find((link) => cleanReference(link.getAttribute('href') ?? '') === source);
 
     if (declaredFormat !== inspected.format) {
       issues.push(`${source}: extension declares ${declaredFormat ?? 'unknown'}, bytes are ${inspected.format}`);
@@ -118,8 +67,8 @@ export async function auditRoadMedia({ rootDir, htmlPath = 'index.html' }) {
       issues.push(`${source}: declared ${declaredWidth}x${declaredHeight}, file is ${inspected.width}x${inspected.height}`);
     }
     if (!alt) issues.push(`${source}: alternative text is empty`);
-    if (preload && preload.getAttribute('type') !== FORMAT_MIMES.get(inspected.format)) {
-      issues.push(`${source}: preload type is ${preload.getAttribute('type')}, expected ${FORMAT_MIMES.get(inspected.format)}`);
+    if (preload && preload.getAttribute('type') !== inspected.mime) {
+      issues.push(`${source}: preload type is ${preload.getAttribute('type')}, expected ${inspected.mime}`);
     }
 
     assets.push({ source, alt, ...inspected });

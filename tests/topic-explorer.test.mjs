@@ -51,11 +51,18 @@ test('missing panel hooks fail at the module interface', () => {
   assert.throws(() => initTopicExplorer(root), /missing required topic panel/i);
 });
 
-test('the latest selection wins while motion is pending', async () => {
+test('a superseded selection never appears while the latest transition is pending', (t) => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
   const { dom, root, cards } = setup({ reducedMotion: false });
+  t.after(() => dom.window.close());
   cards[1].dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true }));
+  t.mock.timers.tick(60);
   cards[2].dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true }));
-  await new Promise((resolve) => dom.window.setTimeout(resolve, 130));
+  t.mock.timers.tick(50);
+  assert.equal(root.querySelector('[data-topic-panel-title]').textContent, 'נושא ראשון');
+  assert.equal(root.querySelector('[data-topic-panel]').dataset.updating, 'true');
+  t.mock.timers.tick(60);
   assert.equal(root.querySelector('[data-topic-panel-title]').textContent, 'נושא שלישי');
   assert.equal(root.querySelector('[data-topic-panel-description]').textContent, 'תיאור שלישי');
+  assert.equal(root.querySelector('[data-topic-panel]').dataset.updating, 'false');
 });

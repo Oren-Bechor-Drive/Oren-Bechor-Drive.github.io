@@ -8,6 +8,7 @@
     "check:media": "node scripts/road-media-integrity.mjs"
   },
   "devDependencies": {
+    "image-size": "^2.0.2",
     "jsdom": "26.1.0"
   }
 }
