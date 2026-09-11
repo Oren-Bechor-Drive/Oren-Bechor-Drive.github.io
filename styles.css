@@ -41,8 +41,10 @@
   --radius-control: 8px;
   --radius-card: 16px;
   --radius-large: 24px;
-  --shadow-one: 0 2px 8px -2px rgb(20 29 30 / 0.04), 0 1px 3px rgb(20 29 30 / 0.02);
-  --shadow-two: 0 12px 28px -6px rgb(20 29 30 / 0.07), 0 4px 10px -2px rgb(20 29 30 / 0.03);
+  --shadow-one:
+    0 2px 8px -2px rgb(20 29 30 / 0.04), 0 1px 3px rgb(20 29 30 / 0.02);
+  --shadow-two:
+    0 12px 28px -6px rgb(20 29 30 / 0.07), 0 4px 10px -2px rgb(20 29 30 / 0.03);
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   --header-height: 72px;
@@ -296,7 +298,10 @@ button {
   line-height: 1.25;
   text-decoration: none;
   white-space: nowrap;
-  transition: background-color 160ms ease, transform 140ms var(--ease-out), box-shadow 160ms ease;
+  transition:
+    background-color 160ms ease,
+    transform 140ms var(--ease-out),
+    box-shadow 160ms ease;
 }
 
 .button-primary {
@@ -327,14 +332,18 @@ button {
   min-width: 0;
   margin: 0 -48px 0 0;
   overflow: hidden;
-  border-radius: var(--radius-large) 0 0 var(--radius-large);
+  border-radius: var(--radius-large);
   box-shadow: var(--shadow-two);
 }
 
 .hero-visual::after {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent 60%, rgb(240 251 254 / 0.58) 100%);
+  background: linear-gradient(
+    90deg,
+    transparent 60%,
+    rgb(240 251 254 / 0.58) 100%
+  );
   content: "";
   pointer-events: none;
 }
@@ -472,7 +481,12 @@ button {
   font-size: 16px;
   font-weight: 700;
   text-align: right;
-  transition: border-color 180ms ease, background-color 180ms ease, color 180ms ease, transform 140ms var(--ease-out), box-shadow 180ms ease;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease,
+    transform 140ms var(--ease-out),
+    box-shadow 180ms ease;
 }
 
 .topic-card:first-child,
@@ -495,7 +509,9 @@ button {
   border-radius: var(--radius-large);
   background: var(--primary);
   color: var(--white);
-  box-shadow: 0 24px 48px -12px rgb(0 86 92 / 0.18), 0 8px 20px -4px rgb(109 205 214 / 0.16);
+  box-shadow:
+    0 24px 48px -12px rgb(0 86 92 / 0.18),
+    0 8px 20px -4px rgb(109 205 214 / 0.16);
 }
 
 .topic-panel[data-updating="true"] > * {
@@ -504,7 +520,9 @@ button {
 }
 
 .topic-panel > * {
-  transition: opacity 180ms var(--ease-out), transform 180ms var(--ease-out);
+  transition:
+    opacity 180ms var(--ease-out),
+    transform 180ms var(--ease-out);
 }
 
 .topic-panel h3 {
@@ -895,7 +913,11 @@ button {
   }
 
   .hero-visual::after {
-    background: linear-gradient(180deg, rgb(240 251 254 / 0.08), transparent 42%);
+    background: linear-gradient(
+      180deg,
+      rgb(240 251 254 / 0.08),
+      transparent 42%
+    );
   }
 
   .section {
