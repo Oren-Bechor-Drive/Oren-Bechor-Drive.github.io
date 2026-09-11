@@ -220,7 +220,7 @@
 
 .topic-explorer {
   display: grid;
-  grid-template-columns: minmax(0, 1.18fr) minmax(300px, 0.82fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 28px;
   align-items: stretch;
 }
@@ -228,21 +228,23 @@
 .topic-rail {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  grid-auto-rows: 1fr;
+  gap: 8px;
 }
 
 .topic-card {
   position: relative;
-  min-height: 76px;
-  padding: 16px 20px;
+  min-width: 0;
+  min-height: 56px;
+  padding: 12px 20px;
   border: 1px solid var(--border);
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-control);
   background: var(--white);
   color: var(--text-soft);
   cursor: pointer;
   font-size: 16px;
   font-weight: 700;
-  text-align: right;
+  text-align: center;
   transition:
     border-color 180ms ease,
     background-color 180ms ease,
@@ -251,9 +253,8 @@
     box-shadow 180ms ease;
 }
 
-.topic-card:first-child,
-.topic-card:last-child {
-  grid-column: span 2;
+.topic-card:first-child:nth-last-child(odd) {
+  grid-column: 1 / -1;
 }
 
 .topic-card[data-active="true"] {
@@ -274,6 +275,8 @@
   box-shadow:
     0 24px 48px -12px rgb(0 86 92 / 0.18),
     0 8px 20px -4px rgb(109 205 214 / 0.16);
+  text-align: center;
+  text-wrap: balance;
 }
 
 .topic-panel[data-updating="true"] > * {
@@ -288,14 +291,12 @@
 }
 
 .topic-panel h3 {
-  max-width: 14ch;
   margin: 0 0 18px;
   font-size: clamp(28px, 3.1vw, 42px);
   line-height: 1.18;
 }
 
 .topic-panel p {
-  max-width: 40ch;
   margin: 0;
   color: #e7f3f5;
   font-size: 17px;
@@ -305,7 +306,6 @@
   margin-block-start: 54px;
   padding-block-start: 18px;
   border-block-start: 1px solid rgb(231 243 245 / 0.2);
-  color: #e7f3f5;
   font-size: 14px;
 }
 
@@ -338,7 +338,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  image-rendering: auto;
 }
 
 .road-frame-main {

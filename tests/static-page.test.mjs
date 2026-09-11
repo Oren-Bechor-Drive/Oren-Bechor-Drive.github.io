@@ -43,10 +43,17 @@ test("styles preserve the supplied design system and responsive contract", async
   const css = (await Promise.all(stylesheets.map((link) => read(link.getAttribute("href")))))
     .join('\n').toLowerCase();
 
+  // Palette tokens remain available even when the current page does not use them.
+  for (const [name, color] of [
+    ["--primary-bright", "#6dcdd6"],
+    ["--secondary-bright", "#f6db78"],
+    ["--tertiary-bright", "#d96c6c"],
+  ]) {
+    assert.match(css, new RegExp(`${name}\\s*:\\s*${color}\\s*;`),
+      `Missing palette token: ${name}`);
+  }
+
   for (const token of [
-    "#6dcdd6",
-    "#f6db78",
-    "#d96c6c",
     "prefers-reduced-motion",
     "max-width: 768px",
   ]) {
