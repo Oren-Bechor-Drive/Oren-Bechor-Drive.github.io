@@ -18,9 +18,11 @@ No installation or build step is required.
 
 - `index.html` contains the Hebrew, right-to-left page content.
 - `styles.css` implements the system defined in `DESIGN.md`.
-- `script.js` adds the mobile menu, topic preview, and focus behavior.
-- `assets/` contains the generated hero image, local fonts, and road examples taken from the supplied PDF.
-- `tests/static-page.test.mjs` checks the page contract with Node's built-in test runner.
+- `script.js` adds the mobile menu and initializes page enhancements.
+- `topic-explorer.js` owns the topic preview interaction.
+- `scripts/road-media-integrity.mjs` audits marked road media during development.
+- `assets/` contains the current road media and local fonts.
+- `tests/` contains static page, behavior-level, and media-integrity tests.
 
 Run the tests with:
 
@@ -28,7 +30,18 @@ Run the tests with:
 node --test tests/static-page.test.mjs
 ```
 
-## Future directions
+Development checks require Node.js and can be run with:
 
-- **Instructor-led welcome:** Put Oren Bachor's story, experience, and teaching approach at the center before introducing the course topics.
-- **Course-dashboard preview:** Present the welcome experience through realistic lesson modules, progress examples, and course navigation.
+```bash
+npm install
+npm test
+npm run check:media
+```
+
+## Todo
+
+- Build the **Instructor-led welcome** direction around Oren Bachor's story and teaching approach.
+- Build the **Course-dashboard preview** direction with lesson modules and realistic course navigation.
+- Introduce a **shared course-content module** when the second runtime page creates a real seam between two page adapters.
+- Revisit the **visual-system interface** after another page reveals which layout and styling decisions genuinely repeat.
+- Add **full browser automation** when continuous integration or multiple interactive pages justify the dependency and maintenance cost.

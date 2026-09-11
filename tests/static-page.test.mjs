@@ -55,6 +55,10 @@ test('script progressively enhances navigation and topic details', async () => {
 
 test('README records the later welcome-page concepts', async () => {
   const readme = await read('README.md');
+  assert.match(readme, /^## Todo$/m);
   assert.match(readme, /Instructor-led welcome/i);
   assert.match(readme, /Course-dashboard preview/i);
+  assert.match(readme, /shared course-content module/i);
+  assert.match(readme, /visual-system interface/i);
+  assert.match(readme, /full browser automation/i);
 });
