@@ -95,7 +95,16 @@ export async function auditRoadMedia({ rootDir, htmlPath = 'index.html' }) {
   for (const image of document.querySelectorAll('img[data-road-media]')) {
     const source = cleanReference(image.getAttribute('src') ?? '');
     const absoluteImagePath = path.resolve(path.dirname(absoluteHtmlPath), source);
-    const inspected = inspectImage(await readFile(absoluteImagePath));
+    let inspected;
+    try {
+      inspected = inspectImage(await readFile(absoluteImagePath));
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        issues.push(`${source}: file does not exist`);
+        continue;
+      }
+      throw error;
+    }
     const declaredFormat = EXTENSION_FORMATS.get(path.extname(source).toLowerCase());
     const declaredWidth = Number(image.getAttribute('width'));
     const declaredHeight = Number(image.getAttribute('height'));

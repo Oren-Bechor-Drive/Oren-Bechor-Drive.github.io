@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { readFile } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -25,5 +26,23 @@ test('replacement photo bytes remain unchanged', async () => {
     const bytes = await readFile(path.join(rootDir, relativePath));
     const actualHash = createHash('sha256').update(bytes).digest('hex');
     assert.equal(actualHash, expectedHash, relativePath);
+  }
+});
+
+test('missing road media is reported while remaining images are audited', async () => {
+  const temporaryRoot = await mkdtemp(path.join(os.tmpdir(), 'road-media-integrity-'));
+  try {
+    await writeFile(
+      path.join(temporaryRoot, 'index.html'),
+      '<img data-road-media src="missing.jpg" width="1" height="1" alt="missing"><img data-road-media src="existing.jpg" width="843" height="692" alt="existing">',
+    );
+    await writeFile(path.join(temporaryRoot, 'existing.jpg'), await readFile(path.join(rootDir, 'assets/source-road-000.jpg')));
+
+    const audit = await auditRoadMedia({ rootDir: temporaryRoot });
+    assert.equal(audit.assets.length, 1);
+    assert.equal(audit.assets[0].source, 'existing.jpg');
+    assert.deepEqual(audit.issues, ['missing.jpg: file does not exist']);
+  } finally {
+    await rm(temporaryRoot, { recursive: true, force: true });
   }
 });
