@@ -28,9 +28,16 @@ for (const malformed of [false, true]) {
 		assert.equal(document.querySelector("[data-road-toggle]"), null);
 		assert.equal(road.querySelectorAll(".road-carousel-group").length, 1);
 		road.focus();
-		assert.notEqual(document.activeElement, road, "The carousel must not capture focus");
+		assert.notEqual(
+			document.activeElement,
+			road,
+			"The carousel must not capture focus",
+		);
 		const originalCars = [...road.querySelectorAll(".road-car > img")];
-		assert.ok(originalCars.every((image) => !image.draggable), "Car images must not start native drag interactions");
+		assert.ok(
+			originalCars.every((image) => !image.draggable),
+			"Car images must not start native drag interactions",
+		);
 		if (malformed)
 			document.querySelector("[data-topic-panel-title]").remove();
 		const entry = document.querySelector('script[type="module"][src]');

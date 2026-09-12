@@ -128,13 +128,15 @@ test("a superseded selection never appears while the latest transition is pendin
 	);
 });
 
-
 test("dropdown includes every topic and starts with the active selection", () => {
 	const { root, cards } = setup();
 	const dropdown = root.querySelector(".topic-select");
 	const options = [...root.querySelectorAll('[role="option"]')];
 	assert.equal(dropdown.textContent, cards[0].textContent.trim());
-	assert.deepEqual(options.map(option => option.textContent), cards.map(card => card.textContent.trim()));
+	assert.deepEqual(
+		options.map((option) => option.textContent),
+		cards.map((card) => card.textContent.trim()),
+	);
 	assert.equal(dropdown.getAttribute("aria-expanded"), "false");
 	assert.equal(root.querySelector('[role="listbox"]').hidden, true);
 });
@@ -144,8 +146,14 @@ test("dropdown selection updates the preview and desktop card selection", () => 
 	const dropdown = root.querySelector(".topic-select");
 	dropdown.click();
 	root.querySelectorAll('[role="option"]')[2].click();
-	assert.equal(root.querySelector("[data-topic-panel-title]").textContent, "נושא שלישי");
-	assert.deepEqual(cards.map(card => card.dataset.active), ["false", "false", "true"]);
+	assert.equal(
+		root.querySelector("[data-topic-panel-title]").textContent,
+		"נושא שלישי",
+	);
+	assert.deepEqual(
+		cards.map((card) => card.dataset.active),
+		["false", "false", "true"],
+	);
 	assert.equal(dropdown.getAttribute("aria-expanded"), "false");
 	assert.equal(root.ownerDocument.activeElement, dropdown);
 	cards[1].click();
@@ -156,7 +164,13 @@ test("dropdown keyboard navigation and dismissal keep open state accurate", () =
 	const { dom, root } = setup();
 	const dropdown = root.querySelector(".topic-select");
 	const options = [...root.querySelectorAll('[role="option"]')];
-	const key = (name) => dom.window.document.activeElement.dispatchEvent(new dom.window.KeyboardEvent("keydown", { key: name, bubbles: true }));
+	const key = (name) =>
+		dom.window.document.activeElement.dispatchEvent(
+			new dom.window.KeyboardEvent("keydown", {
+				key: name,
+				bubbles: true,
+			}),
+		);
 	dropdown.focus();
 	key("ArrowDown");
 	assert.equal(dropdown.getAttribute("aria-expanded"), "true");
@@ -171,7 +185,9 @@ test("dropdown keyboard navigation and dismissal keep open state accurate", () =
 	assert.equal(dropdown.getAttribute("aria-expanded"), "false");
 	assert.equal(dom.window.document.activeElement, dropdown);
 	dropdown.click();
-	dom.window.document.body.dispatchEvent(new dom.window.Event("pointerdown", { bubbles: true }));
+	dom.window.document.body.dispatchEvent(
+		new dom.window.Event("pointerdown", { bubbles: true }),
+	);
 	assert.equal(dropdown.getAttribute("aria-expanded"), "false");
 	dropdown.click();
 	root.querySelector(".topic-card").focus();

@@ -31,7 +31,12 @@ test("page introduces the instructor directly after the hero", async () => {
 	].map((link) => link.getAttribute("href"));
 
 	assert.deepEqual(sectionIds, ["top", "instructor", "about", "topics"]);
-	assert.deepEqual(navigationTargets, ["#about", "#topics", "#instructor", "#"]);
+	assert.deepEqual(navigationTargets, [
+		"#about",
+		"#topics",
+		"#instructor",
+		"#",
+	]);
 });
 
 test("course icon brands the header and browser tab", async () => {

@@ -30,7 +30,11 @@ const expectedHashes = new Map([
 test("road-media declarations match their files", async () => {
 	const audit = await auditRoadMedia({ rootDir, htmlPath: "index.html" });
 	assert.deepEqual(audit.issues, []);
-	assert.ok(audit.assets.some(asset => asset.source === "assets/images/stop-sign.png"));
+	assert.ok(
+		audit.assets.some(
+			(asset) => asset.source === "assets/images/stop-sign.png",
+		),
+	);
 });
 
 test("current road-media bytes remain unchanged", async () => {
@@ -84,7 +88,9 @@ test("image metadata supports JPEG, WebP, and PNG", async () => {
 		height: 50,
 	});
 	assert.deepEqual(
-		inspectImage(await readFile(path.join(rootDir, "assets/images/stop-sign.png"))),
+		inspectImage(
+			await readFile(path.join(rootDir, "assets/images/stop-sign.png")),
+		),
 		{ format: "png", mime: "image/png", width: 1254, height: 1254 },
 	);
 });
@@ -137,75 +143,182 @@ test("corrupt and unsupported images become issues while later images are audite
 	}
 });
 
-async function galleryFixture(t, { photos = [1, 2, 3], sprites = ["cyan"], fallback = 1 } = {}) {
+async function galleryFixture(
+	t,
+	{ photos = [1, 2, 3], sprites = ["cyan"], fallback = 1 } = {},
+) {
 	const rootDir = await mkdtemp(path.join(os.tmpdir(), "gallery-media-"));
 	t.after(() => rm(rootDir, { recursive: true, force: true }));
 	await mkdir(path.join(rootDir, "assets/images/cars"), { recursive: true });
-	await mkdir(path.join(rootDir, "assets/images/students-pass"), { recursive: true });
-	const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=", "base64");
-	for (const name of sprites) await writeFile(path.join(rootDir, `assets/images/cars/car-${name}.png`), png);
-	for (const number of photos) await writeFile(path.join(rootDir, `assets/images/students-pass/${number}.png`), png);
-	await writeFile(path.join(rootDir, "index.html"), `<div data-road-carousel><ul class="road-carousel-group"><li class="road-car road-car-cyan">
+	await mkdir(path.join(rootDir, "assets/images/students-pass"), {
+		recursive: true,
+	});
+	const png = Buffer.from(
+		"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=",
+		"base64",
+	);
+	for (const name of sprites)
+		await writeFile(
+			path.join(rootDir, `assets/images/cars/car-${name}.png`),
+			png,
+		);
+	for (const number of photos)
+		await writeFile(
+			path.join(rootDir, `assets/images/students-pass/${number}.png`),
+			png,
+		);
+	await writeFile(
+		path.join(rootDir, "index.html"),
+		`<div data-road-carousel><ul class="road-carousel-group"><li class="road-car road-car-cyan">
 		<img data-road-media src="assets/images/cars/car-cyan.png" width="1" height="1" alt="מכונית">
 		<span class="road-photo"><img src="assets/images/students-pass/${fallback}.png" width="1" height="1" alt="תמונה"></span>
-	</li></ul></div>`);
+	</li></ul></div>`,
+	);
 	return rootDir;
 }
 
 test("gallery audit includes every numbered photo without a fixed maximum", async (t) => {
-	const rootDir = await galleryFixture(t, { photos: Array.from({ length: 27 }, (_, index) => index + 1) });
+	const rootDir = await galleryFixture(t, {
+		photos: Array.from({ length: 27 }, (_, index) => index + 1),
+	});
 	const audit = await auditRoadMedia({ rootDir });
 	assert.deepEqual(audit.issues, []);
-	assert.equal(audit.assets.length, 28, "one car plus all 27 unique student photos");
+	assert.equal(
+		audit.assets.length,
+		28,
+		"one car plus all 27 unique student photos",
+	);
 });
 
 test("gallery audit reports a numbering gap even when later photos exist", async (t) => {
 	const rootDir = await galleryFixture(t, { photos: [1, 3, 4] });
 	const audit = await auditRoadMedia({ rootDir });
-	assert.ok(audit.issues.some(issue => issue.includes("2.png") && issue.includes("numbering gap")));
-	assert.ok(audit.assets.some(asset => asset.source.endsWith("/4.png")), "continue inspecting beyond the gap");
+	assert.ok(
+		audit.issues.some(
+			(issue) =>
+				issue.includes("2.png") && issue.includes("numbering gap"),
+		),
+	);
+	assert.ok(
+		audit.assets.some((asset) => asset.source.endsWith("/4.png")),
+		"continue inspecting beyond the gap",
+	);
 });
 
 test("gallery audit owns palette checks and ignores the composite source artwork", async (t) => {
 	const rootDir = await galleryFixture(t, { sprites: ["cyan", "red"] });
-	await writeFile(path.join(rootDir, "assets/images/cars/cars.png"), "source artwork");
+	await writeFile(
+		path.join(rootDir, "assets/images/cars/cars.png"),
+		"source artwork",
+	);
 	const audit = await auditRoadMedia({ rootDir });
-	assert.ok(audit.issues.some(issue => issue.includes("car-red.png") && issue.includes("template")));
-	assert.ok(audit.issues.every(issue => !issue.includes("cars.png")));
+	assert.ok(
+		audit.issues.some(
+			(issue) =>
+				issue.includes("car-red.png") && issue.includes("template"),
+		),
+	);
+	assert.ok(audit.issues.every((issue) => !issue.includes("cars.png")));
 });
 
 test("gallery audit reports missing sprites, broken photos and fallback metadata together", async (t) => {
-	const rootDir = await galleryFixture(t, { sprites: [], photos: [1, 2], fallback: 3 });
-	await writeFile(path.join(rootDir, "assets/images/students-pass/2.png"), "broken image");
+	const rootDir = await galleryFixture(t, {
+		sprites: [],
+		photos: [1, 2],
+		fallback: 3,
+	});
+	await writeFile(
+		path.join(rootDir, "assets/images/students-pass/2.png"),
+		"broken image",
+	);
 	const audit = await auditRoadMedia({ rootDir });
-	assert.ok(audit.issues.some(issue => issue.includes("car-cyan.png") && issue.includes("file does not exist")));
-	assert.ok(audit.issues.some(issue => issue.includes("3.png") && issue.includes("file does not exist")));
-	assert.ok(audit.issues.some(issue => issue.includes("2.png") && issue.includes("unsupported image format")));
+	assert.ok(
+		audit.issues.some(
+			(issue) =>
+				issue.includes("car-cyan.png") &&
+				issue.includes("file does not exist"),
+		),
+	);
+	assert.ok(
+		audit.issues.some(
+			(issue) =>
+				issue.includes("3.png") &&
+				issue.includes("file does not exist"),
+		),
+	);
+	assert.ok(
+		audit.issues.some(
+			(issue) =>
+				issue.includes("2.png") &&
+				issue.includes("unsupported image format"),
+		),
+	);
 });
 
 test("gallery audit checks fallback dimensions, order and canonical photo names", async (t) => {
-	const rootDir = await galleryFixture(t, { photos: [1, 2, "03"], fallback: 2 });
+	const rootDir = await galleryFixture(t, {
+		photos: [1, 2, "03"],
+		fallback: 2,
+	});
 	const htmlPath = path.join(rootDir, "index.html");
 	const html = await readFile(htmlPath, "utf8");
-	await writeFile(htmlPath, html.replace('2.png" width="1"', '2.png" width="9"'));
+	await writeFile(
+		htmlPath,
+		html.replace('2.png" width="1"', '2.png" width="9"'),
+	);
 	const audit = await auditRoadMedia({ rootDir });
-	assert.ok(audit.issues.some(issue => issue.includes("2.png") && issue.includes("declared 9x1")));
-	assert.ok(audit.issues.some(issue => issue.includes("fallback") && issue.includes("1.png")));
-	assert.ok(audit.issues.some(issue => issue.includes("03.png") && issue.includes("filename")));
+	assert.ok(
+		audit.issues.some(
+			(issue) =>
+				issue.includes("2.png") && issue.includes("declared 9x1"),
+		),
+	);
+	assert.ok(
+		audit.issues.some(
+			(issue) => issue.includes("fallback") && issue.includes("1.png"),
+		),
+	);
+	assert.ok(
+		audit.issues.some(
+			(issue) => issue.includes("03.png") && issue.includes("filename"),
+		),
+	);
 });
 
 test("gallery audit rejects duplicate and non-sprite templates", async (t) => {
 	const rootDir = await galleryFixture(t);
 	const htmlPath = path.join(rootDir, "index.html");
 	const html = await readFile(htmlPath, "utf8");
-	await writeFile(htmlPath, html.replace('</ul>', '<li class="road-car"><img src="assets/images/cars/car-cyan.png" width="1" height="1" alt="מכונית"></li><li class="road-car"><img src="assets/images/students-pass/1.png" width="1" height="1" alt="תמונה"></li></ul>'));
+	await writeFile(
+		htmlPath,
+		html.replace(
+			"</ul>",
+			'<li class="road-car"><img src="assets/images/cars/car-cyan.png" width="1" height="1" alt="מכונית"></li><li class="road-car"><img src="assets/images/students-pass/1.png" width="1" height="1" alt="תמונה"></li></ul>',
+		),
+	);
 	const audit = await auditRoadMedia({ rootDir });
-	assert.ok(audit.issues.some(issue => issue.includes("duplicate carousel template")));
-	assert.ok(audit.issues.some(issue => issue.includes("not an available car sprite")));
-	assert.ok(audit.issues.some(issue => issue.includes("exactly one fallback photo")));
+	assert.ok(
+		audit.issues.some((issue) =>
+			issue.includes("duplicate carousel template"),
+		),
+	);
+	assert.ok(
+		audit.issues.some((issue) =>
+			issue.includes("not an available car sprite"),
+		),
+	);
+	assert.ok(
+		audit.issues.some((issue) =>
+			issue.includes("exactly one fallback photo"),
+		),
+	);
 });
 
-for (const mutation of ["move car outside group", "remove group", "wrap car in another element"]) {
+for (const mutation of [
+	"move car outside group",
+	"remove group",
+	"wrap car in another element",
+]) {
 	test(`gallery audit rejects runtime template mismatch: ${mutation}`, async (t) => {
 		const rootDir = await galleryFixture(t);
 		const htmlPath = path.join(rootDir, "index.html");
@@ -214,7 +327,8 @@ for (const mutation of ["move car outside group", "remove group", "wrap car in a
 		const document = dom.window.document;
 		const gallery = document.querySelector("[data-road-carousel]");
 		const group = gallery.querySelector(".road-carousel-group");
-		if (mutation === "move car outside group") gallery.append(group.firstElementChild);
+		if (mutation === "move car outside group")
+			gallery.append(group.firstElementChild);
 		if (mutation === "remove group") group.replaceWith(...group.children);
 		if (mutation === "wrap car in another element") {
 			const wrapper = document.createElement("li");
@@ -223,6 +337,9 @@ for (const mutation of ["move car outside group", "remove group", "wrap car in a
 		}
 		await writeFile(htmlPath, document.documentElement.outerHTML);
 		const audit = await auditRoadMedia({ rootDir });
-		assert.ok(audit.issues.length > 0, "invalid runtime templates must fail the audit");
+		assert.ok(
+			audit.issues.length > 0,
+			"invalid runtime templates must fail the audit",
+		);
 	});
 }

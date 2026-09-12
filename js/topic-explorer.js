@@ -53,7 +53,12 @@ export function initTopicExplorer(root) {
 	function setOpen(open, restoreFocus = false) {
 		menu.hidden = !open;
 		dropdown.setAttribute("aria-expanded", String(open));
-		if (open) options.find(option => option.getAttribute("aria-selected") === "true").focus();
+		if (open)
+			options
+				.find(
+					(option) => option.getAttribute("aria-selected") === "true",
+				)
+				.focus();
 		else if (restoreFocus) dropdown.focus();
 	}
 
@@ -64,15 +69,23 @@ export function initTopicExplorer(root) {
 			setOpen(false, true);
 			return;
 		}
-		if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
+		if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key))
+			return;
 		event.preventDefault();
 		if (menu.hidden) {
 			setOpen(true);
 			return;
 		}
 		const index = options.indexOf(document.activeElement);
-		const next = event.key === "Home" ? 0 : event.key === "End" ? options.length - 1
-			: (index + (event.key === "ArrowDown" ? 1 : -1) + options.length) % options.length;
+		const next =
+			event.key === "Home"
+				? 0
+				: event.key === "End"
+					? options.length - 1
+					: (index +
+							(event.key === "ArrowDown" ? 1 : -1) +
+							options.length) %
+						options.length;
 		options[next].focus();
 	});
 	document.addEventListener("pointerdown", (event) => {
@@ -81,7 +94,9 @@ export function initTopicExplorer(root) {
 	picker.addEventListener("focusout", (event) => {
 		if (!picker.contains(event.relatedTarget)) setOpen(false);
 	});
-	browserWindow?.matchMedia?.("(max-width: 639px)").addEventListener?.("change", () => setOpen(false));
+	browserWindow
+		?.matchMedia?.("(max-width: 639px)")
+		.addEventListener?.("change", () => setOpen(false));
 	let pendingUpdate;
 
 	function updateContent(card) {

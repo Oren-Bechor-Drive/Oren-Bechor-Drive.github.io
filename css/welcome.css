@@ -419,7 +419,7 @@
 }
 
 .road-car-yellow {
-	--car-art-width: 126.030%;
+	--car-art-width: 126.03%;
 	--car-art-left: -0.434%;
 	--car-art-top: -0.083%;
 }
@@ -436,8 +436,20 @@
 	transform: translate(-50%, -50%);
 	background: var(--white);
 	mask-image:
-		linear-gradient(to right, transparent, #000 3px, #000 calc(100% - 3px), transparent),
-		linear-gradient(to bottom, transparent, #000 3px, #000 calc(100% - 3px), transparent);
+		linear-gradient(
+			to right,
+			transparent,
+			#000 3px,
+			#000 calc(100% - 3px),
+			transparent
+		),
+		linear-gradient(
+			to bottom,
+			transparent,
+			#000 3px,
+			#000 calc(100% - 3px),
+			transparent
+		);
 	mask-composite: intersect;
 }
 

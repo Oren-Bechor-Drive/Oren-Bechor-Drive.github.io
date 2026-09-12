@@ -48,7 +48,10 @@ const roadCarousel = document.querySelector("[data-road-carousel]");
 
 if (roadCarousel) {
 	initRoadCarousel(roadCarousel).catch((error) => {
-		console.warn("Student gallery could not refresh; keeping the static photos.", error);
+		console.warn(
+			"Student gallery could not refresh; keeping the static photos.",
+			error,
+		);
 	});
 }
 
