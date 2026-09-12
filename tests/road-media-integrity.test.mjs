@@ -17,16 +17,16 @@ const rootDir = path.resolve(
 );
 const expectedHashes = new Map([
 	[
-		"assets/images/learning-road.jpg",
-		"bcb8095abd13e0f730ee6bc7977c8422d405d9367836dabd8d1d6095d43bb73f",
+		"assets/images/stop-sign.png",
+		"74c8b03d12564dcfbe001e9016d1b6e940abc513de21e5b706f45ea44affedc3",
 	],
 	[
 		"assets/images/source-road-000.jpg",
-		"692d892f7ac25af2a99ce24cd083bad11c8daad4092ef6a35888e3197d863cfb",
+		"acb8bd9d9c7129c10247105b01e5076439c5cbaddf9618fa696cf29c8b6698ef",
 	],
 	[
 		"assets/images/source-road-001.jpg",
-		"804377c8a085a12e70a93b8523725bc6dbe43b3be92a2d67036ae7508e6e3e91",
+		"0c6ab90604e43703c32d3c54e6ac831bc882df6f3902389518e2e6dc7d301ede",
 	],
 ]);
 
@@ -36,7 +36,7 @@ test("road-media declarations match their files", async () => {
 	assert.equal(audit.assets.length, 3);
 });
 
-test("replacement photo bytes remain unchanged", async () => {
+test("current road-media bytes remain unchanged", async () => {
 	for (const [relativePath, expectedHash] of expectedHashes) {
 		const bytes = await readFile(path.join(rootDir, relativePath));
 		const actualHash = createHash("sha256").update(bytes).digest("hex");
@@ -69,7 +69,7 @@ test("missing road media is reported while remaining images are audited", async 
 	}
 });
 
-test("image metadata supports JPEG and WebP", async () => {
+test("image metadata supports JPEG, WebP, and PNG", async () => {
 	const jpeg = await readFile(
 		path.join(rootDir, "assets/images/source-road-000.jpg"),
 	);
@@ -94,6 +94,10 @@ test("image metadata supports JPEG and WebP", async () => {
 		width: 100,
 		height: 50,
 	});
+	assert.deepEqual(
+		inspectImage(await readFile(path.join(rootDir, "assets/images/stop-sign.png"))),
+		{ format: "png", mime: "image/png", width: 1254, height: 1254 },
+	);
 });
 
 test("corrupt and unsupported images become issues while later images are audited", async () => {

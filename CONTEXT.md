@@ -17,8 +17,8 @@ The welcome-page experience where a learner selects a learning topic and reads w
 _Avoid_: Course dashboard, lesson player
 
 **Road media**:
-A photograph that illustrates a real road environment for learning context.
-_Avoid_: Decoration, stock graphic
+A visual that illustrates a driving concept or a real road environment. Road media can be a road photograph or a road-sign illustration.
+_Avoid_: Decoration, generic stock graphic
 
 **Welcome direction**:
 A distinct way to introduce the course to a new learner, such as the Learning Journey, Instructor-led, or Course-dashboard direction.

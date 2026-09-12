@@ -58,7 +58,7 @@
 	.content-shell,
 	.nav-shell,
 	.hero-shell {
-		width: min(100% - 64px, 960px);
+		width: calc(100% - 64px);
 	}
 
 	.site-menu {
@@ -143,9 +143,8 @@
 	}
 
 	.hero-shell {
-		min-height: auto;
-		grid-template-columns: minmax(0, 1fr) clamp(140px, 38vw, 160px);
-		gap: 24px 16px;
+		grid-template-columns: minmax(0, 1fr);
+		row-gap: 24px;
 	}
 
 	.hero-copy {
@@ -153,7 +152,7 @@
 	}
 
 	.hero-copy h1 {
-		grid-area: 1 / 1;
+		grid-area: 2 / 1;
 		align-self: center;
 		max-width: 13ch;
 		margin: 0;
@@ -162,21 +161,22 @@
 	}
 
 	.hero-copy p {
-		grid-area: 2 / 1 / auto / -1;
+		grid-area: 3 / 1;
 		max-width: none;
 		margin: 0;
 		font-size: 17px;
 	}
 
 	.hero-actions {
-		grid-area: 3 / 1 / auto / -1;
+		grid-area: 4 / 1;
 		flex-wrap: wrap;
 		gap: 12px 18px;
 	}
 
 	.hero-visual {
-		grid-area: 1 / 2;
-		align-self: center;
+		grid-area: 1 / 1;
+		justify-self: center;
+		width: clamp(220px, 64vw, 300px);
 		margin: 0;
 	}
 

@@ -1,4 +1,8 @@
 .hero {
+	display: grid;
+	min-height: calc(100vh - var(--header-height));
+	min-height: calc(100dvh - var(--header-height));
+	align-items: center;
 	padding-block: 72px 72px;
 	overflow: hidden;
 }
@@ -6,7 +10,6 @@
 .hero-shell {
 	position: relative;
 	display: grid;
-	min-height: min(700px, calc(100dvh - var(--header-height) - 40px));
 	grid-template-columns: minmax(340px, 0.78fr) minmax(0, 1.48fr);
 	align-items: stretch;
 }
@@ -95,6 +98,7 @@
 }
 
 .hero-visual img {
+	height: auto;
 	object-fit: cover;
 	object-position: 48% center;
 }

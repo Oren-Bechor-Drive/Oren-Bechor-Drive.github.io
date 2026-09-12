@@ -4,6 +4,7 @@ import { pathToFileURL } from "node:url";
 
 // Import only supported parsers; unrelated container parsers are never loaded.
 import { JPG } from "image-size/types/jpg";
+import { PNG } from "image-size/types/png";
 import { WEBP } from "image-size/types/webp";
 import { JSDOM } from "jsdom";
 
@@ -11,23 +12,29 @@ const EXTENSION_FORMATS = new Map([
 	[".jpg", "jpeg"],
 	[".jpeg", "jpeg"],
 	[".webp", "webp"],
+	[".png", "png"],
 ]);
 
 const FORMAT_MIMES = new Map([
 	["jpeg", "image/jpeg"],
 	["webp", "image/webp"],
+	["png", "image/png"],
+]);
+
+const FORMAT_PARSERS = new Map([
+	["jpeg", JPG],
+	["webp", WEBP],
+	["png", PNG],
 ]);
 
 export function inspectImage(buffer) {
-	const format = JPG.validate(buffer)
-		? "jpeg"
-		: WEBP.validate(buffer)
-			? "webp"
-			: undefined;
+	const [format, parser] = [...FORMAT_PARSERS].find(
+		([, candidate]) => candidate.validate(buffer),
+	) ?? [];
 	if (!format) throw new Error("unsupported image format");
 	let metadata;
 	try {
-		metadata = (format === "jpeg" ? JPG : WEBP).calculate(buffer);
+		metadata = parser.calculate(buffer);
 	} catch (error) {
 		throw new Error("image metadata could not be read", { cause: error });
 	}
