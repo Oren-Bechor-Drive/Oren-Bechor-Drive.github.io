@@ -15,25 +15,21 @@ const rootDir = path.resolve(
 	path.dirname(fileURLToPath(import.meta.url)),
 	"..",
 );
+const testJpeg = Buffer.from(
+	"/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgICAgMCAgIDAwMDBAYEBAQEBAgGBgUGCQgKCgkICQkKDA8MCgsOCwkJDRENDg8QEBEQCgwSExIQEw8QEBD/wAALCAACAAIBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AVN//2Q==",
+	"base64",
+);
 const expectedHashes = new Map([
 	[
 		"assets/images/stop-sign.png",
 		"74c8b03d12564dcfbe001e9016d1b6e940abc513de21e5b706f45ea44affedc3",
-	],
-	[
-		"assets/images/source-road-000.jpg",
-		"acb8bd9d9c7129c10247105b01e5076439c5cbaddf9618fa696cf29c8b6698ef",
-	],
-	[
-		"assets/images/source-road-001.jpg",
-		"0c6ab90604e43703c32d3c54e6ac831bc882df6f3902389518e2e6dc7d301ede",
 	],
 ]);
 
 test("road-media declarations match their files", async () => {
 	const audit = await auditRoadMedia({ rootDir, htmlPath: "index.html" });
 	assert.deepEqual(audit.issues, []);
-	assert.equal(audit.assets.length, 3);
+	assert.equal(audit.assets.length, 1);
 });
 
 test("current road-media bytes remain unchanged", async () => {
@@ -51,14 +47,9 @@ test("missing road media is reported while remaining images are audited", async 
 	try {
 		await writeFile(
 			path.join(temporaryRoot, "index.html"),
-			'<img data-road-media src="missing.jpg" width="1" height="1" alt="missing"><img data-road-media src="existing.jpg" width="843" height="692" alt="existing">',
+			'<img data-road-media src="missing.jpg" width="1" height="1" alt="missing"><img data-road-media src="existing.jpg" width="2" height="2" alt="existing">',
 		);
-		await writeFile(
-			path.join(temporaryRoot, "existing.jpg"),
-			await readFile(
-				path.join(rootDir, "assets/images/source-road-000.jpg"),
-			),
-		);
+		await writeFile(path.join(temporaryRoot, "existing.jpg"), testJpeg);
 
 		const audit = await auditRoadMedia({ rootDir: temporaryRoot });
 		assert.equal(audit.assets.length, 1);
@@ -70,9 +61,6 @@ test("missing road media is reported while remaining images are audited", async 
 });
 
 test("image metadata supports JPEG, WebP, and PNG", async () => {
-	const jpeg = await readFile(
-		path.join(rootDir, "assets/images/source-road-000.jpg"),
-	);
 	const webp = Buffer.alloc(30);
 	webp.write("RIFF", 0);
 	webp.writeUInt32LE(22, 4);
@@ -82,11 +70,11 @@ test("image metadata supports JPEG, WebP, and PNG", async () => {
 	webp[24] = 99;
 	webp[27] = 49;
 
-	assert.deepEqual(inspectImage(jpeg), {
+	assert.deepEqual(inspectImage(testJpeg), {
 		format: "jpeg",
 		mime: "image/jpeg",
-		width: 843,
-		height: 692,
+		width: 2,
+		height: 2,
 	});
 	assert.deepEqual(inspectImage(webp), {
 		format: "webp",
@@ -113,7 +101,7 @@ test("corrupt and unsupported images become issues while later images are audite
 				'<img data-road-media src="corrupt.jpg" width="1" height="1" alt="corrupt">',
 				'<img data-road-media src="unsupported.jpg" width="1" height="1" alt="unsupported">',
 				'<img data-road-media src="metadata.jpg?rev=1" width="1" height="1" alt="metadata">',
-				'<img data-road-media src="valid.jpg" width="843" height="692" alt="valid">',
+				'<img data-road-media src="valid.jpg" width="2" height="2" alt="valid">',
 			].join(""),
 		);
 		await writeFile(
@@ -128,18 +116,8 @@ test("corrupt and unsupported images become issues while later images are audite
 				"base64",
 			),
 		);
-		await writeFile(
-			path.join(temporaryRoot, "metadata.jpg"),
-			await readFile(
-				path.join(rootDir, "assets/images/source-road-000.jpg"),
-			),
-		);
-		await writeFile(
-			path.join(temporaryRoot, "valid.jpg"),
-			await readFile(
-				path.join(rootDir, "assets/images/source-road-000.jpg"),
-			),
-		);
+		await writeFile(path.join(temporaryRoot, "metadata.jpg"), testJpeg);
+		await writeFile(path.join(temporaryRoot, "valid.jpg"), testJpeg);
 
 		const audit = await auditRoadMedia({ rootDir: temporaryRoot });
 		assert.deepEqual(
@@ -150,7 +128,7 @@ test("corrupt and unsupported images become issues while later images are audite
 			"missing.jpg: file does not exist",
 			"corrupt.jpg: image metadata could not be read",
 			"unsupported.jpg: unsupported image format",
-			"metadata.jpg: declared 1x1, file is 843x692",
+			"metadata.jpg: declared 1x1, file is 2x2",
 			"metadata.jpg: preload type is image/webp, expected image/jpeg",
 		]);
 	} finally {

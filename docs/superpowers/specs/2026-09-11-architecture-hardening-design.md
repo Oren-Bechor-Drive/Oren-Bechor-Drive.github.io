@@ -1,5 +1,7 @@
 # Architecture Hardening Design
 
+> Historical record: This document describes the site before the learning-method section and its two supporting road photographs were removed on September 12, 2026. Paths, media counts, markup samples, and commands below may no longer match the current tree. Use `README.md` for the current page structure and file paths.
+
 ## Goal
 
 Deepen the parts of the welcome page that already create maintenance friction: road-media replacement, topic-preview behavior, and verification. Preserve the current Hebrew experience, the supplied design system, and the learner's no-JavaScript reading path.

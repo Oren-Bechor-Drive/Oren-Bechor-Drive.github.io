@@ -4,6 +4,10 @@ This is the first welcome-page concept for Oren Bachor's Hebrew driving course. 
 
 The hero fills the available viewport below the navigation. On mobile, the cyan stop-sign illustration appears above the course introduction.
 
+## Current page flow
+
+The page moves through the hero, course explanation, learning-topic preview, instructor introduction, and closing learning action. The main navigation links to the course explanation, topic preview, and instructor introduction.
+
 ## Open locally
 
 From this folder, run:
@@ -26,9 +30,9 @@ No installation or build step is required.
 - `js/script.js` adds the mobile menu and initializes page enhancements.
 - `js/topic-explorer.js` owns the topic preview interaction.
 - `scripts/road-media-integrity.mjs` audits marked JPEG, WebP, and PNG road media during development.
-- `assets/images/` contains the cyan stop-sign illustration and the current road photographs. Typography uses Varela Round globally and loads it from Google Fonts.
+- `assets/images/` contains the cyan stop-sign illustration. Typography uses Varela Round globally and loads it from Google Fonts.
 - `docs/reference/the-idea.pdf` is the supplied course brief.
-- `docs/superpowers/` preserves historical implementation plans and specifications; use this README for current paths.
+- `docs/superpowers/` preserves historical implementation plans and specifications. Those files can contain obsolete paths, media counts, and markup from earlier versions. Use this README for the current structure and paths.
 - `tests/` contains static page, behavior-level, and media-integrity tests.
 
 Development checks require Node.js and can be run with:

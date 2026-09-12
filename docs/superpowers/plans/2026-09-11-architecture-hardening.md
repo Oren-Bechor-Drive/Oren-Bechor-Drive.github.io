@@ -1,5 +1,7 @@
 # Architecture Hardening Implementation Plan
 
+> Historical record: This document describes the site before the learning-method section and its two supporting road photographs were removed on September 12, 2026. Paths, media counts, markup samples, and commands below may no longer match the current tree. Use `README.md` for the current page structure and file paths.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Protect road-photo replacements from metadata drift, deepen the interactive topic preview behind one interface, and record deliberately deferred architecture work.

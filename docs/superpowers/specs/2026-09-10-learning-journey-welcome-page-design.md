@@ -1,5 +1,7 @@
 # Learning journey welcome page
 
+> Historical record: This document describes the site before the learning-method section and its two supporting road photographs were removed on September 12, 2026. Paths, media counts, markup samples, and commands below may no longer match the current tree. Use `README.md` for the current page structure and file paths.
+
 ## Goal
 
 Create a single Hebrew welcome page for new visitors who do not yet know the course. The page should explain what the course teaches, connect the material to real driving situations, and lead visitors into a preview of the learning topics.

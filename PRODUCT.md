@@ -24,7 +24,7 @@ The course connects driving theory to situations that occur on the road. It supp
 
 ## Operating context
 
-Visitors first learn what the course is, then browse a preview of topics such as right-of-way, turns, intersections, road signs, speed limits, overtaking, trip planning, and common driving-test mistakes.
+Visitors first learn what the course is, then browse a preview of topics such as right-of-way, turns, intersections, road signs, speed limits, overtaking, trip planning, and common driving-test mistakes. The page then introduces Oren Bachor and closes with a link back to the topic preview.
 
 ## Capabilities and constraints
 

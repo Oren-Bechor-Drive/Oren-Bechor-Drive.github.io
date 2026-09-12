@@ -73,10 +73,6 @@
 		margin-inline-end: -32px;
 	}
 
-	.method-layout {
-		gap: 54px;
-	}
-
 	.instructor-layout {
 		padding: 42px;
 	}
@@ -192,7 +188,6 @@
 
 	.about-layout,
 	.topic-explorer,
-	.method-layout,
 	.instructor-layout {
 		grid-template-columns: 1fr;
 	}
@@ -203,7 +198,6 @@
 
 	.about-title-block h2,
 	.section-heading h2,
-	.method-copy h2,
 	.closing h2 {
 		font-size: 36px;
 	}
@@ -242,31 +236,8 @@
 		margin-block-start: 32px;
 	}
 
-	.road-frames {
-		min-height: 390px;
-		order: 2;
-	}
-
-	.road-frame-main {
-		inset: 0 0 64px 48px;
-	}
-
-	.road-frame-secondary {
-		inset: 202px 42% 0 0;
-		border-width: 7px;
-	}
-
-	.method-copy {
-		order: 1;
-	}
-
-	.method-list li {
-		grid-template-columns: 1fr;
-		gap: 4px;
-	}
-
 	.instructor {
-		padding-block: 52px;
+		padding-block: 0 52px;
 	}
 
 	.instructor-layout {
@@ -427,21 +398,8 @@
 
 	.about-title-block h2,
 	.section-heading h2,
-	.method-copy h2,
 	.closing h2 {
 		font-size: 32px;
-	}
-
-	.road-frames {
-		min-height: 320px;
-	}
-
-	.road-frame-main {
-		inset: 0 0 56px 28px;
-	}
-
-	.road-frame-secondary {
-		inset: 174px 38% 0 0;
 	}
 }
 

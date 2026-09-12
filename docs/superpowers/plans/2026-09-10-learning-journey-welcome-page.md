@@ -1,5 +1,7 @@
 # Learning Journey Welcome Page Implementation Plan
 
+> Historical record: This document describes the site before the learning-method section and its two supporting road photographs were removed on September 12, 2026. Paths, media counts, markup samples, and commands below may no longer match the current tree. Use `README.md` for the current page structure and file paths.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build a responsive Hebrew welcome page that explains Oren Bachor's driving course and scrolls new visitors to an interactive preview of its learning topics.

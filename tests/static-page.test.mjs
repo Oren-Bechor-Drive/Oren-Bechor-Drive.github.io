@@ -21,6 +21,19 @@ test("page exposes its Hebrew semantic structure", async () => {
 	}
 });
 
+test("page moves directly from learning topics to the instructor", async () => {
+	const document = new JSDOM(await read("index.html")).window.document;
+	const sectionIds = [...document.querySelectorAll("main > section")]
+		.map((section) => section.id)
+		.filter(Boolean);
+	const navigationTargets = [
+		...document.querySelectorAll('#site-menu a[href^="#"]'),
+	].map((link) => link.getAttribute("href"));
+
+	assert.deepEqual(sectionIds, ["top", "about", "topics", "instructor"]);
+	assert.deepEqual(navigationTargets, ["#about", "#topics", "#instructor", "#"]);
+});
+
 test("course icon brands the header and browser tab", async () => {
 	const document = new JSDOM(await read("index.html")).window.document;
 	const iconPath = "assets/icons/course-icon.png";
