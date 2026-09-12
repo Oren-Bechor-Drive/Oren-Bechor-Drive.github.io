@@ -20,7 +20,11 @@ for (const malformed of [false, true]) {
 			delete globalThis.window;
 			delete globalThis.document;
 		});
-		dom.window.matchMedia = () => ({ matches: true });
+		dom.window.matchMedia = () => ({
+			matches: true,
+			addEventListener() {},
+			removeEventListener() {},
+		});
 		dom.window.fetch = async () => ({ status: 404 });
 		const document = dom.window.document;
 		const road = document.querySelector("[data-road-carousel]");
@@ -38,8 +42,7 @@ for (const malformed of [false, true]) {
 			originalCars.every((image) => !image.draggable),
 			"Car images must not start native drag interactions",
 		);
-		if (malformed)
-			document.querySelector("[data-topic-panel-title]").remove();
+		if (malformed) document.querySelector("[data-topic-panel-title]").remove();
 		const entry = document.querySelector('script[type="module"][src]');
 		assert.ok(entry, "HTML must load a module entry");
 		const entryUrl = new URL(
@@ -66,9 +69,7 @@ for (const malformed of [false, true]) {
 		assert.equal(menu.dataset.open, "false");
 
 		document.querySelector("[data-topics-link]").click();
-		await new Promise((resolve) =>
-			dom.window.requestAnimationFrame(resolve),
-		);
+		await new Promise((resolve) => dom.window.requestAnimationFrame(resolve));
 		assert.equal(document.activeElement, document.querySelector("#topics"));
 		if (!malformed) {
 			const card = document.querySelectorAll(".topic-card")[1];

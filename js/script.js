@@ -55,5 +55,28 @@ if (roadCarousel) {
 	});
 }
 
+// Footer labels work immediately; fetch the icon kit only near the footer.
+const socialFooter = document.querySelector("[data-icon-kit]");
+if (socialFooter) {
+	const loadIcons = () => {
+		const script = document.createElement("script");
+		script.src = socialFooter.dataset.iconKit;
+		script.crossOrigin = "anonymous";
+		script.async = true;
+		document.head.append(script);
+	};
+	if ("IntersectionObserver" in window) {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (!entries.some((entry) => entry.isIntersecting)) return;
+				observer.disconnect();
+				loadIcons();
+			},
+			{ rootMargin: "300px" },
+		);
+		observer.observe(socialFooter);
+	} else window.addEventListener("load", loadIcons, { once: true });
+}
+
 // Register independent page controls before validating topic markup.
 if (topicExplorer) initTopicExplorer(topicExplorer);

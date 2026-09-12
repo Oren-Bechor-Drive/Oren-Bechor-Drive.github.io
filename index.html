@@ -21,11 +21,9 @@
 		<link rel="stylesheet" href="css/welcome.css" />
 		<link rel="stylesheet" href="css/responsive.css" />
 		<script src="js/script.js" type="module"></script>
-		<script
-			src="https://kit.fontawesome.com/a138530222.js"
-			crossorigin="anonymous"
-			defer
-		></script>
+		<link rel="modulepreload" href="js/road-carousel.js" />
+		<link rel="modulepreload" href="js/road-photo-sources.js" />
+		<link rel="modulepreload" href="js/topic-explorer.js" />
 	</head>
 	<body>
 		<a class="skip-link" href="#main-content">דלגו לתוכן הראשי</a>
@@ -100,6 +98,7 @@
 					<figure class="hero-visual">
 						<img
 							src="assets/images/stop-sign.png"
+							srcset="assets/images/optimized/stop-sign.webp"
 							width="1254"
 							height="1254"
 							data-road-media
@@ -117,8 +116,9 @@
 					<div class="road-loader" aria-hidden="true">
 						<img
 							src="assets/images/wheel.png"
-							width="1920"
-							height="1920"
+							srcset="assets/images/optimized/wheel.webp"
+							width="480"
+							height="480"
 							data-road-media
 							draggable="false"
 							alt="גלגל"
@@ -138,6 +138,7 @@
 								<span class="road-photo">
 									<img
 										src="assets/images/students-pass/1.png"
+										srcset="assets/images/optimized/students-pass/1.webp"
 										width="309"
 										height="193"
 										draggable="false"
@@ -158,6 +159,7 @@
 								<span class="road-photo">
 									<img
 										src="assets/images/students-pass/2.png"
+										srcset="assets/images/optimized/students-pass/2.webp"
 										width="319"
 										height="245"
 										draggable="false"
@@ -178,6 +180,7 @@
 								<span class="road-photo">
 									<img
 										src="assets/images/students-pass/3.png"
+										srcset="assets/images/optimized/students-pass/3.webp"
 										width="405"
 										height="271"
 										draggable="false"
@@ -198,6 +201,7 @@
 								<span class="road-photo">
 									<img
 										src="assets/images/students-pass/4.png"
+										srcset="assets/images/optimized/students-pass/4.webp"
 										width="460"
 										height="300"
 										draggable="false"
@@ -218,6 +222,7 @@
 								<span class="road-photo">
 									<img
 										src="assets/images/students-pass/5.png"
+										srcset="assets/images/optimized/students-pass/5.webp"
 										width="633"
 										height="553"
 										draggable="false"
@@ -238,6 +243,7 @@
 								<span class="road-photo">
 									<img
 										src="assets/images/students-pass/6.png"
+										srcset="assets/images/optimized/students-pass/6.webp"
 										width="361"
 										height="230"
 										draggable="false"
@@ -415,7 +421,7 @@
 			</section>
 		</main>
 
-		<footer class="site-footer">
+		<footer class="site-footer" data-icon-kit="https://kit.fontawesome.com/a138530222.js">
 			<div class="content-shell footer-layout">
 				<p>א.ב נהיגה נכונה בע״מ</p>
 				<nav class="footer-social" aria-label="רשתות חברתיות ויצירת קשר">

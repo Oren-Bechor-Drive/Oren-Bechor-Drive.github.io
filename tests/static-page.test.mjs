@@ -33,7 +33,10 @@ test("page introduces the instructor after the hero and ends with topics then th
 	assert.deepEqual(sectionIds, ["top", "instructor", "about", "topics"]);
 	const main = document.querySelector("main");
 	assert.equal(main.lastElementChild.id, "topics");
-	assert.equal(main.nextElementSibling, document.querySelector("body > footer"));
+	assert.equal(
+		main.nextElementSibling,
+		document.querySelector("body > footer"),
+	);
 	assert.deepEqual(navigationTargets, [
 		"#instructor",
 		"#about",
@@ -44,12 +47,16 @@ test("page introduces the instructor after the hero and ends with topics then th
 
 test("footer social links remain named and usable without the icon kit", async () => {
 	const document = new JSDOM(await read("index.html")).window.document;
-	const kit = document.querySelector('script[src="https://kit.fontawesome.com/a138530222.js"]');
-	assert.equal(kit?.getAttribute("crossorigin"), "anonymous");
+	assert.equal(document.querySelector('script[src*="fontawesome"]'), null);
+	assert.equal(
+		document.querySelector(".site-footer").dataset.iconKit,
+		"https://kit.fontawesome.com/a138530222.js",
+	);
 	const links = [...document.querySelectorAll(".site-footer nav a")];
-	assert.deepEqual(links.map((link) => link.textContent.trim()), [
-		"אינסטגרם", "טיקטוק", "יוטיוב", "וואטסאפ",
-	]);
+	assert.deepEqual(
+		links.map((link) => link.textContent.trim()),
+		["אינסטגרם", "טיקטוק", "יוטיוב", "וואטסאפ"],
+	);
 	for (const link of links) {
 		assert.equal(link.getAttribute("href"), "#");
 		assert.equal(link.querySelector("i")?.getAttribute("aria-hidden"), "true");
@@ -90,9 +97,7 @@ test("page loads the requested Google Fonts efficiently", async () => {
 	);
 	assert.equal(
 		document
-			.querySelector(
-				'link[rel="preconnect"][href="https://fonts.gstatic.com"]',
-			)
+			.querySelector('link[rel="preconnect"][href="https://fonts.gstatic.com"]')
 			?.getAttribute("crossorigin"),
 		"",
 	);

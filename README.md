@@ -10,7 +10,7 @@ The page moves through the hero with its student-photo road carousel, instructor
 
 The hero learning action leads to the topic preview. The topbar learning action still uses `href="#"` to reserve a future account-page destination; no account or enrollment flow exists yet.
 
-The footer includes Instagram, TikTok, YouTube, and WhatsApp links, currently pointing to `#`. Their icons load from Font Awesome kit `a138530222`; Hebrew link labels remain visible if the external kit is unavailable.
+The footer includes Instagram, TikTok, YouTube, and WhatsApp links, currently pointing to `#`. Their icons load from Font Awesome kit `a138530222` when the footer is within 300px of the viewport. Hebrew link labels remain visible if the external kit is unavailable. Browsers without IntersectionObserver request the kit after page load.
 
 ## Open locally
 
@@ -30,11 +30,31 @@ Place photos in `assets/images/students-pass/` with consecutive names: `1.png`, 
 
 The carousel discovers the files on page load and shows them in numeric order, then repeats. There is no maximum count. Keep the numbering consecutive: discovery stops at the first missing file. Car colors are randomized independently, and adding photos preserves the travel speed. The gallery calculates loop duration from the rendered row width and car spacing, and recalculates it on viewport resize. The approved cadence is about 11.11 seconds per car on desktop and 9.46 seconds on phones; tune `--road-seconds-per-car` in the corresponding CSS rule to change it. Car sizing follows road height with a separate car-scale setting.
 
-Discovery makes one sequential `HEAD` request per photo, followed by a request for the first missing number. The server must return an image content type for existing photos and HTTP 404 for missing files. Each discovered photo must decode before motion starts, so larger galleries take longer to initialize.
+Discovery runs up to four `HEAD` requests concurrently and starts decoding each confirmed photo immediately. Requests use normal browser caching. A missing response is revalidated before it ends discovery, so a cached 404 does not hide newly uploaded photos. Speculative requests can reach up to three numbers beyond the first missing file. The server must return an image content type for existing photos and HTTP 404 for missing files.
 
-During discovery and decoding, the gallery's `aria-busy` state shows the supplied wheel rotating over a light white blur. The overlay clears as the gallery becomes ready or falls back after an empty result or error. Reduced motion keeps the loading wheel still. Without JavaScript, the overlay stays hidden.
+Motion starts once six consecutive photos have decoded, or all photos for a smaller gallery. Wider viewports require enough cars to cover the viewport with one car of spare space. Later decoded photos join in numeric order while preserving the visible cars' position and travel speed. If the repeated row is visible, the append waits for the next loop boundary. Reduced motion shows available photos without waiting for that boundary.
+
+Startup and individual requests/decodes have an eight-second deadline. A stalled initial load uncovers the static fallback. A later failure keeps the already working row. Newly discovered photos receive lower download priority than the initial row.
+
+Until the initial row is ready, the gallery's `aria-busy` state shows the supplied wheel rotating over a light white blur. The overlay clears as the initial row becomes ready or falls back after an empty result, error, or timeout. Reduced motion keeps the loading wheel still. Without JavaScript, the overlay stays hidden.
 
 The HTML provides six initial static photos while discovery runs, when it fails, or when JavaScript is unavailable. Keep those declarations synchronized if you replace or remove the initial photos. With reduced motion enabled, the discovered row stays static and its duplicate is hidden. The road clips horizontal overflow in every mode; it has no drag, click, or pause controls.
+
+## Optimize delivery images
+
+Original PNG files stay in their supplied paths. The page uses smaller WebP delivery copies for the wheel, stop sign, and existing student photos, generated with deterministic resizing and encoding. Car sprites and roof alignment stay unchanged.
+
+To regenerate those copies after adding or replacing photos, run:
+
+```bash
+npm run optimize:media
+npm run check:media
+npm test
+```
+
+Publish `assets/images/optimized/` and the generated `js/road-photo-sources.js` with the page. This is optional maintenance, not a required site build. New numbered PNGs still appear without running the optimizer; they use the original image. Regenerate delivery copies when replacing existing photos so the static fallback and the generated mapping stay current, including replacements with the same byte count. Runtime loading falls back to the PNG if a delivery copy fails to decode or the original's Content-Length no longer matches the generated mapping.
+
+The HTML keeps original image dimensions and uses `srcset` for delivery copies. If changing their aspect ratios or initial photo paths, synchronize those declarations as well. Module preload hints fetch carousel dependencies alongside the entry script.
 
 ## Maintain road artwork
 
@@ -52,7 +72,8 @@ Alignment compensates for transparent margins in each source image. Student phot
 - `js/script.js` adds the mobile menu and initializes page enhancements.
 - `js/topic-explorer.js` owns the topic preview interaction.
 - `js/road-carousel.js` discovers numbered student photos and builds the looping car gallery.
-- `scripts/road-media-integrity.mjs` audits marked JPEG, WebP, and PNG road media, car templates, and numbered student photos during development.
+- `scripts/road-media-integrity.mjs` audits marked JPEG, WebP, and PNG road media, declared delivery copies, car templates, and numbered student photos during development.
+- `scripts/optimize-road-media.mjs` generates optional WebP delivery copies and the runtime photo mapping without changing originals.
 - `assets/images/` contains the stop-sign illustration, road background, car artwork, and numbered student photos. `assets/icons/` contains the course icon. Typography uses Varela Round globally and loads it from Google Fonts.
 - `docs/reference/the-idea.pdf` is the supplied course brief.
 - `docs/superpowers/` preserves historical implementation plans and specifications. Those files can contain obsolete paths, media counts, and markup from earlier versions. Use this README for the current structure and paths.

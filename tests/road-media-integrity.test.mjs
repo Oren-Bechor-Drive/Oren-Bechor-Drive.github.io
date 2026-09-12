@@ -195,8 +195,7 @@ test("gallery audit reports a numbering gap even when later photos exist", async
 	const audit = await auditRoadMedia({ rootDir });
 	assert.ok(
 		audit.issues.some(
-			(issue) =>
-				issue.includes("2.png") && issue.includes("numbering gap"),
+			(issue) => issue.includes("2.png") && issue.includes("numbering gap"),
 		),
 	);
 	assert.ok(
@@ -214,8 +213,7 @@ test("gallery audit owns palette checks and ignores the composite source artwork
 	const audit = await auditRoadMedia({ rootDir });
 	assert.ok(
 		audit.issues.some(
-			(issue) =>
-				issue.includes("car-red.png") && issue.includes("template"),
+			(issue) => issue.includes("car-red.png") && issue.includes("template"),
 		),
 	);
 	assert.ok(audit.issues.every((issue) => !issue.includes("cars.png")));
@@ -235,22 +233,19 @@ test("gallery audit reports missing sprites, broken photos and fallback metadata
 	assert.ok(
 		audit.issues.some(
 			(issue) =>
-				issue.includes("car-cyan.png") &&
-				issue.includes("file does not exist"),
+				issue.includes("car-cyan.png") && issue.includes("file does not exist"),
 		),
 	);
 	assert.ok(
 		audit.issues.some(
 			(issue) =>
-				issue.includes("3.png") &&
-				issue.includes("file does not exist"),
+				issue.includes("3.png") && issue.includes("file does not exist"),
 		),
 	);
 	assert.ok(
 		audit.issues.some(
 			(issue) =>
-				issue.includes("2.png") &&
-				issue.includes("unsupported image format"),
+				issue.includes("2.png") && issue.includes("unsupported image format"),
 		),
 	);
 });
@@ -269,8 +264,7 @@ test("gallery audit checks fallback dimensions, order and canonical photo names"
 	const audit = await auditRoadMedia({ rootDir });
 	assert.ok(
 		audit.issues.some(
-			(issue) =>
-				issue.includes("2.png") && issue.includes("declared 9x1"),
+			(issue) => issue.includes("2.png") && issue.includes("declared 9x1"),
 		),
 	);
 	assert.ok(
@@ -298,19 +292,13 @@ test("gallery audit rejects duplicate and non-sprite templates", async (t) => {
 	);
 	const audit = await auditRoadMedia({ rootDir });
 	assert.ok(
-		audit.issues.some((issue) =>
-			issue.includes("duplicate carousel template"),
-		),
+		audit.issues.some((issue) => issue.includes("duplicate carousel template")),
 	);
 	assert.ok(
-		audit.issues.some((issue) =>
-			issue.includes("not an available car sprite"),
-		),
+		audit.issues.some((issue) => issue.includes("not an available car sprite")),
 	);
 	assert.ok(
-		audit.issues.some((issue) =>
-			issue.includes("exactly one fallback photo"),
-		),
+		audit.issues.some((issue) => issue.includes("exactly one fallback photo")),
 	);
 });
 
@@ -343,3 +331,24 @@ for (const mutation of [
 		);
 	});
 }
+
+test("delivery images declared in srcset are audited", async (t) => {
+	const rootDir = await galleryFixture(t);
+	const htmlPath = path.join(rootDir, "index.html");
+	const html = await readFile(htmlPath, "utf8");
+	await writeFile(
+		htmlPath,
+		html.replace(
+			'src="assets/images/students-pass/1.png"',
+			'src="assets/images/students-pass/1.png" srcset="assets/images/optimized/students-pass/1.webp"',
+		),
+	);
+	const audit = await auditRoadMedia({ rootDir });
+	assert.ok(
+		audit.issues.some(
+			(issue) =>
+				issue.includes("optimized/students-pass/1.webp") &&
+				issue.includes("file does not exist"),
+		),
+	);
+});

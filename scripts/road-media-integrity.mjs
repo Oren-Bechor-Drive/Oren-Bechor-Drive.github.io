@@ -93,6 +93,10 @@ export async function auditRoadMedia({ rootDir, htmlPath = "index.html" }) {
 	)) {
 		const source = cleanReference(image.getAttribute("src") ?? "");
 		const inspected = await inspectSource(source);
+		for (const candidate of (image.getAttribute("srcset") ?? "").split(",")) {
+			const deliverySource = candidate.trim().split(/\s+/, 1)[0];
+			if (deliverySource) await inspectSource(cleanReference(deliverySource));
+		}
 		if (!inspected) continue;
 		const declaredWidth = Number(image.getAttribute("width"));
 		const declaredHeight = Number(image.getAttribute("height"));
