@@ -102,6 +102,12 @@ Tests also check runtime discovery, failure preservation, and loop timing across
 - [Original welcome-page spec](docs/superpowers/specs/2026-09-10-learning-journey-welcome-page-design.md) and [plan](docs/superpowers/plans/2026-09-10-learning-journey-welcome-page.md): archived initial implementation.
 - [Architecture-hardening spec](docs/superpowers/specs/2026-09-11-architecture-hardening-design.md) and [plan](docs/superpowers/plans/2026-09-11-architecture-hardening.md): archived refactor rationale.
 
+## Licensing
+
+Website code is available under the [MIT License](LICENSES/MIT.txt).
+Course content, photos, artwork, and branding are excluded.
+See [LICENSE](LICENSE) for the complete scope.
+
 ## Todo
 
 - Update `image-size` when a release fixes its ICNS/JXL/HEIF parser advisories. The audit imports only the JPEG, WebP, and PNG parser subpaths, so the affected parsers are not loaded. `npm audit` still reports the package-level advisory.

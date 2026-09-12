@@ -1,0 +1,24 @@
+Licensing scope
+
+Copyright (c) 2026 Idan Gilboa
+
+Original website code, including HTML markup, CSS, JavaScript,
+tests, and maintenance scripts, is licensed under the MIT License
+in LICENSES/MIT.txt, subject to the exclusions below.
+
+The MIT License does not cover:
+- Course and marketing copy, lesson explanations, or teaching material,
+  including text embedded in HTML, JavaScript, or documentation.
+- Photos, illustrations, road artwork, car sprites, icons, logos,
+  or other media under assets/, including optimized copies.
+- The supplied course brief under docs/reference/.
+
+All rights in these excluded materials are reserved by their
+respective rights holders unless separately stated. No permission
+to reuse them is granted by the MIT License.
+
+No trademark rights or endorsement rights are granted.
+
+Third-party materials remain subject to their own licenses.
+This notice does not limit rights granted by those licenses,
+applicable law, or GitHub's terms of service.
