@@ -24,7 +24,7 @@ No installation or build step is required.
 - `js/script.js` adds the mobile menu and initializes page enhancements.
 - `js/topic-explorer.js` owns the topic preview interaction.
 - `scripts/road-media-integrity.mjs` audits marked road media during development.
-- `assets/images/` contains the current road media. Typography uses the system stack defined in `DESIGN.md`; no font files are bundled or downloaded.
+- `assets/images/` contains the current road media. Typography uses Varela Round globally and loads it from Google Fonts.
 - `docs/reference/the-idea.pdf` is the supplied course brief.
 - `docs/superpowers/` preserves historical implementation plans and specifications; use this README for current paths.
 - `tests/` contains static page, behavior-level, and media-integrity tests.

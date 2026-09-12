@@ -186,14 +186,6 @@
 		object-fit: contain;
 	}
 
-	.hero-visual::after {
-		background: linear-gradient(
-			180deg,
-			rgb(240 251 254 / 0.08),
-			transparent 42%
-		);
-	}
-
 	.section {
 		padding-block: 78px;
 	}
@@ -343,7 +335,6 @@
 		border-radius: var(--radius-control);
 		background-color: var(--white);
 		color: var(--text);
-		font: inherit;
 		font-size: 16px;
 		cursor: pointer;
 	}
@@ -396,7 +387,6 @@
 		border-radius: var(--radius-control);
 		background: transparent;
 		color: var(--text-soft);
-		font: inherit;
 		font-size: 16px;
 		text-align: start;
 		cursor: pointer;

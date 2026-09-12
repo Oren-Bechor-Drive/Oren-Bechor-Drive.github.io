@@ -27,8 +27,6 @@
 .initials {
 	display: grid;
 	place-items: center;
-	background: var(--primary-bright);
-	color: var(--text);
 	font-weight: 700;
 }
 

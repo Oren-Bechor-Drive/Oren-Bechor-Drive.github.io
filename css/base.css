@@ -54,7 +54,7 @@ body {
 	margin: 0;
 	background: var(--surface);
 	color: var(--text);
-	font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+	font-family: "Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif;
 	font-size: 16px;
 	line-height: 1.625;
 	text-rendering: optimizeLegibility;
@@ -81,7 +81,10 @@ a {
 	-webkit-tap-highlight-color: transparent;
 }
 
-button {
+button,
+input,
+select,
+textarea {
 	font: inherit;
 }
 

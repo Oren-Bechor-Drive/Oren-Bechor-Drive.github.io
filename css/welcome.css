@@ -1,5 +1,5 @@
 .hero {
-	padding-block: 24px 72px;
+	padding-block: 72px 72px;
 	overflow: hidden;
 }
 
@@ -62,8 +62,7 @@
 	white-space: nowrap;
 	transition:
 		background-color 160ms ease,
-		transform 140ms var(--ease-out),
-		box-shadow 160ms ease;
+		transform 140ms var(--ease-out);
 }
 
 .button-primary {
