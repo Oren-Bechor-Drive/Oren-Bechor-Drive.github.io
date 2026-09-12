@@ -166,6 +166,7 @@
 	.hero-copy h1 {
 		grid-area: 2 / 1;
 		align-self: center;
+		justify-self: center;
 		max-width: 13ch;
 		margin: 0;
 		font-size: 36px;
@@ -268,7 +269,19 @@
 	}
 
 	.instructor-intro {
-		align-items: flex-start;
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr);
+		gap: 12px 26px;
+	}
+
+	.instructor-intro > div {
+		display: contents;
+	}
+
+	.instructor-intro p {
+		grid-column: 1 / -1;
+		max-width: none;
+		margin: 0;
 	}
 
 	.initials {
@@ -286,8 +299,13 @@
 	}
 
 	.footer-layout {
-		align-items: flex-start;
+		align-items: center;
 		flex-direction: column;
+		text-align: center;
+	}
+
+	.footer-social {
+		justify-content: center;
 	}
 }
 
