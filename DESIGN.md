@@ -245,7 +245,7 @@ The design system maintains a balanced, rounded shape profile (`roundedness: 2`)
 
 ## Current Welcome Page
 
-The approved composition places the instructor directly after the hero, followed by the course explanation, topic preview, and closing action. This section records page-specific choices within the broader system above; unused palette colors remain available for future designs.
+The approved composition places the instructor directly after the hero, followed by the course explanation and topic preview. The site footer follows the topic preview directly. This section records page-specific choices within the broader system above; unused palette colors remain available for future designs.
 
 ### Hero Student Gallery and Instructor
 
@@ -259,6 +259,8 @@ The approved composition places the instructor directly after the hero, followed
 - While JavaScript loads the gallery, center the supplied `wheel.png` in a 128px square over a 55% white overlay with 4px backdrop blur. Rotate it in place every 1.2 seconds with linear timing. Remove the overlay when the gallery is ready, empty, or fails to load. Keep the wheel still with reduced motion and use an opaque white overlay with reduced transparency. Without JavaScript, leave the static photos uncovered.
 
 ### Applied Layout and Styling
+
+The footer includes a right-to-left row of Instagram, TikTok, YouTube, and WhatsApp links. Use 24px Font Awesome brand icons in the primary teal, with visible Hebrew labels and at least 44px touch targets. Links wrap as needed on small screens and retain visible keyboard focus.
 
 The current page uses a maximum 1280px content width, with 48px side margins above 1024px, 32px at 1024px and below, 20px at 768px and below, and 16px at 440px and below. The main layout and menu switch at 768px; the topic dropdown switches below 640px. These are the implemented page breakpoints rather than a mandatory column grid.
 

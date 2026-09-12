@@ -21,22 +21,39 @@ test("page exposes its Hebrew semantic structure", async () => {
 	}
 });
 
-test("page introduces the instructor directly after the hero", async () => {
+test("page introduces the instructor after the hero and ends with topics then the footer", async () => {
 	const document = new JSDOM(await read("index.html")).window.document;
-	const sectionIds = [...document.querySelectorAll("main > section")]
-		.map((section) => section.id)
-		.filter(Boolean);
+	const sectionIds = [...document.querySelectorAll("main > section")].map(
+		(section) => section.id,
+	);
 	const navigationTargets = [
 		...document.querySelectorAll('#site-menu a[href^="#"]'),
 	].map((link) => link.getAttribute("href"));
 
 	assert.deepEqual(sectionIds, ["top", "instructor", "about", "topics"]);
+	const main = document.querySelector("main");
+	assert.equal(main.lastElementChild.id, "topics");
+	assert.equal(main.nextElementSibling, document.querySelector("body > footer"));
 	assert.deepEqual(navigationTargets, [
+		"#instructor",
 		"#about",
 		"#topics",
-		"#instructor",
 		"#",
 	]);
+});
+
+test("footer social links remain named and usable without the icon kit", async () => {
+	const document = new JSDOM(await read("index.html")).window.document;
+	const kit = document.querySelector('script[src="https://kit.fontawesome.com/a138530222.js"]');
+	assert.equal(kit?.getAttribute("crossorigin"), "anonymous");
+	const links = [...document.querySelectorAll(".site-footer nav a")];
+	assert.deepEqual(links.map((link) => link.textContent.trim()), [
+		"אינסטגרם", "טיקטוק", "יוטיוב", "וואטסאפ",
+	]);
+	for (const link of links) {
+		assert.equal(link.getAttribute("href"), "#");
+		assert.equal(link.querySelector("i")?.getAttribute("aria-hidden"), "true");
+	}
 });
 
 test("course icon brands the header and browser tab", async () => {

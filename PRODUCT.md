@@ -24,7 +24,7 @@ The course connects driving theory to situations that occur on the road. It supp
 
 ## Operating context
 
-Visitors first see the course introduction and a road carousel of supplied photos of Oren Bachor with students after passing their driving tests. The instructor introduction follows, then a course explanation and a preview of topics such as right-of-way, turns, intersections, road signs, speed limits, overtaking, trip planning, and common driving-test mistakes. The page closes with a link back to the topic preview.
+Visitors first see the course introduction and a road carousel of supplied photos of Oren Bachor with students after passing their driving tests. The instructor introduction follows, then a course explanation and a preview of topics such as right-of-way, turns, intersections, road signs, speed limits, overtaking, trip planning, and common driving-test mistakes. The site footer follows the topic preview directly.
 
 ## Capabilities and constraints
 

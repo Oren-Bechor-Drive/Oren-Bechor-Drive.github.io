@@ -6,9 +6,11 @@ The hero fills the available viewport below the navigation and ends with the stu
 
 ## Current page flow
 
-The page moves through the hero with its student-photo road carousel, instructor introduction, course explanation, learning-topic preview, and closing learning action. The main navigation links to the course explanation, topic preview, and instructor introduction. The instructor's amber section aligns directly below the sticky header when reached through `#instructor`.
+The page moves through the hero with its student-photo road carousel, instructor introduction, course explanation, and learning-topic preview, followed directly by the site footer. The main navigation links to the course explanation, topic preview, and instructor introduction. The instructor's amber section aligns directly below the sticky header when reached through `#instructor`.
 
-The hero and closing actions lead to the topic preview. The topbar learning action still uses `href="#"` to reserve a future account-page destination; no account or enrollment flow exists yet.
+The hero learning action leads to the topic preview. The topbar learning action still uses `href="#"` to reserve a future account-page destination; no account or enrollment flow exists yet.
+
+The footer includes Instagram, TikTok, YouTube, and WhatsApp links, currently pointing to `#`. Their icons load from Font Awesome kit `a138530222`; Hebrew link labels remain visible if the external kit is unavailable.
 
 ## Open locally
 

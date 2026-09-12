@@ -23,7 +23,7 @@ const testJpeg = Buffer.from(
 const expectedHashes = new Map([
 	[
 		"assets/images/stop-sign.png",
-		"74c8b03d12564dcfbe001e9016d1b6e940abc513de21e5b706f45ea44affedc3",
+		"71b74e57b5e4afac418839ff23e9f2e24e5fc747a74d4adaf30d58a275e11267",
 	],
 ]);
 

@@ -1,4 +1,9 @@
 @media (hover: hover) and (pointer: fine) {
+	.footer-social a:hover {
+		background: var(--surface-highest);
+		text-decoration: underline;
+	}
+
 	.site-menu a:not(.nav-action):hover::after {
 		transform: scaleX(1);
 	}
@@ -6,10 +11,6 @@
 	.button-primary:hover,
 	.nav-action:hover {
 		background: var(--primary-hover);
-	}
-
-	.button-secondary:hover {
-		background: var(--secondary-hover);
 	}
 
 	.button:hover {
@@ -212,8 +213,7 @@
 	}
 
 	.about-title-block h2,
-	.section-heading h2,
-	.closing h2 {
+	.section-heading h2 {
 		font-size: 36px;
 	}
 
@@ -285,11 +285,6 @@
 		border-inline-start: 0;
 	}
 
-	.closing {
-		padding-block: 90px;
-	}
-
-	.closing-shell,
 	.footer-layout {
 		align-items: flex-start;
 		flex-direction: column;
@@ -418,8 +413,7 @@
 	}
 
 	.about-title-block h2,
-	.section-heading h2,
-	.closing h2 {
+	.section-heading h2 {
 		font-size: 32px;
 	}
 }
