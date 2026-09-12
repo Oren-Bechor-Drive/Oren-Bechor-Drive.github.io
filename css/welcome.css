@@ -92,27 +92,10 @@
 .hero-visual {
 	position: relative;
 	min-width: 0;
-	margin: 0 -48px 0 0;
-	overflow: hidden;
 	border-radius: var(--radius-large);
-	box-shadow: var(--shadow-two);
-}
-
-.hero-visual::after {
-	position: absolute;
-	inset: 0;
-	background: linear-gradient(
-		90deg,
-		transparent 80%,
-		rgb(240 251 254 / 0.58) 100%
-	);
-	content: "";
-	pointer-events: none;
 }
 
 .hero-visual img {
-	width: 100%;
-	height: 100%;
 	object-fit: cover;
 	object-position: 48% center;
 }
