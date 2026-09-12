@@ -247,14 +247,16 @@ The design system maintains a balanced, rounded shape profile (`roundedness: 2`)
 
 The approved composition places the instructor directly after the hero, followed by the course explanation, topic preview, and closing action. This section records page-specific choices within the broader system above; unused palette colors remain available for future designs.
 
-### Instructor and Student Gallery
+### Hero Student Gallery and Instructor
 
 - Use a full-width warm amber (`#F6DB78`) instructor section to distinguish it from the pale cyan hero. The top of the amber aligns with the bottom of the sticky header when navigating to `#instructor`.
-- Place the supplied road background beneath the instructor introduction. The road spans the viewport, repeats horizontally, fills its height, and has square corners.
-- Center the visible car silhouettes despite differing transparent margins in their source files. Scale cars independently of road height; phone layouts deliberately show large cars with neighboring cars partially clipped.
+- Place the supplied road background at the bottom of the hero, beneath its course introduction and actions. The hero and road fit in the initial viewport below the header on typical laptop and phone screens. Use a smaller stop sign and compact spacing; allow natural page growth on shorter screens or with enlarged text.
+- The road spans the viewport, repeats horizontally, fills its height, and has square corners. Its height responds to the small viewport height, with a 180–264px desktop range and a 140–188px phone range.
+- Center the visible car silhouettes despite differing transparent margins in their source files. Size cars relative to the road height and retain a separate car-scale setting; phone layouts show neighboring cars partially clipped.
 - Place student photos on the car roofs with 8px rounded corners and a subtle 3px transparent edge fade. Keep the middle of each photo opaque, crop with `object-fit: cover`, and preserve the original image files.
 - Move cars continuously to the left with linear timing. Keep photo order numeric and randomize car colors independently. Preserve the approved cadence of about 11.11 seconds per car on desktop and 9.46 seconds on phones, configured by `--road-seconds-per-car`. The gallery derives loop duration from rendered row width and car spacing and updates it on viewport resize; short rows include any extra viewport space in their travel distance. The road is noninteractive and has no pause control.
 - Start motion only after the complete photo sequence is ready. Keep a static row during loading, failure, or without JavaScript. With reduced motion, stop the animation and hide the duplicate row; overflow remains clipped.
+- While JavaScript loads the gallery, center the supplied `wheel.png` in a 128px square over a 55% white overlay with 4px backdrop blur. Rotate it in place every 1.2 seconds with linear timing. Remove the overlay when the gallery is ready, empty, or fails to load. Keep the wheel still with reduced motion and use an opaque white overlay with reduced transparency. Without JavaScript, leave the static photos uncovered.
 
 ### Applied Layout and Styling
 

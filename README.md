@@ -2,11 +2,11 @@
 
 This is the first welcome-page concept for Oren Bachor's Hebrew driving course. The current direction is a **Learning journey** that introduces the course, explains how it connects theory to real road situations, and lets visitors preview the learning topics.
 
-The hero fills the available viewport below the navigation. On mobile, the cyan stop-sign illustration appears above the course introduction.
+The hero fills the available viewport below the navigation and ends with the student-photo road carousel. A smaller stop sign and compact spacing keep the full composition visible on typical laptop and phone screens. On mobile, the cyan stop-sign illustration appears above the course introduction. Shorter screens and enlarged text can extend the hero naturally.
 
 ## Current page flow
 
-The page moves through the hero, instructor introduction with a student-photo road carousel, course explanation, learning-topic preview, and closing learning action. The main navigation links to the course explanation, topic preview, and instructor introduction. The instructor's amber section aligns directly below the sticky header when reached through `#instructor`.
+The page moves through the hero with its student-photo road carousel, instructor introduction, course explanation, learning-topic preview, and closing learning action. The main navigation links to the course explanation, topic preview, and instructor introduction. The instructor's amber section aligns directly below the sticky header when reached through `#instructor`.
 
 The hero and closing actions lead to the topic preview. The topbar learning action still uses `href="#"` to reserve a future account-page destination; no account or enrollment flow exists yet.
 
@@ -26,9 +26,11 @@ No installation or build step is required.
 
 Place photos in `assets/images/students-pass/` with consecutive names: `1.png`, `2.png`, `3.png`, and so on. Add the next number and publish the files as usual; no code or photo-count setting needs updating.
 
-The carousel discovers the files on page load and shows them in numeric order, then repeats. There is no maximum count. Keep the numbering consecutive: discovery stops at the first missing file. Car colors are randomized independently, and adding photos preserves the travel speed. The gallery calculates loop duration from the rendered row width and car spacing, and recalculates it on viewport resize. The approved cadence is about 11.11 seconds per car on desktop and 9.46 seconds on phones; tune `--road-seconds-per-car` in the corresponding CSS rule to change it. Car sizing and road height remain separate.
+The carousel discovers the files on page load and shows them in numeric order, then repeats. There is no maximum count. Keep the numbering consecutive: discovery stops at the first missing file. Car colors are randomized independently, and adding photos preserves the travel speed. The gallery calculates loop duration from the rendered row width and car spacing, and recalculates it on viewport resize. The approved cadence is about 11.11 seconds per car on desktop and 9.46 seconds on phones; tune `--road-seconds-per-car` in the corresponding CSS rule to change it. Car sizing follows road height with a separate car-scale setting.
 
 Discovery makes one sequential `HEAD` request per photo, followed by a request for the first missing number. The server must return an image content type for existing photos and HTTP 404 for missing files. Each discovered photo must decode before motion starts, so larger galleries take longer to initialize.
+
+During discovery and decoding, the gallery's `aria-busy` state shows the supplied wheel rotating over a light white blur. The overlay clears as the gallery becomes ready or falls back after an empty result or error. Reduced motion keeps the loading wheel still. Without JavaScript, the overlay stays hidden.
 
 The HTML provides six initial static photos while discovery runs, when it fails, or when JavaScript is unavailable. Keep those declarations synchronized if you replace or remove the initial photos. With reduced motion enabled, the discovered row stays static and its duplicate is hidden. The road clips horizontal overflow in every mode; it has no drag, click, or pause controls.
 

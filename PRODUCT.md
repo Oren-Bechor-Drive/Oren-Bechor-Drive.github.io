@@ -24,13 +24,13 @@ The course connects driving theory to situations that occur on the road. It supp
 
 ## Operating context
 
-Visitors first see the course introduction, then meet Oren Bachor and see supplied photos of him with students after passing their driving tests. A course explanation follows, then a preview of topics such as right-of-way, turns, intersections, road signs, speed limits, overtaking, trip planning, and common driving-test mistakes. The page closes with a link back to the topic preview.
+Visitors first see the course introduction and a road carousel of supplied photos of Oren Bachor with students after passing their driving tests. The instructor introduction follows, then a course explanation and a preview of topics such as right-of-way, turns, intersections, road signs, speed limits, overtaking, trip planning, and common driving-test mistakes. The page closes with a link back to the topic preview.
 
 ## Capabilities and constraints
 
 - The first release is one welcome page for new visitors.
 - The main action scrolls to a preview of learning topics on the same page.
-- The instructor gallery presents student photos in numeric order on cars moving left across a road. Car colors vary independently of photo order. Adding consecutively numbered photos does not require a code change or a maximum-count setting; see [README.md](README.md) for publishing requirements.
+- The hero gallery presents student photos in numeric order on cars moving left across a road. Car colors vary independently of photo order. Adding consecutively numbered photos does not require a code change or a maximum-count setting; see [README.md](README.md) for publishing requirements.
 - The gallery is noninteractive. A static row remains during loading or failure and without JavaScript. Reduced motion disables scrolling; horizontal overflow remains clipped.
 - Enrollment, payment, user accounts, and course playback are outside this release.
 - Visitor-facing website copy is Hebrew and uses a right-to-left reading direction.

@@ -29,7 +29,7 @@ A supplied photograph of Oren with students after passing a driving test.
 _Avoid_: Testimonial, pass-rate evidence
 
 **Student gallery**:
-The collection of student photos presented within the instructor introduction.
+The collection of student photos presented on the road carousel at the bottom of the hero.
 _Avoid_: Lesson gallery, course dashboard
 
 **Welcome direction**:

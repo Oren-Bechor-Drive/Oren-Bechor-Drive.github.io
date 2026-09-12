@@ -24,7 +24,7 @@ for (const malformed of [false, true]) {
 		dom.window.fetch = async () => ({ status: 404 });
 		const document = dom.window.document;
 		const road = document.querySelector("[data-road-carousel]");
-		assert.ok(road, "Instructor section must include the road carousel");
+		assert.ok(road, "Page must include the road carousel");
 		assert.equal(document.querySelector("[data-road-toggle]"), null);
 		assert.equal(road.querySelectorAll(".road-carousel-group").length, 1);
 		road.focus();

@@ -23,7 +23,17 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-	.instructor-road[data-ready="true"] .road-carousel-track {
+	.hero-road[aria-busy="true"] .road-loader img {
+		animation: wheel-spin 1.2s linear infinite;
+	}
+
+	@keyframes wheel-spin {
+		to {
+			transform: rotate(1turn);
+		}
+	}
+
+	.hero-road[data-ready="true"] .road-carousel-track {
 		animation: road-scroll var(--road-loop-duration) linear infinite;
 	}
 
@@ -76,11 +86,8 @@
 	}
 
 	.hero-shell {
-		grid-template-columns: minmax(310px, 0.85fr) minmax(0, 1.15fr);
-	}
-
-	.hero-visual {
-		margin-inline-end: -32px;
+		grid-template-columns: minmax(310px, 1fr) minmax(0, 1fr);
+		gap: 24px;
 	}
 
 	.instructor-layout {
@@ -144,13 +151,11 @@
 		text-align: center;
 	}
 
-	.hero {
-		padding-block: 52px 48px;
-	}
-
 	.hero-shell {
 		grid-template-columns: minmax(0, 1fr);
-		row-gap: 24px;
+		align-content: center;
+		row-gap: 12px;
+		padding-block: 12px 16px;
 	}
 
 	.hero-copy {
@@ -162,7 +167,7 @@
 		align-self: center;
 		max-width: 13ch;
 		margin: 0;
-		font-size: 44px;
+		font-size: 36px;
 		line-height: 1.08;
 	}
 
@@ -182,7 +187,7 @@
 	.hero-visual {
 		grid-area: 1 / 1;
 		justify-self: center;
-		width: clamp(220px, 64vw, 300px);
+		width: clamp(96px, 16svh, 144px);
 		margin: 0;
 	}
 
@@ -247,12 +252,12 @@
 	}
 
 	.instructor {
-		padding-block: 0 32px;
+		padding-block: 0;
 	}
 
-	.instructor-road {
-		--road-image-width: 320px;
-		--road-car-scale: 1.4;
+	.hero-road {
+		--road-height: clamp(140px, 21svh, 188px);
+		--road-car-scale: 1.25;
 		--road-image-gap: 32px;
 		--road-seconds-per-car: 9.462366;
 	}
@@ -439,6 +444,12 @@
 }
 
 @media (prefers-reduced-transparency: reduce) {
+	.road-loader {
+		background: var(--white);
+		backdrop-filter: none;
+		-webkit-backdrop-filter: none;
+	}
+
 	.site-header {
 		background: var(--surface);
 		backdrop-filter: none;

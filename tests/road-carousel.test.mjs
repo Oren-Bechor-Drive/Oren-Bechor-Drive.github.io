@@ -62,6 +62,30 @@ test("the first missing numbered photo ends discovery", async (t) => {
 	assert.equal(root.querySelector(".road-carousel-group").children.length, 3);
 });
 
+test("loading remains busy through photo decoding and clears when ready", async (t) => {
+	const root = await setup(t, { count: 1 });
+	const window = root.ownerDocument.defaultView;
+	let releasePhoto;
+	let decodingStarted;
+	const decoding = new Promise(resolve => { decodingStarted = resolve; });
+	const decoded = new Promise(resolve => { releasePhoto = resolve; });
+	const originalDecode = window.HTMLImageElement.prototype.decode;
+	window.HTMLImageElement.prototype.decode = async function () {
+		decodingStarted();
+		await decoded;
+		return originalDecode.call(this);
+	};
+	const loading = initRoadCarousel(root);
+	assert.equal(root.getAttribute("aria-busy"), "true");
+	await decoding;
+	assert.equal(root.getAttribute("aria-busy"), "true");
+	assert.notEqual(root.dataset.ready, "true");
+	releasePhoto();
+	await loading;
+	assert.equal(root.getAttribute("aria-busy"), "false");
+	assert.equal(root.dataset.ready, "true");
+});
+
 for (const options of [{ failureStatus: 503 }, { brokenPhoto: 2 }, { contentType: "text/html" }]) {
 	test(`loading failure preserves the static photo gallery: ${JSON.stringify(options)}`, async (t) => {
 		const root = await setup(t, options);
@@ -69,6 +93,7 @@ for (const options of [{ failureStatus: 503 }, { brokenPhoto: 2 }, { contentType
 		await assert.rejects(initRoadCarousel(root));
 		assert.equal(root.innerHTML, before);
 		assert.notEqual(root.dataset.ready, "true");
+		assert.equal(root.getAttribute("aria-busy"), "false");
 	});
 }
 
@@ -78,6 +103,7 @@ test("an empty numbered folder preserves the fallback without starting a loop", 
 	await initRoadCarousel(root);
 	assert.equal(root.innerHTML, before);
 	assert.notEqual(root.dataset.ready, "true");
+	assert.equal(root.getAttribute("aria-busy"), "false");
 });
 
 test("loop duration follows rendered travel distance and updates on resize", async (t) => {
