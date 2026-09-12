@@ -242,3 +242,22 @@ The design system maintains a balanced, rounded shape profile (`roundedness: 2`)
 
 ### Lists & Navigation Rails
 - Row dividers utilize 1px `#DFE7E8`. Active navigation list items feature a `#FFFDF5` surface background with `#F6DB78` left accent edge (3px) and bold `#141D1E` label copy.
+
+## Current Welcome Page
+
+The approved composition places the instructor directly after the hero, followed by the course explanation, topic preview, and closing action. This section records page-specific choices within the broader system above; unused palette colors remain available for future designs.
+
+### Instructor and Student Gallery
+
+- Use a full-width warm amber (`#F6DB78`) instructor section to distinguish it from the pale cyan hero. The top of the amber aligns with the bottom of the sticky header when navigating to `#instructor`.
+- Place the supplied road background beneath the instructor introduction. The road spans the viewport, repeats horizontally, fills its height, and has square corners.
+- Center the visible car silhouettes despite differing transparent margins in their source files. Scale cars independently of road height; phone layouts deliberately show large cars with neighboring cars partially clipped.
+- Place student photos on the car roofs with 8px rounded corners and a subtle 3px transparent edge fade. Keep the middle of each photo opaque, crop with `object-fit: cover`, and preserve the original image files.
+- Move cars continuously to the left with linear timing. Keep photo order numeric and randomize car colors independently. Preserve the approved cadence of about 11.11 seconds per car on desktop and 9.46 seconds on phones, configured by `--road-seconds-per-car`. The gallery derives loop duration from rendered row width and car spacing and updates it on viewport resize; short rows include any extra viewport space in their travel distance. The road is noninteractive and has no pause control.
+- Start motion only after the complete photo sequence is ready. Keep a static row during loading, failure, or without JavaScript. With reduced motion, stop the animation and hide the duplicate row; overflow remains clipped.
+
+### Applied Layout and Styling
+
+The current page uses a maximum 1280px content width, with 48px side margins above 1024px, 32px at 1024px and below, 20px at 768px and below, and 16px at 440px and below. The main layout and menu switch at 768px; the topic dropdown switches below 640px. These are the implemented page breakpoints rather than a mandatory column grid.
+
+The page uses `#F0FBFE` for its base surface and `#131D1F` for primary text. `css/base.css` holds runtime tokens, `css/components.css` holds navigation styles, `css/welcome.css` holds section layouts, and `css/responsive.css` holds motion, interaction states, responsive overrides, and accessibility preferences. Keep this stylesheet load order.

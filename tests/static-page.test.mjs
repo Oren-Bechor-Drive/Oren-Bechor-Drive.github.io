@@ -21,7 +21,7 @@ test("page exposes its Hebrew semantic structure", async () => {
 	}
 });
 
-test("page moves directly from learning topics to the instructor", async () => {
+test("page introduces the instructor directly after the hero", async () => {
 	const document = new JSDOM(await read("index.html")).window.document;
 	const sectionIds = [...document.querySelectorAll("main > section")]
 		.map((section) => section.id)
@@ -30,7 +30,7 @@ test("page moves directly from learning topics to the instructor", async () => {
 		...document.querySelectorAll('#site-menu a[href^="#"]'),
 	].map((link) => link.getAttribute("href"));
 
-	assert.deepEqual(sectionIds, ["top", "about", "topics", "instructor"]);
+	assert.deepEqual(sectionIds, ["top", "instructor", "about", "topics"]);
 	assert.deepEqual(navigationTargets, ["#about", "#topics", "#instructor", "#"]);
 });
 

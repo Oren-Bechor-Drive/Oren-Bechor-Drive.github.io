@@ -23,6 +23,16 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
+	.instructor-road[data-ready="true"] .road-carousel-track {
+		animation: road-scroll var(--road-loop-duration) linear infinite;
+	}
+
+	@keyframes road-scroll {
+		to {
+			transform: translateX(-50%);
+		}
+	}
+
 	.hero-copy > * {
 		animation: hero-enter 720ms var(--ease-out) both;
 	}
@@ -237,7 +247,14 @@
 	}
 
 	.instructor {
-		padding-block: 0 52px;
+		padding-block: 0 32px;
+	}
+
+	.instructor-road {
+		--road-image-width: 320px;
+		--road-car-scale: 1.4;
+		--road-image-gap: 32px;
+		--road-seconds-per-car: 9.462366;
 	}
 
 	.instructor-layout {
@@ -404,6 +421,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+	.road-carousel-group[aria-hidden="true"] {
+		display: none;
+	}
+
 	html {
 		scroll-behavior: auto;
 	}

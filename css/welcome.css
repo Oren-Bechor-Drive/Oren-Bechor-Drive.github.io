@@ -3,7 +3,7 @@
 	min-height: calc(100vh - var(--header-height));
 	min-height: calc(100dvh - var(--header-height));
 	align-items: center;
-	padding-block: 72px 72px;
+	padding-block: 36px 72px;
 	overflow: hidden;
 }
 
@@ -299,7 +299,129 @@
 }
 
 .instructor {
-	padding-block: 0 80px;
+	padding-block: 0 40px;
+	background: var(--secondary-bright);
+	/* Cancel html's extra 24px inset to meet the sticky header exactly. */
+	scroll-margin-top: -24px;
+}
+
+.instructor-road {
+	--road-image-width: max(320px, calc(100vw / 3 - var(--road-image-gap)));
+	--road-car-scale: 1.15;
+	--road-image-gap: 48px;
+	/* Approved cadence; the gallery derives loop duration from rendered distance. */
+	--road-seconds-per-car: 11.111111;
+	height: clamp(320px, 30vw, 480px);
+	min-height: calc(var(--road-image-width) * 0.6 + 96px);
+	margin-block-start: 24px;
+	overflow: hidden;
+	pointer-events: none;
+	-webkit-user-select: none;
+	user-select: none;
+	direction: ltr;
+	background: url("../assets/images/road.jpg") center / auto 100% repeat-x;
+}
+
+.road-carousel-track {
+	display: flex;
+	width: max-content;
+	height: 100%;
+}
+
+.road-carousel-group {
+	display: flex;
+	flex: 0 0 auto;
+	align-items: center;
+	justify-content: space-around;
+	gap: var(--road-image-gap);
+	min-width: 100vw;
+	margin: 0;
+	padding: 0 calc(var(--road-image-gap) / 2);
+	list-style: none;
+}
+
+.road-car {
+	position: relative;
+	flex: 0 0 calc(var(--road-image-width) * var(--road-car-scale));
+	width: calc(var(--road-image-width) * var(--road-car-scale));
+	aspect-ratio: 460 / 260;
+	overflow: hidden;
+}
+
+.road-car > img {
+	position: absolute;
+	top: var(--car-art-top, 0%);
+	left: var(--car-art-left, 0%);
+	width: var(--car-art-width, 100%);
+	max-width: none;
+	height: auto;
+}
+
+/* Fit and center each alpha > 128 silhouette in a 460 x 260 frame.
+   Percentages account for source-image margins without editing image bytes. */
+.road-car-cyan {
+	--car-art-width: 102.222%;
+	--car-art-left: -0.667%;
+	--car-art-top: -0.718%;
+	--car-roof-left: 66%;
+}
+
+.road-car-gray {
+	--car-art-width: 101.754%;
+	--car-art-left: -0.658%;
+	--car-art-top: 1.113%;
+	--car-roof-left: 55%;
+}
+
+.road-car-green {
+	--car-art-width: 104.688%;
+	--car-art-left: -1.339%;
+	--car-art-top: -19.505%;
+	--car-roof-left: 64%;
+}
+
+.road-car-orange {
+	--car-art-width: 102.895%;
+	--car-art-left: -0.891%;
+	--car-art-top: -2.013%;
+	--car-roof-left: 58%;
+}
+
+.road-car-red {
+	--car-art-width: 102.434%;
+	--car-art-left: -1.106%;
+	--car-art-top: 2.638%;
+	--car-roof-left: 58%;
+}
+
+.road-car-yellow {
+	--car-art-width: 126.030%;
+	--car-art-left: -0.434%;
+	--car-art-top: -0.083%;
+}
+
+.road-photo {
+	position: absolute;
+	top: 50%;
+	left: var(--car-roof-left, 60%);
+	display: block;
+	width: 32%;
+	height: 44%;
+	overflow: hidden;
+	border-radius: var(--radius-control);
+	transform: translate(-50%, -50%);
+	background: var(--white);
+	mask-image:
+		linear-gradient(to right, transparent, #000 3px, #000 calc(100% - 3px), transparent),
+		linear-gradient(to bottom, transparent, #000 3px, #000 calc(100% - 3px), transparent);
+	mask-composite: intersect;
+}
+
+.road-photo img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: 50% 35%;
 }
 
 .instructor-layout {
@@ -308,9 +430,6 @@
 	gap: 64px;
 	align-items: center;
 	padding: 58px;
-	border-radius: var(--radius-large);
-	background: var(--secondary-bright);
-	box-shadow: 0 18px 42px -14px rgb(112 93 0 / 0.16);
 }
 
 .instructor-intro {

@@ -24,12 +24,14 @@ The course connects driving theory to situations that occur on the road. It supp
 
 ## Operating context
 
-Visitors first learn what the course is, then browse a preview of topics such as right-of-way, turns, intersections, road signs, speed limits, overtaking, trip planning, and common driving-test mistakes. The page then introduces Oren Bachor and closes with a link back to the topic preview.
+Visitors first see the course introduction, then meet Oren Bachor and see supplied photos of him with students after passing their driving tests. A course explanation follows, then a preview of topics such as right-of-way, turns, intersections, road signs, speed limits, overtaking, trip planning, and common driving-test mistakes. The page closes with a link back to the topic preview.
 
 ## Capabilities and constraints
 
 - The first release is one welcome page for new visitors.
 - The main action scrolls to a preview of learning topics on the same page.
+- The instructor gallery presents student photos in numeric order on cars moving left across a road. Car colors vary independently of photo order. Adding consecutively numbered photos does not require a code change or a maximum-count setting; see [README.md](README.md) for publishing requirements.
+- The gallery is noninteractive. A static row remains during loading or failure and without JavaScript. Reduced motion disables scrolling; horizontal overflow remains clipped.
 - Enrollment, payment, user accounts, and course playback are outside this release.
 - Visitor-facing website copy is Hebrew and uses a right-to-left reading direction.
 - The page must work on desktop and mobile without a framework or build step.
@@ -44,7 +46,8 @@ Visitors first learn what the course is, then browse a preview of topics such as
 
 - `docs/reference/the-idea.pdf` contains the course introduction, instructor facts, lesson topics, explanations, and examples.
 - `DESIGN.md` contains the complete Solar Serenity palette, typography, spacing, shapes, and component treatments.
-- No instructor portrait, testimonials, prices, enrollment URL, or performance claims were supplied. Future work must not invent them.
+- The supplied road background, car artwork, and photos of Oren with students are in `assets/images/`. Student photos are gallery content, not written testimonials or evidence for a pass-rate claim.
+- No written testimonials, prices, enrollment URL, or numerical performance claims were supplied. Future work must not invent them.
 
 ## Product principles
 

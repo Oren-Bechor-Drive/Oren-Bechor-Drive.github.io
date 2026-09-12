@@ -1,4 +1,5 @@
 import { initTopicExplorer } from "./topic-explorer.js";
+import { initRoadCarousel } from "./road-carousel.js";
 
 const menuToggle = document.querySelector("[data-menu-toggle]");
 const menu = document.querySelector("[data-menu]");
@@ -43,5 +44,13 @@ document.querySelectorAll("[data-topics-link]").forEach((link) => {
 	});
 });
 
-// Register independent navigation before validating topic markup.
+const roadCarousel = document.querySelector("[data-road-carousel]");
+
+if (roadCarousel) {
+	initRoadCarousel(roadCarousel).catch((error) => {
+		console.warn("Student gallery could not refresh; keeping the static photos.", error);
+	});
+}
+
+// Register independent page controls before validating topic markup.
 if (topicExplorer) initTopicExplorer(topicExplorer);

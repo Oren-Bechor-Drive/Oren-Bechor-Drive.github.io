@@ -1,6 +1,8 @@
 # Learning journey welcome page
 
-> Historical record: This document describes the site before the learning-method section and its two supporting road photographs were removed on September 12, 2026. Paths, media counts, markup samples, and commands below may no longer match the current tree. Use `README.md` for the current page structure and file paths.
+> **Archived — current-state note, September 12, 2026:** This document preserves the original proposal and implementation history. Its commands, checkboxes, branch/worktree instructions, paths, and asset counts are not an active work plan. Use [README.md](../../../README.md) for setup and maintenance, [PRODUCT.md](../../../PRODUCT.md) for current scope, and [DESIGN.md](../../../DESIGN.md) for the approved appearance.
+>
+> The current page uses four stylesheets under `css/` and browser modules under `js/`, with Varela Round typography. The instructor now follows the hero and includes a full-width amber section and a road carousel of supplied student photos. Numbered photos are discovered without a fixed maximum; six current car colors are templates. The separate learning-method section and its supporting road photographs were removed. The current media audit also checks numbered student photos and the scrolling group’s direct child templates. Gallery timing follows rendered geometry, and `npm test` includes a focused Playwright Chromium check; see README for browser installation. Historical examples below intentionally retain the earlier structure.
 
 ## Goal
 

@@ -21,7 +21,16 @@ for (const malformed of [false, true]) {
 			delete globalThis.document;
 		});
 		dom.window.matchMedia = () => ({ matches: true });
+		dom.window.fetch = async () => ({ status: 404 });
 		const document = dom.window.document;
+		const road = document.querySelector("[data-road-carousel]");
+		assert.ok(road, "Instructor section must include the road carousel");
+		assert.equal(document.querySelector("[data-road-toggle]"), null);
+		assert.equal(road.querySelectorAll(".road-carousel-group").length, 1);
+		road.focus();
+		assert.notEqual(document.activeElement, road, "The carousel must not capture focus");
+		const originalCars = [...road.querySelectorAll(".road-car > img")];
+		assert.ok(originalCars.every((image) => !image.draggable), "Car images must not start native drag interactions");
 		if (malformed)
 			document.querySelector("[data-topic-panel-title]").remove();
 		const entry = document.querySelector('script[type="module"][src]');
