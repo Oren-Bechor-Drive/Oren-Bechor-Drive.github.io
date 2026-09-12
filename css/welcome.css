@@ -381,7 +381,7 @@
 	--car-art-width: 102.222%;
 	--car-art-left: -0.667%;
 	--car-art-top: -0.718%;
-	--car-roof-left: 66%;
+	--car-roof-left: 59%;
 }
 
 .road-car-gray {
@@ -395,21 +395,21 @@
 	--car-art-width: 104.688%;
 	--car-art-left: -1.339%;
 	--car-art-top: -19.505%;
-	--car-roof-left: 64%;
+	--car-roof-left: 58%;
 }
 
 .road-car-orange {
 	--car-art-width: 102.895%;
 	--car-art-left: -0.891%;
 	--car-art-top: -2.013%;
-	--car-roof-left: 58%;
+	--car-roof-left: 52%;
 }
 
 .road-car-red {
 	--car-art-width: 102.434%;
 	--car-art-left: -1.106%;
 	--car-art-top: 2.638%;
-	--car-roof-left: 58%;
+	--car-roof-left: 52%;
 }
 
 .road-car-yellow {
@@ -421,10 +421,10 @@
 .road-photo {
 	position: absolute;
 	top: 50%;
-	left: var(--car-roof-left, 60%);
+	left: var(--car-roof-left, 55%);
 	display: block;
-	width: 32%;
-	height: 44%;
+	width: 62%;
+	height: 68%;
 	overflow: hidden;
 	border-radius: var(--radius-control);
 	transform: translate(-50%, -50%);
