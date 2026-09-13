@@ -78,20 +78,33 @@ test("course icon brands the header and browser tab", async () => {
 	assert.equal(favicon?.getAttribute("type"), "image/png");
 });
 
-test("font declarations load Varela Round directly without a blocking stylesheet", async () => {
+test("page loads the requested Google Fonts efficiently", async () => {
 	const document = new JSDOM(await read("index.html")).window.document;
-	assert.equal(document.querySelector('link[rel="stylesheet"]'), null);
-	assert.equal(document.querySelector('link[href^="https://fonts.googleapis.com"]'), null);
+	const connectionHints = [
+		...document.querySelectorAll('link[rel="preconnect"]'),
+	].map((link) => link.getAttribute("href"));
+	const fontStylesheet = [
+		...document.querySelectorAll('link[rel="stylesheet"]'),
+	].find((link) => link.href.startsWith("https://fonts.googleapis.com/css2"));
+
+	assert.ok(
+		connectionHints.includes("https://fonts.googleapis.com"),
+		"Missing Google Fonts API preconnect",
+	);
+	assert.ok(
+		connectionHints.includes("https://fonts.gstatic.com"),
+		"Missing Google Fonts asset preconnect",
+	);
 	assert.equal(
-		document.querySelector('link[rel="preconnect"][href="https://fonts.gstatic.com"]')?.getAttribute("crossorigin"),
+		document
+			.querySelector('link[rel="preconnect"][href="https://fonts.gstatic.com"]')
+			?.getAttribute("crossorigin"),
 		"",
 	);
-	const css = document.querySelector("style[data-site-styles]").textContent;
-	assert.match(css, /@font-face/);
-	assert.match(css, /font-display: swap/);
-	assert.match(css, /https:\/\/fonts\.gstatic\.com\/s\/varelaround\/.*\.woff2/);
-	assert.match(css, /U\+0590-05FF/, "keep Hebrew coverage");
-	assert.match(css, /U\+0000-00FF/, "keep Latin and punctuation coverage");
+	assert.ok(fontStylesheet, "Missing Google Fonts stylesheet");
+
+	const families = new URL(fontStylesheet.href).searchParams.getAll("family");
+	assert.deepEqual(families, ["Varela Round"]);
 });
 
 test("page uses Varela Round as its global typeface", async () => {
@@ -125,9 +138,17 @@ test("topbar learning action reserves the future account-page destination", asyn
 
 test("styles preserve the supplied design system and responsive contract", async () => {
 	const document = new JSDOM(await read("index.html")).window.document;
-	const inline = document.querySelector("style[data-site-styles]");
-	assert.ok(inline, "Page must include its styles before rendering");
-	const css = inline.textContent.toLowerCase();
+	const stylesheets = [
+		...document.querySelectorAll('link[rel="stylesheet"][href^="css/"]'),
+	];
+	assert.ok(stylesheets.length > 0, "Page must load its stylesheets");
+	const css = (
+		await Promise.all(
+			stylesheets.map((link) => read(link.getAttribute("href"))),
+		)
+	)
+		.join("\n")
+		.toLowerCase();
 
 	// Palette tokens remain available even when the current page does not use them.
 	for (const [name, color] of [

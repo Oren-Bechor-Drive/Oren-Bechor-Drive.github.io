@@ -24,19 +24,6 @@ Then open [http://localhost:8000](http://localhost:8000).
 
 No installation or build step is required.
 
-## Maintain inline styles
-
-The published HTML includes all four stylesheets in one inline block, so initial rendering does not wait for CSS requests. It also contains Varela Round's `@font-face` declarations. Font files still load from Google Fonts with `font-display: swap`; the Google Fonts stylesheet request is no longer needed.
-
-Keep editing `css/base.css`, `css/components.css`, `css/welcome.css`, and `css/responsive.css`. After CSS changes, synchronize the committed HTML:
-
-```bash
-npm run inline:styles
-npm test
-```
-
-The synchronization script uses only Node.js built-ins. It preserves source order and rewrites relative CSS asset URLs for use in the document. Commit `index.html` with the CSS edits. `npm test` rejects a stale inline copy. Serving or deploying the committed page needs no build or JavaScript to apply its styles.
-
 ## Add student photos
 
 Place photos in `assets/images/students-pass/` with consecutive names: `1.png`, `2.png`, `3.png`, and so on. Add the next number and publish the files as usual; no code or photo-count setting needs updating.
@@ -85,14 +72,13 @@ Alignment compensates for transparent margins in each source image. Student phot
 - `css/base.css` defines design tokens, global defaults, and shared layout widths.
 - `css/components.css` styles the header and navigation.
 - `css/welcome.css` styles the welcome-page sections and their controls.
-- `css/responsive.css` contains interaction states, animations, breakpoints, and accessibility preferences. The inline copy preserves the four source files' order.
-- `scripts/inline-styles.mjs` synchronizes the CSS sources into `index.html` and checks for stale inline styles.
+- `css/responsive.css` contains interaction states, animations, breakpoints, and accessibility preferences. Load the four stylesheets in this order to preserve the cascade.
 - `js/script.js` adds the mobile menu and initializes page enhancements.
 - `js/topic-explorer.js` owns the topic preview interaction.
 - `js/road-carousel.js` discovers numbered student photos and builds the looping car gallery.
 - `scripts/road-media-integrity.mjs` audits marked JPEG, WebP, and PNG road media, declared delivery copies, car templates, and numbered student photos during development.
 - `scripts/optimize-road-media.mjs` generates optional WebP delivery copies and the runtime photo mapping without changing originals.
-- `assets/images/` contains the stop-sign illustration, road background, car artwork, and numbered student photos. `assets/icons/` contains the course icon. Typography uses Varela Round globally and loads its font files directly from Google Fonts through declarations in `css/base.css`.
+- `assets/images/` contains the stop-sign illustration, road background, car artwork, and numbered student photos. `assets/icons/` contains the course icon. Typography uses Varela Round globally and loads it from Google Fonts.
 - `docs/reference/the-idea.pdf` is the supplied course brief.
 - `docs/superpowers/` preserves historical implementation plans and specifications. Those files can contain obsolete paths, media counts, and markup from earlier versions. Use this README for the current structure and paths.
 - `tests/` contains static page, behavior-level, media-integrity, and Chromium gallery tests.
@@ -109,9 +95,7 @@ git diff --check
 
 The media audit checks marked HTML images and their preload metadata, matches car templates to the `car-*.png` files, and inspects every numbered student photo without a fixed maximum. It validates the scrolling group’s direct child templates, matching runtime initialization, and reports misplaced or malformed templates, numbering gaps, invalid PNG filenames, missing or duplicate templates, and incorrect fallback photo references or metadata. The supplied `cars.png` composite is excluded. It checks image headers and dimensions, not full decoding, roof alignment, or the CSS road background.
 
-Tests also check runtime discovery, failure preservation, and loop timing across row sizes and viewport changes. `npm test` includes a focused Chromium check that loads the actual page, inline styles, scripts, and images at desktop and phone sizes, including resizing and reduced motion. It intercepts local requests to serve repository files and blocks external font requests, so no dev server or network connection is needed after setup. Verify layout and interaction changes in the collaborative browser at desktop and phone sizes, including reduced motion.
-
-The render-blocking check holds font and script requests pending and verifies that the styled page still paints at desktop and phone widths without requesting a stylesheet.
+Tests also check runtime discovery, failure preservation, and loop timing across row sizes and viewport changes. `npm test` includes a focused Chromium check that loads the actual page, stylesheets, scripts, and images at desktop and phone sizes, including resizing and reduced motion. It intercepts local requests to serve repository files and blocks external font requests, so no dev server or network connection is needed after setup. Verify layout and interaction changes in the collaborative browser at desktop and phone sizes, including reduced motion.
 
 ## Documentation
 
