@@ -14,7 +14,7 @@ async function setup(
 		new URL("../index.html", import.meta.url),
 		"utf8",
 	);
-	const dom = new JSDOM(html, { url: "https://example.com/course/" });
+	const dom = new JSDOM(html, { url: "https://example.com/course/", pretendToBeVisual: true });
 	t.after(() => dom.window.close());
 	const { window } = dom;
 	window.fetch = async (url, options) => {
@@ -37,6 +37,8 @@ async function setup(
 	const root = window.document.querySelector("[data-road-carousel]");
 	root.style.setProperty("--road-seconds-per-car", "11.111111");
 	root.querySelector(".road-carousel-group").style.columnGap = "48px";
+	root.querySelector(".road-carousel-group").style.minWidth = "1440px";
+	root.querySelector(".road-carousel-group").style.padding = "0 24px";
 	// JSDOM has no layout engine; supply rendered geometry at the browser seam.
 	t.mock.method(
 		window.HTMLElement.prototype,
@@ -52,6 +54,39 @@ async function setup(
 	);
 	return root;
 }
+
+test("photo batches do not read layout after changing the connected row in a frame", async (t) => {
+	const root = await setup(t);
+	const window = root.ownerDocument.defaultView;
+	const group = root.querySelector(".road-carousel-group");
+	let rowChanged = false;
+	const requestFrame = window.requestAnimationFrame.bind(window);
+	t.mock.method(window, "requestAnimationFrame", callback => requestFrame(time => {
+		rowChanged = false;
+		callback(time);
+	}));
+	for (const method of ["append", "replaceChildren"]) {
+		const original = group[method].bind(group);
+		t.mock.method(group, method, (...args) => {
+			rowChanged = true;
+			return original(...args);
+		});
+	}
+	const measure = window.HTMLElement.prototype.getBoundingClientRect;
+	t.mock.method(window.HTMLElement.prototype, "getBoundingClientRect", function () {
+		assert.equal(rowChanged, false, "geometry reads must precede row changes");
+		return measure.call(this);
+	});
+	const computedStyle = window.getComputedStyle.bind(window);
+	t.mock.method(window, "getComputedStyle", (...args) => {
+		assert.equal(rowChanged, false, "style reads must precede row changes");
+		return computedStyle(...args);
+	});
+	await initRoadCarousel(root);
+	assert.equal(group.children.length, 27);
+	assert.equal(group.replaceChildren.mock.callCount(), 1);
+	assert.equal(group.append.mock.callCount(), 0, "photos decoded together should publish in one batch");
+});
 
 test("numbered photos extend beyond the car count and repeat in numeric order", async (t) => {
 	const root = await setup(t);
@@ -163,6 +198,7 @@ test("loop duration follows rendered travel distance and updates on resize", asy
 	root.ownerDocument.defaultView.dispatchEvent(
 		new root.ownerDocument.defaultView.Event("resize"),
 	);
+	await new Promise(resolve => root.ownerDocument.defaultView.requestAnimationFrame(resolve));
 	assert.ok(Math.abs(duration() - 141.93549) < 0.001);
 });
 

@@ -19,6 +19,9 @@ export async function initRoadCarousel(root) {
 	let shown = 0;
 	let repeat;
 	let startupTimer;
+	let pendingFrame;
+	let framePromise;
+	let resized = false;
 
 	// Deadlines reject even if a host or image decoder never settles.
 	function withDeadline(operation) {
@@ -59,62 +62,88 @@ export async function initRoadCarousel(root) {
 		];
 	}
 
-	function updateDuration() {
-		const secondsPerCar = Number(
-			browserWindow
-				.getComputedStyle(root)
-				.getPropertyValue("--road-seconds-per-car"),
-		);
-		const gap = parseFloat(browserWindow.getComputedStyle(group).columnGap);
-		const carStep = group.firstElementChild.getBoundingClientRect().width + gap;
-		const distance = group.getBoundingClientRect().width;
-		if (distance > 0 && carStep > 0 && secondsPerCar > 0) {
-			root.style.setProperty(
-				"--road-loop-duration",
-				`${(distance / carStep) * secondsPerCar}s`,
-			);
-		}
+	function schedulePublish() {
+		if (pendingFrame !== undefined) return framePromise;
+		framePromise = new Promise((resolve) => {
+			pendingFrame = browserWindow.requestAnimationFrame(() => {
+				pendingFrame = undefined;
+				try {
+					publishAvailable();
+				} catch (error) {
+					controller.abort(error);
+				} finally {
+					resolve();
+				}
+			});
+		});
+		return framePromise;
 	}
 
 	function publishAvailable() {
 		if (stopped) return;
 		let count = 0;
 		while (records[count]?.image) count += 1;
-		const carStep =
-			group.firstElementChild.getBoundingClientRect().width +
-			parseFloat(browserWindow.getComputedStyle(group).columnGap);
-		// Keep the initial row wider than the viewport, so later appends have a safe seam.
-		const initialCount = Math.max(
-			templates.length,
-			Math.ceil(root.getBoundingClientRect().width / carStep) + 1,
-		);
-		const minimum = discoveryComplete
-			? Math.min(initialCount, records.length)
-			: initialCount;
+		// Decoding and discovery can finish together. Skip geometry until a row can change.
+		const allShown = count && count === shown && discoveryComplete && count === records.length;
 		if (
-			count &&
-			count === shown &&
-			discoveryComplete &&
-			count === records.length
+			!resized &&
+			(!count || count <= shown || (!shown && count < templates.length && !discoveryComplete))
 		) {
-			root.dataset.ready = "true";
+			if (allShown)
+				root.dataset.ready = "true";
+			return;
 		}
-		if (!count || count < minimum || count <= shown) return;
 
-		// Extending the first row moves its duplicate. Wait if that duplicate is visible.
+		// Read layout once, before changing either row or the animation duration.
+		const groupStyle = browserWindow.getComputedStyle(group);
+		const gap = parseFloat(groupStyle.columnGap);
+		const carStep = group.firstElementChild.getBoundingClientRect().width + gap;
+		const viewportWidth = root.getBoundingClientRect().width;
+		const oldDistance = group.getBoundingClientRect().width;
+		const secondsPerCar = Number(
+			browserWindow.getComputedStyle(root).getPropertyValue("--road-seconds-per-car"),
+		);
+		const minimumWidth = parseFloat(groupStyle.minWidth);
+		const padding =
+			parseFloat(groupStyle.paddingLeft) + parseFloat(groupStyle.paddingRight);
 		const animation = track
 			.getAnimations?.()
 			.find((item) => item.animationName === "road-scroll");
-		const oldDistance = group.getBoundingClientRect().width;
 		const oldDuration =
 			parseFloat(root.style.getPropertyValue("--road-loop-duration")) * 1000;
 		const offset =
 			animation && oldDuration > 0
-				? ((Number(animation.currentTime) % oldDuration) / oldDuration) *
-					oldDistance
+				? ((Number(animation.currentTime) % oldDuration) / oldDuration) * oldDistance
 				: 0;
-		if (animation && offset + root.getBoundingClientRect().width > oldDistance)
+		// Widening may expose the duplicate everywhere. Hold that row until it can cover the viewport.
+		const restart =
+			resized && shown && (!discoveryComplete || shown < records.length) &&
+			oldDistance <= viewportWidth;
+		const initialCount = Math.max(
+			templates.length,
+			Math.ceil(viewportWidth / carStep) + 1,
+		);
+		const minimum = discoveryComplete
+			? Math.min(initialCount, records.length)
+			: initialCount;
+		const canAppend =
+			count >= minimum && count > shown &&
+			(restart || !animation || offset + viewportWidth <= oldDistance);
+		// Equal-width flex items plus gaps and end padding determine the new row width.
+		const distance = canAppend
+			? Math.max(minimumWidth, count * carStep - gap + padding)
+			: oldDistance;
+		const duration = (distance / carStep) * secondsPerCar;
+
+		if ((resized || canAppend) && distance > 0 && carStep > 0 && secondsPerCar > 0)
+			root.style.setProperty("--road-loop-duration", `${duration}s`);
+		resized = false;
+		if (restart) delete root.dataset.ready;
+		if (!canAppend) {
+			if (allShown)
+				root.dataset.ready = "true";
 			return;
+		}
 
 		const cars = records.slice(shown, count).map(({ image }, index) => {
 			const car = templates[(shown + index) % templates.length].cloneNode(true);
@@ -129,13 +158,9 @@ export async function initRoadCarousel(root) {
 		repeat.setAttribute("inert", "");
 		group.after(repeat);
 		shown = count;
-		updateDuration();
-		if (animation) {
-			// Preserve physical position, rather than the old loop's percentage.
-			const duration =
-				parseFloat(root.style.getPropertyValue("--road-loop-duration")) * 1000;
-			animation.currentTime =
-				(offset / group.getBoundingClientRect().width) * duration;
+		if (animation && !restart) {
+			// Preserve physical position using the computed distance, without another layout read.
+			animation.currentTime = (offset / distance) * duration * 1000;
 		}
 		browserWindow.clearTimeout(startupTimer);
 		root.dataset.ready = "true";
@@ -208,7 +233,7 @@ export async function initRoadCarousel(root) {
 		record.loaded = loadPhoto(number, response).then(
 			(image) => {
 				record.image = image;
-				publishAvailable();
+				schedulePublish();
 			},
 			(error) => {
 				record.error = error;
@@ -232,25 +257,17 @@ export async function initRoadCarousel(root) {
 				if (!result.value) {
 					records.length = first + index - 1;
 					discoveryComplete = true;
-					publishAvailable();
+					schedulePublish();
 					return;
 				}
 			}
-			publishAvailable();
+			schedulePublish();
 		}
 	}
 
 	function resize() {
-		updateDuration();
-		// Widening can expose the duplicate everywhere. Hold the loaded row still
-		// until it can cover the new viewport; restarting here belongs to the resize.
-		if (
-			shown &&
-			(!discoveryComplete || shown < records.length) &&
-			group.getBoundingClientRect().width <= root.getBoundingClientRect().width
-		)
-			delete root.dataset.ready;
-		publishAvailable();
+		resized = true;
+		schedulePublish();
 	}
 
 	root.setAttribute("aria-busy", "true");
@@ -258,24 +275,28 @@ export async function initRoadCarousel(root) {
 		() => controller.abort(new Error("Student gallery loading timed out")),
 		LOAD_TIMEOUT_MS,
 	);
-	track.addEventListener("animationiteration", publishAvailable);
+	track.addEventListener("animationiteration", schedulePublish);
 	browserWindow.addEventListener("resize", resize);
-	motionPreference?.addEventListener("change", publishAvailable);
+	motionPreference?.addEventListener("change", schedulePublish);
 	try {
 		await discover();
 		await Promise.all(records.map((record) => record.loaded));
 		const failed = records.find((record) => record.error);
 		if (failed) throw failed.error;
-		publishAvailable();
+		await withDeadline(schedulePublish());
 	} finally {
 		stopped = !discoveryComplete || records.some((record) => record.error);
 		browserWindow.clearTimeout(startupTimer);
 		controller.abort();
+		if (pendingFrame !== undefined) {
+			browserWindow.cancelAnimationFrame(pendingFrame);
+			pendingFrame = undefined;
+		}
 		root.setAttribute("aria-busy", "false");
 		if (!shown) {
-			track.removeEventListener("animationiteration", publishAvailable);
+			track.removeEventListener("animationiteration", schedulePublish);
 			browserWindow.removeEventListener("resize", resize);
-			motionPreference?.removeEventListener("change", publishAvailable);
+			motionPreference?.removeEventListener("change", schedulePublish);
 		}
 	}
 }
