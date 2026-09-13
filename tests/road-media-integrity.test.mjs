@@ -207,6 +207,34 @@ test("gallery audit reports a numbering gap even when later photos exist", async
 	);
 });
 
+test("gallery audit collects invalid names and multiple gaps while inspecting later photos", async (t) => {
+	const rootDir = await galleryFixture(t, { photos: [1, 3, 12] });
+	const directory = path.join(rootDir, "assets/images/students-pass");
+	await writeFile(path.join(directory, "01.png"), "invalid name");
+	await writeFile(path.join(directory, "2.PNG"), "invalid name");
+	await writeFile(path.join(directory, "notes.txt"), "not a photo");
+	await mkdir(path.join(directory, "2.png"));
+	const audit = await auditRoadMedia({ rootDir });
+	assert.equal(audit.issues.length, 4);
+	for (const name of ["01.png", "2.PNG"])
+		assert.ok(audit.issues.some(issue => issue.includes(name) && issue.includes("filename")));
+	for (const name of ["2.png", "4.png"])
+		assert.ok(audit.issues.some(issue => issue.includes(name) && issue.includes("numbering gap")));
+	assert.deepEqual(audit.assets.filter(asset => asset.source.includes("students-pass"))
+		.map(asset => path.basename(asset.source)), ["1.png", "3.png", "12.png"]);
+});
+
+for (const missing of [false, true]) {
+	test(`gallery audit continues after an ${missing ? "absent" : "empty"} photo directory`, async (t) => {
+		const rootDir = await galleryFixture(t, { photos: [] });
+		if (missing) await rm(path.join(rootDir, "assets/images/students-pass"), { recursive: true });
+		const audit = await auditRoadMedia({ rootDir });
+		assert.ok(audit.issues.some(issue => issue.includes("no numbered student photos")));
+		assert.equal(audit.issues.some(issue => issue.includes("directory does not exist")), missing);
+		assert.ok(audit.assets.some(asset => asset.source.endsWith("car-cyan.png")));
+	});
+}
+
 test("gallery audit owns palette checks and ignores the composite source artwork", async (t) => {
 	const rootDir = await galleryFixture(t, { sprites: ["cyan", "red"] });
 	await writeFile(

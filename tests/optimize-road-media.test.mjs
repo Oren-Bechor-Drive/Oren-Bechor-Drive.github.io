@@ -13,6 +13,39 @@ import { inspectImage } from "../scripts/road-media-integrity.mjs";
 const run = promisify(execFile);
 const root = new URL("../", import.meta.url);
 
+for (const [names, expected] of [
+	[["1.png", "01.png"], /01\.png: filename must be a positive number/],
+	[["1.png", "2.PNG"], /2\.PNG: filename must be a positive number/],
+	[[], /no numbered student photos/],
+]) {
+	test(`optimizer rejects invalid photo inventory before writing: ${JSON.stringify(names)}`, async (t) => {
+		const cwd = await mkdtemp(path.join(os.tmpdir(), "invalid-photo-inventory-"));
+		t.after(() => rm(cwd, { recursive: true, force: true }));
+		const directory = path.join(cwd, "assets/images/students-pass");
+		await mkdir(directory, { recursive: true });
+		await mkdir(path.join(cwd, "js"));
+		await mkdir(path.join(cwd, "assets/images/optimized"));
+		await mkdir(path.join(cwd, "assets/images/cars"));
+		await mkdir(path.join(cwd, "assets/icons"));
+		await mkdir(path.join(cwd, "css"));
+		await writeFile(path.join(cwd, "css/welcome.css"), "");
+		const png = await sharp({ create: { width: 1, height: 1, channels: 3, background: "white" } }).png().toBuffer();
+		for (const file of ["assets/images/wheel.png", "assets/images/stop-sign.png", "assets/icons/course-icon.png"])
+			await writeFile(path.join(cwd, file), png);
+		for (const name of names) await writeFile(path.join(directory, name), png);
+		const published = ["index.html", "js/road-photo-sources.js", "assets/images/optimized/keep.webp"];
+		for (const file of published) await writeFile(path.join(cwd, file), "published content");
+		await assert.rejects(
+			run(process.execPath, [fileURLToPath(new URL("scripts/optimize-road-media.mjs", root))], { cwd }),
+			expected,
+		);
+		for (const file of published)
+			assert.equal(await readFile(path.join(cwd, file), "utf8"), "published content");
+		assert.deepEqual(await readdir(path.join(cwd, "assets/images/optimized")), ["keep.webp"]);
+		for (const name of names) assert.deepEqual(await readFile(path.join(directory, name)), png);
+	});
+}
+
 test("optimizer preserves originals, discovers later photos and synchronizes responsive metadata deterministically", async (t) => {
 	const cwd = await mkdtemp(path.join(os.tmpdir(), "responsive-media-"));
 	t.after(() => rm(cwd, { recursive: true, force: true }));

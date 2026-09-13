@@ -30,7 +30,7 @@ Place photos in `assets/images/students-pass/` with consecutive names: `1.png`, 
 
 After adding, replacing, removing, or renumbering photos:
 
-1. Keep the filenames consecutive, starting at `1.png`. The optimizer rejects numbering gaps. If initial photos were removed or renumbered, keep the six static fallback image references in `index.html` valid.
+1. Keep the filenames consecutive, starting at `1.png`. The optimizer rejects numbering gaps, invalid PNG names such as `01.png` or `2.PNG`, and an empty photo directory before writing any generated files. If initial photos were removed or renumbered, keep the six static fallback image references in `index.html` valid.
 2. Run the maintenance and verification commands:
 
    ```bash
@@ -104,10 +104,12 @@ Alignment compensates for transparent margins in each source image. Student phot
 - `scripts/road-media-integrity.mjs` audits marked JPEG, WebP, and PNG road media, declared delivery copies, car templates, and numbered student photos during development.
 - `js/road-photo-sources.js` is the generated complete photo list and responsive delivery metadata.
 - `scripts/optimize-road-media.mjs` regenerates that list and WebP delivery copies without changing originals.
+- `scripts/student-photos.mjs` owns student photo discovery, numeric ordering, and filename diagnostics for the optimizer and media audit. The optimizer stops on findings; the audit collects them and continues checking media.
 - `assets/images/` contains the stop-sign illustration, road background, car artwork, and numbered student photos. `assets/icons/` contains the course icon. Typography uses Varela Round globally, with local WOFF2 files under `assets/fonts/`.
 - `docs/reference/the-idea.pdf` is the supplied course brief.
 - `docs/superpowers/` preserves historical implementation plans and specifications. Those files can contain obsolete paths, media counts, and markup from earlier versions. Use this README for the current structure and paths.
 - `tests/` contains static page, behavior-level, media-integrity, and Chromium gallery tests.
+- `tests/helpers/road-media.mjs` serves repository files in browser tests with consistent MIME types and original byte counts for HEAD requests. Individual tests own delays, failures, and download observations.
 
 ### Automated checks
 

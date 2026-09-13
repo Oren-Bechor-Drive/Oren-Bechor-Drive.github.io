@@ -1,6 +1,7 @@
 import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
+import { discoverStudentPhotos } from "./student-photos.mjs";
 
 // Run after changing gallery photos. The generated files are served directly.
 const outputDirectory = "assets/images/optimized";
@@ -48,14 +49,8 @@ async function delivery(source, name, widths, encoding, sizes, smallEncoding = {
 	return { srcset: declaration.srcset, sizes, originalBytes: bytes.length };
 }
 
-const photoDirectory = "assets/images/students-pass";
-const photoNames = (await readdir(photoDirectory))
-	.filter((name) => /^[1-9]\d*\.png$/.test(name))
-	.sort((a, b) => parseInt(a) - parseInt(b));
-for (const [index, name] of photoNames.entries()) {
-	if (name !== `${index + 1}.png`)
-		throw new Error(`${photoDirectory}/${index + 1}.png: numbering gap before ${name}; keep photos consecutive`);
-}
+const { directory: photoDirectory, names: photoNames, issues } = await discoverStudentPhotos(process.cwd());
+if (issues.length) throw new Error(issues.join("\n"));
 for (const name of photoNames) {
 	const source = `${photoDirectory}/${name}`;
 	const { width, height } = await sharp(source).metadata();

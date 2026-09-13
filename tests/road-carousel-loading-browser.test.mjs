@@ -1,23 +1,12 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
-import path from "node:path";
 import test from "node:test";
 import { chromium } from "playwright";
+import { serveRoadMedia } from "./helpers/road-media.mjs";
 import { roadPhotoSources } from "../js/road-photo-sources.js";
 
 const photoNumbers = Object.keys(roadPhotoSources).map(Number).sort((a, b) => a - b);
 const photoCount = photoNumbers.length;
 const lastPhoto = photoNumbers.at(-1);
-const root = new URL("../", import.meta.url);
-const types = {
-	".html": "text/html",
-	".js": "text/javascript",
-	".css": "text/css",
-	".png": "image/png",
-	".jpg": "image/jpeg",
-	".webp": "image/webp",
-	".woff2": "font/woff2",
-};
 
 for (const [width, late] of [
 	[1366, false],
@@ -53,7 +42,6 @@ for (const [width, late] of [
 				kitRequests++;
 				return route.fulfill({ contentType: "text/javascript", body: "" });
 			}
-			if (url.origin !== "http://gallery.test") return route.abort();
 			if (
 				request.method() !== "HEAD" &&
 				url.pathname.includes("students-pass")
@@ -64,19 +52,7 @@ for (const [width, late] of [
 				)
 					await gate;
 			}
-			try {
-				const filename =
-					url.pathname === "/" ? "index.html" : url.pathname.slice(1);
-				const bytes = await readFile(new URL(filename, root));
-				await route.fulfill({
-					contentType: types[path.extname(filename)],
-					headers: { "content-length": String(bytes.length) },
-					body: request.method() === "HEAD" ? "" : bytes,
-				});
-			} catch (error) {
-				if (error.code !== "ENOENT") throw error;
-				await route.fulfill({ status: 404, body: "" });
-			}
+			await serveRoadMedia(route);
 		});
 		await page.goto("http://gallery.test/", { waitUntil: "domcontentloaded" });
 		const minimumInitialCount = await page.locator(".road-carousel-group").evaluate(group => {

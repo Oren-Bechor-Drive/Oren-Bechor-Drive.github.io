@@ -1,18 +1,43 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import path from "node:path";
 import test from "node:test";
 import { chromium } from "playwright";
+import { serveRoadMedia } from "./helpers/road-media.mjs";
 import { roadPhotoSources } from "../js/road-photo-sources.js";
 import { inspectImage } from "../scripts/road-media-integrity.mjs";
 
 const photoCount = Object.keys(roadPhotoSources).length;
 const root = new URL("../", import.meta.url);
-const types = {
-	".html": "text/html", ".js": "text/javascript", ".css": "text/css",
-	".png": "image/png", ".jpg": "image/jpeg", ".webp": "image/webp",
-	".woff2": "font/woff2",
-};
+
+for (const failure of ["missing delivery copies", "stale original metadata"]) {
+	test(`student photos recover to PNG with ${failure}`, async (t) => {
+		const browser = await chromium.launch();
+		t.after(() => browser.close());
+		const page = await browser.newPage();
+		await page.route("**/*", async route => {
+			const request = route.request();
+			const url = new URL(request.url());
+			if (url.pathname.includes("students-pass")) {
+				if (failure === "missing delivery copies" && url.pathname.endsWith(".webp"))
+					return route.fulfill({ status: 404, body: "" });
+				if (failure === "stale original metadata" && request.method() === "HEAD")
+					return route.fulfill({ contentType: "image/png", headers: { "content-length": "0" }, body: "" });
+			}
+			await serveRoadMedia(route);
+		});
+		await page.goto("http://gallery.test/");
+		await page.waitForFunction(count => {
+			const root = document.querySelector("[data-road-carousel]");
+			return root.dataset.ready === "true" && root.getAttribute("aria-busy") === "false" &&
+				root.querySelector(".road-carousel-group").children.length === count;
+		}, photoCount);
+		const photos = await page.locator(".road-carousel-group").first().locator(".road-photo img")
+			.evaluateAll(images => images.map(image => ({ source: image.currentSrc, loaded: image.complete && image.naturalWidth > 0 })));
+		assert.equal(photos.length, photoCount);
+		assert.ok(photos.every(photo => photo.loaded && photo.source.endsWith(".png")));
+		assert.equal(await page.locator(".road-loader").isVisible(), false);
+	});
+}
 
 test("the LCP background and text fonts download before stylesheets arrive", async (t) => {
 	const browser = await chromium.launch();
@@ -35,13 +60,8 @@ test("the LCP background and text fonts download before stylesheets arrive", asy
 			const stylesReady = new Promise(resolve => { releaseStyles = resolve; });
 			await page.route("**/*", async route => {
 				const url = new URL(route.request().url());
-				if (url.origin !== "http://gallery.test") return route.abort();
-				const filename = url.pathname === "/" ? "index.html" : url.pathname.slice(1);
-				if (filename.endsWith(".css")) await stylesReady;
-				await route.fulfill({
-					contentType: types[path.extname(filename)],
-					body: await readFile(new URL(filename, root)),
-				});
+				if (url.pathname.endsWith(".css")) await stylesReady;
+				await serveRoadMedia(route);
 			});
 			const criticalResponses = Promise.all([
 				"/assets/images/road.jpg",
@@ -89,23 +109,9 @@ test("responsive delivery reduces desktop and mobile bytes and preserves density
 			});
 			const downloaded = new Map();
 			await page.route("**/*", async (route) => {
-				const request = route.request();
-				const url = new URL(request.url());
-				if (url.origin !== "http://gallery.test") return route.abort();
-				const filename = url.pathname === "/" ? "index.html" : url.pathname.slice(1);
-				try {
-					const bytes = await readFile(new URL(filename, root));
-					if (request.method() !== "HEAD" && /\.(png|webp|jpg)$/.test(filename))
-						downloaded.set(filename, bytes.length);
-					await route.fulfill({
-						contentType: types[path.extname(filename)],
-						headers: { "content-length": String(bytes.length) },
-						body: request.method() === "HEAD" ? "" : bytes,
-					});
-				} catch (error) {
-					if (error.code !== "ENOENT") throw error;
-					await route.fulfill({ status: 404, body: "" });
-				}
+				const served = await serveRoadMedia(route);
+				if (served?.byteLength && /\.(png|webp|jpg)$/.test(served.source))
+					downloaded.set(served.source, served.byteLength);
 			});
 			await page.goto("http://gallery.test/");
 			if (scenario.javaScriptEnabled !== false) {

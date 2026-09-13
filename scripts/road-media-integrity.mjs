@@ -7,6 +7,7 @@ import { JPG } from "image-size/types/jpg";
 import { PNG } from "image-size/types/png";
 import { WEBP } from "image-size/types/webp";
 import { JSDOM } from "jsdom";
+import { discoverStudentPhotos } from "./student-photos.mjs";
 
 const EXTENSION_FORMATS = new Map([
 	[".jpg", "jpeg"],
@@ -211,31 +212,12 @@ async function auditGallery(gallery, pageDir, issues, inspectSource, inspectSrcs
 		}
 	}
 
-	const photoDirectory = "assets/images/students-pass";
-	const photoFiles = (await filesIn(photoDirectory)).filter((name) =>
-		/\.png$/i.test(name),
-	);
-	const numberedPhotos = [];
-	for (const name of photoFiles) {
-		if (!/^[1-9]\d*\.png$/.test(name)) {
-			issues.push(
-				`${photoDirectory}/${name}: filename must be a positive number followed by .png`,
-			);
-		} else numberedPhotos.push(name);
-	}
-	numberedPhotos.sort((a, b) => parseInt(a) - parseInt(b));
-	let expected = 1;
+	const { directory: photoDirectory, names: numberedPhotos, issues: photoIssues } =
+		await discoverStudentPhotos(pageDir);
+	issues.push(...photoIssues);
 	for (const name of numberedPhotos) {
-		const number = parseInt(name);
-		if (number !== expected)
-			issues.push(
-				`${photoDirectory}/${expected}.png: numbering gap before ${name}`,
-			);
-		expected = number + 1;
 		await inspectSource(`${photoDirectory}/${name}`);
 	}
-	if (numberedPhotos.length === 0)
-		issues.push(`${photoDirectory}: no numbered student photos`);
 
 	// The generator writes a JSON object in this module; inspect data without executing it.
 	const listPath = "js/road-photo-sources.js";

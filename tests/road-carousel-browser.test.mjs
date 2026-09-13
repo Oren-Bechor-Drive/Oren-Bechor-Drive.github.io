@@ -1,19 +1,8 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
-import path from "node:path";
 import test from "node:test";
-import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
 
-const rootDir = fileURLToPath(new URL("../", import.meta.url));
-const contentTypes = {
-	".html": "text/html",
-	".css": "text/css",
-	".js": "text/javascript",
-	".png": "image/png",
-	".jpg": "image/jpeg",
-	".woff2": "font/woff2",
-};
+import { serveRoadMedia } from "./helpers/road-media.mjs";
 
 test(
 	"real gallery styles keep animation working across viewport changes",
@@ -32,25 +21,8 @@ test(
 		t.after(() => releaseDiscovery());
 		// Serve the actual project files without a dev server or external font requests.
 		await page.route("**/*", async (route) => {
-			const url = new URL(route.request().url());
-			if (url.origin !== "http://gallery.test") return route.abort();
 			if (route.request().method() === "HEAD") await discoveryGate;
-			const filename = path.join(
-				rootDir,
-				url.pathname === "/" ? "index.html" : url.pathname,
-			);
-			try {
-				const bytes = await readFile(filename);
-				await route.fulfill({
-					contentType:
-						contentTypes[path.extname(filename)] ??
-						"application/octet-stream",
-					body: route.request().method() === "HEAD" ? "" : bytes,
-				});
-			} catch (error) {
-				if (error.code !== "ENOENT") throw error;
-				await route.fulfill({ status: 404, body: "" });
-			}
+			await serveRoadMedia(route);
 		});
 		const session = await page.context().newCDPSession(page);
 		const trace = [];
@@ -116,6 +88,10 @@ test(
 		releaseDiscovery();
 		await page.locator('[data-road-carousel][data-ready="true"]').waitFor();
 		assert.equal(await page.locator(".road-loader").isVisible(), false);
+		const loadedSources = await page.locator(".road-carousel-group").first()
+			.locator(".road-photo img").evaluateAll(images => images.map(image => image.currentSrc));
+		assert.ok(loadedSources.length > 0 && loadedSources.every(source => source.endsWith(".webp")),
+			"motion checks must exercise optimized student photo delivery");
 
 		for (const [name, width, height, secondsPerCar] of [
 			["desktop", 1440, 900, 11.111111],
