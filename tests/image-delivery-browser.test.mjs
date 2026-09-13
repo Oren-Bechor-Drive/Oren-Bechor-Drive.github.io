@@ -11,6 +11,48 @@ const types = {
 	".png": "image/png", ".jpg": "image/jpeg", ".webp": "image/webp",
 };
 
+test("the LCP road background downloads at high priority before stylesheets arrive", async (t) => {
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	for (const viewport of [{ width: 1366, height: 940 }, { width: 390, height: 844 }]) {
+		await t.test(`${viewport.width}px`, async () => {
+			const page = await browser.newPage({ viewport, javaScriptEnabled: false });
+			t.after(() => page.close());
+			const session = await page.context().newCDPSession(page);
+			await session.send("Network.enable");
+			const roadRequests = [];
+			session.on("Network.requestWillBeSent", ({ request }) => {
+				if (request.url.endsWith("/assets/images/road.jpg")) roadRequests.push(request);
+			});
+			let releaseStyles;
+			const stylesReady = new Promise(resolve => { releaseStyles = resolve; });
+			await page.route("**/*", async route => {
+				const url = new URL(route.request().url());
+				if (url.origin !== "http://gallery.test") return route.abort();
+				const filename = url.pathname === "/" ? "index.html" : url.pathname.slice(1);
+				if (filename.endsWith(".css")) await stylesReady;
+				await route.fulfill({
+					contentType: types[path.extname(filename)],
+					body: await readFile(new URL(filename, root)),
+				});
+			});
+			const roadResponse = page.waitForResponse(response => response.url().endsWith("/assets/images/road.jpg"), { timeout: 3000 });
+			try {
+				await page.goto("http://gallery.test/", { waitUntil: "commit" });
+				await (await roadResponse).finished();
+				assert.equal(roadRequests.length, 1);
+				assert.equal(roadRequests[0].initialPriority, "High");
+			} finally {
+				releaseStyles();
+				await page.waitForLoadState("load");
+			}
+			const background = await page.locator("#hero-road").evaluate(element => getComputedStyle(element).backgroundImage);
+			assert.equal(background, `url("${roadRequests[0].url}")`);
+			assert.equal(roadRequests.length, 1, "CSS must reuse the preloaded image");
+		});
+	}
+});
+
 test("responsive delivery reduces desktop bytes and preserves density, cropping and fallback", async (t) => {
 	const browser = await chromium.launch();
 	t.after(() => browser.close());
