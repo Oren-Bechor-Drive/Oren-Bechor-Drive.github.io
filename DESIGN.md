@@ -174,7 +174,7 @@ A saturated, lively coral red that delivers punchy notifications, alerts, and cr
 
 ## Typography
 
-Use `"Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif` for all Hebrew and Latin text. Varela Round loads from Google Fonts; no font files are bundled with the project.
+Use `"Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif` for all Hebrew and Latin text. Varela Round's font files load directly from Google Fonts through inline `@font-face` declarations with `font-display: swap`; no font files are bundled with the project.
 
 ### Hierarchy & Typesetting
 - **Display & Headlines:** Use Varela Round at the documented sizes and weights, checking Hebrew line wrapping at desktop and mobile widths. Varela Round provides only weight `400`; browsers synthesize the documented `600` and `700` emphasis.
@@ -264,4 +264,4 @@ The footer includes a right-to-left row of Instagram, TikTok, YouTube, and Whats
 
 The current page uses a maximum 1280px content width, with 48px side margins above 1024px, 32px at 1024px and below, 20px at 768px and below, and 16px at 440px and below. The main layout and menu switch at 768px; the topic dropdown switches below 640px. These are the implemented page breakpoints rather than a mandatory column grid.
 
-The page uses `#F0FBFE` for its base surface and `#131D1F` for primary text. `css/base.css` holds runtime tokens, `css/components.css` holds navigation styles, `css/welcome.css` holds section layouts, and `css/responsive.css` holds motion, interaction states, responsive overrides, and accessibility preferences. Keep this stylesheet load order.
+The page uses `#F0FBFE` for its base surface and `#131D1F` for primary text. `css/base.css` holds runtime tokens, `css/components.css` holds navigation styles, `css/welcome.css` holds section layouts, and `css/responsive.css` holds motion, interaction states, responsive overrides, and accessibility preferences. The generated inline CSS preserves this order. After editing a CSS source, run `npm run inline:styles` to synchronize the published HTML.

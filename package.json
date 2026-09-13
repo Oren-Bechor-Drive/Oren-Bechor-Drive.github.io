@@ -5,7 +5,8 @@
   "license": "SEE LICENSE IN LICENSE",
   "type": "module",
   "scripts": {
-    "test": "node --test tests/*.test.mjs",
+    "test": "node scripts/inline-styles.mjs --check && node --test tests/*.test.mjs",
+    "inline:styles": "node scripts/inline-styles.mjs",
     "check:media": "node scripts/road-media-integrity.mjs",
     "optimize:media": "node scripts/optimize-road-media.mjs"
   },
