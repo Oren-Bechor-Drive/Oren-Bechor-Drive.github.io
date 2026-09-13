@@ -1,17 +1,15 @@
 import { initTopicExplorer } from "./topic-explorer.js";
 import { initRoadCarousel } from "./road-carousel.js";
+import { initDisclosureMotion } from "./disclosure-motion.js";
 
 const menuToggle = document.querySelector("[data-menu-toggle]");
 const menu = document.querySelector("[data-menu]");
 const topicExplorer = document.querySelector("[data-topic-explorer]");
 const topicSection = document.querySelector("#topics");
 
-function setMenu(open) {
-	if (!menuToggle || !menu) return;
-
-	menuToggle.setAttribute("aria-expanded", String(open));
-	menu.dataset.open = String(open);
-}
+const setMenu = menuToggle && menu
+	? initDisclosureMotion(menuToggle, menu, "(max-width: 768px)", true)
+	: () => {};
 
 function closeMenu({ returnFocus = false } = {}) {
 	setMenu(false);

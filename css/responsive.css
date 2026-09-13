@@ -138,6 +138,28 @@
 		display: flex;
 	}
 
+	.site-menu[data-motion="pointer"] {
+		opacity: 0;
+		transform: translateY(-4px);
+		transition:
+			opacity 150ms var(--ease-out),
+			transform 150ms var(--ease-out),
+			display 150ms allow-discrete;
+	}
+
+	.site-menu[data-motion="pointer"][data-open="true"] {
+		opacity: 1;
+		transform: translateY(0);
+		transition-duration: 180ms;
+	}
+
+	@starting-style {
+		.site-menu[data-motion="pointer"][data-open="true"] {
+			opacity: 0;
+			transform: translateY(-4px);
+		}
+	}
+
 	.site-menu a {
 		padding-inline: 14px;
 	}
@@ -382,6 +404,29 @@
 		display: none;
 	}
 
+	.topic-options[data-motion="pointer"] {
+		opacity: 0;
+		transform: scale(0.98);
+		transform-origin: top right;
+		transition:
+			opacity 150ms var(--ease-out),
+			transform 150ms var(--ease-out),
+			display 150ms allow-discrete;
+	}
+
+	.topic-options[data-motion="pointer"][data-open="true"] {
+		opacity: 1;
+		transform: scale(1);
+		transition-duration: 180ms;
+	}
+
+	@starting-style {
+		.topic-options[data-motion="pointer"][data-open="true"] {
+			opacity: 0;
+			transform: scale(0.98);
+		}
+	}
+
 	.topic-option {
 		display: block;
 		width: 100%;
@@ -430,6 +475,20 @@
 	}
 }
 
+.menu-toggle[data-input="pointer"],
+.topic-select[data-input="pointer"] {
+	transition: transform 140ms var(--ease-out);
+}
+
+.menu-toggle[data-pressed="true"],
+.topic-select[data-pressed="true"] {
+	transform: translateY(1px) scale(0.99);
+}
+
+.topic-select[data-input="keyboard"]::after {
+	transition: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.road-carousel-group[aria-hidden="true"] {
 		display: none;
@@ -445,6 +504,27 @@
 		animation-duration: 0.01ms !important;
 		animation-iteration-count: 1 !important;
 		transition-duration: 0.01ms !important;
+	}
+
+	/* Only these user-triggered disclosures retain a gentle fade. */
+	.site-menu[data-motion="pointer"],
+	.topic-options[data-motion="pointer"] {
+		transform: none !important;
+		transition-property: opacity, display;
+		transition-behavior: allow-discrete;
+		transition-duration: 80ms !important;
+	}
+
+	.menu-toggle[data-input="pointer"],
+	.topic-select[data-input="pointer"] {
+		transform: none;
+		transition: opacity 100ms var(--ease-out);
+		transition-duration: 100ms !important;
+	}
+
+	.menu-toggle[data-pressed="true"],
+	.topic-select[data-pressed="true"] {
+		opacity: 0.92;
 	}
 }
 
