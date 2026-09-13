@@ -78,33 +78,19 @@ test("course icon brands the header and browser tab", async () => {
 	assert.equal(favicon?.getAttribute("type"), "image/png");
 });
 
-test("page loads the requested Google Fonts efficiently", async () => {
+test("page preloads its local Hebrew and Latin fonts with reusable CORS requests", async () => {
 	const document = new JSDOM(await read("index.html")).window.document;
-	const connectionHints = [
-		...document.querySelectorAll('link[rel="preconnect"]'),
-	].map((link) => link.getAttribute("href"));
-	const fontStylesheet = [
-		...document.querySelectorAll('link[rel="stylesheet"]'),
-	].find((link) => link.href.startsWith("https://fonts.googleapis.com/css2"));
-
-	assert.ok(
-		connectionHints.includes("https://fonts.googleapis.com"),
-		"Missing Google Fonts API preconnect",
-	);
-	assert.ok(
-		connectionHints.includes("https://fonts.gstatic.com"),
-		"Missing Google Fonts asset preconnect",
-	);
-	assert.equal(
-		document
-			.querySelector('link[rel="preconnect"][href="https://fonts.gstatic.com"]')
-			?.getAttribute("crossorigin"),
-		"",
-	);
-	assert.ok(fontStylesheet, "Missing Google Fonts stylesheet");
-
-	const families = new URL(fontStylesheet.href).searchParams.getAll("family");
-	assert.deepEqual(families, ["Varela Round"]);
+	const preloads = [...document.querySelectorAll('link[rel="preload"][as="font"]')];
+	assert.deepEqual(preloads.map(link => link.getAttribute("href")), [
+		"assets/fonts/varela-round-v21-hebrew.woff2",
+		"assets/fonts/varela-round-v21-latin.woff2",
+	]);
+	for (const link of preloads) {
+		assert.equal(link.getAttribute("type"), "font/woff2");
+		assert.equal(link.getAttribute("crossorigin"), "");
+	}
+	assert.equal(document.querySelector('link[href*="fonts.googleapis.com"], link[href*="fonts.gstatic.com"]'), null);
+	assert.equal(document.querySelector("style"), null, "styles stay in CSS files");
 });
 
 test("page uses Varela Round as its global typeface", async () => {

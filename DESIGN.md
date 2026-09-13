@@ -174,7 +174,7 @@ A saturated, lively coral red that delivers punchy notifications, alerts, and cr
 
 ## Typography
 
-Use `"Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif` for all Hebrew and Latin text. Varela Round loads from Google Fonts; no font files are bundled with the project.
+Use `"Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif` for all Hebrew and Latin text. Varela Round uses locally hosted WOFF2 subsets from Google Fonts, declared in `css/base.css` with `font-display: swap`. The HTML preloads the Hebrew and Latin subsets.
 
 ### Hierarchy & Typesetting
 - **Display & Headlines:** Use Varela Round at the documented sizes and weights, checking Hebrew line wrapping at desktop and mobile widths. Varela Round provides only weight `400`; browsers synthesize the documented `600` and `700` emphasis.

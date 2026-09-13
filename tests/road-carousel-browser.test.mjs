@@ -12,6 +12,7 @@ const contentTypes = {
 	".js": "text/javascript",
 	".png": "image/png",
 	".jpg": "image/jpeg",
+	".woff2": "font/woff2",
 };
 
 test(

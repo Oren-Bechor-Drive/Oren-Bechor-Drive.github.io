@@ -12,6 +12,7 @@ const types = {
 	".png": "image/png",
 	".jpg": "image/jpeg",
 	".webp": "image/webp",
+	".woff2": "font/woff2",
 };
 
 for (const [width, late] of [

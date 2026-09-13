@@ -9,9 +9,10 @@ const root = new URL("../", import.meta.url);
 const types = {
 	".html": "text/html", ".js": "text/javascript", ".css": "text/css",
 	".png": "image/png", ".jpg": "image/jpeg", ".webp": "image/webp",
+	".woff2": "font/woff2",
 };
 
-test("the LCP road background downloads at high priority before stylesheets arrive", async (t) => {
+test("the LCP background and text fonts download before stylesheets arrive", async (t) => {
 	const browser = await chromium.launch();
 	t.after(() => browser.close());
 	for (const viewport of [{ width: 1366, height: 940 }, { width: 390, height: 844 }]) {
@@ -21,8 +22,12 @@ test("the LCP road background downloads at high priority before stylesheets arri
 			const session = await page.context().newCDPSession(page);
 			await session.send("Network.enable");
 			const roadRequests = [];
+			const fontRequests = [];
+			const externalRequests = [];
 			session.on("Network.requestWillBeSent", ({ request }) => {
 				if (request.url.endsWith("/assets/images/road.jpg")) roadRequests.push(request);
+				if (request.url.endsWith(".woff2")) fontRequests.push(request);
+				if (new URL(request.url).origin !== "http://gallery.test") externalRequests.push(request.url);
 			});
 			let releaseStyles;
 			const stylesReady = new Promise(resolve => { releaseStyles = resolve; });
@@ -36,10 +41,14 @@ test("the LCP road background downloads at high priority before stylesheets arri
 					body: await readFile(new URL(filename, root)),
 				});
 			});
-			const roadResponse = page.waitForResponse(response => response.url().endsWith("/assets/images/road.jpg"), { timeout: 3000 });
+			const criticalResponses = Promise.all([
+				"/assets/images/road.jpg",
+				"/assets/fonts/varela-round-v21-hebrew.woff2",
+				"/assets/fonts/varela-round-v21-latin.woff2",
+			].map(asset => page.waitForResponse(response => response.url().endsWith(asset), { timeout: 3000 })));
 			try {
 				await page.goto("http://gallery.test/", { waitUntil: "commit" });
-				await (await roadResponse).finished();
+				await Promise.all((await criticalResponses).map(response => response.finished()));
 				assert.equal(roadRequests.length, 1);
 				assert.equal(roadRequests[0].initialPriority, "High");
 			} finally {
@@ -49,6 +58,13 @@ test("the LCP road background downloads at high priority before stylesheets arri
 			const background = await page.locator("#hero-road").evaluate(element => getComputedStyle(element).backgroundImage);
 			assert.equal(background, `url("${roadRequests[0].url}")`);
 			assert.equal(roadRequests.length, 1, "CSS must reuse the preloaded image");
+			const loadedFonts = await page.evaluate(async () => {
+				await document.fonts.ready;
+				return [...document.fonts].filter(font => font.status === "loaded").map(font => font.family);
+			});
+			assert.deepEqual(loadedFonts, ["Varela Round", "Varela Round"], "Hebrew and Latin must decode and render");
+			assert.equal(fontRequests.length, 2, "CSS must reuse both font preloads without fetching unused subsets");
+			assert.deepEqual(externalRequests, [], "initial rendering must not depend on a font provider");
 		});
 	}
 });

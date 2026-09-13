@@ -60,6 +60,12 @@ WebP quality starts at 78 for photos, 80 for cars and the wheel, and 85 for the 
 
 Two small variants use stronger compression after visual comparison: the 128px wheel uses quality 65 and alpha quality 60, and the 240px version of photo 11 uses quality 55. Their larger variants retain the default quality. The browser test caps the small downloads at 6 KiB and 8 KiB respectively.
 
+## Font delivery
+
+Varela Round's `@font-face` declarations live in `css/base.css` with `font-display: swap`. The original Google Fonts v21 WOFF2 subsets are served from `assets/fonts/`, with their SIL Open Font License and source URLs in that directory. Hebrew and Latin are preloaded in the HTML so they download alongside CSS. Both are used by the initial page, including punctuation and digits. The Vietnamese and extended Latin subsets remain available on demand through their original Unicode ranges.
+
+Font preloads require `crossorigin` even for local files so CSS can reuse them. Keep preload paths synchronized with the CSS when updating fonts. No Google Fonts stylesheet or preconnect is needed at runtime. The browser delivery test holds CSS responses to verify early font downloads and checks that the page uses both fonts without duplicate requests.
+
 ## Maintain road artwork
 
 `assets/images/road.jpg` is the repeating background. The six active car sprites are cyan, gray, green, orange, red, and yellow in `assets/images/cars/car-*.png`. Their static HTML entries also serve as JavaScript templates. Changing the car palette requires updating those entries and the matching `.road-car-*` alignment rules in `css/welcome.css`.
@@ -78,7 +84,7 @@ Alignment compensates for transparent margins in each source image. Student phot
 - `js/road-carousel.js` discovers numbered student photos and builds the looping car gallery.
 - `scripts/road-media-integrity.mjs` audits marked JPEG, WebP, and PNG road media, declared delivery copies, car templates, and numbered student photos during development.
 - `scripts/optimize-road-media.mjs` generates optional WebP delivery copies and the runtime photo mapping without changing originals.
-- `assets/images/` contains the stop-sign illustration, road background, car artwork, and numbered student photos. `assets/icons/` contains the course icon. Typography uses Varela Round globally and loads it from Google Fonts.
+- `assets/images/` contains the stop-sign illustration, road background, car artwork, and numbered student photos. `assets/icons/` contains the course icon. Typography uses Varela Round globally, with local WOFF2 files under `assets/fonts/`.
 - `docs/reference/the-idea.pdf` is the supplied course brief.
 - `docs/superpowers/` preserves historical implementation plans and specifications. Those files can contain obsolete paths, media counts, and markup from earlier versions. Use this README for the current structure and paths.
 - `tests/` contains static page, behavior-level, media-integrity, and Chromium gallery tests.
@@ -95,7 +101,7 @@ git diff --check
 
 The media audit checks marked HTML images and their preload metadata, matches car templates to the `car-*.png` files, and inspects every numbered student photo without a fixed maximum. It validates the scrolling group’s direct child templates, matching runtime initialization, and reports misplaced or malformed templates, numbering gaps, invalid PNG filenames, missing or duplicate templates, and incorrect fallback photo references or metadata. The supplied `cars.png` composite is excluded. It checks image headers and dimensions, not full decoding, roof alignment, or the CSS road background.
 
-Tests also check runtime discovery, failure preservation, and loop timing across row sizes and viewport changes. `npm test` includes a focused Chromium check that loads the actual page, stylesheets, scripts, and images at desktop and phone sizes, including resizing and reduced motion. It intercepts local requests to serve repository files and blocks external font requests, so no dev server or network connection is needed after setup. Verify layout and interaction changes in the collaborative browser at desktop and phone sizes, including reduced motion.
+Tests also check runtime discovery, failure preservation, and loop timing across row sizes and viewport changes. `npm test` includes a focused Chromium check that loads the actual page, stylesheets, scripts, and images at desktop and phone sizes, including resizing and reduced motion. It intercepts local requests to serve repository files and blocks external requests, so no dev server or network connection is needed after setup. Verify layout and interaction changes in the collaborative browser at desktop and phone sizes, including reduced motion.
 
 ## Documentation
 
