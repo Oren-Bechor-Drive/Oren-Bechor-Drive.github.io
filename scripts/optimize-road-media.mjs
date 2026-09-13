@@ -62,9 +62,9 @@ for (const name of photoNames) {
 	// object-fit: cover can require a wider source than the photo's visible box.
 	const fraction = Math.max(0.62, (260 / 460) * 0.68 * (width / height));
 	const smallWidth = Math.ceil((254 * 1.3 * 1.15 * fraction) / 20) * 20;
-	const largeWidth = Math.max(smallWidth * 2, Math.ceil(264 * 1.3 * 1.15 * fraction * 2));
-	// Intermediate candidates avoid jumping from desktop 1x to desktop 2x on phones.
-	const widths = [smallWidth, ...[320, 360, 400].filter(width => width > smallWidth && width < largeWidth), largeWidth];
+	const largeWidth = Math.min(width, Math.max(smallWidth * 2, Math.ceil(264 * 1.3 * 1.15 * fraction * 2)));
+	// Intermediate candidates serve phones; keep the larger copy when widths differ by less than 5%.
+	const widths = [smallWidth, ...[320, 360, 400].filter(width => width > smallWidth && width * 1.05 <= largeWidth), largeWidth];
 	sources[parseInt(name)] = await delivery(
 		source, `students-pass/${path.parse(name).name}`,
 		widths, { quality: 65 }, roadSizes(fraction),

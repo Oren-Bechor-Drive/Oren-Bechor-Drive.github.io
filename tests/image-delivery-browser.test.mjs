@@ -3,8 +3,10 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
 import { chromium } from "playwright";
+import { roadPhotoSources } from "../js/road-photo-sources.js";
 import { inspectImage } from "../scripts/road-media-integrity.mjs";
 
+const photoCount = Object.keys(roadPhotoSources).length;
 const root = new URL("../", import.meta.url);
 const types = {
 	".html": "text/html", ".js": "text/javascript", ".css": "text/css",
@@ -107,7 +109,7 @@ test("responsive delivery reduces desktop and mobile bytes and preserves density
 			});
 			await page.goto("http://gallery.test/");
 			if (scenario.javaScriptEnabled !== false) {
-				await page.waitForFunction(() => document.querySelector(".road-carousel-group").children.length === 15);
+				await page.waitForFunction(count => document.querySelector(".road-carousel-group").children.length === count, photoCount);
 			}
 			await page.waitForFunction(() => [...document.images].every(i => i.complete && i.naturalWidth > 0));
 			const images = await page.locator(".brand-mark, .hero-visual img, .road-loader img, .road-carousel-group:first-child img").evaluateAll(images => images.map(img => ({
@@ -121,9 +123,9 @@ test("responsive delivery reduces desktop and mobile bytes and preserves density
 			assert.ok(!downloaded.has("assets/icons/course-icon.png"), "the full-size logo must not load as a favicon");
 			assert.ok([...downloaded.keys()].every(src => !/\/(cars|students-pass)\/.*\.png$/.test(src)), "original car/photo bodies should not download");
 			if (scenario.deviceScaleFactor === 1)
-				assert.ok(total < 250 * 1024, `desktop image budget exceeded: ${total}`);
+				assert.ok(total < (115 + 9 * photoCount) * 1024, `desktop image budget exceeded: ${total}`);
 			if (scenario.width <= 412 && scenario.deviceScaleFactor <= 2) {
-				assert.ok(total < 300 * 1024, `mobile image budget exceeded: ${total}`);
+				assert.ok(total < (120 + 12 * photoCount) * 1024, `mobile image budget exceeded: ${total}`);
 				assert.ok(downloaded.get("assets/images/optimized/wheel-256.webp") <= 13 * 1024,
 					"high-density wheel exceeds its compression budget");
 			}
@@ -132,6 +134,7 @@ test("responsive delivery reduces desktop and mobile bytes and preserves density
 					["assets/images/optimized/wheel.webp", 6 * 1024],
 					["assets/images/optimized/students-pass/11.webp", 8 * 1024],
 				]) {
+					if (source.includes("students-pass/11.") && !roadPhotoSources[11]) continue;
 					assert.ok(downloaded.has(source), `missing desktop image: ${source}`);
 					assert.ok(downloaded.get(source) <= budget, `${source} exceeds its compression budget`);
 				}

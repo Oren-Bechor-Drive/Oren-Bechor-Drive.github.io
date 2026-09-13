@@ -382,3 +382,19 @@ for (const change of ["added photo", "removed photo", "replaced photo", "missing
 		assert.ok(audit.issues.some(issue => issue.includes("road-photo-sources.js") && issue.includes("npm run optimize:media")));
 	});
 }
+
+for (const problem of ["missing file", "wrong width", "valid candidate"]) {
+	test(`generated-only delivery candidates are audited: ${problem}`, async (t) => {
+		const rootDir = await galleryFixture(t);
+		const listPath = path.join(rootDir, "js/road-photo-sources.js");
+		const module = await readFile(listPath, "utf8");
+		const sources = JSON.parse(module.match(/= (\{[\s\S]*\});/)[1]);
+		const source = problem === "missing file" ? "missing-delivery.png" : "assets/images/students-pass/3.png";
+		sources[3].srcset = `${source} ${problem === "wrong width" ? 240 : 1}w`;
+		await writeFile(listPath, `export const roadPhotoSources = ${JSON.stringify(sources)};\n`);
+		const audit = await auditRoadMedia({ rootDir });
+		if (problem === "valid candidate") assert.deepEqual(audit.issues, []);
+		else assert.ok(audit.issues.some(issue => issue.includes(source) &&
+			issue.includes(problem === "missing file" ? "file does not exist" : "1px")));
+	});
+}

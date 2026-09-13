@@ -11,7 +11,7 @@ export const roadPhotoSources = {
 		"originalBytes": 43417
 	},
 	"3": {
-		"srcset": "assets/images/optimized/students-pass/3.webp 240w, assets/images/optimized/students-pass/3-320.webp 320w, assets/images/optimized/students-pass/3-360.webp 360w, assets/images/optimized/students-pass/3-400.webp 400w, assets/images/optimized/students-pass/3-405.webp 405w",
+		"srcset": "assets/images/optimized/students-pass/3.webp 240w, assets/images/optimized/students-pass/3-320.webp 320w, assets/images/optimized/students-pass/3-360.webp 360w, assets/images/optimized/students-pass/3-405.webp 405w",
 		"sizes": "(max-width: 768px) clamp(141.05px, 21.158svh, 189.41px), clamp(166.842px, 25.026svh, 244.702px)",
 		"originalBytes": 68670
 	},
@@ -26,7 +26,7 @@ export const roadPhotoSources = {
 		"originalBytes": 136008
 	},
 	"6": {
-		"srcset": "assets/images/optimized/students-pass/6.webp 240w, assets/images/optimized/students-pass/6-320.webp 320w, assets/images/optimized/students-pass/6-360.webp 360w, assets/images/optimized/students-pass/6-361.webp 361w",
+		"srcset": "assets/images/optimized/students-pass/6.webp 240w, assets/images/optimized/students-pass/6-320.webp 320w, assets/images/optimized/students-pass/6-361.webp 361w",
 		"sizes": "(max-width: 768px) clamp(141.05px, 21.158svh, 189.41px), clamp(166.842px, 25.026svh, 244.702px)",
 		"originalBytes": 49458
 	},
@@ -46,12 +46,12 @@ export const roadPhotoSources = {
 		"originalBytes": 62037
 	},
 	"10": {
-		"srcset": "assets/images/optimized/students-pass/10.webp 240w, assets/images/optimized/students-pass/10-320.webp 320w, assets/images/optimized/students-pass/10-360.webp 360w, assets/images/optimized/students-pass/10-400.webp 400w, assets/images/optimized/students-pass/10-416.webp 416w",
+		"srcset": "assets/images/optimized/students-pass/10.webp 240w, assets/images/optimized/students-pass/10-320.webp 320w, assets/images/optimized/students-pass/10-360.webp 360w, assets/images/optimized/students-pass/10-416.webp 416w",
 		"sizes": "(max-width: 768px) clamp(143.773px, 21.566svh, 193.067px), clamp(170.063px, 25.51svh, 249.426px)",
 		"originalBytes": 67552
 	},
 	"11": {
-		"srcset": "assets/images/optimized/students-pass/11.webp 240w, assets/images/optimized/students-pass/11-320.webp 320w, assets/images/optimized/students-pass/11-360.webp 360w, assets/images/optimized/students-pass/11-400.webp 400w, assets/images/optimized/students-pass/11-401.webp 401w",
+		"srcset": "assets/images/optimized/students-pass/11.webp 240w, assets/images/optimized/students-pass/11-320.webp 320w, assets/images/optimized/students-pass/11-360.webp 360w, assets/images/optimized/students-pass/11-401.webp 401w",
 		"sizes": "(max-width: 768px) clamp(141.05px, 21.158svh, 189.41px), clamp(166.842px, 25.026svh, 244.702px)",
 		"originalBytes": 68298
 	},

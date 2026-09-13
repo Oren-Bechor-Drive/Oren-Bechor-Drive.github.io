@@ -234,7 +234,6 @@ export async function initRoadCarousel(root) {
 				record.error = error;
 			},
 		);
-		return record;
 	}
 
 	async function loadListedPhotos() {

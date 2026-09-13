@@ -19,7 +19,7 @@ test("optimizer preserves originals, discovers later photos and synchronizes res
 	for (const dir of ["assets/icons", "assets/images/students-pass", "assets/images/cars", "css", "js"])
 		await mkdir(path.join(cwd, dir), { recursive: true });
 	await writeFile(path.join(cwd, "css/welcome.css"), await readFile(new URL("css/welcome.css", root)));
-	const png = await sharp({ create: { width: 320, height: 210, channels: 4, background: "#6dcdd680" } }).png().toBuffer();
+	const png = await sharp({ create: { width: 405, height: 210, channels: 4, background: "#6dcdd680" } }).png().toBuffer();
 	const originals = [
 		"assets/icons/course-icon.png", "assets/images/wheel.png", "assets/images/stop-sign.png",
 		"assets/images/cars/car-cyan.png",
@@ -36,12 +36,16 @@ test("optimizer preserves originals, discovers later photos and synchronizes res
 	for (const source of originals) assert.deepEqual(await readFile(path.join(cwd, source)), png);
 	for (const { srcset, originalBytes } of Object.values(roadPhotoSources)) {
 		assert.equal(originalBytes, png.length);
+		const widths = srcset.split(", ").map(candidate => parseInt(candidate.split(" ")[1]));
+		assert.equal(widths.at(-1), 405, "retain full source coverage");
+		assert.ok(widths.every((width, index) => index === 0 || width >= widths[index - 1] * 1.05),
+			"avoid nearly identical responsive candidates");
 		for (const candidate of srcset.split(", ")) {
 			const [source, width] = candidate.split(" ");
 			const metadata = inspectImage(await readFile(path.join(cwd, source)));
 			assert.equal(metadata.width, parseInt(width));
-			assert.ok(metadata.width <= 320, "never enlarge the supplied source");
-			assert.ok(Math.abs(metadata.height - metadata.width * 210 / 320) <= 1);
+			assert.ok(metadata.width <= 405, "never enlarge the supplied source");
+			assert.ok(Math.abs(metadata.height - metadata.width * 210 / 405) <= 1);
 		}
 	}
 	const dom = new JSDOM(html);
@@ -49,7 +53,7 @@ test("optimizer preserves originals, discovers later photos and synchronizes res
 	const image = dom.window.document.querySelector("img");
 	assert.equal(image.srcset, roadPhotoSources[1].srcset);
 	assert.equal(image.sizes, roadPhotoSources[1].sizes);
-	assert.equal(image.width, 320);
+	assert.equal(image.width, 405);
 	assert.equal(image.height, 210);
 	const directory = path.join(cwd, "assets/images/optimized");
 	const names = (await readdir(directory, { recursive: true })).filter(name => /\.(webp|png)$/.test(name));

@@ -3,7 +3,11 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
 import { chromium } from "playwright";
+import { roadPhotoSources } from "../js/road-photo-sources.js";
 
+const photoNumbers = Object.keys(roadPhotoSources).map(Number).sort((a, b) => a - b);
+const photoCount = photoNumbers.length;
+const lastPhoto = photoNumbers.at(-1);
 const root = new URL("../", import.meta.url);
 const types = {
 	".html": "text/html",
@@ -56,9 +60,7 @@ for (const [width, late] of [
 			) {
 				requestedImages.push(url.pathname);
 				if (
-					(late === "resize" ? /\/7(?:-\d+)?\.(png|webp)$/ : /\/15(?:-\d+)?\.(png|webp)$/).test(
-						url.pathname,
-					)
+					Number(url.pathname.match(/\/(\d+)(?:-\d+)?\.(?:png|webp)$/)?.[1]) === (late === "resize" ? 7 : lastPhoto)
 				)
 					await gate;
 			}
@@ -77,12 +79,20 @@ for (const [width, late] of [
 			}
 		});
 		await page.goto("http://gallery.test/", { waitUntil: "domcontentloaded" });
+		const minimumInitialCount = await page.locator(".road-carousel-group").evaluate(group => {
+			const step = group.firstElementChild.getBoundingClientRect().width + parseFloat(getComputedStyle(group).columnGap);
+			return Math.max(group.children.length, Math.ceil(innerWidth / step) + 1);
+		});
+		if (photoCount <= minimumInitialCount) {
+			t.skip("The gallery needs more photos to exercise a later append at this viewport");
+			return;
+		}
 		await page.locator('[data-ready="true"]').waitFor();
 		await page.waitForFunction(
 			(count) =>
 				document.querySelector(".road-carousel-group").children.length ===
 				count,
-			late === "resize" ? 6 : 14,
+			late === "resize" ? 6 : photoCount - 1,
 		);
 		if (late === "resize") {
 			await page.setViewportSize({ width: 5000, height: 844 });
@@ -110,14 +120,14 @@ for (const [width, late] of [
 					.first()
 					.locator(".road-car")
 					.count(),
-				14,
+				photoCount - 1,
 			);
 			await page.emulateMedia({ reducedMotion: "reduce" });
 		}
 		await page.waitForFunction(
-			() =>
-				document.querySelector(".road-carousel-group").children.length === 15,
-			null,
+			count =>
+				document.querySelector(".road-carousel-group").children.length === count,
+			photoCount,
 			{ timeout: 1500 },
 		);
 		const state = await page.evaluate(() => ({
@@ -142,7 +152,7 @@ for (const [width, late] of [
 			);
 		assert.deepEqual(
 			state.photos.map((photo) => Number(photo.src.match(/\/(\d+)\.png$/)[1])),
-			Array.from({ length: 15 }, (_, i) => i + 1),
+			photoNumbers,
 		);
 		assert.ok(
 			state.photos.every(

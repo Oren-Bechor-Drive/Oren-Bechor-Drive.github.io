@@ -88,12 +88,8 @@ export async function auditRoadMedia({ rootDir, htmlPath = "index.html" }) {
 		return asset;
 	}
 
-	for (const image of document.querySelectorAll(
-		"img[data-road-media], [data-road-carousel] .road-car > img, [data-road-carousel] .road-photo img",
-	)) {
-		const source = cleanReference(image.getAttribute("src") ?? "");
-		const inspected = await inspectSource(source);
-		for (const candidate of (image.getAttribute("srcset") ?? "").split(",")) {
+	async function inspectSrcset(srcset) {
+		for (const candidate of (srcset ?? "").split(",")) {
 			const [deliverySource, descriptor] = candidate.trim().split(/\s+/);
 			if (!deliverySource) continue;
 			const delivery = await inspectSource(cleanReference(deliverySource));
@@ -101,6 +97,14 @@ export async function auditRoadMedia({ rootDir, htmlPath = "index.html" }) {
 				issues.push(`${deliverySource}: srcset declares ${descriptor}, file is ${delivery.width}px wide`);
 			}
 		}
+	}
+
+	for (const image of document.querySelectorAll(
+		"img[data-road-media], [data-road-carousel] .road-car > img, [data-road-carousel] .road-photo img",
+	)) {
+		const source = cleanReference(image.getAttribute("src") ?? "");
+		const inspected = await inspectSource(source);
+		await inspectSrcset(image.getAttribute("srcset"));
 		if (!inspected) continue;
 		const declaredWidth = Number(image.getAttribute("width"));
 		const declaredHeight = Number(image.getAttribute("height"));
@@ -137,12 +141,13 @@ export async function auditRoadMedia({ rootDir, htmlPath = "index.html" }) {
 			path.dirname(absoluteHtmlPath),
 			issues,
 			inspectSource,
+			inspectSrcset,
 		);
 	}
 	return { assets, issues };
 }
 
-async function auditGallery(gallery, pageDir, issues, inspectSource) {
+async function auditGallery(gallery, pageDir, issues, inspectSource, inspectSrcset) {
 	async function filesIn(directory) {
 		try {
 			return (
@@ -237,6 +242,7 @@ async function auditGallery(gallery, pageDir, issues, inspectSource) {
 	try {
 		const module = await readFile(path.join(pageDir, listPath), "utf8");
 		const sources = JSON.parse(module.match(/export const roadPhotoSources = (\{[\s\S]*\});\s*$/)?.[1]);
+		for (const source of Object.values(sources)) await inspectSrcset(source.srcset);
 		const listedNames = Object.keys(sources).map(number => `${number}.png`);
 		if (listedNames.length !== numberedPhotos.length || numberedPhotos.some(name => !listedNames.includes(name)))
 			issues.push(`${listPath}: photo list is stale; run npm run optimize:media`);

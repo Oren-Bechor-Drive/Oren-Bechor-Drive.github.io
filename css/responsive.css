@@ -298,7 +298,6 @@
 	}
 
 	.footer-layout {
-		align-items: center;
 		flex-direction: column;
 		text-align: center;
 	}
@@ -423,10 +422,6 @@
 
 	.brand-copy strong {
 		font-size: 14px;
-	}
-
-	.hero-copy h1 {
-		font-size: 36px;
 	}
 
 	.about-title-block h2,
