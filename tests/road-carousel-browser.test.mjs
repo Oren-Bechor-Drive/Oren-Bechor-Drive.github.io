@@ -52,7 +52,33 @@ test(
 				await route.fulfill({ status: 404, body: "" });
 			}
 		});
+		const session = await page.context().newCDPSession(page);
+		const trace = [];
+		session.on("Tracing.dataCollected", ({ value }) => trace.push(...value));
+		await session.send("Tracing.start", {
+			categories: "devtools.timeline",
+			transferMode: "ReportEvents",
+		});
 		await page.goto("http://gallery.test/");
+		await page.evaluate(() => new Promise(resolve =>
+			requestAnimationFrame(() => requestAnimationFrame(resolve)),
+		));
+		const traceComplete = new Promise(resolve =>
+			session.once("Tracing.tracingComplete", resolve),
+		);
+		await session.send("Tracing.end");
+		await traceComplete;
+		await t.test("the stop-sign entrance runs without compositor failures", () => {
+			const entrances = trace.filter(event =>
+				event.name === "Animation" && event.args?.data?.displayName === "image-reveal",
+			);
+			assert.ok(entrances.length > 0, "the browser must run the stop-sign entrance");
+			const ids = new Set(entrances.map(event => event.id2.local));
+			const failures = trace.filter(event =>
+				event.name === "Animation" && ids.has(event.id2?.local) && event.args?.data?.compositeFailed,
+			);
+			assert.deepEqual(failures.map(event => event.args.data), []);
+		});
 		await t.test(
 			"loading wheel covers the stopped road until discovery finishes",
 			async () => {
@@ -74,6 +100,10 @@ test(
 				assert.equal(state.roadAnimations, 0);
 				assert.match(state.blur, /blur\([1-9]/);
 				await page.emulateMedia({ reducedMotion: "reduce" });
+				assert.equal(
+					await page.locator(".hero-visual").evaluate(element => element.getAnimations().length),
+					0,
+				);
 				assert.equal(
 					await loader
 						.locator("img")

@@ -70,7 +70,6 @@
 	@keyframes image-reveal {
 		from {
 			opacity: 0.6;
-			clip-path: inset(0 100% 0 0 round 24px 0 0 24px);
 		}
 	}
 }
