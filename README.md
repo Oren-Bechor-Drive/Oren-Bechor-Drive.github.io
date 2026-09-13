@@ -73,9 +73,11 @@ Publish generated files with their originals as described under [Add or update s
 
 The HTML keeps original road-image dimensions and uses width descriptors in `srcset` plus `sizes` for delivery copies. Smaller variants serve ordinary desktop screens; larger variants support high-density screens without enlarging an original. Photo sizing accounts for the `object-fit: cover` crop. The optimizer's size formulas follow the road height, car scale, and photo frame in `css/welcome.css` and `css/responsive.css`; update them if that geometry changes. Car sprite sizing reads each color's `--car-art-width` rule. Module preload hints fetch carousel dependencies alongside the entry script.
 
-WebP quality starts at 78 for photos, 80 for cars and the wheel, and 85 for the logo and stop sign. Check faces, lettering, and transparent edges at their displayed sizes after changing these settings. `tests/image-delivery-browser.test.mjs` checks actual browser source selection, image bytes, high-density coverage, and rendering without JavaScript.
+Student photos include intermediate 320px, 360px, and 400px candidates between the smallest desktop copy and the largest copy, capped at the original width. These let phones select a closer fit without downloading the desktop 2x image. Width descriptors always reflect the generated file's actual width.
 
-Two small variants use stronger compression after visual comparison: the 128px wheel uses quality 65 and alpha quality 60, and the 240px version of photo 11 uses quality 55. Their larger variants retain the default quality. The browser test caps the small downloads at 6 KiB and 8 KiB respectively.
+WebP quality is 65 for intermediate and large photos, 78 for the smallest photos, 80 for cars, and 85 for the logo and stop sign. The smallest version of photo 11 uses quality 55 for its dense background. Both wheel sizes use quality 65 and alpha quality 60. Check faces, lettering, and transparent edges at their displayed sizes after changing these settings.
+
+`tests/image-delivery-browser.test.mjs` checks actual browser source selection, image bytes, high-density coverage, and rendering without JavaScript. It covers desktop at 1x and 2x, plus phones at 1.75x and 2x. Mobile image downloads must stay below 300 KiB, and the 412px phone check limits oversized photo candidates. The 128px and 256px wheel downloads are capped at 6 KiB and 13 KiB; the smallest photo 11 is capped at 8 KiB.
 
 ## Font delivery
 

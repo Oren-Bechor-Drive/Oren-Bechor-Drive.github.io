@@ -69,13 +69,14 @@ test("the LCP background and text fonts download before stylesheets arrive", asy
 	}
 });
 
-test("responsive delivery reduces desktop bytes and preserves density, cropping and fallback", async (t) => {
+test("responsive delivery reduces desktop and mobile bytes and preserves density, cropping and fallback", async (t) => {
 	const browser = await chromium.launch();
 	t.after(() => browser.close());
 	for (const scenario of [
 		{ width: 1366, height: 940, deviceScaleFactor: 1 },
 		{ width: 1366, height: 940, deviceScaleFactor: 2 },
 		{ width: 390, height: 844, deviceScaleFactor: 2 },
+		{ width: 412, height: 823, deviceScaleFactor: 1.75 },
 		{ width: 1366, height: 940, deviceScaleFactor: 1, javaScriptEnabled: false },
 	]) {
 		await t.test(JSON.stringify(scenario), async () => {
@@ -121,6 +122,11 @@ test("responsive delivery reduces desktop bytes and preserves density, cropping 
 			assert.ok([...downloaded.keys()].every(src => !/\/(cars|students-pass)\/.*\.png$/.test(src)), "original car/photo bodies should not download");
 			if (scenario.deviceScaleFactor === 1)
 				assert.ok(total < 250 * 1024, `desktop image budget exceeded: ${total}`);
+			if (scenario.width <= 412 && scenario.deviceScaleFactor <= 2) {
+				assert.ok(total < 300 * 1024, `mobile image budget exceeded: ${total}`);
+				assert.ok(downloaded.get("assets/images/optimized/wheel-256.webp") <= 13 * 1024,
+					"high-density wheel exceeds its compression budget");
+			}
 			if (scenario.deviceScaleFactor === 1 && scenario.javaScriptEnabled !== false) {
 				for (const [source, budget] of [
 					["assets/images/optimized/wheel.webp", 6 * 1024],
@@ -136,6 +142,8 @@ test("responsive delivery reduces desktop bytes and preserves density, cropping 
 				assert.ok(Math.abs(delivered.height - delivered.width * source.height / source.width) <= 1, `aspect ratio changed: ${img.current}`);
 				const required = Math.min(source.width, Math.max(img.width, img.photo ? img.height * source.width / source.height : 0) * scenario.deviceScaleFactor);
 				assert.ok(delivered.width >= required - 2, `${img.current}: ${delivered.width}px cannot cover ${required}px`);
+				if (img.photo && scenario.width === 412)
+					assert.ok(delivered.width <= required * 1.2, `${img.current}: oversized for ${required}px mobile photo`);
 			}
 			await page.close();
 		});

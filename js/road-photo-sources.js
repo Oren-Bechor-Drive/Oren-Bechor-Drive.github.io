@@ -11,67 +11,67 @@ export const roadPhotoSources = {
 		"originalBytes": 43417
 	},
 	"3": {
-		"srcset": "assets/images/optimized/students-pass/3.webp 240w, assets/images/optimized/students-pass/3-405.webp 405w",
+		"srcset": "assets/images/optimized/students-pass/3.webp 240w, assets/images/optimized/students-pass/3-320.webp 320w, assets/images/optimized/students-pass/3-360.webp 360w, assets/images/optimized/students-pass/3-400.webp 400w, assets/images/optimized/students-pass/3-405.webp 405w",
 		"sizes": "(max-width: 768px) clamp(141.05px, 21.158svh, 189.41px), clamp(166.842px, 25.026svh, 244.702px)",
 		"originalBytes": 68670
 	},
 	"4": {
-		"srcset": "assets/images/optimized/students-pass/4.webp 240w, assets/images/optimized/students-pass/4-460.webp 460w",
+		"srcset": "assets/images/optimized/students-pass/4.webp 240w, assets/images/optimized/students-pass/4-320.webp 320w, assets/images/optimized/students-pass/4-360.webp 360w, assets/images/optimized/students-pass/4-400.webp 400w, assets/images/optimized/students-pass/4-460.webp 460w",
 		"sizes": "(max-width: 768px) clamp(141.05px, 21.158svh, 189.41px), clamp(166.842px, 25.026svh, 244.702px)",
 		"originalBytes": 76720
 	},
 	"5": {
-		"srcset": "assets/images/optimized/students-pass/5.webp 240w, assets/images/optimized/students-pass/5-490.webp 490w",
+		"srcset": "assets/images/optimized/students-pass/5.webp 240w, assets/images/optimized/students-pass/5-320.webp 320w, assets/images/optimized/students-pass/5-360.webp 360w, assets/images/optimized/students-pass/5-400.webp 400w, assets/images/optimized/students-pass/5-490.webp 490w",
 		"sizes": "(max-width: 768px) clamp(141.05px, 21.158svh, 189.41px), clamp(166.842px, 25.026svh, 244.702px)",
 		"originalBytes": 136008
 	},
 	"6": {
-		"srcset": "assets/images/optimized/students-pass/6.webp 240w, assets/images/optimized/students-pass/6-361.webp 361w",
+		"srcset": "assets/images/optimized/students-pass/6.webp 240w, assets/images/optimized/students-pass/6-320.webp 320w, assets/images/optimized/students-pass/6-360.webp 360w, assets/images/optimized/students-pass/6-361.webp 361w",
 		"sizes": "(max-width: 768px) clamp(141.05px, 21.158svh, 189.41px), clamp(166.842px, 25.026svh, 244.702px)",
 		"originalBytes": 49458
 	},
 	"7": {
-		"srcset": "assets/images/optimized/students-pass/7.webp 240w, assets/images/optimized/students-pass/7-489.webp 489w",
+		"srcset": "assets/images/optimized/students-pass/7.webp 240w, assets/images/optimized/students-pass/7-320.webp 320w, assets/images/optimized/students-pass/7-360.webp 360w, assets/images/optimized/students-pass/7-400.webp 400w, assets/images/optimized/students-pass/7-489.webp 489w",
 		"sizes": "(max-width: 768px) clamp(141.05px, 21.158svh, 189.41px), clamp(166.842px, 25.026svh, 244.702px)",
 		"originalBytes": 84432
 	},
 	"8": {
-		"srcset": "assets/images/optimized/students-pass/8.webp 260w, assets/images/optimized/students-pass/8-527.webp 527w",
+		"srcset": "assets/images/optimized/students-pass/8.webp 260w, assets/images/optimized/students-pass/8-320.webp 320w, assets/images/optimized/students-pass/8-360.webp 360w, assets/images/optimized/students-pass/8-400.webp 400w, assets/images/optimized/students-pass/8-527.webp 527w",
 		"sizes": "(max-width: 768px) clamp(151.733px, 22.76svh, 203.755px), clamp(179.478px, 26.922svh, 263.234px)",
 		"originalBytes": 90446
 	},
 	"9": {
-		"srcset": "assets/images/optimized/students-pass/9.webp 260w, assets/images/optimized/students-pass/9-502.webp 502w",
+		"srcset": "assets/images/optimized/students-pass/9.webp 260w, assets/images/optimized/students-pass/9-320.webp 320w, assets/images/optimized/students-pass/9-360.webp 360w, assets/images/optimized/students-pass/9-400.webp 400w, assets/images/optimized/students-pass/9-502.webp 502w",
 		"sizes": "(max-width: 768px) clamp(146.315px, 21.947svh, 196.48px), clamp(173.07px, 25.96svh, 253.835px)",
 		"originalBytes": 62037
 	},
 	"10": {
-		"srcset": "assets/images/optimized/students-pass/10.webp 240w, assets/images/optimized/students-pass/10-416.webp 416w",
+		"srcset": "assets/images/optimized/students-pass/10.webp 240w, assets/images/optimized/students-pass/10-320.webp 320w, assets/images/optimized/students-pass/10-360.webp 360w, assets/images/optimized/students-pass/10-400.webp 400w, assets/images/optimized/students-pass/10-416.webp 416w",
 		"sizes": "(max-width: 768px) clamp(143.773px, 21.566svh, 193.067px), clamp(170.063px, 25.51svh, 249.426px)",
 		"originalBytes": 67552
 	},
 	"11": {
-		"srcset": "assets/images/optimized/students-pass/11.webp 240w, assets/images/optimized/students-pass/11-401.webp 401w",
+		"srcset": "assets/images/optimized/students-pass/11.webp 240w, assets/images/optimized/students-pass/11-320.webp 320w, assets/images/optimized/students-pass/11-360.webp 360w, assets/images/optimized/students-pass/11-400.webp 400w, assets/images/optimized/students-pass/11-401.webp 401w",
 		"sizes": "(max-width: 768px) clamp(141.05px, 21.158svh, 189.41px), clamp(166.842px, 25.026svh, 244.702px)",
 		"originalBytes": 68298
 	},
 	"12": {
-		"srcset": "assets/images/optimized/students-pass/12.webp 240w, assets/images/optimized/students-pass/12-350.webp 350w",
+		"srcset": "assets/images/optimized/students-pass/12.webp 240w, assets/images/optimized/students-pass/12-320.webp 320w, assets/images/optimized/students-pass/12-350.webp 350w",
 		"sizes": "(max-width: 768px) clamp(141.05px, 21.158svh, 189.41px), clamp(166.842px, 25.026svh, 244.702px)",
 		"originalBytes": 43575
 	},
 	"13": {
-		"srcset": "assets/images/optimized/students-pass/13.webp 240w, assets/images/optimized/students-pass/13-490.webp 490w",
+		"srcset": "assets/images/optimized/students-pass/13.webp 240w, assets/images/optimized/students-pass/13-320.webp 320w, assets/images/optimized/students-pass/13-360.webp 360w, assets/images/optimized/students-pass/13-400.webp 400w, assets/images/optimized/students-pass/13-490.webp 490w",
 		"sizes": "(max-width: 768px) clamp(141.05px, 21.158svh, 189.41px), clamp(166.842px, 25.026svh, 244.702px)",
 		"originalBytes": 133493
 	},
 	"14": {
-		"srcset": "assets/images/optimized/students-pass/14.webp 260w, assets/images/optimized/students-pass/14-523.webp 523w",
+		"srcset": "assets/images/optimized/students-pass/14.webp 260w, assets/images/optimized/students-pass/14-320.webp 320w, assets/images/optimized/students-pass/14-360.webp 360w, assets/images/optimized/students-pass/14-400.webp 400w, assets/images/optimized/students-pass/14-523.webp 523w",
 		"sizes": "(max-width: 768px) clamp(150.71px, 22.607svh, 202.382px), clamp(178.269px, 26.74svh, 261.461px)",
 		"originalBytes": 90210
 	},
 	"15": {
-		"srcset": "assets/images/optimized/students-pass/15.webp 240w, assets/images/optimized/students-pass/15-423.webp 423w",
+		"srcset": "assets/images/optimized/students-pass/15.webp 240w, assets/images/optimized/students-pass/15-320.webp 320w, assets/images/optimized/students-pass/15-360.webp 360w, assets/images/optimized/students-pass/15-400.webp 400w, assets/images/optimized/students-pass/15-423.webp 423w",
 		"sizes": "(max-width: 768px) clamp(141.05px, 21.158svh, 189.41px), clamp(166.842px, 25.026svh, 244.702px)",
 		"originalBytes": 61563
 	}

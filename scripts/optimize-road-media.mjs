@@ -21,7 +21,7 @@ function roadSizes(fraction) {
 	return `(max-width: 768px) ${clamp(140, 21, 188, 1.25)}, ${clamp(180, 27, 264, 1.15)}`;
 }
 
-async function delivery(source, name, widths, quality, sizes, smallEncoding = {}) {
+async function delivery(source, name, widths, encoding, sizes, smallEncoding = {}) {
 	const bytes = await readFile(source);
 	const metadata = await sharp(bytes).metadata();
 	const candidates = [];
@@ -31,7 +31,7 @@ async function delivery(source, name, widths, quality, sizes, smallEncoding = {}
 		await mkdir(path.dirname(src), { recursive: true });
 		const result = await sharp(bytes)
 			.resize({ width, withoutEnlargement: true })
-			.webp({ quality, effort: 6, ...(index === 0 ? smallEncoding : {}) })
+			.webp({ ...encoding, effort: 6, ...(index === 0 ? smallEncoding : {}) })
 			.toFile(src);
 		candidates.push(`${src} ${result.width}w`);
 		generatedPaths.add(src);
@@ -62,12 +62,14 @@ for (const name of photoNames) {
 	// object-fit: cover can require a wider source than the photo's visible box.
 	const fraction = Math.max(0.62, (260 / 460) * 0.68 * (width / height));
 	const smallWidth = Math.ceil((254 * 1.3 * 1.15 * fraction) / 20) * 20;
-	const largeWidth = Math.ceil(264 * 1.3 * 1.15 * fraction * 2);
+	const largeWidth = Math.max(smallWidth * 2, Math.ceil(264 * 1.3 * 1.15 * fraction * 2));
+	// Intermediate candidates avoid jumping from desktop 1x to desktop 2x on phones.
+	const widths = [smallWidth, ...[320, 360, 400].filter(width => width > smallWidth && width < largeWidth), largeWidth];
 	sources[parseInt(name)] = await delivery(
 		source, `students-pass/${path.parse(name).name}`,
-		[smallWidth, Math.max(smallWidth * 2, largeWidth)], 78, roadSizes(fraction),
-		// This photo's dense background needs stronger compression at desktop size.
-		name === "11.png" ? { quality: 55 } : {},
+		widths, { quality: 65 }, roadSizes(fraction),
+		// Preserve the reviewed desktop copies, including photo 11's denser background.
+		{ quality: name === "11.png" ? 55 : 78 },
 	);
 }
 
@@ -81,18 +83,17 @@ for (const name of (await readdir("assets/images/cars")).filter((name) => /^car-
 	const source = `assets/images/cars/${name}`;
 	const { width } = await sharp(source).metadata();
 	const smallWidth = Math.ceil((254 * 1.3 * 1.15 * fraction) / 10) * 10;
-	await delivery(source, `cars/${car}`, [smallWidth, width], 80, roadSizes(fraction));
+	await delivery(source, `cars/${car}`, [smallWidth, width], { quality: 80 }, roadSizes(fraction));
 }
 
 await delivery(
-	"assets/images/wheel.png", "wheel", [128, 256], 80, "128px",
-	{ quality: 65, alphaQuality: 60 },
+	"assets/images/wheel.png", "wheel", [128, 256], { quality: 65, alphaQuality: 60 }, "128px",
 );
 await delivery(
-	"assets/images/stop-sign.png", "stop-sign", [144, 380, 760, 800], 85,
+	"assets/images/stop-sign.png", "stop-sign", [144, 380, 760, 800], { quality: 85 },
 	"(max-width: 768px) clamp(96px, 16svh, 144px), clamp(220px, 40svh, 400px)",
 );
-await delivery("assets/icons/course-icon.png", "course-icon", [42, 84], 85, "42px");
+await delivery("assets/icons/course-icon.png", "course-icon", [42, 84], { quality: 85 }, "42px");
 // A separate favicon prevents the browser tab from downloading the 512px original.
 await sharp("assets/icons/course-icon.png")
 	.resize({ width: 32, withoutEnlargement: true })
