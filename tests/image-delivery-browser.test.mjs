@@ -118,6 +118,10 @@ test("responsive delivery reduces desktop and mobile bytes and preserves density
 				await page.waitForFunction(count => document.querySelector(".road-carousel-group").children.length === count, photoCount);
 			}
 			await page.waitForFunction(() => [...document.images].every(i => i.complete && i.naturalWidth > 0));
+			// Measure image density after the entrance rotation has settled.
+			await page.locator(".hero-visual").evaluate(async element => {
+				await Promise.all(element.getAnimations().map(animation => animation.finished));
+			});
 			const images = await page.locator(".brand-mark, .hero-visual img, .road-loader img, .road-carousel-group:first-child img").evaluateAll(images => images.map(img => ({
 				src: new URL(img.src).pathname.slice(1), current: new URL(img.currentSrc).pathname.slice(1),
 				width: img.getBoundingClientRect().width, height: img.getBoundingClientRect().height,

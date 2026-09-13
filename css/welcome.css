@@ -8,6 +8,7 @@
 
 .hero-shell {
 	position: relative;
+	z-index: 0;
 	display: grid;
 	grid-template-columns: minmax(340px, 1fr) minmax(0, 1fr);
 	align-items: center;
@@ -312,6 +313,7 @@
 	/* Approved cadence; the gallery derives loop duration from rendered distance. */
 	--road-seconds-per-car: 11.111111;
 	position: relative;
+	z-index: 1;
 	height: var(--road-height);
 	overflow: hidden;
 	pointer-events: none;

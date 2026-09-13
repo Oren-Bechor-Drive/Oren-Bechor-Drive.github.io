@@ -42,7 +42,7 @@ test(
 		await traceComplete;
 		await t.test("the stop-sign entrance runs without compositor failures", () => {
 			const entrances = trace.filter(event =>
-				event.name === "Animation" && event.args?.data?.displayName === "image-reveal",
+				event.name === "Animation" && event.args?.data?.displayName === "brake",
 			);
 			assert.ok(entrances.length > 0, "the browser must run the stop-sign entrance");
 			const ids = new Set(entrances.map(event => event.id2.local));
@@ -72,6 +72,7 @@ test(
 				assert.equal(state.roadAnimations, 0);
 				assert.match(state.blur, /blur\([1-9]/);
 				await page.emulateMedia({ reducedMotion: "reduce" });
+				await page.waitForFunction(() => document.querySelector(".hero-visual").getAnimations().length === 0);
 				assert.equal(
 					await page.locator(".hero-visual").evaluate(element => element.getAnimations().length),
 					0,
@@ -92,6 +93,10 @@ test(
 			.locator(".road-photo img").evaluateAll(images => images.map(image => image.currentSrc));
 		assert.ok(loadedSources.length > 0 && loadedSources.every(source => source.endsWith(".webp")),
 			"motion checks must exercise optimized student photo delivery");
+		// Measure the resting layout after the hero's off-screen entrance.
+		await page.locator(".hero-copy > *").evaluateAll(elements => Promise.all(
+			elements.flatMap(element => element.getAnimations().map(animation => animation.finished)),
+		));
 
 		for (const [name, width, height, secondsPerCar] of [
 			["desktop", 1440, 900, 11.111111],
@@ -199,6 +204,7 @@ test(
 
 		await t.test("reduced motion", async () => {
 			await page.emulateMedia({ reducedMotion: "reduce" });
+			await page.waitForFunction(() => document.querySelector(".hero-visual").getAnimations().length === 0);
 			assert.equal(
 				await page
 					.locator(".road-carousel-track")

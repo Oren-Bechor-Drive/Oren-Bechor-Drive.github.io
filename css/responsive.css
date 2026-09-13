@@ -45,31 +45,45 @@
 	}
 
 	.hero-copy > * {
-		animation: hero-enter 720ms var(--ease-out) both;
+		animation: hero-enter-bottom 1s var(--ease-out) both;
 	}
 
-	.hero-copy > :nth-child(2) {
-		animation-delay: 70ms;
+	.hero-copy > h1 {
+		animation-name: hero-enter-right;
 	}
 
-	.hero-copy > :nth-child(3) {
-		animation-delay: 140ms;
+	.hero-copy > p,
+	.hero-copy > .hero-actions {
+		animation-delay: 325ms;
 	}
 
 	.hero-visual {
-		animation: image-reveal 860ms var(--ease-out) both;
+		transform-origin: bottom center;
+		animation: brake 3s var(--ease-out) both;
 	}
 
-	@keyframes hero-enter {
+	@keyframes hero-enter-right {
 		from {
-			opacity: 0;
-			transform: translateY(18px);
+			transform: translateX(100vw);
 		}
 	}
 
-	@keyframes image-reveal {
+	@keyframes hero-enter-bottom {
 		from {
-			opacity: 0.6;
+			transform: translateY(100vh);
+		}
+	}
+
+	@keyframes brake {
+		0% {
+			transform: translateY(12px) rotate(-20deg);
+		}
+		20% {
+			transform: translateY(0) rotate(8deg);
+		}
+		30%,
+		100% {
+			transform: translateY(0) rotate(0);
 		}
 	}
 }
