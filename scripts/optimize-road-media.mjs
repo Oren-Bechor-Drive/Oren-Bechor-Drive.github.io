@@ -1,43 +1,119 @@
-import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 
 // Optional maintenance command. The published site never needs an image build.
 const outputDirectory = "assets/images/optimized";
-await mkdir(`${outputDirectory}/students-pass`, { recursive: true });
-const photoNames = (await readdir("assets/images/students-pass"))
-	.filter((name) => /^[1-9]\d*\.png$/.test(name))
-	.sort((a, b) => parseInt(a) - parseInt(b));
+const declarations = new Map();
+const generatedPaths = new Set();
 const sources = {};
 let originalBytes = 0;
-let deliveredBytes = 0;
+let smallBytes = 0;
+
+// Match welcome.css and responsive.css: road height × 1.3 × car scale.
+// The browser evaluates these even for detached images and with JS disabled.
+function roadSizes(fraction) {
+	const clamp = (min, vh, max, scale) => {
+		const factor = 1.3 * scale * fraction;
+		const value = (number) => Number((number * factor).toFixed(3));
+		return `clamp(${value(min)}px, ${value(vh)}svh, ${value(max)}px)`;
+	};
+	return `(max-width: 768px) ${clamp(140, 21, 188, 1.25)}, ${clamp(180, 27, 264, 1.15)}`;
+}
+
+async function delivery(source, name, widths, quality, sizes) {
+	const bytes = await readFile(source);
+	const metadata = await sharp(bytes).metadata();
+	const candidates = [];
+	const uniqueWidths = [...new Set(widths.map((width) => Math.min(width, metadata.width)))];
+	for (const [index, width] of uniqueWidths.entries()) {
+		const src = `${outputDirectory}/${name}${index ? `-${width}` : ""}.webp`;
+		await mkdir(path.dirname(src), { recursive: true });
+		const result = await sharp(bytes)
+			.resize({ width, withoutEnlargement: true })
+			.webp({ quality, effort: 6 })
+			.toFile(src);
+		candidates.push(`${src} ${result.width}w`);
+		generatedPaths.add(src);
+		if (!index) smallBytes += result.size;
+	}
+	const declaration = {
+		srcset: candidates.join(", "),
+		sizes,
+		width: metadata.width,
+		height: metadata.height,
+	};
+	declarations.set(source, declaration);
+	originalBytes += bytes.length;
+	return { srcset: declaration.srcset, sizes, originalBytes: bytes.length };
+}
+
+const photoDirectory = "assets/images/students-pass";
+const photoNames = (await readdir(photoDirectory))
+	.filter((name) => /^[1-9]\d*\.png$/.test(name))
+	.sort((a, b) => parseInt(a) - parseInt(b));
 for (const name of photoNames) {
-	const bytes = await readFile(`assets/images/students-pass/${name}`);
-	const src = `${outputDirectory}/students-pass/${path.parse(name).name}.webp`;
-	const result = await sharp(bytes)
-		.resize({ width: 420, withoutEnlargement: true })
-		.webp({ quality: 88, effort: 6 })
-		.toFile(src);
-	sources[parseInt(name)] = { src, originalBytes: bytes.length };
-	originalBytes += bytes.length;
-	deliveredBytes += result.size;
+	const source = `${photoDirectory}/${name}`;
+	const { width, height } = await sharp(source).metadata();
+	// object-fit: cover can require a wider source than the photo's visible box.
+	const fraction = Math.max(0.62, (260 / 460) * 0.68 * (width / height));
+	const smallWidth = Math.ceil((254 * 1.3 * 1.15 * fraction) / 20) * 20;
+	const largeWidth = Math.ceil(264 * 1.3 * 1.15 * fraction * 2);
+	sources[parseInt(name)] = await delivery(
+		source, `students-pass/${path.parse(name).name}`,
+		[smallWidth, Math.max(smallWidth * 2, largeWidth)], 78, roadSizes(fraction),
+	);
 }
-for (const [name, width] of [
-	["wheel", 384],
-	["stop-sign", 840],
-]) {
-	const bytes = await readFile(`assets/images/${name}.png`);
-	const result = await sharp(bytes)
-		.resize({ width, withoutEnlargement: true })
-		.webp({ quality: 90, effort: 6 })
-		.toFile(`${outputDirectory}/${name}.webp`);
-	originalBytes += bytes.length;
-	deliveredBytes += result.size;
+
+const css = await readFile("css/welcome.css", "utf8");
+for (const name of (await readdir("assets/images/cars")).filter((name) => /^car-.*\.png$/.test(name))) {
+	const car = path.parse(name).name;
+	const rule = css.match(new RegExp(`\\.${car.replace("car-", "road-car-")}\\s*\\{([^}]+)\\}`));
+	const artWidth = rule?.[1].match(/--car-art-width:\s*([\d.]+)%/);
+	if (!artWidth) throw new Error(`Missing --car-art-width for ${car}`);
+	const fraction = Number(artWidth[1]) / 100;
+	const source = `assets/images/cars/${name}`;
+	const { width } = await sharp(source).metadata();
+	const smallWidth = Math.ceil((254 * 1.3 * 1.15 * fraction) / 10) * 10;
+	await delivery(source, `cars/${car}`, [smallWidth, width], 80, roadSizes(fraction));
 }
+
+await delivery("assets/images/wheel.png", "wheel", [128, 256], 80, "128px");
+await delivery(
+	"assets/images/stop-sign.png", "stop-sign", [144, 380, 760, 800], 85,
+	"(max-width: 768px) clamp(96px, 16svh, 144px), clamp(220px, 40svh, 400px)",
+);
+await delivery("assets/icons/course-icon.png", "course-icon", [42, 84], 85, "42px");
+// A separate favicon prevents the browser tab from downloading the 512px original.
+await sharp("assets/icons/course-icon.png")
+	.resize({ width: 32, withoutEnlargement: true })
+	.png()
+	.toFile(`${outputDirectory}/favicon.png`);
+
 await writeFile(
 	"js/road-photo-sources.js",
 	`// Generated by npm run optimize:media. Originals remain the discovery source.\nexport const roadPhotoSources = ${JSON.stringify(sources, null, "\t")};\n`,
 );
-console.log(
-	`Road image delivery: ${originalBytes} → ${deliveredBytes} bytes. Original files preserved.`,
-);
+
+// Update only image attributes, keeping the hand-authored page and its formatting.
+const html = await readFile("index.html", "utf8");
+const updated = html.replace(/<img\b[^>]*>/g, (tag) => {
+	const source = tag.match(/\bsrc="([^"]+)"/)?.[1];
+	const declaration = declarations.get(source);
+	if (!declaration) return tag;
+	const indent = tag.match(/\n([\t ]+)\S/)?.[1] ?? "\t";
+	for (const [name, value] of Object.entries(declaration)) {
+		if (source === "assets/icons/course-icon.png" && ["width", "height"].includes(name)) continue;
+		const attribute = new RegExp(`\\b${name}="[^"]*"`);
+		if (attribute.test(tag)) tag = tag.replace(attribute, `${name}="${value}"`);
+		else tag = tag.replace(/\s*\/?>$/, `\n${indent}${name}="${value}"\n${indent.slice(0, -1)}/>`);
+	}
+	return tag;
+}).replace(/(<link\b[^>]*rel="icon"[^>]*href=")[^"]+/, `$1${outputDirectory}/favicon.png`);
+await writeFile("index.html", updated);
+// Only this generated directory is cleaned; supplied artwork stays untouched.
+for (const name of await readdir(outputDirectory, { recursive: true })) {
+	const source = `${outputDirectory}/${name}`;
+	if (name.endsWith(".webp") && !generatedPaths.has(source)) await rm(source);
+}
+console.log(`Responsive image delivery: ${originalBytes} original bytes; ${smallBytes} bytes in smallest WebP variants. Actual downloads depend on viewport and density.`);

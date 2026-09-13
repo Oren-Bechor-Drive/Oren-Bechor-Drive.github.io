@@ -46,7 +46,7 @@ for (const [width, late] of [
 			) {
 				requestedImages.push(url.pathname);
 				if (
-					(late === "resize" ? /\/7\.(png|webp)$/ : /\/15\.(png|webp)$/).test(
+					(late === "resize" ? /\/7(?:-\d+)?\.(png|webp)$/ : /\/15(?:-\d+)?\.(png|webp)$/).test(
 						url.pathname,
 					)
 				)

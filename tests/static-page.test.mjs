@@ -74,7 +74,7 @@ test("course icon brands the header and browser tab", async () => {
 	assert.equal(brandIcon.getAttribute("width"), "42");
 	assert.equal(brandIcon.getAttribute("height"), "42");
 	assert.equal(brandIcon.getAttribute("alt"), "");
-	assert.equal(favicon?.getAttribute("href"), iconPath);
+	assert.equal(favicon?.getAttribute("href"), "assets/images/optimized/favicon.png");
 	assert.equal(favicon?.getAttribute("type"), "image/png");
 });
 

@@ -352,3 +352,15 @@ test("delivery images declared in srcset are audited", async (t) => {
 		),
 	);
 });
+
+test("responsive width descriptors must match the actual delivery file", async (t) => {
+	const rootDir = await galleryFixture(t);
+	const htmlPath = path.join(rootDir, "index.html");
+	const html = await readFile(htmlPath, "utf8");
+	await writeFile(htmlPath, html.replace(
+		'src="assets/images/students-pass/1.png"',
+		'src="assets/images/students-pass/1.png" srcset="assets/images/students-pass/1.png 240w" sizes="240px"',
+	));
+	const audit = await auditRoadMedia({ rootDir });
+	assert.ok(audit.issues.some(issue => issue.includes("240w") && issue.includes("1px")));
+});

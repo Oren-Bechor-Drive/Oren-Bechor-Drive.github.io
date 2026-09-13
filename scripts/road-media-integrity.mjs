@@ -94,8 +94,12 @@ export async function auditRoadMedia({ rootDir, htmlPath = "index.html" }) {
 		const source = cleanReference(image.getAttribute("src") ?? "");
 		const inspected = await inspectSource(source);
 		for (const candidate of (image.getAttribute("srcset") ?? "").split(",")) {
-			const deliverySource = candidate.trim().split(/\s+/, 1)[0];
-			if (deliverySource) await inspectSource(cleanReference(deliverySource));
+			const [deliverySource, descriptor] = candidate.trim().split(/\s+/);
+			if (!deliverySource) continue;
+			const delivery = await inspectSource(cleanReference(deliverySource));
+			if (delivery && /^\d+w$/.test(descriptor) && parseInt(descriptor) !== delivery.width) {
+				issues.push(`${deliverySource}: srcset declares ${descriptor}, file is ${delivery.width}px wide`);
+			}
 		}
 		if (!inspected) continue;
 		const declaredWidth = Number(image.getAttribute("width"));

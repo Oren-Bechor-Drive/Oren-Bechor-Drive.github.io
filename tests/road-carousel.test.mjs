@@ -4,6 +4,7 @@ import test from "node:test";
 import { JSDOM } from "jsdom";
 
 import { initRoadCarousel } from "../js/road-carousel.js";
+import { roadPhotoSources } from "../js/road-photo-sources.js";
 
 async function setup(
 	t,
@@ -364,3 +365,34 @@ test("late successful speculative requests cannot repopulate records beyond a co
 	assert.equal(root.dataset.ready, "true");
 	assert.equal(root.querySelector(".road-carousel-group").children.length, 1);
 });
+
+for (const scenario of ["responsive", "changed original", "broken delivery"]) {
+	test(`photo delivery keeps discovery and PNG recovery: ${scenario}`, async (t) => {
+		const root = await setup(t, { count: 1 });
+		const window = root.ownerDocument.defaultView;
+		const fetch = window.fetch;
+		window.fetch = async (...args) => {
+			const response = await fetch(...args);
+			response.headers.set("Content-Length", String(roadPhotoSources[1].originalBytes + (scenario === "changed original" ? 1 : 0)));
+			return response;
+		};
+		const decode = window.HTMLImageElement.prototype.decode;
+		let attempts = 0;
+		window.HTMLImageElement.prototype.decode = async function () {
+			attempts++;
+			if (scenario === "broken delivery" && this.srcset) throw new Error("Invalid WebP");
+			return decode.call(this);
+		};
+		await initRoadCarousel(root);
+		const image = root.querySelector(".road-photo img");
+		assert.ok(image.src.endsWith("/assets/images/students-pass/1.png"));
+		if (scenario === "responsive") {
+			assert.match(image.srcset, /\.webp \d+w, .*\.webp \d+w/);
+			assert.match(image.sizes, /max-width: 768px/);
+		} else {
+			assert.equal(image.srcset, "");
+			assert.equal(image.sizes, "");
+		}
+		assert.equal(attempts, scenario === "broken delivery" ? 2 : 1);
+	});
+}

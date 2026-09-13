@@ -42,7 +42,7 @@ The HTML provides six initial static photos while discovery runs, when it fails,
 
 ## Optimize delivery images
 
-Original PNG files stay in their supplied paths. The page uses smaller WebP delivery copies for the wheel, stop sign, and existing student photos, generated with deterministic resizing and encoding. Car sprites and roof alignment stay unchanged.
+Original PNG files stay in their supplied paths. The page uses responsive WebP delivery copies for the course icon, wheel, stop sign, car sprites, and student photos. Resizing preserves aspect ratios and transparent margins, so car and roof alignment stay unchanged. The browser tab uses a separate 32px PNG favicon.
 
 To regenerate those copies after adding or replacing photos, run:
 
@@ -52,9 +52,11 @@ npm run check:media
 npm test
 ```
 
-Publish `assets/images/optimized/` and the generated `js/road-photo-sources.js` with the page. This is optional maintenance, not a required site build. New numbered PNGs still appear without running the optimizer; they use the original image. Regenerate delivery copies when replacing existing photos so the static fallback and the generated mapping stay current, including replacements with the same byte count. Runtime loading falls back to the PNG if a delivery copy fails to decode or the original's Content-Length no longer matches the generated mapping.
+Publish `assets/images/optimized/`, the generated `js/road-photo-sources.js`, and the updated `index.html` together. This is optional maintenance, not a required site build. The optimizer synchronizes image candidates and dimensions in the HTML, refreshes the photo mapping, and removes obsolete WebPs only within the generated directory. New numbered PNGs still appear without running the optimizer; they use the original image. Regenerate delivery copies when replacing existing photos so the static fallback and the generated mapping stay current, including replacements with the same byte count. Runtime loading falls back to the PNG if a delivery copy fails to decode or the original's Content-Length no longer matches the generated mapping.
 
-The HTML keeps original image dimensions and uses `srcset` for delivery copies. If changing their aspect ratios or initial photo paths, synchronize those declarations as well. Module preload hints fetch carousel dependencies alongside the entry script.
+The HTML keeps original road-image dimensions and uses width descriptors in `srcset` plus `sizes` for delivery copies. Smaller variants serve ordinary desktop screens; larger variants support high-density screens without enlarging an original. Photo sizing accounts for the `object-fit: cover` crop. The optimizer's size formulas follow the road height, car scale, and photo frame in `css/welcome.css` and `css/responsive.css`; update them if that geometry changes. Car sprite sizing reads each color's `--car-art-width` rule. Module preload hints fetch carousel dependencies alongside the entry script.
+
+WebP quality starts at 78 for photos, 80 for cars and the wheel, and 85 for the logo and stop sign. Check faces, lettering, and transparent edges at their displayed sizes after changing these settings. `tests/image-delivery-browser.test.mjs` checks actual browser source selection, image bytes, high-density coverage, and rendering without JavaScript.
 
 ## Maintain road artwork
 

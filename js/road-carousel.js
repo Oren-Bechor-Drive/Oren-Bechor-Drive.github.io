@@ -158,7 +158,8 @@ export async function initRoadCarousel(root) {
 			optimized &&
 			response.headers.get("Content-Length") === String(optimized.originalBytes)
 		) {
-			image.srcset = new URL(optimized.src, document.baseURI).href;
+			image.sizes = optimized.sizes;
+			image.srcset = optimized.srcset;
 		}
 		image.src = src;
 		try {
@@ -166,6 +167,7 @@ export async function initRoadCarousel(root) {
 		} catch (error) {
 			if (!image.srcset || stopped) throw error;
 			image.removeAttribute("srcset");
+			image.removeAttribute("sizes");
 			await withDeadline(image.decode());
 		}
 		image.width = image.naturalWidth;
