@@ -260,6 +260,8 @@ The approved composition places the instructor directly after the hero, followed
 
 ### Applied Layout and Styling
 
+Mobile navigation enters with opacity `0` to `1` and `translateY(-4px)` to `translateY(0)`. The mobile learning-topic list enters with opacity `0` to `1` and `scale(0.98)` to `scale(1)`, anchored at its top right. Both use `--ease-out`, 180ms entrances, and 150ms exits along the same path, without staggering links or options. Apply these transitions only for pointer or touch input; keyboard opening and dismissal remain immediate. Their trigger buttons use `translateY(1px) scale(0.99)` while pressed, with a 140ms `--ease-out` transition. Reduced motion replaces the surface movement with 80ms opacity fades and button movement with 100ms opacity feedback from `1` to `0.92`. Keep these exceptions scoped to the mobile controls; the gallery's reduced-motion behavior remains as documented above.
+
 The footer includes a right-to-left row of Instagram, TikTok, YouTube, and WhatsApp links. Use 24px Font Awesome brand icons in the primary teal, with visible Hebrew labels and at least 44px touch targets. Links wrap as needed on small screens and retain visible keyboard focus.
 
 The current page uses a maximum 1280px content width, with 48px side margins above 1024px, 32px at 1024px and below, 20px at 768px and below, and 16px at 440px and below. The main layout and menu switch at 768px; the topic dropdown switches below 640px. These are the implemented page breakpoints rather than a mandatory column grid.

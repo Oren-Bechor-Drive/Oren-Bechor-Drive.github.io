@@ -1,3 +1,5 @@
+import { initDisclosureMotion } from "./disclosure-motion.js";
+
 export function initTopicExplorer(root) {
 	const cards = [...root.querySelectorAll(".topic-card")];
 	const panel = root.querySelector("[data-topic-panel]");
@@ -49,10 +51,10 @@ export function initTopicExplorer(root) {
 	picker.append(label, dropdown, menu);
 	root.prepend(picker);
 	root.dataset.topicDropdown = "true";
+	const setDisclosureOpen = initDisclosureMotion(dropdown, menu, "(max-width: 639px)");
 
 	function setOpen(open, restoreFocus = false) {
-		menu.hidden = !open;
-		dropdown.setAttribute("aria-expanded", String(open));
+		setDisclosureOpen(open);
 		if (open)
 			options
 				.find(
@@ -94,9 +96,6 @@ export function initTopicExplorer(root) {
 	picker.addEventListener("focusout", (event) => {
 		if (!picker.contains(event.relatedTarget)) setOpen(false);
 	});
-	browserWindow
-		?.matchMedia?.("(max-width: 639px)")
-		.addEventListener?.("change", () => setOpen(false));
 	let pendingUpdate;
 
 	function updateContent(card) {
