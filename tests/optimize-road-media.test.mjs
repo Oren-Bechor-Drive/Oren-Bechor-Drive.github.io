@@ -60,4 +60,15 @@ test("optimizer preserves originals, discovers later photos and synchronizes res
 	assert.equal(await readFile(path.join(cwd, "js/road-photo-sources.js"), "utf8"), generated);
 	assert.deepEqual(await Promise.all(names.map(name => readFile(path.join(directory, name)))), before);
 	await assert.rejects(readFile(path.join(directory, "students-pass/1-obsolete.webp")), { code: "ENOENT" });
+	await rm(path.join(cwd, "assets/images/students-pass/27.png"));
+	await optimize();
+	const reducedModule = await readFile(path.join(cwd, "js/road-photo-sources.js"), "utf8");
+	const reduced = await import(`data:text/javascript,${encodeURIComponent(reducedModule)}`);
+	assert.equal(Object.keys(reduced.roadPhotoSources).length, 26);
+	assert.equal(reduced.roadPhotoSources[27], undefined);
+	await assert.rejects(readFile(path.join(directory, "students-pass/27.webp")), { code: "ENOENT" });
+	await rm(path.join(cwd, "assets/images/students-pass/2.png"));
+	await assert.rejects(optimize(), /numbering gap/);
+	assert.equal(await readFile(path.join(cwd, "js/road-photo-sources.js"), "utf8"), reducedModule,
+		"invalid numbering must not overwrite the published list");
 });

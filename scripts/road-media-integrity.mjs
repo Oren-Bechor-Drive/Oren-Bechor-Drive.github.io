@@ -224,13 +224,30 @@ async function auditGallery(gallery, pageDir, issues, inspectSource) {
 		const number = parseInt(name);
 		if (number !== expected)
 			issues.push(
-				`${photoDirectory}/${expected}.png: numbering gap; discovery stops before ${name}`,
+				`${photoDirectory}/${expected}.png: numbering gap before ${name}`,
 			);
 		expected = number + 1;
 		await inspectSource(`${photoDirectory}/${name}`);
 	}
 	if (numberedPhotos.length === 0)
 		issues.push(`${photoDirectory}: no numbered student photos`);
+
+	// The generator writes a JSON object in this module; inspect data without executing it.
+	const listPath = "js/road-photo-sources.js";
+	try {
+		const module = await readFile(path.join(pageDir, listPath), "utf8");
+		const sources = JSON.parse(module.match(/export const roadPhotoSources = (\{[\s\S]*\});\s*$/)?.[1]);
+		const listedNames = Object.keys(sources).map(number => `${number}.png`);
+		if (listedNames.length !== numberedPhotos.length || numberedPhotos.some(name => !listedNames.includes(name)))
+			issues.push(`${listPath}: photo list is stale; run npm run optimize:media`);
+		for (const name of numberedPhotos) {
+			const bytes = await readFile(path.join(pageDir, photoDirectory, name));
+			if (sources[parseInt(name)]?.originalBytes !== bytes.length)
+				issues.push(`${listPath}: ${name} metadata is stale; run npm run optimize:media`);
+		}
+	} catch (error) {
+		issues.push(`${listPath}: cannot read generated photo list (${error.message}); run npm run optimize:media`);
+	}
 
 	const fallback = cars.flatMap((car) => [
 		...car.querySelectorAll(".road-photo img"),

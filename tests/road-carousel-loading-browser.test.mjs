@@ -31,6 +31,15 @@ for (const [width, late] of [
 			release = resolve;
 		});
 		t.after(() => release());
+		const consoleErrors = [];
+		const failedResponses = [];
+		page.on("console", message => {
+			if (message.type() === "error") consoleErrors.push(message.text());
+		});
+		page.on("pageerror", error => consoleErrors.push(error.message));
+		page.on("response", response => {
+			if (response.status() >= 400) failedResponses.push(response.url());
+		});
 		let kitRequests = 0;
 		const requestedImages = [];
 		await page.route("**/*", async (route) => {
@@ -141,6 +150,8 @@ for (const [width, late] of [
 			),
 		);
 		assert.equal(state.groups[0], state.groups[1]);
+		assert.deepEqual(failedResponses, [], "gallery loading must not probe missing files");
+		assert.deepEqual(consoleErrors, [], "gallery loading must leave the browser console clean");
 		assert.ok(
 			requestedImages.every((src) => src.endsWith(".webp")),
 			"student PNG bodies should not be downloaded",

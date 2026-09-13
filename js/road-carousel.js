@@ -1,6 +1,6 @@
 import { roadPhotoSources } from "./road-photo-sources.js";
 
-const DISCOVERY_CONCURRENCY = 4;
+const METADATA_CONCURRENCY = 4;
 const LOAD_TIMEOUT_MS = 8000;
 
 export async function initRoadCarousel(root) {
@@ -14,7 +14,7 @@ export async function initRoadCarousel(root) {
 	const motionPreference = browserWindow.matchMedia?.(
 		"(prefers-reduced-motion: reduce)",
 	);
-	let discoveryComplete = false;
+	let metadataComplete = false;
 	let stopped = false;
 	let shown = 0;
 	let repeat;
@@ -83,11 +83,11 @@ export async function initRoadCarousel(root) {
 		if (stopped) return;
 		let count = 0;
 		while (records[count]?.image) count += 1;
-		// Decoding and discovery can finish together. Skip geometry until a row can change.
-		const allShown = count && count === shown && discoveryComplete && count === records.length;
+		// Decoding and metadata requests can finish together. Skip geometry until a row can change.
+		const allShown = count && count === shown && metadataComplete && count === records.length;
 		if (
 			!resized &&
-			(!count || count <= shown || (!shown && count < templates.length && !discoveryComplete))
+			(!count || count <= shown || (!shown && count < templates.length && !metadataComplete))
 		) {
 			if (allShown)
 				root.dataset.ready = "true";
@@ -117,13 +117,13 @@ export async function initRoadCarousel(root) {
 				: 0;
 		// Widening may expose the duplicate everywhere. Hold that row until it can cover the viewport.
 		const restart =
-			resized && shown && (!discoveryComplete || shown < records.length) &&
+			resized && shown && (!metadataComplete || shown < records.length) &&
 			oldDistance <= viewportWidth;
 		const initialCount = Math.max(
 			templates.length,
 			Math.ceil(viewportWidth / carStep) + 1,
 		);
-		const minimum = discoveryComplete
+		const minimum = metadataComplete
 			? Math.min(initialCount, records.length)
 			: initialCount;
 		const canAppend =
@@ -200,33 +200,28 @@ export async function initRoadCarousel(root) {
 		return image;
 	}
 
-	async function probe(number) {
+	async function checkPhoto(number) {
 		const url = new URL(
 			`assets/images/students-pass/${number}.png`,
 			document.baseURI,
 		);
-		const request = (cache) =>
-			withDeadline(
-				browserWindow.fetch(url.href, {
-					method: "HEAD",
-					cache,
-					signal: controller.signal,
-				}),
-			);
-		let response = await request("default");
-		// Recheck the end marker so a cached 404 does not hide newly uploaded photos.
-		if (response.status === 404) response = await request("no-cache");
-		if (response.status === 404) return null;
+		const response = await withDeadline(
+			browserWindow.fetch(url.href, {
+				method: "HEAD",
+				cache: "default",
+				signal: controller.signal,
+			}),
+		);
 		if (
 			!response.ok ||
 			!response.headers.get("Content-Type")?.startsWith("image/")
 		) {
 			throw new Error(
-				`Unable to discover student photo ${number}: HTTP ${response.status}`,
+				`Unable to load listed student photo ${number}: HTTP ${response.status}`,
 			);
 		}
-		// A slower speculative response must not reopen an already confirmed gap.
-		if (stopped || (discoveryComplete && number > records.length)) return null;
+		// Ignore responses that settle after a failure or timeout.
+		if (controller.signal.aborted) return;
 		const record = {};
 		records[number - 1] = record;
 		// Start decoding immediately, including while sibling HEAD requests are pending.
@@ -242,27 +237,23 @@ export async function initRoadCarousel(root) {
 		return record;
 	}
 
-	async function discover() {
-		for (let first = 1; !stopped; first += DISCOVERY_CONCURRENCY) {
-			const batch = Array.from({ length: DISCOVERY_CONCURRENCY }, (_, index) =>
-				probe(first + index).then(
-					(value) => ({ value }),
+	async function loadListedPhotos() {
+		const numbers = Object.keys(roadPhotoSources).map(Number).sort((a, b) => a - b);
+		for (let first = 0; first < numbers.length; first += METADATA_CONCURRENCY) {
+			const batch = numbers.slice(first, first + METADATA_CONCURRENCY).map(number =>
+				checkPhoto(number).then(
+					() => ({ status: "fulfilled" }),
 					(reason) => ({ status: "rejected", reason }),
 				),
 			);
-			for (const [index, pending] of batch.entries()) {
+			for (const pending of batch) {
 				const result = await pending;
-				if (stopped) return;
 				if (result.status === "rejected") throw result.reason;
-				if (!result.value) {
-					records.length = first + index - 1;
-					discoveryComplete = true;
-					schedulePublish();
-					return;
-				}
 			}
 			schedulePublish();
 		}
+		metadataComplete = true;
+		schedulePublish();
 	}
 
 	function resize() {
@@ -279,13 +270,13 @@ export async function initRoadCarousel(root) {
 	browserWindow.addEventListener("resize", resize);
 	motionPreference?.addEventListener("change", schedulePublish);
 	try {
-		await discover();
+		await loadListedPhotos();
 		await Promise.all(records.map((record) => record.loaded));
 		const failed = records.find((record) => record.error);
 		if (failed) throw failed.error;
 		await withDeadline(schedulePublish());
 	} finally {
-		stopped = !discoveryComplete || records.some((record) => record.error);
+		stopped = !metadataComplete || records.some((record) => record.error);
 		browserWindow.clearTimeout(startupTimer);
 		controller.abort();
 		if (pendingFrame !== undefined) {

@@ -16,6 +16,15 @@ async function setup(
 	);
 	const dom = new JSDOM(html, { url: "https://example.com/course/", pretendToBeVisual: true });
 	t.after(() => dom.window.close());
+	// Model generated lists of different sizes without adding a test-only runtime API.
+	const publishedSources = { ...roadPhotoSources };
+	for (const number of Object.keys(roadPhotoSources)) delete roadPhotoSources[number];
+	for (let number = 1; number <= count; number++)
+		roadPhotoSources[number] = publishedSources[number] ?? {};
+	t.after(() => {
+		for (const number of Object.keys(roadPhotoSources)) delete roadPhotoSources[number];
+		Object.assign(roadPhotoSources, publishedSources);
+	});
 	const { window } = dom;
 	window.fetch = async (url, options) => {
 		assert.equal(options.method, "HEAD");
@@ -126,9 +135,17 @@ test("numbered photos extend beyond the car count and repeat in numeric order", 
 	assert.ok(carSources.every((src) => originalCars.includes(src)));
 });
 
-test("the first missing numbered photo ends discovery", async (t) => {
+test("a short generated list loads only its listed photos", async (t) => {
 	const root = await setup(t, { count: 3 });
+	const window = root.ownerDocument.defaultView;
+	const fetch = window.fetch;
+	const requested = [];
+	window.fetch = (...args) => {
+		requested.push(Number(new URL(args[0]).pathname.match(/\/(\d+)\.png$/)[1]));
+		return fetch(...args);
+	};
 	await initRoadCarousel(root);
+	assert.deepEqual(requested, [1, 2, 3]);
 	assert.equal(root.querySelector(".road-carousel-group").children.length, 3);
 });
 
@@ -162,6 +179,7 @@ test("loading remains busy through photo decoding and clears when ready", async 
 
 for (const options of [
 	{ failureStatus: 503 },
+	{ failureStatus: 404 },
 	{ brokenPhoto: 2 },
 	{ contentType: "text/html" },
 ]) {
@@ -175,7 +193,7 @@ for (const options of [
 	});
 }
 
-test("an empty numbered folder preserves the fallback without starting a loop", async (t) => {
+test("an empty generated list preserves the fallback without starting a loop", async (t) => {
 	const root = await setup(t, { count: 0 });
 	const before = root.innerHTML;
 	await initRoadCarousel(root);
@@ -211,7 +229,7 @@ test("a short row accounts for viewport space in its travel duration", async (t)
 	assert.ok(Math.abs(duration - (1440 / 544.8) * 11.111111) < 0.001);
 });
 
-test("discovery overlaps requests and decoding while a later HEAD is pending", async (t) => {
+test("metadata loading overlaps requests and decoding while a later HEAD is pending", async (t) => {
 	const root = await setup(t, { count: 8 });
 	const window = root.ownerDocument.defaultView;
 	const fetch = window.fetch;
@@ -240,7 +258,7 @@ test("discovery overlaps requests and decoding while a later HEAD is pending", a
 		);
 		assert.ok(
 			decoded,
-			"confirmed photos must decode while discovery is pending",
+			"confirmed photos must decode while metadata is pending",
 		);
 		assert.equal(
 			requests.find(({ url }) => url.endsWith("/1.png")).options.cache,
@@ -280,7 +298,7 @@ test("the initial row starts before the last photo decodes", async (t) => {
 	assert.equal(root.querySelector(".road-carousel-group").children.length, 15);
 });
 
-test("a stalled discovery has a deadline and cannot mutate the fallback later", async (t) => {
+test("a stalled metadata request has a deadline and cannot mutate the fallback later", async (t) => {
 	const root = await setup(t);
 	const window = root.ownerDocument.defaultView;
 	const callbacks = [];
@@ -331,79 +349,33 @@ test("six decoded photos start even when HEAD 7 stalls", async (t) => {
 	}
 });
 
-test("a cached missing end marker is revalidated to discover newly uploaded photos", async (t) => {
-	const root = await setup(t, { count: 7 });
-	const window = root.ownerDocument.defaultView;
-	const fetch = window.fetch;
-	let refreshed = false;
-	window.fetch = async (url, options) => {
-		if (url.endsWith("/7.png")) {
-			if (options.cache === "default") return { status: 404 };
-			refreshed = true;
-		}
-		return fetch(url, options);
-	};
-	await initRoadCarousel(root);
-	assert.equal(refreshed, true);
-	assert.equal(root.querySelector(".road-carousel-group").children.length, 7);
-});
-
-test("a known missing photo ends discovery without waiting for later speculative requests", async (t) => {
-	const root = await setup(t, { count: 1 });
-	const window = root.ownerDocument.defaultView;
-	const fetch = window.fetch;
-	let release;
-	const gate = new Promise((resolve) => {
-		release = resolve;
-	});
-	window.fetch = async (url, options) => {
-		if (url.endsWith("/3.png")) await gate;
-		return fetch(url, options);
-	};
-	const loading = initRoadCarousel(root);
-	await new Promise((resolve) => setTimeout(resolve, 25));
-	try {
-		assert.equal(root.dataset.ready, "true");
-	} finally {
-		release();
-		await loading;
-	}
-});
-
-test("late successful speculative requests cannot repopulate records beyond a confirmed gap", async (t) => {
+test("a failed listed photo rejects without retrying or waiting for later metadata requests", async (t) => {
 	const root = await setup(t, { count: 4 });
 	const window = root.ownerDocument.defaultView;
 	const fetch = window.fetch;
-	const decode = window.HTMLImageElement.prototype.decode;
-	let releaseHead, releasePhoto;
-	const headGate = new Promise((resolve) => {
-		releaseHead = resolve;
-	});
-	const photoGate = new Promise((resolve) => {
-		releasePhoto = resolve;
-	});
+	let release;
+	const gate = new Promise(resolve => { release = resolve; });
+	const requests = [];
 	window.fetch = async (url, options) => {
-		if (url.endsWith("/2.png") || url.endsWith("/3.png"))
-			return { status: 404 };
-		if (url.endsWith("/4.png")) await headGate;
+		requests.push(url);
+		if (url.endsWith("/2.png")) return { ok: false, status: 404 };
+		if (url.endsWith("/3.png")) await gate;
 		return fetch(url, options);
 	};
-	window.HTMLImageElement.prototype.decode = async function () {
-		if (this.src.endsWith("/1.png")) await photoGate;
-		return decode.call(this);
-	};
-	const loading = initRoadCarousel(root);
-	await new Promise((resolve) => setTimeout(resolve, 10));
-	releaseHead();
-	await new Promise((resolve) => setTimeout(resolve, 10));
-	releasePhoto();
-	await loading;
-	assert.equal(root.dataset.ready, "true");
-	assert.equal(root.querySelector(".road-carousel-group").children.length, 1);
+	const before = root.innerHTML;
+	try {
+		await assert.rejects(initRoadCarousel(root), /photo 2: HTTP 404/);
+		assert.equal(requests.filter(url => url.endsWith("/2.png")).length, 1);
+		assert.equal(root.getAttribute("aria-busy"), "false");
+	} finally {
+		release();
+	}
+	await new Promise(resolve => setTimeout(resolve, 25));
+	assert.equal(root.innerHTML, before, "late metadata must not replace the fallback after failure");
 });
 
 for (const scenario of ["responsive", "changed original", "broken delivery"]) {
-	test(`photo delivery keeps discovery and PNG recovery: ${scenario}`, async (t) => {
+	test(`listed photo delivery keeps PNG recovery: ${scenario}`, async (t) => {
 		const root = await setup(t, { count: 1 });
 		const window = root.ownerDocument.defaultView;
 		const fetch = window.fetch;

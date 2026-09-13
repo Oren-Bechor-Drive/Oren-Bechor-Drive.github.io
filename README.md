@@ -24,29 +24,44 @@ Then open [http://localhost:8000](http://localhost:8000).
 
 No installation or build step is required.
 
-## Add student photos
+## Add or update student photos
 
-Place photos in `assets/images/students-pass/` with consecutive names: `1.png`, `2.png`, `3.png`, and so on. Add the next number and publish the files as usual; no code or photo-count setting needs updating.
+Place photos in `assets/images/students-pass/` with consecutive names: `1.png`, `2.png`, `3.png`, and so on. There is no maximum count or photo-count setting.
 
-The carousel discovers the files on page load and shows them in numeric order, then repeats. There is no maximum count. Keep the numbering consecutive: discovery stops at the first missing file. Car colors are randomized independently, and adding photos preserves the travel speed. The gallery calculates loop duration from the rendered row width and car spacing, and recalculates it on viewport resize. The approved cadence is about 11.11 seconds per car on desktop and 9.46 seconds on phones; tune `--road-seconds-per-car` in the corresponding CSS rule to change it. Car sizing follows road height with a separate car-scale setting.
+After adding, replacing, removing, or renumbering photos:
 
-Discovery runs up to four `HEAD` requests concurrently and starts decoding each confirmed photo immediately. Requests use normal browser caching. A missing response is revalidated before it ends discovery, so a cached 404 does not hide newly uploaded photos. Speculative requests can reach up to three numbers beyond the first missing file. The server must return an image content type for existing photos and HTTP 404 for missing files.
+1. Keep the filenames consecutive, starting at `1.png`. The optimizer rejects numbering gaps. If initial photos were removed or renumbered, keep the six static fallback image references in `index.html` valid.
+2. Run the maintenance and verification commands:
+
+   ```bash
+   npm run optimize:media
+   npm run check:media
+   npm test
+   ```
+
+3. Publish the original PNG changes, `assets/images/optimized/`, generated `js/road-photo-sources.js`, and updated `index.html` together, including any deletions.
+
+The generated module is the complete gallery list. New photos appear only after regenerating and publishing it. Regenerate after replacements too, including replacements with the same byte count. Do not edit the generated module by hand. `check:media` catches added or removed photos missing from the list and original-size mismatches.
+
+The carousel loads listed photos in numeric order, then repeats. Car colors are randomized independently, and adding photos preserves the travel speed. The gallery calculates loop duration from the rendered row width and car spacing, and recalculates it on viewport resize. The approved cadence is about 11.11 seconds per car on desktop and 9.46 seconds on phones; tune `--road-seconds-per-car` in the corresponding CSS rule to change it. Car sizing follows road height with a separate car-scale setting.
+
+The browser runs up to four `HEAD` requests concurrently for listed photos to check their content type and original byte count, then starts decoding each confirmed photo immediately. Requests use normal browser caching. It never probes a missing next number to find the end, avoiding routine 404 console errors. A failed request for a listed file is treated as a loading failure.
 
 Motion starts once six consecutive photos have decoded, or all photos for a smaller gallery. Wider viewports require enough cars to cover the viewport with one car of spare space. Later decoded photos join in numeric order while preserving the visible cars' position and travel speed. If the repeated row is visible, the append waits for the next loop boundary. Reduced motion shows available photos without waiting for that boundary.
 
 Photo completions and resize events share one update per animation frame. Each update reads geometry before changing the row. New loop distances use the measured equal car widths, gap, end padding, and minimum row width, avoiding a layout read after inserting cars. Keep that calculation consistent with `.road-car` and `.road-carousel-group` if their layout changes.
 
-Startup and individual requests/decodes have an eight-second deadline. A stalled initial load uncovers the static fallback. A later failure keeps the already working row. Newly discovered photos receive lower download priority than the initial row.
+Startup and individual requests/decodes have an eight-second deadline. A stalled initial load uncovers the static fallback. A later failure keeps the already working row. Photos after the initial row receive lower download priority than the initial row.
 
 Until the initial row is ready, the gallery's `aria-busy` state shows the supplied wheel rotating over a light white blur. The overlay clears as the initial row becomes ready or falls back after an empty result, error, or timeout. Reduced motion keeps the loading wheel still. Without JavaScript, the overlay stays hidden.
 
-The HTML provides six initial static photos while discovery runs, when it fails, or when JavaScript is unavailable. Keep those declarations synchronized if you replace or remove the initial photos. With reduced motion enabled, the discovered row stays static and its duplicate is hidden. The road clips horizontal overflow in every mode; it has no drag, click, or pause controls.
+The HTML provides six initial static photos while listed photos load, when loading fails, or when JavaScript is unavailable. Keep those declarations synchronized if you replace or remove the initial photos. With reduced motion enabled, the loaded row stays static and its duplicate is hidden. The road clips horizontal overflow in every mode; it has no drag, click, or pause controls.
 
 ## Optimize delivery images
 
 Original PNG files stay in their supplied paths. The page uses responsive WebP delivery copies for the course icon, wheel, stop sign, car sprites, and student photos. Resizing preserves aspect ratios and transparent margins, so car and roof alignment stay unchanged. The browser tab uses a separate 32px PNG favicon.
 
-To regenerate those copies after adding or replacing photos, run:
+The photo-maintenance command above also regenerates responsive delivery copies for all road media. To regenerate after changing artwork, run:
 
 ```bash
 npm run optimize:media
@@ -54,7 +69,7 @@ npm run check:media
 npm test
 ```
 
-Publish `assets/images/optimized/`, the generated `js/road-photo-sources.js`, and the updated `index.html` together. This is optional maintenance, not a required site build. The optimizer synchronizes image candidates and dimensions in the HTML, refreshes the photo mapping, and removes obsolete WebPs only within the generated directory. New numbered PNGs still appear without running the optimizer; they use the original image. Regenerate delivery copies when replacing existing photos so the static fallback and the generated mapping stay current, including replacements with the same byte count. Runtime loading falls back to the PNG if a delivery copy fails to decode or the original's Content-Length no longer matches the generated mapping.
+Publish generated files with their originals as described under [Add or update student photos](#add-or-update-student-photos). The optimizer synchronizes image candidates and dimensions in the HTML, refreshes the complete photo list, and removes obsolete WebPs only within the generated directory. This maintenance step is required when photos change; opening or serving the checked-in site still requires no build. Runtime loading falls back to the PNG if a delivery copy fails to decode or the original's Content-Length no longer matches the generated metadata.
 
 The HTML keeps original road-image dimensions and uses width descriptors in `srcset` plus `sizes` for delivery copies. Smaller variants serve ordinary desktop screens; larger variants support high-density screens without enlarging an original. Photo sizing accounts for the `object-fit: cover` crop. The optimizer's size formulas follow the road height, car scale, and photo frame in `css/welcome.css` and `css/responsive.css`; update them if that geometry changes. Car sprite sizing reads each color's `--car-art-width` rule. Module preload hints fetch carousel dependencies alongside the entry script.
 
@@ -83,9 +98,10 @@ Alignment compensates for transparent margins in each source image. Student phot
 - `css/responsive.css` contains interaction states, animations, breakpoints, and accessibility preferences. Load the four stylesheets in this order to preserve the cascade.
 - `js/script.js` adds the mobile menu and initializes page enhancements.
 - `js/topic-explorer.js` owns the topic preview interaction.
-- `js/road-carousel.js` discovers numbered student photos and builds the looping car gallery.
+- `js/road-carousel.js` loads the generated photo list and builds the looping car gallery.
 - `scripts/road-media-integrity.mjs` audits marked JPEG, WebP, and PNG road media, declared delivery copies, car templates, and numbered student photos during development.
-- `scripts/optimize-road-media.mjs` generates optional WebP delivery copies and the runtime photo mapping without changing originals.
+- `js/road-photo-sources.js` is the generated complete photo list and responsive delivery metadata.
+- `scripts/optimize-road-media.mjs` regenerates that list and WebP delivery copies without changing originals.
 - `assets/images/` contains the stop-sign illustration, road background, car artwork, and numbered student photos. `assets/icons/` contains the course icon. Typography uses Varela Round globally, with local WOFF2 files under `assets/fonts/`.
 - `docs/reference/the-idea.pdf` is the supplied course brief.
 - `docs/superpowers/` preserves historical implementation plans and specifications. Those files can contain obsolete paths, media counts, and markup from earlier versions. Use this README for the current structure and paths.
@@ -101,9 +117,9 @@ npm run check:media
 git diff --check
 ```
 
-The media audit checks marked HTML images and their preload metadata, matches car templates to the `car-*.png` files, and inspects every numbered student photo without a fixed maximum. It validates the scrolling group’s direct child templates, matching runtime initialization, and reports misplaced or malformed templates, numbering gaps, invalid PNG filenames, missing or duplicate templates, and incorrect fallback photo references or metadata. The supplied `cars.png` composite is excluded. It checks image headers and dimensions, not full decoding, roof alignment, or the CSS road background.
+The media audit checks marked HTML images and their preload metadata, matches car templates to the `car-*.png` files, and inspects every numbered student photo without a fixed maximum. It validates the scrolling group’s direct child templates, matching runtime initialization, and reports misplaced or malformed templates, numbering gaps, invalid PNG filenames, missing or duplicate templates, incorrect fallback photo references or metadata, and a missing or stale generated photo list. The supplied `cars.png` composite is excluded. It checks image headers and dimensions, not full decoding, roof alignment, or the CSS road background.
 
-Tests also check runtime discovery, failure preservation, and loop timing across row sizes and viewport changes. `npm test` includes a focused Chromium check that loads the actual page, stylesheets, scripts, and images at desktop and phone sizes, including resizing and reduced motion. It intercepts local requests to serve repository files and blocks external requests, so no dev server or network connection is needed after setup. Verify layout and interaction changes in the collaborative browser at desktop and phone sizes, including reduced motion.
+Tests also check loading from the generated photo list without missing-file probes, failure preservation, and loop timing across row sizes and viewport changes. `npm test` includes a focused Chromium check that loads the actual page, stylesheets, scripts, and images at desktop and phone sizes, including resizing and reduced motion. It intercepts local requests to serve repository files and blocks external requests, so no dev server or network connection is needed after setup. Verify layout and interaction changes in the collaborative browser at desktop and phone sizes, including reduced motion.
 
 ## Documentation
 

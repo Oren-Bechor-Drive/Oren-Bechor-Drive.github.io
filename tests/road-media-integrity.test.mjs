@@ -167,6 +167,9 @@ async function galleryFixture(
 			path.join(rootDir, `assets/images/students-pass/${number}.png`),
 			png,
 		);
+	await mkdir(path.join(rootDir, "js"));
+	await writeFile(path.join(rootDir, "js/road-photo-sources.js"),
+		`export const roadPhotoSources = ${JSON.stringify(Object.fromEntries(photos.map(number => [number, { originalBytes: png.length }])))};\n`);
 	await writeFile(
 		path.join(rootDir, "index.html"),
 		`<div data-road-carousel><ul class="road-carousel-group"><li class="road-car road-car-cyan">
@@ -364,3 +367,18 @@ test("responsive width descriptors must match the actual delivery file", async (
 	const audit = await auditRoadMedia({ rootDir });
 	assert.ok(audit.issues.some(issue => issue.includes("240w") && issue.includes("1px")));
 });
+
+for (const change of ["added photo", "removed photo", "replaced photo", "missing list"]) {
+	test(`gallery audit catches a stale generated photo list: ${change}`, async (t) => {
+		const rootDir = await galleryFixture(t);
+		const photo = path.join(rootDir, "assets/images/students-pass/3.png");
+		if (change === "added photo")
+			await writeFile(path.join(rootDir, "assets/images/students-pass/4.png"), await readFile(photo));
+		if (change === "removed photo") await rm(photo);
+		if (change === "replaced photo")
+			await writeFile(photo, Buffer.concat([await readFile(photo), Buffer.from("changed")]));
+		if (change === "missing list") await rm(path.join(rootDir, "js/road-photo-sources.js"));
+		const audit = await auditRoadMedia({ rootDir });
+		assert.ok(audit.issues.some(issue => issue.includes("road-photo-sources.js") && issue.includes("npm run optimize:media")));
+	});
+}
