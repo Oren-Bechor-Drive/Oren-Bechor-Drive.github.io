@@ -63,6 +63,15 @@ test("responsive delivery reduces desktop bytes and preserves density, cropping 
 			assert.ok([...downloaded.keys()].every(src => !/\/(cars|students-pass)\/.*\.png$/.test(src)), "original car/photo bodies should not download");
 			if (scenario.deviceScaleFactor === 1)
 				assert.ok(total < 250 * 1024, `desktop image budget exceeded: ${total}`);
+			if (scenario.deviceScaleFactor === 1 && scenario.javaScriptEnabled !== false) {
+				for (const [source, budget] of [
+					["assets/images/optimized/wheel.webp", 6 * 1024],
+					["assets/images/optimized/students-pass/11.webp", 8 * 1024],
+				]) {
+					assert.ok(downloaded.has(source), `missing desktop image: ${source}`);
+					assert.ok(downloaded.get(source) <= budget, `${source} exceeds its compression budget`);
+				}
+			}
 			for (const img of images) {
 				const source = inspectImage(await readFile(new URL(img.src, root)));
 				const delivered = inspectImage(await readFile(new URL(img.current, root)));

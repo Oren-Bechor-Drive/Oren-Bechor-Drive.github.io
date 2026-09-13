@@ -21,7 +21,7 @@ function roadSizes(fraction) {
 	return `(max-width: 768px) ${clamp(140, 21, 188, 1.25)}, ${clamp(180, 27, 264, 1.15)}`;
 }
 
-async function delivery(source, name, widths, quality, sizes) {
+async function delivery(source, name, widths, quality, sizes, smallEncoding = {}) {
 	const bytes = await readFile(source);
 	const metadata = await sharp(bytes).metadata();
 	const candidates = [];
@@ -31,7 +31,7 @@ async function delivery(source, name, widths, quality, sizes) {
 		await mkdir(path.dirname(src), { recursive: true });
 		const result = await sharp(bytes)
 			.resize({ width, withoutEnlargement: true })
-			.webp({ quality, effort: 6 })
+			.webp({ quality, effort: 6, ...(index === 0 ? smallEncoding : {}) })
 			.toFile(src);
 		candidates.push(`${src} ${result.width}w`);
 		generatedPaths.add(src);
@@ -62,6 +62,8 @@ for (const name of photoNames) {
 	sources[parseInt(name)] = await delivery(
 		source, `students-pass/${path.parse(name).name}`,
 		[smallWidth, Math.max(smallWidth * 2, largeWidth)], 78, roadSizes(fraction),
+		// This photo's dense background needs stronger compression at desktop size.
+		name === "11.png" ? { quality: 55 } : {},
 	);
 }
 
@@ -78,7 +80,10 @@ for (const name of (await readdir("assets/images/cars")).filter((name) => /^car-
 	await delivery(source, `cars/${car}`, [smallWidth, width], 80, roadSizes(fraction));
 }
 
-await delivery("assets/images/wheel.png", "wheel", [128, 256], 80, "128px");
+await delivery(
+	"assets/images/wheel.png", "wheel", [128, 256], 80, "128px",
+	{ quality: 65, alphaQuality: 60 },
+);
 await delivery(
 	"assets/images/stop-sign.png", "stop-sign", [144, 380, 760, 800], 85,
 	"(max-width: 768px) clamp(96px, 16svh, 144px), clamp(220px, 40svh, 400px)",

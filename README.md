@@ -58,6 +58,8 @@ The HTML keeps original road-image dimensions and uses width descriptors in `src
 
 WebP quality starts at 78 for photos, 80 for cars and the wheel, and 85 for the logo and stop sign. Check faces, lettering, and transparent edges at their displayed sizes after changing these settings. `tests/image-delivery-browser.test.mjs` checks actual browser source selection, image bytes, high-density coverage, and rendering without JavaScript.
 
+Two small variants use stronger compression after visual comparison: the 128px wheel uses quality 65 and alpha quality 60, and the 240px version of photo 11 uses quality 55. Their larger variants retain the default quality. The browser test caps the small downloads at 6 KiB and 8 KiB respectively.
+
 ## Maintain road artwork
 
 `assets/images/road.jpg` is the repeating background. The six active car sprites are cyan, gray, green, orange, red, and yellow in `assets/images/cars/car-*.png`. Their static HTML entries also serve as JavaScript templates. Changing the car palette requires updating those entries and the matching `.road-car-*` alignment rules in `css/welcome.css`.
