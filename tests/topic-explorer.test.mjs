@@ -4,7 +4,7 @@ import { JSDOM } from "jsdom";
 
 import { initTopicExplorer } from "../js/topic-explorer.js";
 
-function setup({ reducedMotion = true } = {}) {
+function setup(t, { reducedMotion = true } = {}) {
 	const dom = new JSDOM(
 		`<!doctype html><div data-topic-explorer>
     <button class="topic-card" data-active="true" aria-expanded="true" data-topic-description="תיאור ראשון">נושא ראשון</button>
@@ -14,14 +14,15 @@ function setup({ reducedMotion = true } = {}) {
   </div>`,
 		{ pretendToBeVisual: true },
 	);
+	t.after(() => dom.window.close());
 	dom.window.matchMedia = () => ({ matches: reducedMotion });
 	const root = dom.window.document.querySelector("[data-topic-explorer]");
 	initTopicExplorer(root);
 	return { dom, root, cards: [...root.querySelectorAll(".topic-card")] };
 }
 
-test("initialization reconciles the panel with the active topic", () => {
-	const { root } = setup();
+test("initialization reconciles the panel with the active topic", (t) => {
+	const { root } = setup(t);
 	assert.equal(
 		root.querySelector("[data-topic-panel-title]").textContent,
 		"נושא ראשון",
@@ -32,8 +33,8 @@ test("initialization reconciles the panel with the active topic", () => {
 	);
 });
 
-test("selection updates one complete selected-state invariant", () => {
-	const { dom, root, cards } = setup();
+test("selection updates one complete selected-state invariant", (t) => {
+	const { dom, root, cards } = setup(t);
 	cards[1].dispatchEvent(
 		new dom.window.MouseEvent("click", { bubbles: true }),
 	);
@@ -55,8 +56,8 @@ test("selection updates one complete selected-state invariant", () => {
 	);
 });
 
-test("RTL arrows, Home, and End move focus in display order", () => {
-	const { dom, cards } = setup();
+test("RTL arrows, Home, and End move focus in display order", (t) => {
+	const { dom, cards } = setup(t);
 	cards[0].focus();
 	cards[0].dispatchEvent(
 		new dom.window.KeyboardEvent("keydown", {
@@ -82,10 +83,11 @@ test("RTL arrows, Home, and End move focus in display order", () => {
 	assert.equal(dom.window.document.activeElement, cards[0]);
 });
 
-test("missing panel hooks fail at the module interface", () => {
+test("missing panel hooks fail at the module interface", (t) => {
 	const dom = new JSDOM(
 		'<div data-topic-explorer><button class="topic-card">נושא</button></div>',
 	);
+	t.after(() => dom.window.close());
 	const root = dom.window.document.querySelector("[data-topic-explorer]");
 	assert.throws(
 		() => initTopicExplorer(root),
@@ -95,8 +97,7 @@ test("missing panel hooks fail at the module interface", () => {
 
 test("a superseded selection never appears while the latest transition is pending", (t) => {
 	t.mock.timers.enable({ apis: ["setTimeout"] });
-	const { dom, root, cards } = setup({ reducedMotion: false });
-	t.after(() => dom.window.close());
+	const { dom, root, cards } = setup(t, { reducedMotion: false });
 	cards[1].dispatchEvent(
 		new dom.window.MouseEvent("click", { bubbles: true }),
 	);
@@ -128,8 +129,8 @@ test("a superseded selection never appears while the latest transition is pendin
 	);
 });
 
-test("dropdown includes every topic and starts with the active selection", () => {
-	const { root, cards } = setup();
+test("dropdown includes every topic and starts with the active selection", (t) => {
+	const { root, cards } = setup(t);
 	const dropdown = root.querySelector(".topic-select");
 	const options = [...root.querySelectorAll('[role="option"]')];
 	assert.equal(dropdown.textContent, cards[0].textContent.trim());
@@ -141,8 +142,8 @@ test("dropdown includes every topic and starts with the active selection", () =>
 	assert.equal(root.querySelector('[role="listbox"]').hidden, true);
 });
 
-test("dropdown selection updates the preview and desktop card selection", () => {
-	const { root, cards } = setup();
+test("dropdown selection updates the preview and desktop card selection", (t) => {
+	const { root, cards } = setup(t);
 	const dropdown = root.querySelector(".topic-select");
 	dropdown.click();
 	root.querySelectorAll('[role="option"]')[2].click();
@@ -160,8 +161,8 @@ test("dropdown selection updates the preview and desktop card selection", () => 
 	assert.equal(dropdown.textContent, "נושא שני");
 });
 
-test("dropdown keyboard navigation and dismissal keep open state accurate", () => {
-	const { dom, root } = setup();
+test("dropdown keyboard navigation and dismissal keep open state accurate", (t) => {
+	const { dom, root } = setup(t);
 	const dropdown = root.querySelector(".topic-select");
 	const options = [...root.querySelectorAll('[role="option"]')];
 	const key = (name) =>

@@ -19,6 +19,17 @@ for (const [width, late] of [
 		const browser = await chromium.launch();
 		t.after(() => browser.close());
 		const page = await browser.newPage({ viewport: { width, height: 844 } });
+		// Observe completed real decodes so a deferred-append assertion cannot pass
+		// merely because the final response has not reached the decoder yet.
+		await page.addInitScript(() => {
+			window.decodedPhotoNumbers = [];
+			const decode = HTMLImageElement.prototype.decode;
+			HTMLImageElement.prototype.decode = async function () {
+				await decode.call(this);
+				const number = Number(this.src.match(/students-pass\/(\d+)\.png$/)?.[1]);
+				if (number) window.decodedPhotoNumbers.push(number);
+			};
+		});
 		let release;
 		const gate = new Promise((resolve) => {
 			release = resolve;
@@ -72,7 +83,7 @@ for (const [width, late] of [
 		);
 		if (late === "resize") {
 			await page.setViewportSize({ width: 5000, height: 844 });
-			await page.waitForTimeout(50);
+			await page.waitForFunction(() => document.querySelector("[data-road-carousel]").dataset.ready !== "true");
 		}
 		assert.equal(await page.locator(".road-loader").isVisible(), false);
 		assert.equal(kitRequests, 0);
@@ -89,7 +100,10 @@ for (const [width, late] of [
 		}, late);
 		release();
 		if (late === true) {
-			await page.waitForTimeout(50);
+			await page.waitForFunction(number => window.decodedPhotoNumbers.includes(number), lastPhoto);
+			await page.evaluate(() => new Promise(resolve =>
+				requestAnimationFrame(() => requestAnimationFrame(resolve)),
+			));
 			assert.equal(
 				await page
 					.locator(".road-carousel-group")
@@ -104,7 +118,7 @@ for (const [width, late] of [
 			count =>
 				document.querySelector(".road-carousel-group").children.length === count,
 			photoCount,
-			{ timeout: 1500 },
+			{ timeout: 5000 },
 		);
 		const state = await page.evaluate(() => ({
 			left: document.querySelector(".road-car").getBoundingClientRect().left,
@@ -142,10 +156,9 @@ for (const [width, late] of [
 			requestedImages.every((src) => src.endsWith(".webp")),
 			"student PNG bodies should not be downloaded",
 		);
+		const kitLoaded = page.waitForResponse(response => new URL(response.url()).hostname === "kit.fontawesome.com");
 		await page.locator(".site-footer").scrollIntoViewIfNeeded();
-		await page.waitForFunction(
-			() => !!document.querySelector('script[src*="kit.fontawesome.com"]'),
-		);
+		await kitLoaded;
 		assert.equal(kitRequests, 1);
 	});
 }

@@ -1,10 +1,17 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { setImmediate as flushTasks, setTimeout as delay } from "node:timers/promises";
 import { JSDOM } from "jsdom";
 
 import { initRoadCarousel } from "../js/road-carousel.js";
 import { roadPhotoSources } from "../js/road-photo-sources.js";
+
+async function waitFor(condition, message) {
+	const deadline = performance.now() + 3000;
+	while (!condition() && performance.now() < deadline) await delay(10);
+	assert.ok(condition(), message);
+}
 
 async function setup(
 	t,
@@ -238,6 +245,8 @@ test("metadata loading overlaps requests and decoding while a later HEAD is pend
 		release = resolve;
 	});
 	const requests = [];
+	let releaseFirstThree;
+	const firstThree = new Promise(resolve => { releaseFirstThree = resolve; });
 	let decoded = false;
 	const decode = window.HTMLImageElement.prototype.decode;
 	window.HTMLImageElement.prototype.decode = async function () {
@@ -247,24 +256,21 @@ test("metadata loading overlaps requests and decoding while a later HEAD is pend
 	window.fetch = async (url, options) => {
 		requests.push({ url, options });
 		if (url.endsWith("/4.png")) await gate;
+		else await firstThree;
 		return fetch(url, options);
 	};
 	const loading = initRoadCarousel(root);
-	await new Promise((resolve) => setTimeout(resolve, 25));
 	try {
-		assert.ok(
-			requests.length >= 4,
-			"multiple HEAD requests must start before earlier requests finish",
-		);
-		assert.ok(
-			decoded,
-			"confirmed photos must decode while metadata is pending",
-		);
+		await waitFor(() => requests.length >= 4, "four HEAD requests must start before any response is released");
+		assert.equal(requests.length, 4, "metadata concurrency must be bounded to four requests");
+		releaseFirstThree();
+		await waitFor(() => decoded, "confirmed photos must decode while metadata is pending");
 		assert.equal(
 			requests.find(({ url }) => url.endsWith("/1.png")).options.cache,
 			"default",
 		);
 	} finally {
+		releaseFirstThree();
 		release();
 		await loading;
 	}
@@ -283,8 +289,8 @@ test("the initial row starts before the last photo decodes", async (t) => {
 		return decode.call(this);
 	};
 	const loading = initRoadCarousel(root);
-	await new Promise((resolve) => setTimeout(resolve, 25));
 	try {
+		await waitFor(() => root.dataset.ready === "true", "the initial row must start while photo 15 is pending");
 		assert.equal(root.dataset.ready, "true");
 		assert.equal(root.getAttribute("aria-busy"), "false");
 		assert.equal(
@@ -298,15 +304,40 @@ test("the initial row starts before the last photo decodes", async (t) => {
 	assert.equal(root.querySelector(".road-carousel-group").children.length, 15);
 });
 
+test("a later loading failure preserves the already running row", async (t) => {
+	const root = await setup(t, { count: 8 });
+	const window = root.ownerDocument.defaultView;
+	const fetch = window.fetch;
+	let release;
+	const gate = new Promise(resolve => { release = resolve; });
+	window.fetch = async (url, options) => {
+		if (url.endsWith("/7.png")) {
+			await gate;
+			return { ok: false, status: 503 };
+		}
+		return fetch(url, options);
+	};
+	const loading = initRoadCarousel(root);
+	const rejected = assert.rejects(loading, /photo 7: HTTP 503/);
+	let runningRow;
+	try {
+		await waitFor(() => root.dataset.ready === "true", "the first six photos must start before the failure");
+		assert.equal(root.querySelector(".road-carousel-group").children.length, 6);
+		runningRow = root.innerHTML;
+	} finally {
+		release();
+		await rejected;
+	}
+	await flushTasks();
+	assert.equal(root.innerHTML, runningRow);
+	assert.equal(root.dataset.ready, "true");
+	assert.equal(root.getAttribute("aria-busy"), "false");
+});
+
 test("a stalled metadata request has a deadline and cannot mutate the fallback later", async (t) => {
 	const root = await setup(t);
 	const window = root.ownerDocument.defaultView;
-	const callbacks = [];
-	t.mock.method(window, "setTimeout", (callback) => {
-		callbacks.push(callback);
-		return callbacks.length;
-	});
-	t.mock.method(window, "clearTimeout", () => {});
+	t.mock.timers.enable({ apis: ["setTimeout"] });
 	let release;
 	const gate = new Promise((resolve) => {
 		release = resolve;
@@ -318,12 +349,15 @@ test("a stalled metadata request has a deadline and cannot mutate the fallback l
 	};
 	const before = root.innerHTML;
 	const loading = initRoadCarousel(root);
-	assert.ok(callbacks.length > 0, "loading needs a deadline");
-	callbacks[0]();
-	await assert.rejects(loading, /timed out/i);
+	const rejected = assert.rejects(loading, /timed out/i);
+	t.mock.timers.tick(7999);
+	await flushTasks();
+	assert.equal(root.getAttribute("aria-busy"), "true");
+	t.mock.timers.tick(1);
+	await rejected;
 	assert.equal(root.getAttribute("aria-busy"), "false");
 	release();
-	await new Promise((resolve) => setTimeout(resolve, 10));
+	await flushTasks();
 	assert.equal(root.innerHTML, before);
 });
 
@@ -340,8 +374,8 @@ test("six decoded photos start even when HEAD 7 stalls", async (t) => {
 		return fetch(url, options);
 	};
 	const loading = initRoadCarousel(root);
-	await new Promise((resolve) => setTimeout(resolve, 25));
 	try {
+		await waitFor(() => root.dataset.ready === "true", "six decoded photos must start while HEAD 7 is pending");
 		assert.equal(root.dataset.ready, "true");
 	} finally {
 		release();
@@ -370,7 +404,7 @@ test("a failed listed photo rejects without retrying or waiting for later metada
 	} finally {
 		release();
 	}
-	await new Promise(resolve => setTimeout(resolve, 25));
+	await flushTasks();
 	assert.equal(root.innerHTML, before, "late metadata must not replace the fallback after failure");
 });
 
