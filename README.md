@@ -154,8 +154,7 @@ See [LICENSE](LICENSE) for the complete scope.
 
 - Update `image-size` when a release fixes its ICNS/JXL/HEIF parser advisories. The audit imports only the JPEG, WebP, and PNG parser subpaths, so the affected parsers are not loaded. `npm audit` still reports the package-level advisory.
 
-- Build the **Instructor-led welcome** direction around Oren Bachor's story and teaching approach.
-- Build the **Course-dashboard preview** direction with lesson modules and realistic course navigation.
-- Introduce a **shared course-content module** when the second runtime page creates a real seam between two page adapters.
-- Revisit the **visual-system interface** after another page reveals which layout and styling decisions genuinely repeat.
-- Expand to **full browser automation** beyond the focused gallery check when continuous integration or multiple interactive pages justify broader coverage.
+- Defer a shared course-content module until a second runtime page needs the same course content.
+- Revisit shared layout and styling when a second page reveals what needs to repeat beyond the existing CSS tokens and styles.
+- Add a complete browser journey through page navigation and topic selection at desktop and mobile sizes. CI already runs Chromium checks for the gallery, image and font delivery, mobile disclosures, and related input and accessibility behavior.
+- Add Firefox and WebKit smoke checks for page loading, navigation, and topic selection.
