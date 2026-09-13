@@ -109,7 +109,15 @@ Alignment compensates for transparent margins in each source image. Student phot
 - `docs/superpowers/` preserves historical implementation plans and specifications. Those files can contain obsolete paths, media counts, and markup from earlier versions. Use this README for the current structure and paths.
 - `tests/` contains static page, behavior-level, media-integrity, and Chromium gallery tests.
 
-Development checks require Node.js 20 or newer and Playwright’s Chromium browser. Install the development dependencies and browser once, then run the checks:
+### Automated checks
+
+[The Tests workflow](.github/workflows/tests.yml) runs on every push and pull request, and can also be started manually from GitHub Actions. It uses Node.js 24 on Ubuntu, installs the locked dependencies with `npm ci` and Chromium with its system dependencies, then runs `npm run check:media` and the full `npm test` suite. This includes static and behavior tests, optimizer tests, and all Chromium gallery and image-delivery checks. New tests matching `tests/*.test.mjs` are included automatically.
+
+CI audits the checked-in media. Photo and artwork changes still require running `npm run optimize:media` locally and publishing its output with the originals. The workflow does not deploy the site.
+
+### Local checks
+
+Development checks require Node.js 20 or newer and Playwright’s Chromium browser. CI uses Node.js 24. Install the development dependencies and browser once, then run the checks:
 
 ```bash
 npm install
