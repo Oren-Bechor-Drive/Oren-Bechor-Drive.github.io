@@ -11,9 +11,7 @@ export function initTopicExplorer(root) {
 	}
 
 	const browserWindow = root.ownerDocument.defaultView;
-	const reducedMotion =
-		browserWindow?.matchMedia?.("(prefers-reduced-motion: reduce)")
-			.matches ?? false;
+	const motionPreference = browserWindow?.matchMedia?.("(prefers-reduced-motion: reduce)");
 	const document = root.ownerDocument;
 	const picker = document.createElement("div");
 	picker.className = "topic-picker";
@@ -41,8 +39,8 @@ export function initTopicExplorer(root) {
 		option.tabIndex = -1;
 		option.setAttribute("role", "option");
 		option.textContent = card.textContent.trim();
-		option.addEventListener("click", () => {
-			select(card);
+		option.addEventListener("click", event => {
+			select(card, { animate: event.detail > 0 });
 			setOpen(false, true);
 		});
 		menu.append(option);
@@ -97,14 +95,20 @@ export function initTopicExplorer(root) {
 		if (!picker.contains(event.relatedTarget)) setOpen(false);
 	});
 	let pendingUpdate;
+	let selectedCard;
 
 	function updateContent(card) {
+		browserWindow?.clearTimeout(pendingUpdate);
 		title.textContent = card.textContent.trim();
 		description.textContent = card.dataset.topicDescription ?? "";
 		panel.dataset.updating = "false";
 	}
 
 	function select(card, { animate = true } = {}) {
+		if (card === selectedCard && animate) return;
+		selectedCard = card;
+		const withMotion = animate && !motionPreference?.matches;
+		panel.dataset.motion = withMotion ? "pointer" : "instant";
 		dropdown.textContent = card.textContent.trim();
 		options.forEach((option, index) => {
 			option.setAttribute("aria-selected", String(cards[index] === card));
@@ -116,7 +120,7 @@ export function initTopicExplorer(root) {
 		});
 
 		browserWindow?.clearTimeout(pendingUpdate);
-		if (!animate || reducedMotion) {
+		if (!withMotion) {
 			updateContent(card);
 			return;
 		}
@@ -128,8 +132,15 @@ export function initTopicExplorer(root) {
 		);
 	}
 
+	motionPreference?.addEventListener?.("change", () => {
+		if (motionPreference.matches) {
+			panel.dataset.motion = "instant";
+			updateContent(selectedCard);
+		}
+	});
+
 	cards.forEach((card, index) => {
-		card.addEventListener("click", () => select(card));
+		card.addEventListener("click", event => select(card, { animate: event.detail > 0 }));
 		card.addEventListener("keydown", (event) => {
 			let nextIndex;
 			if (event.key === "ArrowLeft")

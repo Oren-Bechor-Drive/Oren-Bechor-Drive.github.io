@@ -12,6 +12,10 @@ The hero learning action leads to the topic preview. The topbar learning action 
 
 On mobile, pointer and touch input open the navigation and learning-topic list with a 180ms transition and close them over 150ms. Their trigger buttons provide subtle press feedback. Keyboard and assistive activation remain immediate. Closing menus stop accepting input as soon as they close, while CSS finishes the exit; rapid toggles reverse the transition. Reduced motion uses short opacity fades without movement. Browsers without discrete display transitions show and hide the menus immediately. `js/disclosure-motion.js` shares input handling and visibility state between these two controls.
 
+Topic previews update immediately for keyboard and assistive activation. Pointer and touch selections animate the changing title and description while the explanatory note stays still. Reselecting the active topic does nothing. Reduced motion is read live and settles a pending topic change when enabled.
+
+The sections below the hero reveal once on scroll. Focus immediately settles the containing section, and printing exposes all content even before it has been scrolled into view.
+
 The footer includes Instagram, TikTok, YouTube, and WhatsApp links, currently pointing to `#`. Their icons load from Font Awesome kit `a138530222` when the footer is within 300px of the viewport. Hebrew link labels remain visible if the external kit is unavailable. Browsers without IntersectionObserver request the kit after page load.
 
 ## Open locally
@@ -57,13 +61,13 @@ The generated module is the complete gallery list. New photos appear only after 
 
 The carousel loads listed photos in numeric order, then repeats. Car colors are randomized independently, and adding photos preserves the travel speed. The gallery calculates loop duration from the rendered row width and car spacing, and recalculates it on viewport resize. The approved cadence is about 11.11 seconds per car on desktop and 9.46 seconds on phones; tune `--road-seconds-per-car` in the corresponding CSS rule to change it. Car sizing follows road height with a separate car-scale setting.
 
-The browser runs up to four `HEAD` requests concurrently for listed photos to check their content type and original byte count, then starts decoding each confirmed photo immediately. Requests use normal browser caching. It never probes a missing next number to find the end, avoiding routine 404 console errors. A failed request for a listed file is treated as a loading failure.
+The browser runs up to four `HEAD` requests concurrently for listed photos to check their content type and original byte count, refilling each available request slot immediately. Confirmed photos start decoding immediately; only consecutive decoded photos enter the visible row. Requests use normal browser caching. It never probes a missing next number to find the end, avoiding routine 404 console errors. A failed request for a listed file is treated as a loading failure.
 
 Motion starts once six consecutive photos have decoded, or all photos for a smaller gallery. Wider viewports require enough cars to cover the viewport with one car of spare space. Later decoded photos join in numeric order while preserving the visible cars' position and travel speed. If the repeated row is visible, the append waits for the next loop boundary. Reduced motion shows available photos without waiting for that boundary.
 
 Photo completions and resize events share one update per animation frame. Each update reads geometry before changing the row. New loop distances use the measured equal car widths, gap, end padding, and minimum row width, avoiding a layout read after inserting cars. Keep that calculation consistent with `.road-car` and `.road-carousel-group` if their layout changes.
 
-Startup and individual requests/decodes have an eight-second deadline. A stalled initial load uncovers the static fallback. A later failure keeps the already working row. Photos after the initial row receive lower download priority than the initial row.
+Startup and individual requests/decodes have an eight-second deadline. A stalled initial load uncovers the static fallback. A later failure freezes photo additions but keeps the already working row responsive. Resizing updates its duration while preserving its position within the animation cycle. Photos after the initial row receive lower download priority than the initial row.
 
 Until the initial row is ready, the gallery's `aria-busy` state shows the supplied wheel rotating over a light white blur. The overlay clears as the initial row becomes ready or falls back after an empty result, error, or timeout. Reduced motion keeps the loading wheel still. Without JavaScript, the overlay stays hidden.
 
@@ -112,6 +116,7 @@ Alignment compensates for transparent margins in each source image. Student phot
 - `css/responsive.css` contains interaction states, animations, breakpoints, and accessibility preferences. Load the four stylesheets in this order to preserve the cascade.
 - `js/script.js` adds the mobile menu and initializes page enhancements.
 - `js/topic-explorer.js` owns the topic preview interaction.
+- `js/scroll-reveal.js` reveals the instructor, course explanation, and topic preview once as each section enters the viewport.
 - `js/road-carousel.js` loads the generated photo list and builds the looping car gallery.
 - `scripts/road-media-integrity.mjs` audits marked JPEG, WebP, and PNG road media, declared delivery copies, car templates, and numbered student photos during development.
 - `js/road-photo-sources.js` is the generated complete photo list and responsive delivery metadata.
@@ -126,6 +131,8 @@ Alignment compensates for transparent margins in each source image. Student phot
 ### Automated checks
 
 [The Tests workflow](.github/workflows/tests.yml) runs on every push and pull request, and can also be started manually from GitHub Actions. It uses Node.js 24 on Ubuntu, installs the locked dependencies with `npm ci` and Chromium with its system dependencies, then runs `npm run check:media` and the full `npm test` suite. This includes static and behavior tests, optimizer tests, and all Chromium gallery and image-delivery checks. New tests matching `tests/*.test.mjs` are included automatically.
+
+Animation regressions cover focus during section entrances, visibility in print, immediate keyboard topic selection, live reduced-motion changes, and keeping unchanged topic text still. Gallery tests also cover refilling metadata request slots and resizing the preserved row after a later loading failure. Scroll-reveal tests bound their animation-capture waits so a missing reveal fails instead of hanging the suite.
 
 CI audits the checked-in media. Photo and artwork changes still require running `npm run optimize:media` locally and publishing its output with the originals. The workflow does not deploy the site.
 

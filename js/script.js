@@ -1,11 +1,14 @@
 import { initTopicExplorer } from "./topic-explorer.js";
 import { initRoadCarousel } from "./road-carousel.js";
 import { initDisclosureMotion } from "./disclosure-motion.js";
+import { initScrollReveals } from "./scroll-reveal.js";
 
 const menuToggle = document.querySelector("[data-menu-toggle]");
 const menu = document.querySelector("[data-menu]");
 const topicExplorer = document.querySelector("[data-topic-explorer]");
 const topicSection = document.querySelector("#topics");
+
+initScrollReveals(document);
 
 // Settle off-screen controls before the browser scrolls the focused button into view.
 document.querySelector(".hero-actions")?.addEventListener("focusin", () => {

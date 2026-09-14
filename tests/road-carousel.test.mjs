@@ -71,7 +71,7 @@ async function setup(
 	return root;
 }
 
-test("photo batches do not read layout after changing the connected row in a frame", async (t) => {
+test("photo publications do not read layout after changing the connected row in a frame", async (t) => {
 	const root = await setup(t);
 	const window = root.ownerDocument.defaultView;
 	const group = root.querySelector(".road-carousel-group");
@@ -276,6 +276,40 @@ test("metadata loading overlaps requests and decoding while a later HEAD is pend
 	}
 });
 
+test("metadata loading refills available request slots while a sibling is pending", async (t) => {
+	const root = await setup(t, { count: 8 });
+	const window = root.ownerDocument.defaultView;
+	const fetch = window.fetch;
+	let releaseFourth;
+	const fourthPending = new Promise(resolve => { releaseFourth = resolve; });
+	const requested = [];
+	let activeRequests = 0;
+	let peakRequests = 0;
+	window.fetch = async (url, options) => {
+		const number = Number(new URL(url).pathname.match(/\/(\d+)\.png$/)[1]);
+		requested.push(number);
+		activeRequests++;
+		peakRequests = Math.max(peakRequests, activeRequests);
+		if (number === 4) await fourthPending;
+		const response = await fetch(url, options);
+		activeRequests--;
+		return response;
+	};
+	const loading = initRoadCarousel(root);
+	try {
+		await waitFor(
+			() => requested.includes(8),
+			"settled request slots must start later metadata while photo 4 remains pending",
+		);
+		assert.equal(activeRequests, 1);
+		assert.equal(peakRequests, 4);
+	} finally {
+		releaseFourth();
+		await loading;
+	}
+	assert.deepEqual(requested, [1, 2, 3, 4, 5, 6, 7, 8]);
+});
+
 test("the initial row starts before the last photo decodes", async (t) => {
 	const root = await setup(t, { count: 15 });
 	const window = root.ownerDocument.defaultView;
@@ -332,6 +366,68 @@ test("a later loading failure preserves the already running row", async (t) => {
 	assert.equal(root.innerHTML, runningRow);
 	assert.equal(root.dataset.ready, "true");
 	assert.equal(root.getAttribute("aria-busy"), "false");
+});
+
+test("a row kept after a later failure updates phone cadence without publishing partial photos", async (t) => {
+	const root = await setup(t, { count: 8 });
+	const window = root.ownerDocument.defaultView;
+	const group = root.querySelector(".road-carousel-group");
+	const track = group.parentElement;
+	const animation = { animationName: "road-scroll", currentTime: 0 };
+	track.getAnimations = () => [animation];
+	root.getBoundingClientRect = () => ({ width: 1366 });
+
+	let releaseSeven;
+	let releaseEight;
+	let markSevenDecoded;
+	const sevenPending = new Promise(resolve => { releaseSeven = resolve; });
+	const eightPending = new Promise(resolve => { releaseEight = resolve; });
+	const sevenDecoded = new Promise(resolve => { markSevenDecoded = resolve; });
+	const fetch = window.fetch;
+	window.fetch = async (url, options) => {
+		if (url.endsWith("/7.png")) await sevenPending;
+		if (url.endsWith("/8.png")) {
+			await eightPending;
+			return { ok: false, status: 503 };
+		}
+		return fetch(url, options);
+	};
+	const decode = window.HTMLImageElement.prototype.decode;
+	window.HTMLImageElement.prototype.decode = async function () {
+		await decode.call(this);
+		if (this.src.endsWith("/7.png")) markSevenDecoded();
+	};
+
+	const loading = initRoadCarousel(root);
+	const rejected = assert.rejects(loading, /photo 8: HTTP 503/);
+	await waitFor(() => root.dataset.ready === "true", "the first six photos must start");
+	assert.equal(group.children.length, 6);
+	assert.ok(
+		Math.abs(parseFloat(root.style.getPropertyValue("--road-loop-duration")) - 66.666666) < 0.001,
+	);
+	releaseSeven();
+	await sevenDecoded;
+	releaseEight();
+	await rejected;
+	assert.equal(group.children.length, 6, "photo 7 must not leak into the failed row");
+	const preservedRow = group.innerHTML;
+
+	group.style.columnGap = "32px";
+	group.style.minWidth = "390px";
+	group.style.padding = "0 16px";
+	group.getBoundingClientRect = () => ({ width: 2880 });
+	group.firstElementChild.getBoundingClientRect = () => ({ width: 448 });
+	root.getBoundingClientRect = () => ({ width: 390 });
+	root.style.setProperty("--road-seconds-per-car", "9.462366");
+	animation.currentTime = 16666.6665;
+	window.dispatchEvent(new window.Event("resize"));
+	await new Promise(resolve => window.requestAnimationFrame(resolve));
+
+	assert.ok(
+		Math.abs(parseFloat(root.style.getPropertyValue("--road-loop-duration")) - 56.774196) < 0.001,
+	);
+	assert.ok(Math.abs(animation.currentTime - 14193.549) < 0.001);
+	assert.equal(group.innerHTML, preservedRow);
 });
 
 test("a stalled metadata request has a deadline and cannot mutate the fallback later", async (t) => {

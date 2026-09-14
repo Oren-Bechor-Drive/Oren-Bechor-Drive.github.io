@@ -99,11 +99,11 @@ test("a superseded selection never appears while the latest transition is pendin
 	t.mock.timers.enable({ apis: ["setTimeout"] });
 	const { dom, root, cards } = setup(t, { reducedMotion: false });
 	cards[1].dispatchEvent(
-		new dom.window.MouseEvent("click", { bubbles: true }),
+		new dom.window.MouseEvent("click", { bubbles: true, detail: 1 }),
 	);
 	t.mock.timers.tick(60);
 	cards[2].dispatchEvent(
-		new dom.window.MouseEvent("click", { bubbles: true }),
+		new dom.window.MouseEvent("click", { bubbles: true, detail: 1 }),
 	);
 	t.mock.timers.tick(50);
 	assert.equal(

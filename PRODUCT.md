@@ -31,7 +31,7 @@ Visitors first see the course introduction and a road carousel of supplied photo
 - The first release is one welcome page for new visitors.
 - The main action scrolls to a preview of learning topics on the same page.
 - The hero gallery presents student photos in numeric order on cars moving left across a road. Car colors vary independently of photo order. The gallery uses a generated photo list with no maximum-count setting. After changing photos, run `npm run optimize:media` and publish its output with the originals; see [README.md](README.md#add-or-update-student-photos) for the full maintenance steps.
-- The gallery is noninteractive. A static row remains during loading or failure and without JavaScript. Reduced motion disables scrolling; horizontal overflow remains clipped.
+- The gallery is noninteractive. A static row remains during initial loading, after startup failure, and without JavaScript. A later loading failure preserves the already moving row and its responsive timing. Reduced motion disables scrolling; horizontal overflow remains clipped.
 - Enrollment, payment, user accounts, and course playback are outside this release.
 - Visitor-facing website copy is Hebrew and uses a right-to-left reading direction.
 - The page must work on desktop and mobile without a framework or a build step to serve the checked-in files. Updating gallery photos requires the maintenance step above.

@@ -43,6 +43,7 @@
 		<link rel="modulepreload" href="js/road-carousel.js" />
 		<link rel="modulepreload" href="js/road-photo-sources.js" />
 		<link rel="modulepreload" href="js/topic-explorer.js" />
+		<link rel="modulepreload" href="js/scroll-reveal.js" />
 	</head>
 	<body>
 		<a class="skip-link" href="#main-content">דלגו לתוכן הראשי</a>
@@ -359,9 +360,10 @@
 				id="instructor"
 				class="instructor section"
 				aria-labelledby="instructor-title"
+				data-scroll-reveal
 			>
 				<div class="content-shell instructor-layout">
-					<div class="instructor-intro">
+					<div class="instructor-intro scroll-reveal-target">
 						<span class="initials" aria-hidden="true">א.ב</span>
 						<div>
 							<h2 id="instructor-title">נעים להכיר, אורן בכור</h2>
@@ -371,7 +373,7 @@
 							</p>
 						</div>
 					</div>
-					<blockquote>
+					<blockquote class="scroll-reveal-target">
 						<p>
 							בניתי את הקורס כדי שאפשר יהיה להבין זכויות קדימה
 							ונהיגה נכונה גם בתיאוריה וגם דרך מצבים אמיתיים.
@@ -385,14 +387,15 @@
 				id="about"
 				class="about section"
 				aria-labelledby="about-title"
+				data-scroll-reveal
 			>
 				<div class="content-shell about-layout">
-					<div class="about-title-block">
+					<div class="about-title-block scroll-reveal-target">
 						<h2 id="about-title">
 							להבין את החוק לפני הרגע שבו צריך לפעול
 						</h2>
 					</div>
-					<div class="about-copy">
+					<div class="about-copy scroll-reveal-target">
 						<p class="lead">
 							בשיעור הנהיגה מתרגלים את הפעולה. כאן עוצרים לרגע כדי
 							להבין את ההיגיון שמאחוריה.
@@ -404,7 +407,7 @@
 						</p>
 					</div>
 					<aside
-						class="road-question"
+						class="road-question scroll-reveal-target"
 						aria-label="שאלה שמלווה את הלמידה"
 					>
 						<span>בכל מצב בדרך שואלים:</span>
@@ -421,16 +424,20 @@
 				class="topics section"
 				aria-labelledby="topics-title"
 				tabindex="-1"
+				data-scroll-reveal
 			>
 				<div class="content-shell">
-					<div class="section-heading">
+					<div class="section-heading scroll-reveal-target">
 						<h2 id="topics-title">
 							הנושאים שילמדו אתכם לחשוב כמו נהגים
 						</h2>
 						<p>בחרו נושא וקבלו הצצה למה שמפרקים ומתרגלים בקורס.</p>
 					</div>
 
-					<div class="topic-explorer" data-topic-explorer>
+					<div
+						class="topic-explorer scroll-reveal-target"
+						data-topic-explorer
+					>
 						<div
 							class="topic-rail"
 							role="group"

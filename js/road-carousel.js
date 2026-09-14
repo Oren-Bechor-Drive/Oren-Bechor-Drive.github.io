@@ -80,9 +80,11 @@ export async function initRoadCarousel(root) {
 	}
 
 	function publishAvailable() {
-		if (stopped) return;
-		let count = 0;
-		while (records[count]?.image) count += 1;
+		let count = shown;
+		if (!stopped) {
+			count = 0;
+			while (records[count]?.image) count += 1;
+		}
 		// Decoding and metadata requests can finish together. Skip geometry until a row can change.
 		const allShown = count && count === shown && metadataComplete && count === records.length;
 		if (
@@ -117,7 +119,8 @@ export async function initRoadCarousel(root) {
 				: 0;
 		// Widening may expose the duplicate everywhere. Hold that row until it can cover the viewport.
 		const restart =
-			resized && shown && (!metadataComplete || shown < records.length) &&
+			!stopped && resized && shown &&
+			(!metadataComplete || shown < records.length) &&
 			oldDistance <= viewportWidth;
 		const initialCount = Math.max(
 			templates.length,
@@ -127,7 +130,7 @@ export async function initRoadCarousel(root) {
 			? Math.min(initialCount, records.length)
 			: initialCount;
 		const canAppend =
-			count >= minimum && count > shown &&
+			!stopped && count >= minimum && count > shown &&
 			(restart || !animation || offset + viewportWidth <= oldDistance);
 		// Equal-width flex items plus gaps and end padding determine the new row width.
 		const distance = canAppend
@@ -135,8 +138,12 @@ export async function initRoadCarousel(root) {
 			: oldDistance;
 		const duration = (distance / carStep) * secondsPerCar;
 
-		if ((resized || canAppend) && distance > 0 && carStep > 0 && secondsPerCar > 0)
+		const canUpdateTiming =
+			(resized || canAppend) && distance > 0 && carStep > 0 && secondsPerCar > 0;
+		if (canUpdateTiming)
 			root.style.setProperty("--road-loop-duration", `${duration}s`);
+		if (animation && resized && !canAppend && canUpdateTiming && oldDistance > 0)
+			animation.currentTime = (offset / oldDistance) * duration * 1000;
 		resized = false;
 		if (restart) delete root.dataset.ready;
 		if (!canAppend) {
@@ -238,19 +245,20 @@ export async function initRoadCarousel(root) {
 
 	async function loadListedPhotos() {
 		const numbers = Object.keys(roadPhotoSources).map(Number).sort((a, b) => a - b);
-		for (let first = 0; first < numbers.length; first += METADATA_CONCURRENCY) {
-			const batch = numbers.slice(first, first + METADATA_CONCURRENCY).map(number =>
-				checkPhoto(number).then(
-					() => ({ status: "fulfilled" }),
-					(reason) => ({ status: "rejected", reason }),
-				),
-			);
-			for (const pending of batch) {
-				const result = await pending;
-				if (result.status === "rejected") throw result.reason;
+		let next = 0;
+		async function loadNext() {
+			while (next < numbers.length) {
+				const number = numbers[next];
+				next += 1;
+				await checkPhoto(number);
 			}
-			schedulePublish();
 		}
+		await Promise.all(
+			Array.from(
+				{ length: Math.min(METADATA_CONCURRENCY, numbers.length) },
+				loadNext,
+			),
+		);
 		metadataComplete = true;
 		schedulePublish();
 	}

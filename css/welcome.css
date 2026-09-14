@@ -268,15 +268,19 @@
 	text-wrap: balance;
 }
 
-.topic-panel[data-updating="true"] > * {
+.topic-panel[data-updating="true"] > div {
 	opacity: 0.25;
 	transform: translateY(6px);
 }
 
-.topic-panel > * {
+.topic-panel[data-motion="pointer"] > div {
 	transition:
 		opacity 180ms var(--ease-out),
 		transform 180ms var(--ease-out);
+}
+
+.topic-panel[data-motion="instant"] > div {
+	transition: none;
 }
 
 .topic-panel h3 {

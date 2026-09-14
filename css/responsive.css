@@ -94,6 +94,70 @@
 			transform: translateX(0) rotate(0);
 		}
 	}
+
+	[data-scroll-reveal][data-scroll-state="pending"] .scroll-reveal-target {
+		opacity: 0;
+	}
+
+	[data-scroll-reveal][data-scroll-motion="ready"] .scroll-reveal-target {
+		transition-property: opacity, transform;
+		transition-timing-function: var(--ease-out);
+	}
+
+	.instructor[data-scroll-state="pending"] .instructor-intro {
+		transform: translateX(24px);
+	}
+
+	.instructor[data-scroll-state="pending"] blockquote {
+		transform: translateX(-24px);
+	}
+
+	.instructor[data-scroll-motion="ready"] .scroll-reveal-target {
+		transition-duration: 520ms;
+	}
+
+	.instructor[data-scroll-motion="ready"] blockquote {
+		transition-delay: 90ms;
+	}
+
+	.about[data-scroll-state="pending"] :is(.about-title-block, .about-copy) {
+		transform: translateY(20px);
+	}
+
+	.about[data-scroll-state="pending"] .road-question {
+		transform: translateY(16px);
+	}
+
+	.about[data-scroll-motion="ready"] :is(.about-title-block, .about-copy) {
+		transition-duration: 480ms;
+	}
+
+	.about[data-scroll-motion="ready"] .road-question {
+		transition-duration: 520ms;
+		transition-delay: 110ms;
+	}
+
+	.topics[data-scroll-state="pending"] .section-heading {
+		transform: translateY(18px);
+	}
+
+	.topics[data-scroll-state="pending"] .topic-explorer {
+		transform: translateY(22px);
+	}
+
+	.topics[data-scroll-motion="ready"] .section-heading {
+		transition-duration: 420ms;
+	}
+
+	.topics[data-scroll-motion="ready"] .topic-explorer {
+		transition-duration: 500ms;
+		transition-delay: 80ms;
+	}
+
+	[data-scroll-reveal][data-scroll-state="visible"] .scroll-reveal-target {
+		opacity: 1;
+		transform: none;
+	}
 }
 
 @media (max-width: 1024px) {
@@ -343,6 +407,12 @@
 		border-inline-start: 0;
 	}
 
+	@media (prefers-reduced-motion: no-preference) {
+		.instructor[data-scroll-state="pending"] .scroll-reveal-target {
+			transform: translateY(16px);
+		}
+	}
+
 	.footer-layout {
 		flex-direction: column;
 		text-align: center;
@@ -514,6 +584,28 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+	.topic-panel[data-updating] > div {
+		opacity: 1;
+		transform: none;
+		transition: none !important;
+	}
+
+	[data-scroll-reveal][data-scroll-state="pending"] .scroll-reveal-target {
+		opacity: 0;
+		transform: none;
+	}
+
+	[data-scroll-reveal][data-scroll-motion="ready"] .scroll-reveal-target {
+		transition-property: opacity;
+		transition-delay: 0ms !important;
+		transition-duration: 80ms !important;
+		transition-timing-function: var(--ease-out);
+	}
+
+	[data-scroll-reveal][data-scroll-state="visible"] .scroll-reveal-target {
+		opacity: 1;
+	}
+
 	.road-carousel-group[aria-hidden="true"] {
 		display: none;
 	}
@@ -562,5 +654,13 @@
 	.site-header {
 		background: var(--surface);
 		backdrop-filter: none;
+	}
+}
+
+@media print {
+	[data-scroll-reveal][data-scroll-state] .scroll-reveal-target {
+		opacity: 1;
+		transform: none;
+		transition: none !important;
 	}
 }
