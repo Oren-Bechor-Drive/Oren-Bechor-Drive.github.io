@@ -58,8 +58,9 @@
 	}
 
 	.hero-visual {
+		--stop-sign-duration: 3s;
 		transform-origin: bottom center;
-		animation: brake 3s var(--ease-out) both;
+		animation: brake var(--stop-sign-duration) linear both;
 	}
 
 	@keyframes hero-enter-right {
@@ -75,15 +76,22 @@
 	}
 
 	@keyframes brake {
-		0% {
-			transform: translateY(12px) rotate(-20deg);
+		0%,
+		8% {
+			transform: translateX(calc(-50vw - 100%)) rotate(-20deg);
 		}
-		20% {
-			transform: translateY(0) rotate(8deg);
+		40% {
+			transform: translateX(10%) rotate(-20deg);
+			animation-timing-function: var(--ease-out);
 		}
-		30%,
+		46% {
+			transform: translateX(6%) rotate(8deg);
+			animation-timing-function: var(--ease-out);
+		}
+		/* Final correction: 46% to 48% is 60ms at the saved 3s duration. */
+		48%,
 		100% {
-			transform: translateY(0) rotate(0);
+			transform: translateX(0) rotate(0);
 		}
 	}
 }
@@ -222,6 +230,8 @@
 	}
 
 	.hero-visual {
+		--stop-sign-duration: 2s;
+		animation-delay: 400ms;
 		grid-area: 1 / 1;
 		justify-self: center;
 		width: clamp(96px, 16svh, 144px);

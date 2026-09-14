@@ -4,6 +4,64 @@ import { chromium } from "playwright";
 
 import { serveRoadMedia } from "./helpers/road-media.mjs";
 
+test("stop sign enters from the left, overshoots, and corrects back once", async (t) => {
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	for (const width of [1366, 769, 768, 390]) {
+		await t.test(`${width}px`, async () => {
+			const page = await browser.newPage({ viewport: { width, height: 844 }, reducedMotion: "no-preference" });
+			t.after(() => page.close());
+			await page.route("**/*", serveRoadMedia);
+			await page.goto("http://gallery.test/");
+			const sample = time => page.locator(".hero-visual").evaluate((element, time) => {
+				const animation = element.getAnimations()[0];
+				animation.pause();
+				animation.currentTime = time;
+				const style = getComputedStyle(element);
+				const matrix = new DOMMatrixReadOnly(style.transform);
+				return {
+					x: matrix.m41,
+					angle: Math.atan2(matrix.b, matrix.a) * 180 / Math.PI,
+					right: element.getBoundingClientRect().right,
+					opacity: Number(style.opacity),
+					overflow: document.documentElement.scrollWidth > innerWidth,
+				};
+			}, time);
+			const start = await sample(0);
+			assert.ok(start.right < 0, "the complete tilted sign starts beyond the left edge");
+			const mobile = width <= 768;
+			const afterDelay = await sample(400);
+			if (mobile) {
+				assert.equal(afterDelay.x, start.x, "mobile sign waits off screen during its added delay");
+			} else {
+				assert.ok(afterDelay.x > start.x, "desktop entrance starts without the mobile delay");
+			}
+			const arrival = await sample(1200);
+			assert.ok(arrival.x > 0 && arrival.angle < 0, "sign passes its resting point while leaning left");
+			const correction = await sample(mobile ? 1320 : 1380);
+			assert.ok(correction.x > 0 && correction.x < arrival.x && correction.angle > 0,
+				"sign moves back while tilting right");
+			const returning = await sample(mobile ? 1340 : 1410);
+			assert.ok(returning.x > 0 && returning.x < correction.x && returning.angle < correction.angle,
+				"the final correction returns position and angle together");
+			for (const time of [mobile ? 1360 : 1440, 3000, 6000]) {
+				const settled = await sample(time);
+				assert.equal(settled.x, 0, "sign stays at its resting point after the final correction");
+				assert.equal(settled.angle, 0, "sign remains upright without replaying");
+				assert.equal(settled.opacity, 1, "production entrance never fades for a loop reset");
+			}
+			assert.ok([start, arrival, correction, returning].every(state => !state.overflow),
+				"entrance and overshoot do not create horizontal scrolling");
+			await page.emulateMedia({ reducedMotion: "reduce" });
+			await page.waitForFunction(() => document.querySelector(".hero-visual").getAnimations().length === 0);
+			assert.deepEqual(await page.locator(".hero-visual").evaluate(element => ({
+				animations: element.getAnimations().length,
+				transform: getComputedStyle(element).transform,
+			})), { animations: 0, transform: "none" });
+		});
+	}
+});
+
 test("hero slides title from the right and description with buttons from below at full opacity", async (t) => {
 	const browser = await chromium.launch();
 	t.after(() => browser.close());

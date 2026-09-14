@@ -26,6 +26,16 @@ Then open [http://localhost:8000](http://localhost:8000).
 
 No installation or build step is required.
 
+## Stop-sign entrance
+
+The hero stop sign enters from the left while tilted, travels slightly past its resting position, then moves back as it tilts right and settles upright. It plays once per page load. Reduced motion shows the sign immediately without movement.
+
+Adjust `--stop-sign-duration` in the `.hero-visual` rules in `css/responsive.css` to change the speed. Desktop uses `3s`; the mobile rule at widths of 768px and below uses `2s` with `animation-delay: 400ms`. A shorter duration makes every movement faster. The sign settles at 48% of its timeline, so it finishes moving after 1.44 seconds on desktop and 1.36 seconds on mobile, including the mobile delay.
+
+To change only the final correction, adjust the `48%` endpoint in `@keyframes brake`, keeping it above the preceding `46%` keyframe. Each percentage point takes 30ms on desktop and 20ms on mobile. The current final correction takes 60ms and 40ms respectively. Keep the `100%` endpoint fixed so the sign stays upright afterward.
+
+Open [the saved looping preview](http://localhost:8000/stop-sign-preview.html) to inspect the original approved motion against a white background and black stopping dot. `stop-sign-preview.html` preserves the 3-second reference timing at every screen size and includes its own speed instructions. It is independent of the production animation; edits there do not update the website. The website's mobile timing and the full motion specification are recorded in [DESIGN.md](DESIGN.md).
+
 ## Add or update student photos
 
 Place photos in `assets/images/students-pass/` with consecutive names: `1.png`, `2.png`, `3.png`, and so on. There is no maximum count or photo-count setting.
