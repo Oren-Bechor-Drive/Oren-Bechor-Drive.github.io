@@ -7,7 +7,7 @@ import { serveRoadMedia } from "./helpers/road-media.mjs";
 const revealCases = [
 	{
 		section: "#instructor",
-		targets: [".instructor-intro", "blockquote"],
+		targets: [".instructor-intro", ".instructor-photo"],
 		start: [{ x: 24, y: 0 }, { x: -24, y: 0 }],
 		durations: [520, 520],
 		delays: [0, 90],
@@ -219,7 +219,7 @@ test("course content stays visible when IntersectionObserver is unavailable", { 
 	}
 });
 
-test("the stacked instructor layout enters upward on phones", { timeout: 15_000 }, async (t) => {
+test("the instructor title and photo enter upward on phones", { timeout: 15_000 }, async (t) => {
 	const browser = await chromium.launch();
 	t.after(() => browser.close());
 	const page = await browser.newPage({
@@ -301,5 +301,36 @@ test("printing exposes all sections before the learner scrolls", { timeout: 10_0
 			assert.deepEqual(await motionState(page.locator(section), targets),
 				targets.map(() => ({ opacity: 1, x: 0, y: 0 })));
 		}
+	}
+});
+
+test("instructor placeholders fill the viewport with the photo left of the descriptions", async (t) => {
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	for (const [width, height] of [[1366, 768], [390, 844], [320, 568]]) {
+		const page = await browser.newPage({ viewport: { width, height }, javaScriptEnabled: false });
+		await page.route("**/*", serveRoadMedia);
+		await page.goto("http://gallery.test/#instructor");
+		const layout = await page.locator("#instructor").evaluate(section => {
+			const photo = section.querySelector(".instructor-photo").getBoundingClientRect();
+			const descriptions = section.querySelector(".instructor-descriptions").getBoundingClientRect();
+			const title = section.querySelector("h2").getBoundingClientRect();
+			return {
+				height: section.getBoundingClientRect().height,
+				availableHeight: innerHeight - parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-height")),
+				photoLeft: photo.right <= descriptions.left,
+				titleOverPhoto: title.left < photo.right && title.bottom > photo.top,
+				photoLabel: section.querySelector('[role="img"]').getAttribute("aria-label"),
+				copy: [...section.querySelectorAll("p")].map(p => p.textContent),
+				overflow: document.documentElement.scrollWidth > innerWidth,
+			};
+		});
+		assert.ok(Math.abs(layout.height - layout.availableHeight) <= 1);
+		assert.equal(layout.photoLeft, true);
+		assert.equal(layout.titleOverPhoto, true);
+		assert.equal(layout.photoLabel, "תמונה");
+		assert.deepEqual(layout.copy, ["תיאור", "תיאור"]);
+		assert.equal(layout.overflow, false);
+		await page.close();
 	}
 });

@@ -303,6 +303,7 @@
 }
 
 .instructor {
+	overflow: clip;
 	padding-block: 0;
 	background: var(--secondary-bright);
 	/* Cancel html's extra 24px inset to meet the sticky header exactly. */
@@ -464,57 +465,64 @@
 
 .instructor-layout {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) minmax(340px, 0.9fr);
-	gap: 64px;
-	align-items: center;
-	padding: 58px;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	grid-template-rows: auto minmax(32px, 1fr) auto;
+	column-gap: 40px;
+	min-height: calc(100svh - var(--header-height));
+	padding-block: clamp(32px, 7svh, 72px);
+	isolation: isolate;
 }
 
 .instructor-intro {
-	display: flex;
-	align-items: center;
-	gap: 26px;
-}
-
-.initials {
-	width: 92px;
-	height: 92px;
-	flex: 0 0 92px;
-	border-radius: var(--radius-card);
-	background: var(--white);
-	color: var(--secondary);
-	font-size: 28px;
-	box-shadow: var(--shadow-one);
+	grid-column: 1 / -1;
+	grid-row: 1;
+	z-index: 1;
+	pointer-events: none;
 }
 
 .instructor h2 {
-	font-size: clamp(30px, 3vw, 42px);
-}
-
-.instructor-intro p {
-	max-width: 35ch;
-	margin: 12px 0 0;
-	color: #554600;
-}
-
-.instructor blockquote {
 	margin: 0;
-	padding-inline-start: 32px;
-	border-inline-start: 1px solid rgb(112 93 0 / 0.35);
+	font-size: clamp(96px, 22vw, 260px);
+	line-height: 1;
+	letter-spacing: -0.025em;
 }
 
-.instructor blockquote p {
-	margin: 0 0 18px;
-	color: var(--text);
-	font-size: clamp(20px, 2vw, 27px);
-	font-weight: 700;
-	line-height: 1.45;
+.instructor h2 span {
+	display: block;
 }
 
-.instructor blockquote footer {
+.instructor-title-line {
+	margin-block-start: 24px;
+	font-size: clamp(36px, 5vw, 64px);
+	line-height: 1.15;
+}
+
+.instructor-descriptions {
+	grid-column: 1;
+	grid-row: 3;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 24px;
+}
+
+.instructor-descriptions p {
+	min-height: clamp(100px, 24svh, 220px);
+	margin: 0;
 	color: #554600;
-	font-size: 14px;
-	font-weight: 700;
+	font-size: 18px;
+}
+
+.instructor-photo {
+	grid-column: 2;
+	grid-row: 1 / 4;
+	display: grid;
+	place-items: center;
+	min-width: 0;
+	min-height: 300px;
+	border-radius: var(--radius-card);
+	background: var(--secondary-wash);
+	color: var(--secondary);
+	font-size: 18px;
 }
 
 .site-footer {
