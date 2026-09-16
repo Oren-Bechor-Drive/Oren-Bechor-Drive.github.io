@@ -139,7 +139,7 @@ Alignment compensates for transparent margins in each source image. Student phot
 
 ### Automated checks
 
-[The Tests workflow](.github/workflows/tests.yml) runs on every push and pull request, and can also be started manually from GitHub Actions. It uses Node.js 24 on Ubuntu, installs the locked dependencies with `npm ci` and Chromium with its system dependencies, then runs `npm run check:media` and the full `npm test` suite. This includes static and behavior tests, optimizer tests, and all Chromium gallery and image-delivery checks. New tests matching `tests/*.test.mjs` are included automatically.
+[The Tests workflow](.github/workflows/tests.yml) runs on every push and pull request, and can also be started manually from GitHub Actions. It uses Node.js 24 on Ubuntu, installs the locked dependencies with `npm ci`, checks them with `npm audit`, and installs Chromium with its system dependencies, then runs `npm run check:media` and the full `npm test` suite. This includes static and behavior tests, optimizer tests, and all Chromium gallery and image-delivery checks. New tests matching `tests/*.test.mjs` are included automatically.
 
 Animation regressions cover focus during section entrances, visibility in print, immediate keyboard topic selection, live reduced-motion changes, and keeping unchanged topic text still. Hero-car checks cover road position, orientation, and elapsed-time preservation on resize. Gallery tests cover refilling metadata request slots, deferred photo additions at a real animation loop boundary, and resizing the preserved row after a later loading failure. Scroll-reveal tests bound their animation-capture waits so a missing reveal fails instead of hanging the suite.
 
@@ -149,11 +149,12 @@ CI audits the checked-in media. Photo and artwork changes still require running 
 
 ### Local checks
 
-Development checks require Node.js 20 or newer and Playwright’s Chromium browser. CI uses Node.js 24. Install the development dependencies and browser once, then run the checks:
+Development checks require Node.js 22.22.2 or newer in the 22.x line, 24.15.0 or newer in the 24.x line, or 26 or newer, plus Playwright’s Chromium browser. CI uses Node.js 24. Install the locked development dependencies and browser once, then run the checks:
 
 ```bash
-npm install
+npm ci
 npx playwright install chromium
+npm audit
 npm test
 npm run check:media
 git diff --check
@@ -178,8 +179,6 @@ Course content, photos, artwork, and branding are excluded.
 See [LICENSE](LICENSE) for the complete scope.
 
 ## Todo
-
-- Update `image-size` when a release fixes its ICNS/JXL/HEIF parser advisories. The audit imports only the JPEG, WebP, and PNG parser subpaths, so the affected parsers are not loaded. `npm audit` still reports the package-level advisory.
 
 - Defer a shared course-content module until a second runtime page needs the same course content.
 - Revisit shared layout and styling when a second page reveals what needs to repeat beyond the existing CSS tokens and styles.

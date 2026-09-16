@@ -67,7 +67,8 @@ for (const [width, late] of [
 			await serveRoadMedia(route);
 		});
 		await page.goto("http://gallery.test/", { waitUntil: "domcontentloaded" });
-		const minimumInitialCount = await page.locator(".road-carousel-group").evaluate(group => {
+		// Initialization may already have added the aria-hidden loop duplicate.
+		const minimumInitialCount = await page.locator('.road-carousel-group:not([aria-hidden="true"])').evaluate(group => {
 			const step = group.firstElementChild.getBoundingClientRect().width + parseFloat(getComputedStyle(group).columnGap);
 			return Math.max(group.children.length, Math.ceil(innerWidth / step) + 1);
 		});
