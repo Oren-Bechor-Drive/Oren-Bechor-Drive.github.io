@@ -39,7 +39,7 @@ for (const failure of ["missing delivery copies", "stale original metadata"]) {
 	});
 }
 
-test("text fonts download before stylesheets arrive and are reused", async (t) => {
+test("fonts and the high-priority logo download before stylesheets arrive and are reused", async (t) => {
 	const browser = await chromium.launch();
 	t.after(() => browser.close());
 	for (const viewport of [{ width: 1366, height: 940 }, { width: 390, height: 844 }]) {
@@ -49,9 +49,11 @@ test("text fonts download before stylesheets arrive and are reused", async (t) =
 			const session = await page.context().newCDPSession(page);
 			await session.send("Network.enable");
 			const fontRequests = [];
+			const logoRequests = [];
 			const externalRequests = [];
 			session.on("Network.requestWillBeSent", ({ request }) => {
 				if (request.url.endsWith(".woff2")) fontRequests.push(request);
+				if (/\/course-icon(?:-\d+)?\.webp$/.test(request.url)) logoRequests.push(request);
 				if (new URL(request.url).origin !== "http://gallery.test") externalRequests.push(request.url);
 			});
 			let releaseStyles;
@@ -64,6 +66,7 @@ test("text fonts download before stylesheets arrive and are reused", async (t) =
 			const criticalResponses = Promise.all([
 				"/assets/fonts/varela-round-v21-hebrew.woff2",
 				"/assets/fonts/varela-round-v21-latin.woff2",
+				"/assets/images/optimized/course-icon.webp",
 			].map(asset => page.waitForResponse(response => response.url().endsWith(asset), { timeout: 3000 })));
 			try {
 				await page.goto("http://gallery.test/", { waitUntil: "commit" });
@@ -78,6 +81,8 @@ test("text fonts download before stylesheets arrive and are reused", async (t) =
 			});
 			assert.deepEqual(loadedFonts, ["Varela Round", "Varela Round"], "Hebrew and Latin must decode and render");
 			assert.equal(fontRequests.length, 2, "CSS must reuse both font preloads without fetching unused subsets");
+			assert.equal(logoRequests.length, 1, "the header logo must be discovered without JavaScript or CSS");
+			assert.equal(logoRequests[0].initialPriority, "High", "the logo LCP candidate must start at high priority");
 			assert.deepEqual(externalRequests, [], "initial rendering must not depend on a font provider");
 		});
 	}
@@ -91,6 +96,9 @@ test("responsive delivery reduces desktop and mobile bytes and preserves density
 		{ width: 1366, height: 940, deviceScaleFactor: 2 },
 		{ width: 390, height: 844, deviceScaleFactor: 2 },
 		{ width: 412, height: 823, deviceScaleFactor: 1.75 },
+		{ width: 412, height: 823, deviceScaleFactor: 1 },
+		{ width: 768, height: 1024, deviceScaleFactor: 2 },
+		{ width: 390, height: 844, deviceScaleFactor: 2, javaScriptEnabled: false },
 		{ width: 1366, height: 940, deviceScaleFactor: 1, javaScriptEnabled: false },
 	]) {
 		await t.test(JSON.stringify(scenario), async () => {
@@ -124,7 +132,8 @@ test("responsive delivery reduces desktop and mobile bytes and preserves density
 				.reduce((sum, [, bytes]) => sum + bytes, 0);
 			assert.ok(instructorBytes > 0, "the instructor photo uses an optimized copy");
 			assert.ok(!downloaded.has("assets/images/oren.jpg"), "the original instructor photo should not download");
-			assert.ok(instructorBytes <= (scenario.deviceScaleFactor === 1 ? 100 : 250) * 1024,
+			const instructorBudget = scenario.deviceScaleFactor === 1 ? 50 : scenario.width <= 440 ? 90 : scenario.width <= 768 ? 300 : 180;
+			assert.ok(instructorBytes <= instructorBudget * 1024,
 				`instructor image budget exceeded: ${instructorBytes}`);
 			const roadMediaBytes = total - instructorBytes;
 			t.diagnostic(`${scenario.width}px @${scenario.deviceScaleFactor}x: ${(total / 1024).toFixed(1)} KiB of unique image bodies`);
@@ -135,8 +144,9 @@ test("responsive delivery reduces desktop and mobile bytes and preserves density
 				assert.ok(roadMediaBytes < (115 + 9 * photoCount) * 1024, `desktop road image budget exceeded: ${roadMediaBytes}`);
 			if (scenario.width <= 412 && scenario.deviceScaleFactor <= 2) {
 				assert.ok(roadMediaBytes < (120 + 12 * photoCount) * 1024, `mobile road image budget exceeded: ${roadMediaBytes}`);
-				assert.ok(downloaded.get("assets/images/optimized/wheel-256.webp") <= 13 * 1024,
-					"high-density wheel exceeds its compression budget");
+				if (scenario.deviceScaleFactor > 1)
+					assert.ok(downloaded.get("assets/images/optimized/wheel-256.webp") <= 13 * 1024,
+						"high-density wheel exceeds its compression budget");
 			}
 			if (scenario.deviceScaleFactor === 1 && scenario.javaScriptEnabled !== false) {
 				for (const [source, budget] of [
@@ -155,8 +165,10 @@ test("responsive delivery reduces desktop and mobile bytes and preserves density
 				const required = Math.min(source.width, Math.max(img.width, img.cropped ? img.height * source.width / source.height : 0) * scenario.deviceScaleFactor);
 				// Allow subpixel cover geometry and rounded encoded dimensions, up to half a percent.
 				assert.ok(delivered.width >= required - Math.max(2, required * 0.005), `${img.current}: ${delivered.width}px cannot cover ${required}px`);
-				if (img.photo && scenario.width === 412)
+				if (img.photo && scenario.width === 412 && scenario.deviceScaleFactor > 1)
 					assert.ok(delivered.width <= required * 1.2, `${img.current}: oversized for ${required}px mobile photo`);
+				if (img.src === "assets/images/oren.jpg")
+					assert.ok(delivered.width <= required * 1.2, `${img.current}: oversized for ${required}px instructor photo`);
 			}
 			await page.close();
 		});

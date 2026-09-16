@@ -15,17 +15,18 @@
 
 ## Technical boundaries
 
-- Keep production code in plain HTML, CSS, and JavaScript with no build step to run or serve the checked-in site. Gallery photo changes require the maintenance command below.
+- Keep production code in plain HTML, CSS, and JavaScript with no build step to run or serve the checked-in site. Image delivery changes require the maintenance steps in `README.md`.
 - Preserve semantic HTML, keyboard access, visible focus, mobile behavior, progressive enhancement, and reduced-motion support.
 - Keep navigation and all topic descriptions usable when JavaScript is disabled or the entry module fails to load. Use the baseline HTML descriptions as the interactive preview's content source.
 - Preserve user-supplied image bytes unless the user explicitly requests an image edit. Keep marked road-media metadata accurate when paths or images change.
+- When changing image sources, delivery widths, compression, or sizing hints, follow [Optimize delivery images](README.md#optimize-delivery-images) for regeneration, publishing, and browser delivery checks.
 - For gallery maintenance, follow `README.md`: preserve numeric photo order and the generated photo list without a fixed maximum. Keep car templates, sprite files, and CSS alignment consistent. The supplied `cars.png` composite is source artwork, not dead code.
 - After adding, replacing, removing, or renumbering student photos, follow the publishing steps in `README.md`: run `npm run optimize:media`, `npm run check:media`, and `npm test`; publish the originals, generated delivery files, `js/road-photo-sources.js`, and updated `index.html` together.
 - Make focused changes. Introduce shared modules only after a real second consumer creates a clear need.
 
 ## Verification
 
-- Add or update tests for behavior changes and run `npm test`, including the Chromium gallery check. Follow `README.md` for test dependencies and browser installation.
+- Add or update tests for behavior changes and run `npm test`, including the Chromium gallery and image-delivery checks. Follow `README.md` for test dependencies and browser installation.
 - Run `npm run check:media` after changing HTML image declarations, preload metadata, or files under `assets/`.
 - Run `git diff --check` before completion.
 - For visual or interaction changes, verify the affected path at desktop and mobile sizes in the collaborative browser. If it is unavailable, use local Playwright Chromium and report that limitation.

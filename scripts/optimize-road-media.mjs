@@ -97,7 +97,9 @@ await delivery(
 );
 await delivery("assets/icons/course-icon.png", "course-icon", [42, 84], { quality: 85 }, "42px");
 await delivery(
-	"assets/images/oren.jpg", "oren", [400, 640, 1080], { quality: 78 },
+	// 544px covers the desktop frame's slight cover crop; intermediate widths avoid
+	// sending 1080px to phones. The largest copy covers the 728px tablet frame at 2x.
+	"assets/images/oren.jpg", "oren", [400, 480, 544, 680, 768, 960, 1080, 1460], { quality: 50 },
 	"(max-width: 440px) calc(100vw - 32px), (max-width: 768px) calc(100vw - 40px), (max-width: 1024px) calc((100vw - 104px) / 2), (max-width: 1216px) calc((100vw - 136px) / 2), 540px",
 );
 // A separate favicon prevents the browser tab from downloading the 512px original.
