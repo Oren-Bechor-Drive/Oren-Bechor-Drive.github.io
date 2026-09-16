@@ -106,6 +106,7 @@ test("photo publications do not read layout after changing the connected row in 
 
 test("numbered photos extend beyond the car count and repeat in numeric order", async (t) => {
 	const root = await setup(t);
+	const originalTemplates = [...root.querySelectorAll(".road-car")].map(car => car.cloneNode(true));
 	const originalCars = [...root.querySelectorAll(".road-car > img")].map((i) =>
 		i.getAttribute("src"),
 	);
@@ -135,10 +136,16 @@ test("numbered photos extend beyond the car count and repeat in numeric order", 
 	const carSources = [...groups[0].querySelectorAll(".road-car > img")].map(
 		(i) => i.getAttribute("src"),
 	);
-	assert.deepEqual(carSources.slice(0, originalCars.length), [
-		...originalCars.slice(1),
-		originalCars[0],
-	]);
+	assert.deepEqual(new Set(carSources), new Set(originalCars), "all supplied car colors remain available");
+	const secondRoot = root.cloneNode(true);
+	secondRoot.querySelectorAll('.road-carousel-group[aria-hidden="true"]').forEach(group => group.remove());
+	secondRoot.querySelector(".road-carousel-group").replaceChildren(...originalTemplates);
+	root.after(secondRoot);
+	t.mock.method(Math, "random", () => 0.999);
+	await initRoadCarousel(secondRoot);
+	const secondSources = [...secondRoot.querySelector(".road-carousel-group").querySelectorAll(".road-car > img")].map(image => image.getAttribute("src"));
+	assert.notDeepEqual(secondSources, carSources, "random input changes the car order");
+	assert.deepEqual([...secondRoot.querySelector(".road-carousel-group").querySelectorAll(".road-photo img")].map(image => image.src), photos.map(image => image.src), "car randomization does not change photo order");
 	assert.ok(carSources.every((src) => originalCars.includes(src)));
 });
 

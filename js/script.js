@@ -2,13 +2,15 @@ import { initTopicExplorer } from "./topic-explorer.js";
 import { initRoadCarousel } from "./road-carousel.js";
 import { initDisclosureMotion } from "./disclosure-motion.js";
 import { initScrollReveals } from "./scroll-reveal.js";
+import { initHeroRoadCar } from "./hero-road-car.js";
 
 const menuToggle = document.querySelector("[data-menu-toggle]");
 const menu = document.querySelector("[data-menu]");
 const topicExplorer = document.querySelector("[data-topic-explorer]");
-const topicSection = document.querySelector("#topics");
+const courseSection = document.querySelector("#about");
 
 initScrollReveals(document);
+initHeroRoadCar(document.querySelector(".hero"));
 
 // Settle off-screen controls before the browser scrolls the focused button into view.
 document.querySelector(".hero-actions")?.addEventListener("focusin", () => {
@@ -20,6 +22,7 @@ document.querySelector(".hero-actions")?.addEventListener("focusin", () => {
 const setMenu = menuToggle && menu
 	? initDisclosureMotion(menuToggle, menu, "(max-width: 768px)", true)
 	: () => {};
+if (menuToggle && menu) document.documentElement.dataset.menuEnhanced = "true";
 
 function closeMenu({ returnFocus = false } = {}) {
 	setMenu(false);
@@ -47,7 +50,7 @@ document.addEventListener("keydown", (event) => {
 document.querySelectorAll("[data-topics-link]").forEach((link) => {
 	link.addEventListener("click", () => {
 		window.requestAnimationFrame(() =>
-			topicSection?.focus({ preventScroll: true }),
+			courseSection?.focus({ preventScroll: true }),
 		);
 	});
 });

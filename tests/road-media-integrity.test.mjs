@@ -22,6 +22,7 @@ const testJpeg = Buffer.from(
 test("road-media declarations match their files", async () => {
 	const audit = await auditRoadMedia({ rootDir, htmlPath: "index.html" });
 	assert.deepEqual(audit.issues, []);
+	assert.ok(audit.assets.some(asset => asset.source === "assets/images/road.jpg"));
 	assert.ok(
 		audit.assets.some(
 			(asset) => asset.source === "assets/images/stop-sign.png",
@@ -58,6 +59,20 @@ test("image metadata supports JPEG, WebP, and PNG", () => {
 		{ format: "png", mime: "image/png", width: 1, height: 1 },
 	);
 });
+
+for (const missing of [true, false]) {
+	test(`image preloads without an img declaration report ${missing ? "missing files" : "MIME mismatches"}`, async (t) => {
+		const temporaryRoot = await mkdtemp(path.join(os.tmpdir(), "road-preload-"));
+		t.after(() => rm(temporaryRoot, { recursive: true, force: true }));
+		await writeFile(path.join(temporaryRoot, "index.html"),
+			'<link rel="preload" as="image" href="road.jpg?rev=1" type="image/webp">');
+		if (!missing) await writeFile(path.join(temporaryRoot, "road.jpg"), testJpeg);
+		const audit = await auditRoadMedia({ rootDir: temporaryRoot });
+		assert.deepEqual(audit.issues, [missing
+			? "road.jpg: file does not exist"
+			: "road.jpg: preload type is image/webp, expected image/jpeg"]);
+	});
+}
 
 test("corrupt and unsupported images become issues while later images are audited", async () => {
 	const temporaryRoot = await mkdtemp(

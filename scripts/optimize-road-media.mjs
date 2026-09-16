@@ -8,7 +8,7 @@ const outputDirectory = "assets/images/optimized";
 const declarations = new Map();
 const generatedPaths = new Set();
 const sources = {};
-let originalBytes = 0;
+const originalSourceBytes = new Map();
 let smallBytes = 0;
 
 // Match welcome.css and responsive.css: road height × 1.3 × car scale.
@@ -22,7 +22,7 @@ function roadSizes(fraction) {
 	return `(max-width: 768px) ${clamp(140, 21, 188, 1.25)}, ${clamp(180, 27, 264, 1.15)}`;
 }
 
-async function delivery(source, name, widths, encoding, sizes, smallEncoding = {}) {
+async function delivery(source, name, widths, encoding, sizes, smallEncoding = {}, declarationKey = source) {
 	const bytes = await readFile(source);
 	const metadata = await sharp(bytes).metadata();
 	const candidates = [];
@@ -44,8 +44,8 @@ async function delivery(source, name, widths, encoding, sizes, smallEncoding = {
 		width: metadata.width,
 		height: metadata.height,
 	};
-	declarations.set(source, declaration);
-	originalBytes += bytes.length;
+	declarations.set(declarationKey, declaration);
+	originalSourceBytes.set(source, bytes.length);
 	return { srcset: declaration.srcset, sizes, originalBytes: bytes.length };
 }
 
@@ -78,8 +78,15 @@ for (const name of (await readdir("assets/images/cars")).filter((name) => /^car-
 	const source = `assets/images/cars/${name}`;
 	const { width } = await sharp(source).metadata();
 	const smallWidth = Math.ceil((254 * 1.3 * 1.15 * fraction) / 10) * 10;
-	await delivery(source, `cars/${car}`, [smallWidth, width], { quality: 80 }, roadSizes(fraction));
+	// Quantize the red sprite's alpha channel; RGB quality and source artwork stay unchanged.
+	const encoding = { quality: 80, ...(car === "car-red" ? { alphaQuality: 73 } : {}) };
+	await delivery(source, `cars/${car}`, [smallWidth, width], encoding, roadSizes(fraction));
 }
+
+await delivery(
+	"assets/images/cars/car-red.png", "hero-car", [80, 160], { quality: 80 },
+	"clamp(40px, 5vw, 80px)", {}, "hero-road-car",
+);
 
 await delivery(
 	"assets/images/wheel.png", "wheel", [128, 256], { quality: 65, alphaQuality: 60 }, "128px",
@@ -89,6 +96,10 @@ await delivery(
 	"(max-width: 768px) clamp(96px, 16svh, 144px), clamp(220px, 40svh, 400px)",
 );
 await delivery("assets/icons/course-icon.png", "course-icon", [42, 84], { quality: 85 }, "42px");
+await delivery(
+	"assets/images/oren.jpg", "oren", [400, 640, 1080], { quality: 78 },
+	"(max-width: 440px) calc(100vw - 32px), (max-width: 768px) calc(100vw - 40px), (max-width: 1024px) calc((100vw - 104px) / 2), (max-width: 1216px) calc((100vw - 136px) / 2), 540px",
+);
 // A separate favicon prevents the browser tab from downloading the 512px original.
 await sharp("assets/icons/course-icon.png")
 	.resize({ width: 32, withoutEnlargement: true })
@@ -104,7 +115,8 @@ await writeFile(
 const html = await readFile("index.html", "utf8");
 const updated = html.replace(/<img\b[^>]*>/g, (tag) => {
 	const source = tag.match(/\bsrc="([^"]+)"/)?.[1];
-	const declaration = declarations.get(source);
+	const classes = tag.match(/\bclass="([^"]*)"/)?.[1].split(/\s+/) ?? [];
+	const declaration = declarations.get(classes.includes("hero-road-car") ? "hero-road-car" : source);
 	if (!declaration) return tag;
 	const indent = tag.match(/\n([\t ]+)\S/)?.[1] ?? "\t";
 	for (const [name, value] of Object.entries(declaration)) {
@@ -121,4 +133,5 @@ for (const name of await readdir(outputDirectory, { recursive: true })) {
 	const source = `${outputDirectory}/${name}`;
 	if (name.endsWith(".webp") && !generatedPaths.has(source)) await rm(source);
 }
+const originalBytes = [...originalSourceBytes.values()].reduce((sum, bytes) => sum + bytes, 0);
 console.log(`Responsive image delivery: ${originalBytes} original bytes; ${smallBytes} bytes in smallest WebP variants. Actual downloads depend on viewport and density.`);

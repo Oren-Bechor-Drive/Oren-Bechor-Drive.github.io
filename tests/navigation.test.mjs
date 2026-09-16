@@ -50,6 +50,7 @@ for (const malformed of [false, true]) {
 			import.meta.url,
 		);
 		entryUrl.searchParams.set("case", String(malformed));
+		const warning = t.mock.method(console, "warn", () => {});
 		const loading = import(entryUrl.href);
 		if (malformed)
 			await assert.rejects(loading, /Missing required topic panel/);
@@ -70,7 +71,10 @@ for (const malformed of [false, true]) {
 
 		document.querySelector("[data-topics-link]").click();
 		await new Promise((resolve) => dom.window.requestAnimationFrame(resolve));
-		assert.equal(document.activeElement, document.querySelector("#topics"));
+		assert.equal(document.activeElement, document.querySelector("#about"));
+		assert.equal(warning.mock.callCount(), 1, "the fixture's unavailable gallery reports one warning");
+		assert.match(warning.mock.calls[0].arguments[0], /Student gallery could not refresh/);
+		assert.match(warning.mock.calls[0].arguments[1].message, /photo 1: HTTP 404/);
 		if (!malformed) {
 			const card = document.querySelectorAll(".topic-card")[1];
 			card.click();

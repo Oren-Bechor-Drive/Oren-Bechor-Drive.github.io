@@ -13,9 +13,10 @@ for (const [width, late] of [
 	[390, false],
 	[5000, false],
 	[1366, true],
+	[1366, "boundary"],
 	[1366, "resize"],
 ]) {
-	test(`progressive loading keeps position, order and deferred icons at ${width}px${late === "resize" ? " after widening during loading" : late ? " with reduced motion during a pending append" : ""}`, async (t) => {
+	test(`progressive loading keeps position, order and deferred icons at ${width}px${late === "resize" ? " after widening during loading" : late === "boundary" ? " at the next loop boundary" : late ? " with reduced motion during a pending append" : ""}`, async (t) => {
 		const browser = await chromium.launch();
 		t.after(() => browser.close());
 		const page = await browser.newPage({ viewport: { width, height: 844 } });
@@ -99,7 +100,8 @@ for (const [width, late] of [
 			return document.querySelector(".road-car").getBoundingClientRect().left;
 		}, late);
 		release();
-		if (late === true) {
+		let boundaryLeft;
+		if (late === true || late === "boundary") {
 			await page.waitForFunction(number => window.decodedPhotoNumbers.includes(number), lastPhoto);
 			await page.evaluate(() => new Promise(resolve =>
 				requestAnimationFrame(() => requestAnimationFrame(resolve)),
@@ -112,7 +114,20 @@ for (const [width, late] of [
 					.count(),
 				photoCount - 1,
 			);
-			await page.emulateMedia({ reducedMotion: "reduce" });
+			if (late === true) await page.emulateMedia({ reducedMotion: "reduce" });
+			else {
+				boundaryLeft = await page.locator(".road-carousel-track").evaluate(track => new Promise((resolve, reject) => {
+					const timeout = setTimeout(() => reject(new Error("The road did not reach its next loop boundary")), 3000);
+					const animation = track.getAnimations()[0];
+					track.addEventListener("animationiteration", () => {
+						clearTimeout(timeout);
+						animation.pause();
+						resolve(track.querySelector(".road-car").getBoundingClientRect().left);
+					}, { once: true });
+					animation.currentTime = Number(animation.effect.getTiming().duration) - 100;
+					animation.play();
+				}));
+			}
 		}
 		await page.waitForFunction(
 			count =>
@@ -135,6 +150,8 @@ for (const [width, late] of [
 				(group) => group.innerHTML,
 			),
 		}));
+		if (late === "boundary")
+			assert.ok(Math.abs(state.left - boundaryLeft) < 1, "publishing at the loop boundary preserves the visible cars' position");
 		if (!late)
 			assert.ok(
 				Math.abs(state.left - leftBefore) < 1,

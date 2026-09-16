@@ -59,7 +59,7 @@
 
 html {
 	scroll-behavior: smooth;
-	scroll-padding-top: calc(var(--header-height) + 24px);
+	scroll-padding-top: var(--header-height);
 	scrollbar-width: none;
 	background: var(--surface);
 }
@@ -107,7 +107,7 @@ textarea {
 }
 
 :focus-visible {
-	outline: 3px solid rgb(109 205 214 / 0.7);
+	outline: 3px solid var(--primary);
 	outline-offset: 4px;
 }
 

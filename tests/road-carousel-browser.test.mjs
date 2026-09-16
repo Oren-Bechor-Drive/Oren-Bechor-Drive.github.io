@@ -131,15 +131,17 @@ test(
 								(animation) =>
 									animation.animationName === "road-scroll",
 							);
-						const hero = document.querySelector(".hero");
+						const instructor = document.querySelector("#instructor");
 						const roadBounds = root.getBoundingClientRect();
 						return {
-							insideHero: hero.contains(root),
+							insideInstructor: instructor.contains(root),
 							roadBottom: roadBounds.bottom,
-							heroBottom: hero.getBoundingClientRect().bottom,
+							instructorBottom: instructor.getBoundingClientRect().bottom,
+							instructorHeight: instructor.getBoundingClientRect().height,
+							headerHeight: document.querySelector(".site-header").getBoundingClientRect().height,
 							roadTop: roadBounds.top,
-							actionsBottom: document
-								.querySelector(".hero-actions")
+							introductionBottom: document
+								.querySelector(".instructor-layout")
 								.getBoundingClientRect().bottom,
 							pageWidth: document.documentElement.scrollWidth,
 							cadence: Number(
@@ -159,21 +161,21 @@ test(
 						};
 					});
 				assert.equal(
-					state.insideHero,
+					state.insideInstructor,
 					true,
-					"the gallery must belong to the hero",
+					"the gallery must belong to the instructor introduction",
 				);
 				assert.ok(
-					state.roadBottom <= height + 1,
-					"the complete road must fit in the initial viewport",
+					state.instructorHeight + state.headerHeight <= height + 1,
+					"the instructor and complete road must fit below the header",
 				);
 				assert.ok(
-					Math.abs(state.heroBottom - state.roadBottom) < 1,
-					"the road must finish the hero",
+					Math.abs(state.instructorBottom - state.roadBottom) < 1,
+					"the road must finish the instructor section",
 				);
 				assert.ok(
-					state.actionsBottom <= state.roadTop,
-					"hero actions must not overlap the road",
+					state.introductionBottom <= state.roadTop,
+					"the introduction must not overlap the road",
 				);
 				assert.ok(
 					state.pageWidth <= width,

@@ -24,12 +24,6 @@
 	text-decoration: none;
 }
 
-.initials {
-	display: grid;
-	place-items: center;
-	font-weight: 700;
-}
-
 .brand-mark {
 	display: block;
 	width: 42px;

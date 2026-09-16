@@ -14,17 +14,10 @@ const revealCases = [
 	},
 	{
 		section: "#about",
-		targets: [".about-title-block", ".about-copy", ".road-question"],
-		start: [{ x: 0, y: 20 }, { x: 0, y: 20 }, { x: 0, y: 16 }],
-		durations: [480, 480, 520],
-		delays: [0, 0, 110],
-	},
-	{
-		section: "#topics",
-		targets: [".section-heading", ".topic-explorer"],
-		start: [{ x: 0, y: 18 }, { x: 0, y: 22 }],
-		durations: [420, 500],
-		delays: [0, 80],
+		targets: [".about-title-block", ".learning-steps", ".course-topics", ".learning-note"],
+		start: [{ x: 0, y: 20 }, { x: 0, y: 20 }, { x: 0, y: 20 }, { x: 0, y: 16 }],
+		durations: [480, 480, 480, 520],
+		delays: [0, 0, 0, 110],
 	},
 ];
 
@@ -170,7 +163,7 @@ test("reduced motion keeps the reveal as a short opacity fade", { timeout: 15_00
 	const timing = await captureReveal(root, targets);
 	assert.deepEqual(
 		timing,
-		Array.from({ length: 3 }, () => ({
+		Array.from({ length: 4 }, () => ({
 			property: "opacity",
 			delay: 0,
 			duration: 80,
@@ -202,13 +195,24 @@ test("course content stays visible when IntersectionObserver is unavailable", { 
 	t.after(() => browser.close());
 	const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
 	await page.addInitScript(() => {
-		Object.defineProperty(window, "IntersectionObserver", {
-			configurable: true,
-			value: undefined,
-		});
+		delete window.IntersectionObserver;
 	});
-	await page.route("**/*", serveRoadMedia);
+	const errors = [];
+	let iconRequests = 0;
+	page.on("pageerror", error => errors.push(error.message));
+	await page.route("**/*", route => {
+		if (new URL(route.request().url()).hostname === "kit.fontawesome.com") {
+			iconRequests++;
+			return route.fulfill({ contentType: "text/javascript", body: "" });
+		}
+		return serveRoadMedia(route);
+	});
 	await page.goto("http://gallery.test/");
+	await page.locator(".topic-select").click();
+	await page.locator(".topic-option").nth(1).click();
+	await page.waitForFunction(() => document.querySelector("[data-topic-panel-title]").textContent === document.querySelectorAll(".topic-card")[1].textContent.trim());
+	assert.equal(iconRequests, 1, "without IntersectionObserver the icon kit loads after page load");
+	assert.deepEqual(errors, [], "missing optional APIs must not interrupt page initialization");
 	for (const { section, targets } of revealCases) {
 		const root = page.locator(section);
 		assert.equal(await root.getAttribute("data-scroll-state"), null);
@@ -264,11 +268,11 @@ test("topic focus immediately settles pending and running reveals", { timeout: 1
 		await page.route("**/*", serveRoadMedia);
 		for (const running of [false, true]) {
 			await page.goto("http://gallery.test/");
-			const root = page.locator("#topics");
-			await page.waitForFunction(() => document.querySelector("#topics").dataset.scrollMotion === "ready");
+			const root = page.locator("#about");
+			await page.waitForFunction(() => document.querySelector("#about").dataset.scrollMotion === "ready");
 			if (running) {
 				await root.evaluate(element => element.scrollIntoView({ behavior: "instant" }));
-				await page.waitForFunction(() => document.querySelector(".topic-explorer").getAnimations().length > 0);
+				await page.waitForFunction(() => document.querySelector(".course-topics").getAnimations().length > 0);
 			}
 			const focused = await page.evaluate(() => {
 				const control = document.querySelector(innerWidth < 640 ? ".topic-select" : ".topic-card");
@@ -276,10 +280,8 @@ test("topic focus immediately settles pending and running reveals", { timeout: 1
 				return control === document.activeElement;
 			});
 			assert.equal(focused, true);
-			assert.deepEqual(await motionState(root, revealCases[2].targets), [
-				{ opacity: 1, x: 0, y: 0 },
-				{ opacity: 1, x: 0, y: 0 },
-			]);
+			assert.deepEqual(await motionState(root, revealCases[1].targets),
+				revealCases[1].targets.map(() => ({ opacity: 1, x: 0, y: 0 })));
 			assert.ok(await root.locator(".scroll-reveal-target").evaluateAll(elements =>
 				elements.every(element => element.getAnimations().length === 0)));
 		}
@@ -304,33 +306,104 @@ test("printing exposes all sections before the learner scrolls", { timeout: 10_0
 	}
 });
 
-test("instructor placeholders fill the viewport with the photo left of the descriptions", async (t) => {
+test("instructor introduction and gallery fit typical viewports and grow on short screens", async (t) => {
 	const browser = await chromium.launch();
 	t.after(() => browser.close());
 	for (const [width, height] of [[1366, 768], [390, 844], [320, 568]]) {
 		const page = await browser.newPage({ viewport: { width, height }, javaScriptEnabled: false });
 		await page.route("**/*", serveRoadMedia);
 		await page.goto("http://gallery.test/#instructor");
+		await page.evaluate(async () => {
+			await document.fonts.ready;
+			document.querySelector("#instructor").scrollIntoView({ behavior: "instant" });
+		});
+		await page.waitForFunction(() => {
+			const image = document.querySelector(".instructor-photo img");
+			return image.complete && image.naturalWidth > 0;
+		});
 		const layout = await page.locator("#instructor").evaluate(section => {
 			const photo = section.querySelector(".instructor-photo").getBoundingClientRect();
-			const descriptions = section.querySelector(".instructor-descriptions").getBoundingClientRect();
+			const descriptions = section.querySelector(".instructor-description").getBoundingClientRect();
 			const title = section.querySelector("h2").getBoundingClientRect();
 			return {
 				height: section.getBoundingClientRect().height,
+				roadTop: section.querySelector("[data-road-carousel]")?.getBoundingClientRect().top,
+				roadBottom: section.querySelector("[data-road-carousel]")?.getBoundingClientRect().bottom,
+				contentBottom: section.querySelector(".instructor-layout").getBoundingClientRect().bottom,
 				availableHeight: innerHeight - parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-height")),
 				photoLeft: photo.right <= descriptions.left,
+				stacked: title.bottom <= photo.top && photo.bottom <= descriptions.top,
 				titleOverPhoto: title.left < photo.right && title.bottom > photo.top,
-				photoLabel: section.querySelector('[role="img"]').getAttribute("aria-label"),
+				photoLabel: section.querySelector('.instructor-photo img').alt,
+				photoSource: section.querySelector('.instructor-photo img').currentSrc,
 				copy: [...section.querySelectorAll("p")].map(p => p.textContent),
 				overflow: document.documentElement.scrollWidth > innerWidth,
 			};
 		});
-		assert.ok(Math.abs(layout.height - layout.availableHeight) <= 1);
-		assert.equal(layout.photoLeft, true);
-		assert.equal(layout.titleOverPhoto, true);
-		assert.equal(layout.photoLabel, "תמונה");
-		assert.deepEqual(layout.copy, ["תיאור", "תיאור"]);
+		assert.ok(layout.height >= layout.availableHeight - 1, "the section fills the available viewport");
+		if (height >= 768) assert.ok(Math.abs(layout.height - layout.availableHeight) <= 1);
+		assert.ok(layout.roadTop >= layout.contentBottom - 1, "gallery follows the compact introduction");
+		if (height >= 768) {
+			assert.ok(layout.roadBottom <= height + 1, "the gallery fits on typical laptop and phone screens");
+		}
+		if (width <= 768) assert.equal(layout.stacked, true, "phone order must be title, photo, description");
+		else assert.equal(layout.photoLeft, true);
+		assert.equal(layout.photoLabel, "אורן בכור, מנחה הקורס");
+		assert.match(layout.photoSource, /\/optimized\/oren(?:-\d+)?\.webp$/);
+		assert.equal(layout.copy.length, 1, "the instructor has one continuous description");
 		assert.equal(layout.overflow, false);
 		await page.close();
+	}
+});
+
+
+test("hero actions take keyboard and pointer users to the instructor and topic preview", async (t) => {
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	for (const width of [1366, 390]) {
+		const page = await browser.newPage({ viewport: { width, height: 844 }, reducedMotion: "reduce" });
+		t.after(() => page.close());
+		await page.route("**/*", serveRoadMedia);
+		await page.goto("http://gallery.test/");
+		const instructorLink = page.locator(".hero-actions a").first();
+		assert.equal(await instructorLink.getAttribute("href"), "#instructor");
+		await instructorLink.focus();
+		await page.keyboard.press("Enter");
+		await page.waitForFunction(() => location.hash === "#instructor");
+		assert.equal(await page.evaluate(() => document.activeElement.id), "instructor");
+		assert.ok(await page.locator("#instructor").evaluate(element =>
+			Math.abs(element.getBoundingClientRect().top - document.querySelector(".site-header").getBoundingClientRect().bottom) < 2));
+		await page.locator(".hero-actions [data-topics-link]").click();
+		await page.waitForFunction(() => location.hash === "#about" && document.activeElement.id === "about");
+		assert.ok(await page.locator("#about").evaluate(element => {
+			const rect = element.getBoundingClientRect();
+			return Math.abs(rect.top - document.querySelector(".site-header").getBoundingClientRect().bottom) < 2;
+		}));
+		await page.waitForFunction(() => getComputedStyle(document.querySelector("#about .about-title-block")).opacity === "1");
+	}
+});
+
+
+test("section links respect the sticky header or baseline scroll offset with and without JavaScript", async (t) => {
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	for (const width of [1366, 390]) {
+		for (const javaScriptEnabled of [true, false]) {
+			const page = await browser.newPage({ viewport: { width, height: 844 }, reducedMotion: "reduce", javaScriptEnabled });
+			t.after(() => page.close());
+			await page.route("**/*", serveRoadMedia);
+			await page.goto("http://gallery.test/");
+			for (const href of ["#instructor", "#about", "#top"]) {
+				const link = page.locator(`.hero-actions a[href="${href}"], .brand[href="${href}"]`).first();
+				await link.click();
+				await page.waitForFunction(id => {
+					const header = document.querySelector(".site-header");
+					const expectedTop = getComputedStyle(header).position === "sticky"
+						? header.getBoundingClientRect().bottom
+						: 0;
+					return Math.abs(document.querySelector(id).getBoundingClientRect().top - expectedTop) < 2;
+				}, href);
+			}
+		}
 	}
 });

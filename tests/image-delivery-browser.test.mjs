@@ -39,7 +39,7 @@ for (const failure of ["missing delivery copies", "stale original metadata"]) {
 	});
 }
 
-test("the LCP background and text fonts download before stylesheets arrive", async (t) => {
+test("text fonts download before stylesheets arrive and are reused", async (t) => {
 	const browser = await chromium.launch();
 	t.after(() => browser.close());
 	for (const viewport of [{ width: 1366, height: 940 }, { width: 390, height: 844 }]) {
@@ -48,11 +48,9 @@ test("the LCP background and text fonts download before stylesheets arrive", asy
 			t.after(() => page.close());
 			const session = await page.context().newCDPSession(page);
 			await session.send("Network.enable");
-			const roadRequests = [];
 			const fontRequests = [];
 			const externalRequests = [];
 			session.on("Network.requestWillBeSent", ({ request }) => {
-				if (request.url.endsWith("/assets/images/road.jpg")) roadRequests.push(request);
 				if (request.url.endsWith(".woff2")) fontRequests.push(request);
 				if (new URL(request.url).origin !== "http://gallery.test") externalRequests.push(request.url);
 			});
@@ -64,22 +62,16 @@ test("the LCP background and text fonts download before stylesheets arrive", asy
 				await serveRoadMedia(route);
 			});
 			const criticalResponses = Promise.all([
-				"/assets/images/road.jpg",
 				"/assets/fonts/varela-round-v21-hebrew.woff2",
 				"/assets/fonts/varela-round-v21-latin.woff2",
 			].map(asset => page.waitForResponse(response => response.url().endsWith(asset), { timeout: 3000 })));
 			try {
 				await page.goto("http://gallery.test/", { waitUntil: "commit" });
 				await Promise.all((await criticalResponses).map(response => response.finished()));
-				assert.equal(roadRequests.length, 1);
-				assert.equal(roadRequests[0].initialPriority, "High");
 			} finally {
 				releaseStyles();
 				await page.waitForLoadState("load");
 			}
-			const background = await page.locator("#hero-road").evaluate(element => getComputedStyle(element).backgroundImage);
-			assert.equal(background, `url("${roadRequests[0].url}")`);
-			assert.equal(roadRequests.length, 1, "CSS must reuse the preloaded image");
 			const loadedFonts = await page.evaluate(async () => {
 				await document.fonts.ready;
 				return [...document.fonts].filter(font => font.status === "loaded").map(font => font.family);
@@ -122,20 +114,27 @@ test("responsive delivery reduces desktop and mobile bytes and preserves density
 			await page.locator(".hero-visual").evaluate(async element => {
 				await Promise.all(element.getAnimations().map(animation => animation.finished));
 			});
-			const images = await page.locator(".brand-mark, .hero-visual img, .road-loader img, .road-carousel-group:first-child img").evaluateAll(images => images.map(img => ({
+			const images = await page.locator(".brand-mark, .hero-road-car, .hero-visual img, .road-loader img, .road-carousel-group:first-child img, .instructor-photo img").evaluateAll(images => images.map(img => ({
 				src: new URL(img.src).pathname.slice(1), current: new URL(img.currentSrc).pathname.slice(1),
-				width: img.getBoundingClientRect().width, height: img.getBoundingClientRect().height,
-				photo: !!img.closest(".road-photo"), sizes: img.sizes,
+				width: parseFloat(getComputedStyle(img).width), height: parseFloat(getComputedStyle(img).height),
+				photo: !!img.closest(".road-photo"), cropped: getComputedStyle(img).objectFit === "cover", sizes: img.sizes,
 			})));
 			const total = [...downloaded.values()].reduce((sum, bytes) => sum + bytes, 0);
+			const instructorBytes = [...downloaded].filter(([source]) => /\/oren(?:-\d+)?\.webp$/.test(source))
+				.reduce((sum, [, bytes]) => sum + bytes, 0);
+			assert.ok(instructorBytes > 0, "the instructor photo uses an optimized copy");
+			assert.ok(!downloaded.has("assets/images/oren.jpg"), "the original instructor photo should not download");
+			assert.ok(instructorBytes <= (scenario.deviceScaleFactor === 1 ? 100 : 250) * 1024,
+				`instructor image budget exceeded: ${instructorBytes}`);
+			const roadMediaBytes = total - instructorBytes;
 			t.diagnostic(`${scenario.width}px @${scenario.deviceScaleFactor}x: ${(total / 1024).toFixed(1)} KiB of unique image bodies`);
 			assert.ok(images.every(img => img.current.endsWith(".webp")), "every displayed image should use WebP");
 			assert.ok(!downloaded.has("assets/icons/course-icon.png"), "the full-size logo must not load as a favicon");
 			assert.ok([...downloaded.keys()].every(src => !/\/(cars|students-pass)\/.*\.png$/.test(src)), "original car/photo bodies should not download");
 			if (scenario.deviceScaleFactor === 1)
-				assert.ok(total < (115 + 9 * photoCount) * 1024, `desktop image budget exceeded: ${total}`);
+				assert.ok(roadMediaBytes < (115 + 9 * photoCount) * 1024, `desktop road image budget exceeded: ${roadMediaBytes}`);
 			if (scenario.width <= 412 && scenario.deviceScaleFactor <= 2) {
-				assert.ok(total < (120 + 12 * photoCount) * 1024, `mobile image budget exceeded: ${total}`);
+				assert.ok(roadMediaBytes < (120 + 12 * photoCount) * 1024, `mobile road image budget exceeded: ${roadMediaBytes}`);
 				assert.ok(downloaded.get("assets/images/optimized/wheel-256.webp") <= 13 * 1024,
 					"high-density wheel exceeds its compression budget");
 			}
@@ -153,8 +152,9 @@ test("responsive delivery reduces desktop and mobile bytes and preserves density
 				const source = inspectImage(await readFile(new URL(img.src, root)));
 				const delivered = inspectImage(await readFile(new URL(img.current, root)));
 				assert.ok(Math.abs(delivered.height - delivered.width * source.height / source.width) <= 1, `aspect ratio changed: ${img.current}`);
-				const required = Math.min(source.width, Math.max(img.width, img.photo ? img.height * source.width / source.height : 0) * scenario.deviceScaleFactor);
-				assert.ok(delivered.width >= required - 2, `${img.current}: ${delivered.width}px cannot cover ${required}px`);
+				const required = Math.min(source.width, Math.max(img.width, img.cropped ? img.height * source.width / source.height : 0) * scenario.deviceScaleFactor);
+				// Allow subpixel cover geometry and rounded encoded dimensions, up to half a percent.
+				assert.ok(delivered.width >= required - Math.max(2, required * 0.005), `${img.current}: ${delivered.width}px cannot cover ${required}px`);
 				if (img.photo && scenario.width === 412)
 					assert.ok(delivered.width <= required * 1.2, `${img.current}: oversized for ${required}px mobile photo`);
 			}

@@ -2,19 +2,21 @@
 
 This is the first welcome-page concept for Oren Bachor's Hebrew driving course. The current direction is a **Learning journey** that introduces the course, explains how it connects theory to real road situations, and lets visitors preview the learning topics.
 
-The hero fills the available viewport below the navigation and ends with the student-photo road carousel. A smaller stop sign and compact spacing keep the full composition visible on typical laptop and phone screens. On mobile, the cyan stop-sign illustration appears above the course introduction. Shorter screens and enlarged text can extend the hero naturally.
+The hero fills the available viewport below the navigation with the course promise, two actions, and the stop sign. The student-photo road carousel now sits below the compact instructor introduction; together they fit one viewport below the sticky header on typical laptop and phone screens. On mobile, the instructor content stacks in reading order: title, image, then one description. The cyan stop-sign illustration appears above the hero copy. Shorter screens and enlarged text can extend the hero naturally.
 
 ## Current page flow
 
-The page moves through the hero with its student-photo road carousel, instructor introduction, course explanation, and learning-topic preview, followed directly by the site footer. The main navigation links to the course explanation, topic preview, and instructor introduction. The instructor's amber section aligns directly below the sticky header when reached through `#instructor`.
+The page moves through the hero, instructor introduction with its student-photo road carousel, one combined section with the three learning steps and learning-topic preview, and a closing first-lesson action before the footer. The course uses one heading and introduction, a compact learning-step strip, and the complete topic explorer under `#about`. The main navigation has one link to the instructor and one to the course. Section links align their destination immediately below the sticky header, or at the viewport top when the mobile fallback header scrolls with the page.
 
-The hero learning action leads to the topic preview. The topbar learning action still uses `href="#"` to reserve a future account-page destination; no account or enrollment flow exists yet.
+The hero’s main action, “מנחה הקורס”, leads to the instructor; its secondary action leads to the unified course section at `#about`. The course-start actions in the topbar and closing section intentionally use `href="#"`, as requested, until a real course URL is supplied. No course playback, account, or enrollment flow exists yet.
+
+Without JavaScript, or if the entry module fails to load, mobile navigation links remain visible in a header in normal document flow. Successful initialization enables the sticky header and collapsible menu. All seven topic descriptions are readable in the baseline HTML; initialization uses those descriptions for the interactive preview and hides the static summaries.
 
 On mobile, pointer and touch input open the navigation and learning-topic list with a 180ms transition and close them over 150ms. Their trigger buttons provide subtle press feedback. Keyboard and assistive activation remain immediate. Closing menus stop accepting input as soon as they close, while CSS finishes the exit; rapid toggles reverse the transition. Reduced motion uses short opacity fades without movement. Browsers without discrete display transitions show and hide the menus immediately. `js/disclosure-motion.js` shares input handling and visibility state between these two controls.
 
 Topic previews update immediately for keyboard and assistive activation. Pointer and touch selections animate the changing title and description while the explanatory note stays still. Reselecting the active topic does nothing. Reduced motion is read live and settles a pending topic change when enabled.
 
-The sections below the hero reveal once on scroll. Focus immediately settles the containing section, and printing exposes all content even before it has been scrolled into view.
+The instructor and unified course section reveal once on scroll. Focus immediately settles the containing section, and printing exposes all content even before it has been scrolled into view.
 
 The footer includes Instagram, TikTok, YouTube, and WhatsApp links, currently pointing to `#`. Their icons load from Font Awesome kit `a138530222` when the footer is within 300px of the viewport. Hebrew link labels remain visible if the external kit is unavailable. Browsers without IntersectionObserver request the kit after page load.
 
@@ -30,6 +32,10 @@ Then open [http://localhost:8000](http://localhost:8000).
 
 No installation or build step is required.
 
+## Hero road car
+
+The small red car drives along the hero road for 15 seconds, then waits five seconds before repeating. `js/hero-road-car.js` samples the SVG route and animates position and rotation with the Web Animations API. It recalculates the route after resizing while preserving elapsed time. Reduced motion shows a parked car; without JavaScript the decorative car stays hidden. The original car artwork is unchanged.
+
 ## Stop-sign entrance
 
 The hero stop sign enters from the left while tilted, travels slightly past its resting position, then moves back as it tilts right and settles upright. It plays once per page load. Reduced motion shows the sign immediately without movement.
@@ -38,7 +44,7 @@ Adjust `--stop-sign-duration` in the `.hero-visual` rules in `css/responsive.css
 
 To change only the final correction, adjust the `48%` endpoint in `@keyframes brake`, keeping it above the preceding `46%` keyframe. Each percentage point takes 30ms on desktop and 20ms on mobile. The current final correction takes 60ms and 40ms respectively. Keep the `100%` endpoint fixed so the sign stays upright afterward.
 
-Open [the saved looping preview](http://localhost:8000/stop-sign-preview.html) to inspect the original approved motion against a white background and black stopping dot. `stop-sign-preview.html` preserves the 3-second reference timing at every screen size and includes its own speed instructions. It is independent of the production animation; edits there do not update the website. The website's mobile timing and the full motion specification are recorded in [DESIGN.md](DESIGN.md).
+Open [the welcome page](http://localhost:8000/) and reload it to inspect the once-per-load stop-sign entrance. Check a desktop viewport above 768px and a phone viewport at or below 768px; their timing differs as described above. Enable reduced motion in browser emulation to verify that the sign appears immediately. The full motion specification is recorded in [DESIGN.md](DESIGN.md).
 
 ## Add or update student photos
 
@@ -75,7 +81,9 @@ The HTML provides six initial static photos while listed photos load, when loadi
 
 ## Optimize delivery images
 
-Original PNG files stay in their supplied paths. The page uses responsive WebP delivery copies for the course icon, wheel, stop sign, car sprites, and student photos. Resizing preserves aspect ratios and transparent margins, so car and roof alignment stay unchanged. The browser tab uses a separate 32px PNG favicon.
+Original image files stay in their supplied paths. The page uses responsive WebP delivery copies for the course icon, wheel, stop sign, car sprites, student photos, and instructor photo. Resizing preserves aspect ratios and transparent margins, so car and roof alignment stay unchanged. The browser tab uses a separate 32px PNG favicon.
+
+The instructor photo comes from `assets/images/oren.jpg`. The same optimizer generates 400px, 640px, and 1080px WebP copies at quality 78 without changing the JPEG. Its lazy-loaded image declares responsive sizes matching the instructor layout. Publish the original, generated copies, and HTML together after replacing the photo.
 
 The photo-maintenance command above also regenerates responsive delivery copies for all road media. To regenerate after changing artwork, run:
 
@@ -87,13 +95,13 @@ npm test
 
 Publish generated files with their originals as described under [Add or update student photos](#add-or-update-student-photos). The optimizer synchronizes image candidates and dimensions in the HTML, refreshes the complete photo list, and removes obsolete WebPs only within the generated directory. This maintenance step is required when photos change; opening or serving the checked-in site still requires no build. Runtime loading falls back to the PNG if a delivery copy fails to decode or the original's Content-Length no longer matches the generated metadata.
 
-The HTML keeps original road-image dimensions and uses width descriptors in `srcset` plus `sizes` for delivery copies. Smaller variants serve ordinary desktop screens; larger variants support high-density screens without enlarging an original. Photo sizing accounts for the `object-fit: cover` crop. The optimizer's size formulas follow the road height, car scale, and photo frame in `css/welcome.css` and `css/responsive.css`; update them if that geometry changes. Car sprite sizing reads each color's `--car-art-width` rule. Module preload hints fetch carousel dependencies alongside the entry script.
+The HTML keeps original road-image dimensions and uses width descriptors in `srcset` plus `sizes` for delivery copies. Smaller variants serve ordinary desktop screens; larger variants support high-density screens without enlarging an original. Photo sizing accounts for the `object-fit: cover` crop. The optimizer's size formulas follow the road height, car scale, and photo frame in `css/welcome.css` and `css/responsive.css`; update them if that geometry changes. Car sprite sizing reads each color's `--car-art-width` rule. The hero car uses separate 80px and 160px WebP copies of the red-car artwork with `sizes="clamp(40px, 5vw, 80px)"`, matching its smaller CSS width. Module preload hints fetch carousel dependencies alongside the entry script.
 
 Student photos include intermediate 320px, 360px, and 400px candidates between the smallest desktop copy and the largest copy, capped at the original width. Candidates within 5% of the largest source are omitted in favor of that larger copy. These let phones select a closer fit without downloading the desktop 2x image. Width descriptors always reflect the generated file's actual width.
 
-WebP quality is 65 for intermediate and large photos, 78 for the smallest photos, 80 for cars, and 85 for the logo and stop sign. The smallest version of photo 11 uses quality 55 for its dense background. Both wheel sizes use quality 65 and alpha quality 60. Check faces, lettering, and transparent edges at their displayed sizes after changing these settings.
+WebP quality is 65 for intermediate and large photos, 78 for the smallest photos, 80 for cars, and 85 for the logo and stop sign. The red gallery car keeps RGB quality 80 with alpha quality 73 to reduce transparency data; the other cars and the small hero copies retain the default alpha quality. The smallest version of photo 11 uses quality 55 for its dense background. Both wheel sizes use quality 65 and alpha quality 60. Check faces, lettering, and transparent edges at their displayed sizes after changing these settings.
 
-`tests/image-delivery-browser.test.mjs` checks actual browser source selection, image bytes, high-density coverage, and rendering without JavaScript. It covers desktop at 1x and 2x, plus phones at 1.75x and 2x. Download budgets scale with the generated photo count: desktop allows 115 KiB plus 9 KiB per photo, and mobile allows 120 KiB plus 12 KiB per photo. With 15 photos these are 250 KiB and 300 KiB. The 412px phone check also limits oversized photo candidates. The 128px and 256px wheel downloads are capped at 6 KiB and 13 KiB; the smallest photo 11 is capped at 8 KiB.
+`tests/image-delivery-browser.test.mjs` checks actual browser source selection, image bytes, high-density coverage, and rendering without JavaScript. It covers desktop at 1x and 2x, plus phones at 1.75x and 2x. Density checks include the hero car and instructor photo, account for cover cropping, and allow 0.5% for fractional rendering geometry. Road-media download budgets scale with the generated photo count: desktop allows 115 KiB plus 9 KiB per photo, and mobile allows 120 KiB plus 12 KiB per photo. With 15 photos these are 250 KiB and 300 KiB. The instructor photo has a separate budget of 100 KiB at 1x and 250 KiB at higher densities. The 412px phone check also limits oversized photo candidates. The 128px and 256px wheel downloads are capped at 6 KiB and 13 KiB; the smallest photo 11 is capped at 8 KiB.
 
 ## Font delivery
 
@@ -116,15 +124,16 @@ Alignment compensates for transparent margins in each source image. Student phot
 - `css/responsive.css` contains interaction states, animations, breakpoints, and accessibility preferences. Load the four stylesheets in this order to preserve the cascade.
 - `js/script.js` adds the mobile menu and initializes page enhancements.
 - `js/topic-explorer.js` owns the topic preview interaction.
-- `js/scroll-reveal.js` reveals the instructor, course explanation, and topic preview once as each section enters the viewport.
+- `js/disclosure-motion.js` shares mobile menu and topic-list visibility, input handling, and press feedback.
+- `js/hero-road-car.js` animates the small red car along the hero's SVG road.
+- `js/scroll-reveal.js` reveals the instructor and unified course section once as each enters the viewport.
 - `js/road-carousel.js` loads the generated photo list and builds the looping car gallery.
-- `scripts/road-media-integrity.mjs` audits marked JPEG, WebP, and PNG road media, declared delivery copies, car templates, and numbered student photos during development.
+- `scripts/road-media-integrity.mjs` audits marked JPEG, WebP, and PNG road media, image preloads, declared delivery copies, car templates, and numbered student photos during development.
 - `js/road-photo-sources.js` is the generated complete photo list and responsive delivery metadata.
 - `scripts/optimize-road-media.mjs` regenerates that list and WebP delivery copies without changing originals.
 - `scripts/student-photos.mjs` owns student photo discovery, numeric ordering, and filename diagnostics for the optimizer and media audit. The optimizer stops on findings; the audit collects them and continues checking media.
-- `assets/images/` contains the stop-sign illustration, road background, car artwork, and numbered student photos. `assets/icons/` contains the course icon. Typography uses Varela Round globally, with local WOFF2 files under `assets/fonts/`.
+- `assets/images/` contains the stop-sign illustration, road background, car artwork, instructor photo, and numbered student photos. `assets/icons/` contains the course icon. Typography uses Varela Round globally, with local WOFF2 files under `assets/fonts/`.
 - `docs/reference/the-idea.pdf` is the supplied course brief.
-- `docs/superpowers/` preserves historical implementation plans and specifications. Those files can contain obsolete paths, media counts, and markup from earlier versions. Use this README for the current structure and paths.
 - `tests/` contains static page, behavior-level, media-integrity, and Chromium gallery tests.
 - `tests/helpers/road-media.mjs` serves repository files in browser tests with consistent MIME types and original byte counts for HEAD requests. Individual tests own delays, failures, and download observations.
 
@@ -132,7 +141,9 @@ Alignment compensates for transparent margins in each source image. Student phot
 
 [The Tests workflow](.github/workflows/tests.yml) runs on every push and pull request, and can also be started manually from GitHub Actions. It uses Node.js 24 on Ubuntu, installs the locked dependencies with `npm ci` and Chromium with its system dependencies, then runs `npm run check:media` and the full `npm test` suite. This includes static and behavior tests, optimizer tests, and all Chromium gallery and image-delivery checks. New tests matching `tests/*.test.mjs` are included automatically.
 
-Animation regressions cover focus during section entrances, visibility in print, immediate keyboard topic selection, live reduced-motion changes, and keeping unchanged topic text still. Gallery tests also cover refilling metadata request slots and resizing the preserved row after a later loading failure. Scroll-reveal tests bound their animation-capture waits so a missing reveal fails instead of hanging the suite.
+Animation regressions cover focus during section entrances, visibility in print, immediate keyboard topic selection, live reduced-motion changes, and keeping unchanged topic text still. Hero-car checks cover road position, orientation, and elapsed-time preservation on resize. Gallery tests cover refilling metadata request slots, deferred photo additions at a real animation loop boundary, and resizing the preserved row after a later loading failure. Scroll-reveal tests bound their animation-capture waits so a missing reveal fails instead of hanging the suite.
+
+`tests/progressive-enhancement-browser.test.mjs` exercises navigation and topic selection at desktop and phone widths. It also checks visible navigation and all seven descriptions with JavaScript disabled or the entry module blocked. Section-alignment tests distinguish the sticky header from the mobile fallback's zero scroll offset. The unavailable-IntersectionObserver test checks for browser errors and verifies that topic selection and footer icon loading still initialize.
 
 CI audits the checked-in media. Photo and artwork changes still require running `npm run optimize:media` locally and publishing its output with the originals. The workflow does not deploy the site.
 
@@ -148,9 +159,9 @@ npm run check:media
 git diff --check
 ```
 
-The media audit checks marked HTML images and their preload metadata, matches car templates to the `car-*.png` files, and inspects every numbered student photo without a fixed maximum. It validates the scrolling group’s direct child templates, matching runtime initialization, and reports misplaced or malformed templates, numbering gaps, invalid PNG filenames, missing or duplicate templates, incorrect fallback photo references or metadata, and a missing or stale generated photo list. The supplied `cars.png` composite is excluded. It checks delivery candidates from both the HTML and the generated gallery list, including missing files and incorrect width descriptors. It checks image headers and dimensions, not full decoding, roof alignment, or the CSS road background.
+The media audit checks marked HTML images and independently checks every image preload's file and MIME type, including the preloaded `road.jpg` background. It matches car templates to the `car-*.png` files and inspects every numbered student photo without a fixed maximum. It validates the scrolling group’s direct child templates, matching runtime initialization, and reports misplaced or malformed templates, numbering gaps, invalid PNG filenames, missing or duplicate templates, incorrect fallback photo references or metadata, and a missing or stale generated photo list. The supplied `cars.png` composite is excluded. It checks delivery candidates from both the HTML and the generated gallery list, including missing files and incorrect width descriptors. It checks image headers and dimensions, not full decoding or roof alignment, and does not discover arbitrary image URLs in CSS.
 
-Browser tests derive the gallery count and last photo from the generated list. Progressive-append scenarios require enough photos to fill the initial viewport and leave a later photo pending; smaller galleries skip those scenarios. Tests also check loading from the generated photo list without missing-file probes, failure preservation, and loop timing across row sizes and viewport changes. `npm test` includes a focused Chromium check that loads the actual page, stylesheets, scripts, and images at desktop and phone sizes, including resizing and reduced motion. It intercepts local requests to serve repository files and blocks external requests, so no dev server or network connection is needed after setup. Verify layout and interaction changes in the collaborative browser at desktop and phone sizes, including reduced motion.
+Browser tests derive the gallery count and last photo from the generated list. Progressive-append scenarios require enough photos to fill the initial viewport and leave a later photo pending; smaller galleries skip those scenarios. Tests also check loading from the generated photo list without missing-file probes, failure preservation, and loop timing across row sizes and viewport changes. `npm test` includes Chromium checks that load the actual page, stylesheets, scripts, and images at desktop and phone sizes, including resizing and reduced motion. They intercept local requests to serve repository files and block external requests, so no dev server or network connection is needed after setup. Verify layout and interaction changes in the collaborative browser at desktop and phone sizes, including reduced motion. If collaborative preview is unavailable, use local Playwright Chromium and report the limitation.
 
 ## Documentation
 
@@ -158,8 +169,7 @@ Browser tests derive the gallery count and last photo from the generated list. P
 - [DESIGN.md](DESIGN.md): visual system and the approved welcome-page composition.
 - [CONTEXT.md](CONTEXT.md): course and gallery terminology.
 - [AGENTS.md](AGENTS.md): contributor boundaries and required checks.
-- [Original welcome-page spec](docs/superpowers/specs/2026-09-10-learning-journey-welcome-page-design.md) and [plan](docs/superpowers/plans/2026-09-10-learning-journey-welcome-page.md): archived initial implementation.
-- [Architecture-hardening spec](docs/superpowers/specs/2026-09-11-architecture-hardening-design.md) and [plan](docs/superpowers/plans/2026-09-11-architecture-hardening.md): archived refactor rationale.
+- [Supplied course brief](docs/reference/the-idea.pdf): original instructor and course material.
 
 ## Licensing
 
@@ -173,5 +183,4 @@ See [LICENSE](LICENSE) for the complete scope.
 
 - Defer a shared course-content module until a second runtime page needs the same course content.
 - Revisit shared layout and styling when a second page reveals what needs to repeat beyond the existing CSS tokens and styles.
-- Add a complete browser journey through page navigation and topic selection at desktop and mobile sizes. CI already runs Chromium checks for the gallery, image and font delivery, mobile disclosures, and related input and accessibility behavior.
 - Add Firefox and WebKit smoke checks for page loading, navigation, and topic selection.

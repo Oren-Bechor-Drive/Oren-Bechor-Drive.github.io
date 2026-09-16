@@ -110,13 +110,6 @@ export async function auditRoadMedia({ rootDir, htmlPath = "index.html" }) {
 		const declaredWidth = Number(image.getAttribute("width"));
 		const declaredHeight = Number(image.getAttribute("height"));
 		const alt = image.getAttribute("alt")?.trim() ?? "";
-		const preload = [
-			...document.querySelectorAll('link[rel="preload"][as="image"]'),
-		].find(
-			(link) =>
-				cleanReference(link.getAttribute("href") ?? "") === source,
-		);
-
 		if (
 			declaredWidth !== inspected.width ||
 			declaredHeight !== inspected.height
@@ -126,13 +119,18 @@ export async function auditRoadMedia({ rootDir, htmlPath = "index.html" }) {
 			);
 		}
 		if (!alt) issues.push(`${source}: alternative text is empty`);
-		if (preload && preload.getAttribute("type") !== inspected.mime) {
+		inspected.alt = alt;
+	}
+
+	// Background images can be preloaded without a corresponding img element.
+	for (const preload of document.querySelectorAll('link[rel="preload"][as="image"]')) {
+		const source = cleanReference(preload.getAttribute("href") ?? "");
+		const inspected = await inspectSource(source);
+		if (inspected && preload.getAttribute("type") !== inspected.mime) {
 			issues.push(
 				`${source}: preload type is ${preload.getAttribute("type")}, expected ${inspected.mime}`,
 			);
 		}
-
-		inspected.alt = alt;
 	}
 
 	const gallery = document.querySelector("[data-road-carousel]");

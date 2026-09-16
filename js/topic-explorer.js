@@ -5,8 +5,10 @@ export function initTopicExplorer(root) {
 	const panel = root.querySelector("[data-topic-panel]");
 	const title = panel?.querySelector("[data-topic-panel-title]");
 	const description = panel?.querySelector("[data-topic-panel-description]");
+	const summaries = root.querySelector("[data-topic-summaries]");
+	const descriptions = [...(summaries?.querySelectorAll("p") ?? [])];
 
-	if (cards.length === 0 || !panel || !title || !description) {
+	if (cards.length === 0 || !panel || !title || !description || descriptions.length !== cards.length) {
 		throw new Error("Missing required topic panel elements");
 	}
 
@@ -100,7 +102,7 @@ export function initTopicExplorer(root) {
 	function updateContent(card) {
 		browserWindow?.clearTimeout(pendingUpdate);
 		title.textContent = card.textContent.trim();
-		description.textContent = card.dataset.topicDescription ?? "";
+		description.textContent = descriptions[cards.indexOf(card)].textContent.trim();
 		panel.dataset.updating = "false";
 	}
 
@@ -158,4 +160,10 @@ export function initTopicExplorer(root) {
 	const initiallyActive =
 		cards.find((card) => card.dataset.active === "true") ?? cards[0];
 	select(initiallyActive, { animate: false });
+	summaries.hidden = true;
+	panel.hidden = false;
+	const rail = root.querySelector(".topic-rail");
+	if (rail) rail.hidden = false;
+	const prompt = root.closest(".course-topics")?.querySelector(".topic-prompt");
+	if (prompt) prompt.textContent = "בחרו נושא וראו מה תלמדו";
 }

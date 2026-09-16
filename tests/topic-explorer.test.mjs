@@ -7,10 +7,11 @@ import { initTopicExplorer } from "../js/topic-explorer.js";
 function setup(t, { reducedMotion = true } = {}) {
 	const dom = new JSDOM(
 		`<!doctype html><div data-topic-explorer>
-    <button class="topic-card" data-active="true" aria-expanded="true" data-topic-description="תיאור ראשון">נושא ראשון</button>
-    <button class="topic-card" data-active="false" aria-expanded="false" data-topic-description="תיאור שני">נושא שני</button>
-    <button class="topic-card" data-active="false" aria-expanded="false" data-topic-description="תיאור שלישי">נושא שלישי</button>
-    <div data-topic-panel><h3 data-topic-panel-title>ישן</h3><p data-topic-panel-description>ישן</p></div>
+    <button class="topic-card" data-active="true" aria-expanded="true">נושא ראשון</button>
+    <button class="topic-card" data-active="false" aria-expanded="false">נושא שני</button>
+    <button class="topic-card" data-active="false" aria-expanded="false">נושא שלישי</button>
+    <div data-topic-summaries><p>תיאור ראשון</p><p>תיאור שני</p><p>תיאור שלישי</p></div>
+    <div data-topic-panel hidden><h3 data-topic-panel-title>ישן</h3><p data-topic-panel-description>ישן</p></div>
   </div>`,
 		{ pretendToBeVisual: true },
 	);

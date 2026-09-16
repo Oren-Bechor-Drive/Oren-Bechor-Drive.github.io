@@ -13,7 +13,7 @@ test("page exposes its Hebrew semantic structure", async () => {
 	assert.equal(document.querySelectorAll("h1").length, 1);
 });
 
-test("page introduces the instructor after the hero and ends with topics then the footer", async () => {
+test("page introduces the instructor before the combined learning section", async () => {
 	const document = new JSDOM(await read("index.html")).window.document;
 	const sectionIds = [...document.querySelectorAll("main > section")].map(
 		(section) => section.id,
@@ -22,9 +22,11 @@ test("page introduces the instructor after the hero and ends with topics then th
 		...document.querySelectorAll('#site-menu a[href^="#"]:not(.nav-action)'),
 	].map((link) => link.getAttribute("href"));
 
-	assert.deepEqual(sectionIds, ["top", "instructor", "about", "topics"]);
+	assert.deepEqual(sectionIds, ["top", "instructor", "about", "start"]);
+	assert.equal(document.querySelectorAll("#about h2").length, 1);
+	assert.ok(document.querySelector("#about [data-topic-explorer]"));
 	const main = document.querySelector("main");
-	assert.equal(main.lastElementChild.id, "topics");
+	assert.equal(main.lastElementChild.id, "start");
 	assert.equal(
 		main.nextElementSibling,
 		document.querySelector("body > footer"),
@@ -32,7 +34,6 @@ test("page introduces the instructor after the hero and ends with topics then th
 	assert.deepEqual(navigationTargets, [
 		"#instructor",
 		"#about",
-		"#topics",
 	]);
 });
 

@@ -13,6 +13,10 @@
 		background: var(--primary-hover);
 	}
 
+	.button-secondary:hover {
+		background: var(--primary-wash);
+	}
+
 	.button:hover {
 		transform: translateY(-2px);
 	}
@@ -120,38 +124,29 @@
 		transition-delay: 90ms;
 	}
 
-	.about[data-scroll-state="pending"] :is(.about-title-block, .about-copy) {
+	.about[data-scroll-state="pending"] :is(.about-title-block, .learning-steps) {
 		transform: translateY(20px);
 	}
 
-	.about[data-scroll-state="pending"] .road-question {
+	.about[data-scroll-state="pending"] .learning-note {
 		transform: translateY(16px);
 	}
 
-	.about[data-scroll-motion="ready"] :is(.about-title-block, .about-copy) {
+	.about[data-scroll-motion="ready"] :is(.about-title-block, .learning-steps) {
 		transition-duration: 480ms;
 	}
 
-	.about[data-scroll-motion="ready"] .road-question {
+	.about[data-scroll-motion="ready"] .learning-note {
 		transition-duration: 520ms;
 		transition-delay: 110ms;
 	}
 
-	.topics[data-scroll-state="pending"] .section-heading {
-		transform: translateY(18px);
+	.about[data-scroll-state="pending"] .course-topics {
+		transform: translateY(20px);
 	}
 
-	.topics[data-scroll-state="pending"] .topic-explorer {
-		transform: translateY(22px);
-	}
-
-	.topics[data-scroll-motion="ready"] .section-heading {
-		transition-duration: 420ms;
-	}
-
-	.topics[data-scroll-motion="ready"] .topic-explorer {
-		transition-duration: 500ms;
-		transition-delay: 80ms;
+	.about[data-scroll-motion="ready"] .course-topics {
+		transition-duration: 480ms;
 	}
 
 	[data-scroll-reveal][data-scroll-state="visible"] .scroll-reveal-target {
@@ -183,6 +178,10 @@
 		--header-height: 66px;
 	}
 
+	html:not([data-menu-enhanced]) {
+		scroll-padding-top: 0;
+	}
+
 	.content-shell,
 	.nav-shell,
 	.hero-shell {
@@ -193,16 +192,32 @@
 		position: relative;
 	}
 
+	html:not([data-menu-enhanced]) .site-header {
+		position: static;
+		height: auto;
+	}
+
+	html:not([data-menu-enhanced]) .nav-shell {
+		flex-wrap: wrap;
+		gap: 8px;
+		padding-block: 8px;
+	}
+
+	html:not([data-menu-enhanced]) .site-menu {
+		width: 100%;
+		flex-wrap: wrap;
+	}
+
 	.brand-copy small {
 		display: none;
 	}
 
-	.menu-toggle {
+	[data-menu-enhanced] .menu-toggle {
 		display: inline-grid;
 		place-items: center;
 	}
 
-	.site-menu {
+	[data-menu-enhanced] .site-menu {
 		position: absolute;
 		inset-block-start: calc(100% + 10px);
 		inset-inline: 0;
@@ -265,13 +280,18 @@
 
 	.hero-copy {
 		display: contents;
+		text-align: center;
+	}
+
+	.hero-road-curve {
+		opacity: 0.5;
 	}
 
 	.hero-copy h1 {
 		grid-area: 2 / 1;
 		align-self: center;
 		justify-self: center;
-		max-width: 13ch;
+		max-width: 17ch;
 		margin: 0;
 		font-size: 36px;
 		line-height: 1.08;
@@ -286,6 +306,7 @@
 
 	.hero-actions {
 		grid-area: 4 / 1;
+		justify-content: center;
 		flex-wrap: wrap;
 		gap: 12px 18px;
 	}
@@ -318,22 +339,21 @@
 		gap: 28px;
 	}
 
-	.about-title-block h2,
-	.section-heading h2 {
+	.about {
+		padding-block: 40px;
+	}
+
+	.about-title-block h2 {
 		font-size: 36px;
 	}
 
-	.road-question {
+	.learning-steps {
 		grid-template-columns: 1fr;
-		gap: 10px;
-		padding: 28px;
+		gap: 16px;
+		padding: 20px;
 	}
 
-	.section-heading {
-		margin-block-end: 32px;
-	}
-
-	.section-heading p {
+	.about-title-block p {
 		font-size: 16px;
 	}
 
@@ -369,20 +389,34 @@
 	}
 
 	.instructor-layout {
-		column-gap: 20px;
-		padding-block: 32px;
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-rows: auto minmax(120px, 1fr) auto;
+		gap: 16px;
+		padding-block: 24px;
+	}
+
+	.instructor-intro,
+	.instructor-photo,
+	.instructor-description {
+		grid-column: 1;
+	}
+
+	.instructor h2 {
+		font-size: clamp(42px, 10vw, 64px);
+		text-align: center;
+	}
+
+	.instructor-photo {
+		grid-row: 2;
+		min-height: 120px;
 	}
 
 	.instructor-title-line {
-		margin-block-start: 20px;
-		font-size: 36px;
+		margin-block-start: 12px;
+		font-size: 28px;
 	}
 
-	.instructor-descriptions {
-		gap: 16px;
-	}
-
-	.instructor-descriptions p {
+	.instructor-description {
 		font-size: 16px;
 	}
 
@@ -542,8 +576,7 @@
 		font-size: 14px;
 	}
 
-	.about-title-block h2,
-	.section-heading h2 {
+	.about-title-block h2 {
 		font-size: 32px;
 	}
 }

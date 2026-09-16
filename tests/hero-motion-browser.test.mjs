@@ -116,31 +116,8 @@ test("hero slides title from the right and description with buttons from below a
 			const settled = await sample(end);
 			assert.ok(start[0].x - early[0].x > late[0].x - settled[0].x, "motion slows as it finishes");
 			assert.deepEqual(settled, Array.from({ length: 3 }, () => ({ opacity: 1, x: 0, y: 0 })));
-			const roadCoversEntrances = await page.evaluate(() => {
-				const road = document.querySelector(".hero-road");
-				const roadRect = road.getBoundingClientRect();
-				// Enable hit testing only for this paint-order check; the road stays noninteractive in production.
-				road.style.pointerEvents = "auto";
-				try {
-					return [...document.querySelectorAll(".hero-copy > p, .hero-actions")].map(element => {
-						const animation = element.getAnimations()[0];
-						const { delay, duration } = animation.effect.getTiming();
-						for (let step = 1; step < 20; step++) {
-							animation.currentTime = delay + duration * step / 20;
-							const rect = element.getBoundingClientRect();
-							const top = Math.max(rect.top, roadRect.top);
-							const bottom = Math.min(rect.bottom, roadRect.bottom);
-							if (bottom > top) {
-								return road.contains(document.elementFromPoint(rect.left + rect.width / 2, (top + bottom) / 2));
-							}
-						}
-						return false;
-					});
-				} finally {
-					road.style.removeProperty("pointer-events");
-				}
-			});
-			assert.deepEqual(roadCoversEntrances, [true, true], "description and buttons must pass behind the road");
+			assert.equal(await page.locator(".hero").evaluate(element => getComputedStyle(element).overflow), "hidden",
+				"the hero clips its off-screen entrances now that the gallery is below the instructor");
 			await sample(0);
 			await page.locator(".hero-actions a").first().focus();
 			const focusState = await page.evaluate(() => ({

@@ -35,7 +35,7 @@
 			type="font/woff2"
 			crossorigin
 		/>
-		<link rel="stylesheet" href="css/base.css" />
+		<link rel="stylesheet" href="css/base.css?v=2" />
 		<link rel="stylesheet" href="css/components.css" />
 		<link rel="stylesheet" href="css/welcome.css" />
 		<link rel="stylesheet" href="css/responsive.css" />
@@ -61,10 +61,7 @@
 						width="42"
 						height="42"
 						alt=""
-						srcset="
-							assets/images/optimized/course-icon.webp    42w,
-							assets/images/optimized/course-icon-84.webp 84w
-						"
+						srcset="assets/images/optimized/course-icon.webp 42w, assets/images/optimized/course-icon-84.webp 84w"
 						sizes="42px"
 					/>
 					<span class="brand-copy">
@@ -92,43 +89,46 @@
 				>
 					<a href="#instructor">אורן בכור</a>
 					<a href="#about">על הקורס</a>
-					<a href="#topics">נושאי לימוד</a>
-					<a class="nav-action" href="#">מתחילים ללמוד</a>
+					<a class="nav-action" href="#">התחילו ללמוד</a>
 				</nav>
 			</div>
 		</header>
 
 		<main id="main-content">
 			<section id="top" class="hero" aria-labelledby="hero-title">
+				<svg class="hero-road-curve" viewBox="0 0 1860 930" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+					<path class="hero-road-surface" d="M930 -30 C945 40 875 60 760 110 C575 185 360 315 245 410 C170 475 120 565 130 655 C140 725 210 800 285 795 C405 790 490 765 570 695 C740 550 995 430 1190 320 C1320 245 1460 145 1570 150 C1680 150 1765 205 1750 285 C1735 405 1570 480 1420 560 C1240 660 1070 675 995 795 C960 845 925 905 905 960" />
+					<path class="hero-road-markings" d="M930 -30 C945 40 875 60 760 110 C575 185 360 315 245 410 C170 475 120 565 130 655 C140 725 210 800 285 795 C405 790 490 765 570 695 C740 550 995 430 1190 320 C1320 245 1460 145 1570 150 C1680 150 1765 205 1750 285 C1735 405 1570 480 1420 560 C1240 660 1070 675 995 795 C960 845 925 905 905 960" />
+				</svg>
+				<img
+					class="hero-road-car"
+					src="assets/images/cars/car-red.png"
+					srcset="assets/images/optimized/hero-car.webp 80w, assets/images/optimized/hero-car-160.webp 160w"
+					sizes="clamp(40px, 5vw, 80px)"
+					width="463"
+					height="238"
+					alt="מכונית אדומה במבט מלמעלה"
+					aria-hidden="true"
+					draggable="false"
+					data-road-media
+				/>
 				<div class="hero-shell">
 					<div class="hero-copy">
-						<h1 id="hero-title">ללמוד לקרוא את הכביש</h1>
+						<h1 id="hero-title"><span class="hero-underline">להבין</span> את הכביש. <span class="hero-underline">לקבל</span> החלטה נכונה בזמן.</h1>
 						<p>
-							קורס דיגיטלי שמחבר בין חוקי הדרך למצבים שפוגשים באמת
-							בנהיגה.
+							קורס דיגיטלי לתלמידי נהיגה שמחבר בין חוקי הדרך למצבים אמיתיים,
+							עם הסברים וסרטונים מאורן בכור.
 						</p>
 						<div class="hero-actions">
-							<a
-								class="button button-primary"
-								href="#topics"
-								data-topics-link
-								>לנושאי הלימוד</a
-							>
-							<a class="text-link" href="#about"
-								>מה לומדים כאן?</a
-							>
+							<a class="button button-primary" href="#instructor">מנחה הקורס</a>
+							<a class="button button-secondary" href="#about" data-topics-link>צפו בנושאי הקורס</a>
 						</div>
 					</div>
 
 					<figure class="hero-visual">
 						<img
 							src="assets/images/stop-sign.png"
-							srcset="
-								assets/images/optimized/stop-sign.webp     144w,
-								assets/images/optimized/stop-sign-380.webp 380w,
-								assets/images/optimized/stop-sign-760.webp 760w,
-								assets/images/optimized/stop-sign-800.webp 800w
-							"
+							srcset="assets/images/optimized/stop-sign.webp 144w, assets/images/optimized/stop-sign-380.webp 380w, assets/images/optimized/stop-sign-760.webp 760w, assets/images/optimized/stop-sign-800.webp 800w"
 							width="1254"
 							height="1254"
 							data-road-media
@@ -137,6 +137,42 @@
 							fetchpriority="high"
 						/>
 					</figure>
+				</div>
+			</section>
+
+			<section
+				id="instructor"
+				class="instructor section"
+				aria-labelledby="instructor-title"
+				tabindex="-1"
+				data-scroll-reveal
+			>
+				<div class="content-shell instructor-layout">
+					<div class="instructor-intro scroll-reveal-target">
+						<h2 id="instructor-title">
+							<span>אורן בכור</span>
+							<span class="instructor-title-line">מורה לנהיגה ומנחה הקורס</span>
+						</h2>
+					</div>
+					<div class="instructor-photo scroll-reveal-target">
+						<img
+							src="assets/images/oren.jpg"
+							srcset="assets/images/optimized/oren.webp 400w, assets/images/optimized/oren-640.webp 640w, assets/images/optimized/oren-1080.webp 1080w"
+							sizes="(max-width: 440px) calc(100vw - 32px), (max-width: 768px) calc(100vw - 40px), (max-width: 1024px) calc((100vw - 104px) / 2), (max-width: 1216px) calc((100vw - 136px) / 2), 540px"
+							width="1599"
+							height="1536"
+							alt="אורן בכור, מנחה הקורס"
+							loading="lazy"
+							decoding="async"
+							data-road-media
+						/>
+					</div>
+					<p class="instructor-description">
+						אורן הוא מורה נהיגה מוסמך עם ניסיון של למעלה משמונה שנים.
+						בקורס הוא מחבר בין חוקי הדרך למצבים שפוגשים מאחורי ההגה,
+						בעזרת הסברים וסרטונים שיעזרו לכם להבין מה קורה בכביש ואיך לפעול בבטחה.
+						אפשר לחזור לכל נושא בקצב שלכם, גם כהכנה לשיעור הנהיגה הבא.
+					</p>
 				</div>
 				<div
 					id="hero-road"
@@ -148,10 +184,7 @@
 					<div class="road-loader" aria-hidden="true">
 						<img
 							src="assets/images/wheel.png"
-							srcset="
-								assets/images/optimized/wheel.webp     128w,
-								assets/images/optimized/wheel-256.webp 256w
-							"
+							srcset="assets/images/optimized/wheel.webp 128w, assets/images/optimized/wheel-256.webp 256w"
 							width="480"
 							height="480"
 							data-road-media
@@ -170,19 +203,13 @@
 									data-road-media
 									draggable="false"
 									alt="מכונית תכלת במבט מלמעלה"
-									srcset="
-										assets/images/optimized/cars/car-cyan.webp     390w,
-										assets/images/optimized/cars/car-cyan-460.webp 460w
-									"
+									srcset="assets/images/optimized/cars/car-cyan.webp 390w, assets/images/optimized/cars/car-cyan-460.webp 460w"
 									sizes="(max-width: 768px) clamp(232.555px, 34.883svh, 312.288px), clamp(275.079px, 41.262svh, 403.45px)"
 								/>
 								<span class="road-photo">
 									<img
 										src="assets/images/students-pass/1.png"
-										srcset="
-											assets/images/optimized/students-pass/1.webp     240w,
-											assets/images/optimized/students-pass/1-309.webp 309w
-										"
+										srcset="assets/images/optimized/students-pass/1.webp 240w, assets/images/optimized/students-pass/1-309.webp 309w"
 										width="309"
 										height="193"
 										draggable="false"
@@ -200,19 +227,13 @@
 									data-road-media
 									draggable="false"
 									alt="מכונית אפורה במבט מלמעלה"
-									srcset="
-										assets/images/optimized/cars/car-gray.webp     390w,
-										assets/images/optimized/cars/car-gray-464.webp 464w
-									"
+									srcset="assets/images/optimized/cars/car-gray.webp 390w, assets/images/optimized/cars/car-gray-464.webp 464w"
 									sizes="(max-width: 768px) clamp(231.49px, 34.724svh, 310.858px), clamp(273.82px, 41.073svh, 401.603px)"
 								/>
 								<span class="road-photo">
 									<img
 										src="assets/images/students-pass/2.png"
-										srcset="
-											assets/images/optimized/students-pass/2.webp     240w,
-											assets/images/optimized/students-pass/2-319.webp 319w
-										"
+										srcset="assets/images/optimized/students-pass/2.webp 240w, assets/images/optimized/students-pass/2-319.webp 319w"
 										width="319"
 										height="245"
 										draggable="false"
@@ -230,21 +251,13 @@
 									data-road-media
 									draggable="false"
 									alt="מכונית ירוקה במבט מלמעלה"
-									srcset="
-										assets/images/optimized/cars/car-green.webp     400w,
-										assets/images/optimized/cars/car-green-469.webp 469w
-									"
+									srcset="assets/images/optimized/cars/car-green.webp 400w, assets/images/optimized/cars/car-green-469.webp 469w"
 									sizes="(max-width: 768px) clamp(238.165px, 35.725svh, 319.822px), clamp(281.715px, 42.257svh, 413.183px)"
 								/>
 								<span class="road-photo">
 									<img
 										src="assets/images/students-pass/3.png"
-										srcset="
-											assets/images/optimized/students-pass/3.webp     240w,
-											assets/images/optimized/students-pass/3-320.webp 320w,
-											assets/images/optimized/students-pass/3-360.webp 360w,
-											assets/images/optimized/students-pass/3-405.webp 405w
-										"
+										srcset="assets/images/optimized/students-pass/3.webp 240w, assets/images/optimized/students-pass/3-320.webp 320w, assets/images/optimized/students-pass/3-360.webp 360w, assets/images/optimized/students-pass/3-405.webp 405w"
 										width="405"
 										height="271"
 										draggable="false"
@@ -262,22 +275,13 @@
 									data-road-media
 									draggable="false"
 									alt="מכונית כתומה במבט מלמעלה"
-									srcset="
-										assets/images/optimized/cars/car-orange.webp     400w,
-										assets/images/optimized/cars/car-orange-462.webp 462w
-									"
+									srcset="assets/images/optimized/cars/car-orange.webp 400w, assets/images/optimized/cars/car-orange-462.webp 462w"
 									sizes="(max-width: 768px) clamp(234.086px, 35.113svh, 314.344px), clamp(276.89px, 41.534svh, 406.106px)"
 								/>
 								<span class="road-photo">
 									<img
 										src="assets/images/students-pass/4.png"
-										srcset="
-											assets/images/optimized/students-pass/4.webp     240w,
-											assets/images/optimized/students-pass/4-320.webp 320w,
-											assets/images/optimized/students-pass/4-360.webp 360w,
-											assets/images/optimized/students-pass/4-400.webp 400w,
-											assets/images/optimized/students-pass/4-460.webp 460w
-										"
+										srcset="assets/images/optimized/students-pass/4.webp 240w, assets/images/optimized/students-pass/4-320.webp 320w, assets/images/optimized/students-pass/4-360.webp 360w, assets/images/optimized/students-pass/4-400.webp 400w, assets/images/optimized/students-pass/4-460.webp 460w"
 										width="460"
 										height="300"
 										draggable="false"
@@ -295,22 +299,13 @@
 									data-road-media
 									draggable="false"
 									alt="מכונית אדומה במבט מלמעלה"
-									srcset="
-										assets/images/optimized/cars/car-red.webp     390w,
-										assets/images/optimized/cars/car-red-463.webp 463w
-									"
+									srcset="assets/images/optimized/cars/car-red.webp 390w, assets/images/optimized/cars/car-red-463.webp 463w"
 									sizes="(max-width: 768px) clamp(233.037px, 34.956svh, 312.936px), clamp(275.65px, 41.347svh, 404.287px)"
 								/>
 								<span class="road-photo">
 									<img
 										src="assets/images/students-pass/5.png"
-										srcset="
-											assets/images/optimized/students-pass/5.webp     240w,
-											assets/images/optimized/students-pass/5-320.webp 320w,
-											assets/images/optimized/students-pass/5-360.webp 360w,
-											assets/images/optimized/students-pass/5-400.webp 400w,
-											assets/images/optimized/students-pass/5-490.webp 490w
-										"
+										srcset="assets/images/optimized/students-pass/5.webp 240w, assets/images/optimized/students-pass/5-320.webp 320w, assets/images/optimized/students-pass/5-360.webp 360w, assets/images/optimized/students-pass/5-400.webp 400w, assets/images/optimized/students-pass/5-490.webp 490w"
 										width="633"
 										height="553"
 										draggable="false"
@@ -328,20 +323,13 @@
 									data-road-media
 									draggable="false"
 									alt="מכונית צהובה במבט מלמעלה"
-									srcset="
-										assets/images/optimized/cars/car-yellow.webp     480w,
-										assets/images/optimized/cars/car-yellow-581.webp 581w
-									"
+									srcset="assets/images/optimized/cars/car-yellow.webp 480w, assets/images/optimized/cars/car-yellow-581.webp 581w"
 									sizes="(max-width: 768px) clamp(286.718px, 43.008svh, 385.022px), clamp(339.147px, 50.872svh, 497.415px)"
 								/>
 								<span class="road-photo">
 									<img
 										src="assets/images/students-pass/6.png"
-										srcset="
-											assets/images/optimized/students-pass/6.webp     240w,
-											assets/images/optimized/students-pass/6-320.webp 320w,
-											assets/images/optimized/students-pass/6-361.webp 361w
-										"
+										srcset="assets/images/optimized/students-pass/6.webp 240w, assets/images/optimized/students-pass/6-320.webp 320w, assets/images/optimized/students-pass/6-361.webp 361w"
 										width="361"
 										height="230"
 										draggable="false"
@@ -357,167 +345,142 @@
 			</section>
 
 			<section
-				id="instructor"
-				class="instructor section"
-				aria-labelledby="instructor-title"
-				data-scroll-reveal
-			>
-				<div class="content-shell instructor-layout">
-					<div class="instructor-intro scroll-reveal-target">
-						<h2 id="instructor-title">
-							<span>כותרת</span>
-							<span class="instructor-title-line">כותרת</span>
-						</h2>
-					</div>
-					<div class="instructor-descriptions">
-						<p>תיאור</p>
-						<p>תיאור</p>
-					</div>
-					<div class="instructor-photo scroll-reveal-target" role="img" aria-label="תמונה">
-						<span aria-hidden="true">תמונה</span>
-					</div>
-				</div>
-			</section>
-
-			<section
 				id="about"
 				class="about section"
 				aria-labelledby="about-title"
+				tabindex="-1"
 				data-scroll-reveal
 			>
 				<div class="content-shell about-layout">
 					<div class="about-title-block scroll-reveal-target">
-						<h2 id="about-title">
-							להבין את החוק לפני הרגע שבו צריך לפעול
-						</h2>
+						<h2 id="about-title">לומדים להבין את הכביש, צעד אחר צעד</h2>
+						<p>בקורס מחברים בין חוקי הדרך למצבי נהיגה אמיתיים באמצעות הסברים, דוגמאות וסרטונים. בכל נושא מבינים מה רואים בדרך ואיזו החלטה צריך לקבל.</p>
 					</div>
-					<div class="about-copy scroll-reveal-target">
-						<p class="lead">
-							בשיעור הנהיגה מתרגלים את הפעולה. כאן עוצרים לרגע כדי
-							להבין את ההיגיון שמאחוריה.
-						</p>
-						<p>
-							הקורס עוזר לחבר בין התיאוריה לבין מה שרואים דרך
-							השמשה. הוא לא מחליף את מורה הנהיגה, אלא נותן בסיס
-							ברור יותר לתרגול המעשי בשיעור.
-						</p>
-					</div>
-					<aside
-						class="road-question scroll-reveal-target"
-						aria-label="שאלה שמלווה את הלמידה"
-					>
-						<span>בכל מצב בדרך שואלים:</span>
-						<strong
-							>מה אני רואה, למי יש זכות קדימה, ומה הפעולה הבטוחה
-							עכשיו?</strong
+					<ol class="learning-steps scroll-reveal-target" role="list">
+						<li>רואים מצב אמיתי מהכביש</li>
+						<li>מבינים איזה חוק חל</li>
+						<li>לומדים מהי הפעולה הבטוחה</li>
+					</ol>
+					<div class="course-topics scroll-reveal-target">
+						<p class="topic-prompt">נושאי הקורס</p>
+						<div
+							class="topic-explorer"
+							data-topic-explorer
 						>
-					</aside>
+							<div class="topic-summaries" data-topic-summaries>
+								<section>
+									<h3>זכויות קדימה ופניות</h3>
+									<p>לקרוא את מבנה הצומת, להבין את מדרג הציות ולדעת מתי ולאן אפשר לפנות בבטחה.</p>
+								</section>
+								<section>
+									<h3>זיהוי כבישים ונתיבים</h3>
+									<p>לזהות כביש חד־סטרי או דו־סטרי, לבחור נתיב נכון ולהבין לאן כל נתיב מוביל ומתי זה הזמן הנכון לשנות אותו.</p>
+								</section>
+								<section>
+									<h3>מעגלי תנועה וצמתים</h3>
+									<p>להתקרב נכון למעגל תנועה ולצומת, לסרוק את התנועה ולבחור את התזמון המתאים לכניסה.</p>
+								</section>
+								<section>
+									<h3>תמרורים ומהירויות</h3>
+									<p>להכיר תמרורים נפוצים, להבין מתי תמרור גובר על ברירת המחדל ולבחור מהירות שמתאימה לדרך.</p>
+								</section>
+								<section>
+									<h3>עקיפה ואיסורי עקיפה</h3>
+									<p>להבין מתי עקיפה אפשרית, לזהות איסורים ולבדוק אם מרחק הראייה ותנאי הדרך מאפשרים אותה.</p>
+								</section>
+								<section>
+									<h3>תכנון נסיעה</h3>
+									<p>להביט רחוק, לזהות סיכונים מוקדם ולתכנן נתיב ומהירות לפני שמגיעים לנקודת ההחלטה.</p>
+								</section>
+								<section>
+									<h3>טעויות נפוצות בטסט</h3>
+									<p>להכיר את המצבים שבהם תלמידים נכשלים ולתרגל הסתכלות, מיקום וקבלת החלטות לפני המבחן.</p>
+								</section>
+							</div>
+							<div
+								class="topic-rail"
+								hidden
+								role="group"
+								aria-label="נושאי הקורס"
+							>
+								<button
+									class="topic-card"
+									type="button"
+									aria-expanded="true"
+									data-active="true"
+								>
+									זכויות קדימה ופניות
+								</button>
+								<button
+									class="topic-card"
+									type="button"
+									aria-expanded="false"
+								>
+									זיהוי כבישים ונתיבים
+								</button>
+								<button
+									class="topic-card"
+									type="button"
+									aria-expanded="false"
+								>
+									מעגלי תנועה וצמתים
+								</button>
+								<button
+									class="topic-card"
+									type="button"
+									aria-expanded="false"
+								>
+									תמרורים ומהירויות
+								</button>
+								<button
+									class="topic-card"
+									type="button"
+									aria-expanded="false"
+								>
+									עקיפה ואיסורי עקיפה
+								</button>
+								<button
+									class="topic-card"
+									type="button"
+									aria-expanded="false"
+								>
+									תכנון נסיעה
+								</button>
+								<button
+									class="topic-card"
+									type="button"
+									aria-expanded="false"
+								>
+									טעויות נפוצות בטסט
+								</button>
+							</div>
+
+							<div
+								class="topic-panel"
+								hidden
+								data-topic-panel
+								aria-live="polite"
+							>
+								<div>
+									<h3 data-topic-panel-title></h3>
+									<p data-topic-panel-description></p>
+								</div>
+								<p class="topic-note">
+									ההסבר המלא מלווה בדוגמאות ובסרטונים ממצבי נהיגה
+									אמיתיים.
+								</p>
+							</div>
+						</div>
+					</div>
+					<p class="learning-note scroll-reveal-target">הקורס משלים את התרגול בשיעורי הנהיגה ואינו מחליף את מורה הנהיגה.</p>
 				</div>
 			</section>
 
-			<section
-				id="topics"
-				class="topics section"
-				aria-labelledby="topics-title"
-				tabindex="-1"
-				data-scroll-reveal
-			>
-				<div class="content-shell">
-					<div class="section-heading scroll-reveal-target">
-						<h2 id="topics-title">
-							הנושאים שילמדו אתכם לחשוב כמו נהגים
-						</h2>
-						<p>בחרו נושא וקבלו הצצה למה שמפרקים ומתרגלים בקורס.</p>
-					</div>
-
-					<div
-						class="topic-explorer scroll-reveal-target"
-						data-topic-explorer
-					>
-						<div
-							class="topic-rail"
-							role="group"
-							aria-label="נושאי הקורס"
-						>
-							<button
-								class="topic-card"
-								type="button"
-								aria-expanded="true"
-								data-active="true"
-								data-topic-description="לקרוא את מבנה הצומת, להבין את מדרג הציות ולדעת מתי ולאן אפשר לפנות בבטחה."
-							>
-								זכויות קדימה ופניות
-							</button>
-							<button
-								class="topic-card"
-								type="button"
-								aria-expanded="false"
-								data-topic-description="לזהות כביש חד־סטרי או דו־סטרי, לבחור נתיב נכון ולהבין לאן כל נתיב מוביל ומתי זה הזמן הנכון לשנות אותו."
-							>
-								זיהוי כבישים ונתיבים
-							</button>
-							<button
-								class="topic-card"
-								type="button"
-								aria-expanded="false"
-								data-topic-description="להתקרב נכון למעגל תנועה ולצומת, לסרוק את התנועה ולבחור את התזמון המתאים לכניסה."
-							>
-								מעגלי תנועה וצמתים
-							</button>
-							<button
-								class="topic-card"
-								type="button"
-								aria-expanded="false"
-								data-topic-description="להכיר תמרורים נפוצים, להבין מתי תמרור גובר על ברירת המחדל ולבחור מהירות שמתאימה לדרך."
-							>
-								תמרורים ומהירויות
-							</button>
-							<button
-								class="topic-card"
-								type="button"
-								aria-expanded="false"
-								data-topic-description="להבין מתי עקיפה אפשרית, לזהות איסורים ולבדוק אם מרחק הראייה ותנאי הדרך מאפשרים אותה."
-							>
-								עקיפה ואיסורי עקיפה
-							</button>
-							<button
-								class="topic-card"
-								type="button"
-								aria-expanded="false"
-								data-topic-description="להביט רחוק, לזהות סיכונים מוקדם ולתכנן נתיב ומהירות לפני שמגיעים לנקודת ההחלטה."
-							>
-								תכנון נסיעה
-							</button>
-							<button
-								class="topic-card"
-								type="button"
-								aria-expanded="false"
-								data-topic-description="להכיר את המצבים שבהם תלמידים נכשלים ולתרגל הסתכלות, מיקום וקבלת החלטות לפני המבחן."
-							>
-								טעויות נפוצות בטסט
-							</button>
-						</div>
-
-						<div
-							class="topic-panel"
-							data-topic-panel
-							aria-live="polite"
-						>
-							<div>
-								<h3 data-topic-panel-title>
-									זכויות קדימה ופניות
-								</h3>
-								<p data-topic-panel-description>
-									לקרוא את מבנה הצומת, להבין את מדרג הציות
-									ולדעת מתי ולאן אפשר לפנות בבטחה.
-								</p>
-							</div>
-							<p class="topic-note">
-								ההסבר המלא מלווה בדוגמאות ובסרטונים ממצבי נהיגה
-								אמיתיים.
-							</p>
-						</div>
-					</div>
+			<section id="start" class="start section" aria-labelledby="start-title">
+				<div class="content-shell start-layout">
+					<h2 id="start-title">מוכנים להבין את הכביש טוב יותר?</h2>
+					<p>התחילו ללמוד בקצב שלכם וחזרו לכל נושא לפני שיעור הנהיגה הבא.</p>
+					<a class="button button-primary" href="#">התחילו בשיעור הראשון</a>
 				</div>
 			</section>
 		</main>
