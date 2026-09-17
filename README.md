@@ -1,14 +1,14 @@
 # Driving course welcome page
 
-This is the first welcome-page concept for Oren Bachor's Hebrew driving course. The current direction is a **Learning journey** that introduces the course, explains how it connects theory to real road situations, and lets visitors preview the learning topics.
+This is the public welcome page for Oren Bachor's Hebrew driving course. The **Learning journey** introduces the course, explains how it connects theory to real road situations, and lets visitors preview the learning topics.
 
 The hero fills the available viewport below the navigation with the course promise, two actions, and the stop sign. The student-photo road carousel now sits below the compact instructor introduction; together they fit one viewport below the sticky header on typical laptop and phone screens. On mobile, the instructor content stacks in reading order: title, image, then one description. The blue stop-sign illustration appears above the hero copy. Shorter screens and enlarged text can extend the hero naturally.
 
 ## Current page flow
 
-The page moves through the hero, instructor introduction with its student-photo road carousel, one combined section with the three learning steps and learning-topic preview, and a closing first-lesson action before the footer. The course uses one heading and introduction, a compact learning-step strip, and the complete topic explorer under `#about`. The main navigation has one link to the instructor and one to the course. Section links align their destination immediately below the sticky header, or at the viewport top when the mobile fallback header scrolls with the page.
+The page moves through the hero, instructor introduction with its student-photo road carousel, one combined section with the three learning steps and learning-topic preview, and a closing first-lesson action before the footer. Under `#about`, the course has one heading, three introductory paragraphs, a compact learning-step strip, and the complete topic explorer. The paragraphs explain the audience, topics and examples, and how to review material alongside practical driving lessons. The main navigation has one link to the instructor and one to the course. Section links align their destination immediately below the sticky header, or at the viewport top when the mobile fallback header scrolls with the page.
 
-The hero’s main action, “מנחה הקורס”, leads to the instructor; its secondary action leads to the unified course section at `#about`. The course-start actions in the topbar and closing section intentionally use `href="#"`, as requested, until a real course URL is supplied. No course playback, account, or enrollment flow exists yet.
+The hero's main action, "מנחה הקורס", leads to the instructor; its secondary action leads to the unified course section at `#about`. The course-start actions in the topbar and closing section intentionally use `href="#"`, as requested, until a real course URL is supplied. No course playback, account, or enrollment flow exists yet.
 
 Without JavaScript, or if the entry module fails to load, mobile navigation links remain visible in a header in normal document flow. Successful initialization enables the sticky header and collapsible menu. All seven topic descriptions are readable in the baseline HTML; initialization uses those descriptions for the interactive preview and hides the static summaries.
 
@@ -32,17 +32,31 @@ Then open [http://localhost:8000](http://localhost:8000).
 
 No installation or build step is required.
 
+For a preview over an already configured Tailscale connection, keep this server running and use `http://<tailscale-ip>:8000/` from another device on the same tailnet. Find the address with `tailscale ip -4` and check the connection with `tailscale status`. On Linux, start a stopped daemon with `sudo systemctl start tailscaled`, then connect with `tailscale up`. This is a development preview; the public canonical URL remains the GitHub Pages address.
+
 ## Page source maintenance
 
 `index.html` is checked in with compact whitespace and remains directly editable and servable. After editing HTML, run `npm run minify:html` before publishing. You can format the file in your editor while working, then run the command again. Run it after `npm run optimize:media` when updating images. The command preserves single spaces between inline elements, literal whitespace in `pre` and `textarea`, SVG attribute casing, and image metadata. It reports both raw and gzip byte counts; gzip is a comparison here, not a server configuration change.
 
-The entry script uses `type="module"`, so browsers defer its execution automatically. Keeping it in the head lets its download start early. Every HTML image has an `alt` attribute. The brand icon intentionally uses `alt=""` because the adjacent text and enclosing link already identify the brand.
+The entry script uses `type="module"`, so browsers defer its execution automatically. Keeping it in the head lets its download start early. Every HTML image has an `alt` attribute. The brand icon uses the requested Hebrew alternative `alt="לוגו"`; the enclosing link retains its descriptive accessible name.
+
+## Search and sharing metadata
+
+`index.html` includes a Hebrew search title and description, a canonical URL, Open Graph and X card metadata, and JSON-LD describing the website, welcome page, course, and instructor. Keep these descriptions aligned with the visible course and instructor copy. The sharing image reuses the supplied `assets/images/oren.jpg`; no separate artwork or image-generation step is required. Social sharing metadata works without having social-profile accounts.
+
+The public canonical URL is `https://oren-bechor.github.io/`. If the site moves, update the canonical link, social URLs, JSON-LD identifiers and URLs, `robots.txt`, `sitemap.xml`, and `llms.txt` together. The sitemap lists the single public welcome page; section anchors are not separate pages. Add new published pages when they exist, and add `lastmod` only if an accurate modification date can be maintained. `robots.txt` allows public crawling and points to the sitemap.
+
+`llms.txt` provides a short Hebrew overview and links to the existing course and instructor sections, following the [llms.txt proposal](https://llmstxt.org/). The page links it with `rel="describedby"`. Keep the summary and links aligned with the page when course facts, section IDs, or available enrollment/playback capabilities change. It is maintained directly, with no generation or runtime step, and does not replace the page or sitemap.
+
+After editing metadata, run `npm run minify:html`, `npm test`, and `git diff --check`. Run `npm run check:media` as well when changing HTML image declarations, preload metadata, or assets. Publish `index.html`, `robots.txt`, `sitemap.xml`, and `llms.txt` together. After deployment, check those public URLs and use Search Console URL Inspection to verify what Google can fetch. Repository tests cannot confirm indexing or social-platform preview caches.
+
+See [SEO audit decisions](docs/seo-audit.md) for the disposition of the September 17, 2026 SEOptimer recommendations, including findings that do not warrant code changes.
 
 ## Production caching
 
 The public site is hosted at `https://oren-bechor.github.io/` on GitHub Pages. On September 17, 2026, live HTTP checks confirmed that the page and 29 first-party assets referenced by its HTML returned `Expires` and `Cache-Control: max-age=600`. These included stylesheets, JavaScript, images, and fonts. The browser can reuse fresh cached responses for ten minutes. When both headers are present, [`Cache-Control: max-age` takes precedence](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Expires).
 
-GitHub Pages controls response headers and provides no repository setting for longer cache lifetimes. See the [GitHub Pages caching discussion](https://github.com/orgs/community/discussions/11884). Adding `.htaccess`, `_headers`, or HTML meta tags does not configure its HTTP cache policy. An “Add Expires headers” audit can still flag the short lifetime; inspect its affected URLs before choosing a fix.
+GitHub Pages controls response headers and provides no repository setting for longer cache lifetimes. See the [GitHub Pages caching discussion](https://github.com/orgs/community/discussions/11884). Adding `.htaccess`, `_headers`, or HTML meta tags does not configure its HTTP cache policy. An "Add Expires headers" audit can still flag the short lifetime; inspect its affected URLs before choosing a fix.
 
 Check the deployed responses with:
 
@@ -146,6 +160,7 @@ Alignment compensates for transparent margins in each source image. Student phot
 ## Project files
 
 - `index.html` contains the Hebrew, right-to-left page content.
+- `robots.txt` and `sitemap.xml` expose the canonical welcome page to crawlers; `llms.txt` summarizes the course and links to its public sections.
 - `css/base.css` defines design tokens, global defaults, and shared layout widths.
 - `css/components.css` styles the header and navigation.
 - `css/welcome.css` styles the welcome-page sections and their controls.
@@ -173,11 +188,13 @@ Animation regressions cover focus during section entrances, visibility in print,
 
 `tests/progressive-enhancement-browser.test.mjs` exercises navigation and topic selection at desktop and phone widths. It also checks visible navigation and all seven descriptions with JavaScript disabled or the entry module blocked. Section-alignment tests distinguish the sticky header from the mobile fallback's zero scroll offset. The unavailable-IntersectionObserver test checks for browser errors and verifies that topic selection and footer icon loading still initialize.
 
+`tests/seo-metadata.test.mjs` checks consistent canonical and sharing metadata, the existing sharing image's type and dimensions, and linked structured-data entities. `tests/crawler-discovery.test.mjs` checks crawl access, sitemap consistency, and that `llms.txt` links point to real page sections. These checks validate the repository files, not search ranking or production deployment.
+
 CI audits the checked-in media. Photo and artwork changes still require running `npm run optimize:media` locally and publishing its output with the originals. The workflow does not deploy the site.
 
 ### Local checks
 
-Development checks require Node.js 22.22.2 or newer in the 22.x line, 24.15.0 or newer in the 24.x line, or 26 or newer, plus Playwright’s Chromium browser. CI uses Node.js 24. Install the locked development dependencies and browser once, then run the checks:
+Development checks require Node.js 22.22.2 or newer in the 22.x line, 24.15.0 or newer in the 24.x line, or 26 or newer, plus Playwright's Chromium browser. CI uses Node.js 24. Install the locked development dependencies and browser once, then run the checks:
 
 ```bash
 npm ci
@@ -188,7 +205,7 @@ npm run check:media
 git diff --check
 ```
 
-The media audit checks marked HTML images and independently checks every image preload's file and MIME type, including the preloaded `road.jpg` background. It matches car templates to the `car-*.png` files and inspects every numbered student photo without a fixed maximum. It validates the scrolling group’s direct child templates, matching runtime initialization, and reports misplaced or malformed templates, numbering gaps, invalid PNG filenames, missing or duplicate templates, incorrect fallback photo references or metadata, and a missing or stale generated photo list. The supplied `cars.png` composite is excluded. It checks delivery candidates from both the HTML and the generated gallery list, including missing files and incorrect width descriptors. It checks image headers and dimensions, not full decoding or roof alignment, and does not discover arbitrary image URLs in CSS.
+The media audit checks marked HTML images and independently checks every image preload's file and MIME type, including the preloaded `road.jpg` background. It matches car templates to the `car-*.png` files and inspects every numbered student photo without a fixed maximum. It validates the scrolling group's direct child templates, matching runtime initialization, and reports misplaced or malformed templates, numbering gaps, invalid PNG filenames, missing or duplicate templates, incorrect fallback photo references or metadata, and a missing or stale generated photo list. The supplied `cars.png` composite is excluded. It checks delivery candidates from both the HTML and the generated gallery list, including missing files and incorrect width descriptors. It checks image headers and dimensions, not full decoding or roof alignment, and does not discover arbitrary image URLs in CSS.
 
 Browser tests derive the gallery count and last photo from the generated list. Progressive-append scenarios require enough photos to fill the initial viewport and leave a later photo pending; smaller galleries skip those scenarios. Tests also check loading from the generated photo list without missing-file probes, failure preservation, and loop timing across row sizes and viewport changes. `npm test` includes Chromium checks that load the actual page, stylesheets, scripts, and images at desktop and phone sizes, including resizing and reduced motion. They intercept local requests to serve repository files and block external requests, so no dev server or network connection is needed after setup. Verify layout and interaction changes in the collaborative browser at desktop and phone sizes, including reduced motion. If collaborative preview is unavailable, use local Playwright Chromium and report the limitation.
 
@@ -198,6 +215,8 @@ Browser tests derive the gallery count and last photo from the generated list. P
 - [DESIGN.md](DESIGN.md): visual system and the approved welcome-page composition.
 - [CONTEXT.md](CONTEXT.md): course and gallery terminology.
 - [AGENTS.md](AGENTS.md): contributor boundaries and required checks.
+- [SEO audit decisions](docs/seo-audit.md): implemented recommendations, retained behavior, and items waiting for real business details or infrastructure changes.
+- [Font sources and license](assets/fonts/README.md): the local font files and their delivery requirements.
 - [Supplied course brief](docs/reference/the-idea.pdf): original instructor and course material.
 
 ## Licensing

@@ -24,7 +24,7 @@ The course connects driving theory to situations that occur on the road. It supp
 
 ## Operating context
 
-Visitors first see a concrete course promise and links to the instructor and topic preview. The compact instructor introduction and student gallery follow, sharing a viewport. The course has one introduction, three learning steps, and the full topic preview in a continuous section below the instructor. On phones, the instructor title, photo, and single description stack vertically. A closing first-lesson action precedes the footer.
+Visitors first see a concrete course promise and links to the instructor and topic preview. The compact instructor introduction and student gallery follow, sharing a viewport. The course introduction explains the audience, specific topics and examples, and how to review material between practical lessons. Its three paragraphs lead into three learning steps and the full topic preview in one continuous section below the instructor. On phones, the instructor title, photo, and single description stack vertically. A closing first-lesson action precedes the footer.
 
 ## Capabilities and constraints
 
@@ -35,6 +35,7 @@ Visitors first see a concrete course promise and links to the instructor and top
 - The gallery is noninteractive. A static row remains during initial loading, after startup failure, and without JavaScript. A later loading failure preserves the already moving row and its responsive timing. Reduced motion disables scrolling; horizontal overflow remains clipped.
 - Enrollment, payment, user accounts, and course playback are outside this release.
 - Visitor-facing website copy is Hebrew and uses a right-to-left reading direction.
+- Search and sharing descriptions, structured data, and the public `llms.txt` overview describe the same course and instructor facts as the welcome page. They do not imply that enrollment or lesson playback is available on this site.
 - The page must work on desktop and mobile without a framework or a build step to serve the checked-in files. Updating gallery photos requires the maintenance step above.
 
 ## Brand commitments
@@ -49,6 +50,7 @@ Visitors first see a concrete course promise and links to the instructor and top
 - `DESIGN.md` contains the complete Solar Serenity palette, typography, spacing, shapes, and component treatments.
 - The supplied road background, car artwork, and photos of Oren with students are in `assets/images/`. Student photos are gallery content, not written testimonials or evidence for a pass-rate claim.
 - No written testimonials, prices, enrollment URL, or numerical performance claims were supplied. Future work must not invent them.
+- Public business contact details and real social-profile URLs are not available yet. Existing footer links remain placeholders until the owner supplies destinations.
 
 ## Product principles
 

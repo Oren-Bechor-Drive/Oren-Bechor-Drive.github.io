@@ -8,6 +8,10 @@ This context describes the public learning experience that introduces Oren Bacho
 A visitor preparing to drive or improving their understanding of correct driving.
 _Avoid_: Customer, student account
 
+**Course introduction**:
+The welcome-page explanation of who the driving course is for, what it covers, and how learners can use it alongside practical driving lessons.
+_Avoid_: Enrollment flow, lesson player, instructor introduction
+
 **Learning topic**:
 A named area of driving knowledge, such as right-of-way, lane choice, intersections, or trip planning.
 _Avoid_: Feature, category

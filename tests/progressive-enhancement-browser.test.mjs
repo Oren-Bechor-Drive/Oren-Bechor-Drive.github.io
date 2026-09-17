@@ -17,7 +17,7 @@ for (const failure of ["disabled", "module unavailable"]) {
 			await page.locator('.site-menu a[href="#about"]').click();
 			assert.equal(await page.locator(".topic-card:visible").count(), 0, "nonfunctional topic buttons are not offered");
 			const content = await page.locator("#about").innerText();
-			for (const description of ["לקרוא את מבנה הצומת", "לזהות כביש חד־סטרי", "להתקרב נכון למעגל תנועה", "להכיר תמרורים נפוצים", "להבין מתי עקיפה אפשרית", "להביט רחוק", "להכיר את המצבים שבהם תלמידים נכשלים"]) {
+			for (const description of ["לקרוא את מבנה הצומת", "לזהות כביש חד-סטרי", "להתקרב נכון למעגל תנועה", "להכיר תמרורים נפוצים", "להבין מתי עקיפה אפשרית", "להביט רחוק", "להכיר את המצבים שבהם תלמידים נכשלים"]) {
 				assert.ok(content.includes(description), `readable description: ${description}`);
 			}
 			assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, "no horizontal overflow");

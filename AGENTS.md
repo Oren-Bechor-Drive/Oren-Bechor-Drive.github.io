@@ -5,6 +5,7 @@
 - Build the public learning experience for Oren Bachor's driving course.
 - Write all visitor-facing website copy in Hebrew and preserve right-to-left layout and reading order.
 - Communicate with the user in English.
+- Use ASCII punctuation in project-authored text, including Hebrew: `-`, `:`, `;`, `'`, `"`, `,`, `/`, `?`, and `.`. Preserve supplied reference documents, font files, and third-party license text.
 
 ## Sources of truth
 
@@ -12,12 +13,14 @@
 - When changing domain language or content structure, read `CONTEXT.md` and use its terms.
 - Use `README.md` for local setup and current project scope. Its Todo section records future suggestions; implement them only when the user explicitly requests them.
 - Use `PRODUCT.md` for audience, release boundaries, and supplied evidence.
+- When changing search metadata, structured data, crawler files, or public URLs, follow [Search and sharing metadata](README.md#search-and-sharing-metadata) and consult [SEO audit decisions](docs/seo-audit.md) before implementing scanner recommendations.
 
 ## Technical boundaries
 
 - Keep production code in plain HTML, CSS, and JavaScript with no build step to run or serve the checked-in site. Image delivery changes require the maintenance steps in `README.md`.
 - Preserve semantic HTML, keyboard access, visible focus, mobile behavior, progressive enhancement, and reduced-motion support.
 - Keep navigation and all topic descriptions usable when JavaScript is disabled or the entry module fails to load. Use the baseline HTML descriptions as the interactive preview's content source.
+- Keep course copy, search and sharing metadata, structured data, and `llms.txt` consistent with supplied facts. Add real contact details, profile URLs, or enrollment destinations only when supplied.
 - Preserve user-supplied image bytes unless the user explicitly requests an image edit. Keep marked road-media metadata accurate when paths or images change.
 - When changing image sources, delivery widths, compression, or sizing hints, follow [Optimize delivery images](README.md#optimize-delivery-images) for regeneration, publishing, and browser delivery checks.
 - For gallery maintenance, follow `README.md`: preserve numeric photo order and the generated photo list without a fixed maximum. Keep car templates, sprite files, and CSS alignment consistent. The supplied `cars.png` composite is source artwork, not dead code.
