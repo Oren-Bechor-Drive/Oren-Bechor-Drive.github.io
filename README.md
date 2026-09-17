@@ -195,11 +195,9 @@ Alignment compensates for transparent margins in each source image. Student phot
 
 ### Automated checks
 
-[The Tests workflow](.github/workflows/tests.yml) runs on every push and pull request, and can also be started manually from GitHub Actions. It uses Node.js 24 on Blacksmith's 4-vCPU Ubuntu 24.04 runner, `blacksmith-4vcpu-ubuntu-2404`, installs the locked dependencies with `npm ci`, checks them with `npm audit`, and installs Chromium with its system dependencies, then runs `npm run check:media` and the full `npm test` suite. This includes static and behavior tests, optimizer tests, and all Chromium gallery and image-delivery checks. New tests matching `tests/*.test.mjs` are included automatically.
+[The Tests workflow](.github/workflows/tests.yml) runs on every push and pull request, and can also be started manually from GitHub Actions. It uses Node.js 24 on GitHub's hosted Ubuntu 24.04 runner, `ubuntu-24.04`, installs the locked dependencies with `npm ci`, checks them with `npm audit`, and installs Chromium with its system dependencies, then runs `npm run check:media` and the full `npm test` suite. This includes static and behavior tests, optimizer tests, and all Chromium gallery and image-delivery checks. New tests matching `tests/*.test.mjs` are included automatically.
 
-The workflow keeps `actions/setup-node` with `cache: npm`. Blacksmith supports this cache directly; its older `useblacksmith/setup-node` and `useblacksmith/cache` forks are archived. See [Blacksmith dependency caching](https://docs.blacksmith.sh/blacksmith-caching/dependencies-actions).
-
-The Blacksmith GitHub integration must have permission to execute jobs for this repository in the `Oren-Bechor-Drive` organization. If a job stays queued without an assigned runner or any started steps, check the organization's integration and repository access in the [Blacksmith dashboard](https://app.blacksmith.sh), following the [setup guide](https://docs.blacksmith.sh/introduction/quickstart). The runner label selects Blacksmith; it does not grant that access.
+The workflow uses `actions/setup-node` with `cache: npm` to reuse downloaded dependencies between runs.
 
 Animation regressions cover focus during section entrances, visibility in print, immediate keyboard topic selection, live reduced-motion changes, and keeping unchanged topic text still. Hero-car checks cover road position, orientation, and elapsed-time preservation on resize. Gallery tests cover refilling metadata request slots, deferred photo additions at a real animation loop boundary, and resizing the preserved row after a later loading failure. Scroll-reveal tests bound their animation-capture waits so a missing reveal fails instead of hanging the suite.
 
