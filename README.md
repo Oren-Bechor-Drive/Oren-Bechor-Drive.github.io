@@ -50,8 +50,6 @@ The public canonical URL is `https://oren-bechor.github.io/`. If the site moves,
 
 After editing metadata, run `npm run minify:html`, `npm test`, and `git diff --check`. Run `npm run check:media` as well when changing HTML image declarations, preload metadata, or assets. Publish `index.html`, `robots.txt`, `sitemap.xml`, and `llms.txt` together. After deployment, check those public URLs and use Search Console URL Inspection to verify what Google can fetch. Repository tests cannot confirm indexing or social-platform preview caches.
 
-See [SEO audit decisions](docs/seo-audit.md) for the disposition of the September 17, 2026 SEOptimer recommendations, including findings that do not warrant code changes.
-
 ## Production caching
 
 The public site is hosted at `https://oren-bechor.github.io/` on GitHub Pages. On September 17, 2026, live HTTP checks confirmed that the page and 29 first-party assets referenced by its HTML returned `Expires` and `Cache-Control: max-age=600`. These included stylesheets, JavaScript, images, and fonts. The browser can reuse fresh cached responses for ten minutes. When both headers are present, [`Cache-Control: max-age` takes precedence](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Expires).
@@ -215,7 +213,6 @@ Browser tests derive the gallery count and last photo from the generated list. P
 - [DESIGN.md](DESIGN.md): visual system and the approved welcome-page composition.
 - [CONTEXT.md](CONTEXT.md): course and gallery terminology.
 - [AGENTS.md](AGENTS.md): contributor boundaries and required checks.
-- [SEO audit decisions](docs/seo-audit.md): implemented recommendations, retained behavior, and items waiting for real business details or infrastructure changes.
 - [Font sources and license](assets/fonts/README.md): the local font files and their delivery requirements.
 - [Supplied course brief](docs/reference/the-idea.pdf): original instructor and course material.
 

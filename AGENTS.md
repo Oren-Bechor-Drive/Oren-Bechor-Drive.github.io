@@ -13,7 +13,7 @@
 - When changing domain language or content structure, read `CONTEXT.md` and use its terms.
 - Use `README.md` for local setup and current project scope. Its Todo section records future suggestions; implement them only when the user explicitly requests them.
 - Use `PRODUCT.md` for audience, release boundaries, and supplied evidence.
-- When changing search metadata, structured data, crawler files, or public URLs, follow [Search and sharing metadata](README.md#search-and-sharing-metadata) and consult [SEO audit decisions](docs/seo-audit.md) before implementing scanner recommendations.
+- When changing search metadata, structured data, crawler files, or public URLs, follow [Search and sharing metadata](README.md#search-and-sharing-metadata).
 
 ## Technical boundaries
 
