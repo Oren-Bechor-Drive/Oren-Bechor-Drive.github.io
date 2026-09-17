@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://oren-bechor.github.io/sitemap.xml
+Sitemap: https://oren-bechor-drive.github.io/sitemap.xml

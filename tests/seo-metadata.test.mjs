@@ -4,7 +4,7 @@ import test from "node:test";
 import { JSDOM } from "jsdom";
 import { inspectImage } from "../scripts/road-media-integrity.mjs";
 
-const siteUrl = "https://oren-bechor.github.io/";
+const siteUrl = "https://oren-bechor-drive.github.io/";
 const document = new JSDOM(
 	await readFile(new URL("../index.html", import.meta.url), "utf8"),
 	{ url: siteUrl },

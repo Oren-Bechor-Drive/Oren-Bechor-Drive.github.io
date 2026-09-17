@@ -20,6 +20,19 @@ The instructor and unified course section reveal once on scroll. Focus immediate
 
 The footer includes Instagram, TikTok, YouTube, and WhatsApp links, currently pointing to `#`. Their icons load from Font Awesome kit `a138530222` when the footer is within 300px of the viewport. Hebrew link labels remain visible if the external kit is unavailable. Browsers without IntersectionObserver request the kit after page load.
 
+## Repository and publishing
+
+The repository is [Oren-Bechor-Drive/Oren-Bechor-Drive.github.io](https://github.com/Oren-Bechor-Drive/Oren-Bechor-Drive.github.io), owned by the `Oren-Bechor-Drive` organization. The public site is [https://oren-bechor-drive.github.io/](https://oren-bechor-drive.github.io/).
+
+GitHub Pages publishes from the root of `main`, using the "Deploy from a branch" source in the repository's Pages settings. The repository name matches the organization account's `<owner>.github.io` name, so the site is served at the domain root with no repository path prefix. See [GitHub's site types](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#types-of-github-pages-sites). Keep asset paths and the manifest's `start_url` relative.
+
+For an existing clone that still points to the previous repository, update its remote:
+
+```bash
+git remote set-url origin https://github.com/Oren-Bechor-Drive/Oren-Bechor-Drive.github.io.git
+git remote -v
+```
+
 ## Open locally
 
 From this folder, run:
@@ -44,7 +57,7 @@ The entry script uses `type="module"`, so browsers defer its execution automatic
 
 `index.html` includes a Hebrew search title and description, a canonical URL, Open Graph and X card metadata, and JSON-LD describing the website, welcome page, course, and instructor. Keep these descriptions aligned with the visible course and instructor copy. The sharing image reuses the supplied `assets/images/oren.jpg`; no separate artwork or image-generation step is required. Social sharing metadata works without having social-profile accounts.
 
-The public canonical URL is `https://oren-bechor.github.io/`. If the site moves, update the canonical link, social URLs, JSON-LD identifiers and URLs, `robots.txt`, `sitemap.xml`, and `llms.txt` together. The sitemap lists the single public welcome page; section anchors are not separate pages. Add new published pages when they exist, and add `lastmod` only if an accurate modification date can be maintained. `robots.txt` allows public crawling and points to the sitemap.
+The public canonical URL is `https://oren-bechor-drive.github.io/`. If the site moves, update the canonical link, social URLs, JSON-LD identifiers and URLs, `robots.txt`, `sitemap.xml`, and `llms.txt` together. The sitemap lists the single public welcome page; section anchors are not separate pages. Add new published pages when they exist, and add `lastmod` only if an accurate modification date can be maintained. `robots.txt` allows public crawling and points to the sitemap.
 
 `llms.txt` provides a short Hebrew overview and links to the existing course and instructor sections, following the [llms.txt proposal](https://llmstxt.org/). The page links it with `rel="describedby"`. Keep the summary and links aligned with the page when course facts, section IDs, or available enrollment/playback capabilities change. It is maintained directly, with no generation or runtime step, and does not replace the page or sitemap.
 
@@ -52,18 +65,18 @@ After editing metadata, run `npm run minify:html`, `npm test`, and `git diff --c
 
 ## Production caching
 
-The public site is hosted at `https://oren-bechor.github.io/` on GitHub Pages. On September 17, 2026, live HTTP checks confirmed that the page and 29 first-party assets referenced by its HTML returned `Expires` and `Cache-Control: max-age=600`. These included stylesheets, JavaScript, images, and fonts. The browser can reuse fresh cached responses for ten minutes. When both headers are present, [`Cache-Control: max-age` takes precedence](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Expires).
+The public site is hosted at `https://oren-bechor-drive.github.io/` on GitHub Pages. On September 17, 2026, live HTTP checks at this address confirmed that the page, crawler files, and the stylesheet, JavaScript, font, and image URLs listed below returned HTTP 200 with `Expires` and `Cache-Control: max-age=600`. The browser can reuse fresh cached responses for ten minutes. When both headers are present, [`Cache-Control: max-age` takes precedence](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Expires).
 
 GitHub Pages controls response headers and provides no repository setting for longer cache lifetimes. See the [GitHub Pages caching discussion](https://github.com/orgs/community/discussions/11884). Adding `.htaccess`, `_headers`, or HTML meta tags does not configure its HTTP cache policy. An "Add Expires headers" audit can still flag the short lifetime; inspect its affected URLs before choosing a fix.
 
 Check the deployed responses with:
 
 ```bash
-curl -I https://oren-bechor.github.io/
-curl -I 'https://oren-bechor.github.io/css/base.css?v=2'
-curl -I https://oren-bechor.github.io/js/script.js
-curl -I https://oren-bechor.github.io/assets/fonts/varela-round-v21-hebrew.woff2
-curl -I https://oren-bechor.github.io/assets/images/road.jpg
+curl -I https://oren-bechor-drive.github.io/
+curl -I 'https://oren-bechor-drive.github.io/css/base.css?v=2'
+curl -I https://oren-bechor-drive.github.io/js/script.js
+curl -I https://oren-bechor-drive.github.io/assets/fonts/varela-round-v21-hebrew.woff2
+curl -I https://oren-bechor-drive.github.io/assets/images/road.jpg
 ```
 
 Longer lifetimes require a host or CDN with configurable response headers. Before assigning long-lived caching, use versioned asset URLs that change whenever file contents change; current image and module paths can be replaced in place. Keep HTML short-lived so it can reference updated assets. The external Font Awesome kit controls its own headers.
@@ -180,7 +193,11 @@ Alignment compensates for transparent margins in each source image. Student phot
 
 ### Automated checks
 
-[The Tests workflow](.github/workflows/tests.yml) runs on every push and pull request, and can also be started manually from GitHub Actions. It uses Node.js 24 on Ubuntu, installs the locked dependencies with `npm ci`, checks them with `npm audit`, and installs Chromium with its system dependencies, then runs `npm run check:media` and the full `npm test` suite. This includes static and behavior tests, optimizer tests, and all Chromium gallery and image-delivery checks. New tests matching `tests/*.test.mjs` are included automatically.
+[The Tests workflow](.github/workflows/tests.yml) runs on every push and pull request, and can also be started manually from GitHub Actions. It uses Node.js 24 on Blacksmith's 4-vCPU Ubuntu 24.04 runner, `blacksmith-4vcpu-ubuntu-2404`, installs the locked dependencies with `npm ci`, checks them with `npm audit`, and installs Chromium with its system dependencies, then runs `npm run check:media` and the full `npm test` suite. This includes static and behavior tests, optimizer tests, and all Chromium gallery and image-delivery checks. New tests matching `tests/*.test.mjs` are included automatically.
+
+The workflow keeps `actions/setup-node` with `cache: npm`. Blacksmith supports this cache directly; its older `useblacksmith/setup-node` and `useblacksmith/cache` forks are archived. See [Blacksmith dependency caching](https://docs.blacksmith.sh/blacksmith-caching/dependencies-actions).
+
+The Blacksmith GitHub integration must have permission to execute jobs for this repository in the `Oren-Bechor-Drive` organization. If a job stays queued without an assigned runner or any started steps, check the organization's integration and repository access in the [Blacksmith dashboard](https://app.blacksmith.sh), following the [setup guide](https://docs.blacksmith.sh/introduction/quickstart). The runner label selects Blacksmith; it does not grant that access.
 
 Animation regressions cover focus during section entrances, visibility in print, immediate keyboard topic selection, live reduced-motion changes, and keeping unchanged topic text still. Hero-car checks cover road position, orientation, and elapsed-time preservation on resize. Gallery tests cover refilling metadata request slots, deferred photo additions at a real animation loop boundary, and resizing the preserved row after a later loading failure. Scroll-reveal tests bound their animation-capture waits so a missing reveal fails instead of hanging the suite.
 

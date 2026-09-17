@@ -6,7 +6,7 @@ import { JSDOM } from "jsdom";
 
 const root = new URL("../", import.meta.url);
 const read = (path) => readFile(new URL(path, root), "utf8");
-const canonicalUrl = "https://oren-bechor.github.io/";
+const canonicalUrl = "https://oren-bechor-drive.github.io/";
 
 test("llms overview points to real public page sections", async () => {
 	const overview = await read("llms.txt");
