@@ -141,7 +141,7 @@ const updated = html.replace(/<img\b[^>]*>/g, (tag) => {
 		else tag = tag.replace(/\s*\/?>$/, `\n${indent}${name}="${value}"\n${indent.slice(0, -1)}/>`);
 	}
 	return tag;
-}).replace(/(<link\b[^>]*rel="icon"[^>]*href=")[^"]+/, `$1${outputDirectory}/favicon.png`);
+}).replace(/(<link\b[^>]*rel="icon"[^>]*href=")[^"]+/, `$1${outputDirectory}/favicon.png?v=2`);
 await writeFile("index.html", updated);
 // Only this generated directory is cleaned; supplied artwork stays untouched.
 for (const name of await readdir(outputDirectory, { recursive: true })) {
