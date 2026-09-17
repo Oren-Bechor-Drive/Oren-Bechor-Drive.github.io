@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { JSDOM } from "jsdom";
+import { inspectImage } from "../scripts/road-media-integrity.mjs";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
@@ -78,6 +79,36 @@ test("page uses Varela Round as its global typeface", async () => {
 	const bodyFont = window.getComputedStyle(window.document.body).fontFamily;
 
 	assert.match(bodyFont, /^"Varela Round",/);
+});
+
+test("mobile and Windows icons reference PNG files at their declared dimensions", async () => {
+	const document = new JSDOM(await read("index.html")).window.document;
+	const touch = document.querySelector('link[rel="apple-touch-icon"]');
+	assert.equal(touch?.getAttribute("sizes"), "180x180");
+	const manifestLink = document.querySelector('link[rel="manifest"]');
+	assert.ok(manifestLink, "mobile browsers need a linked manifest");
+	const manifestUrl = new URL(`../${manifestLink.getAttribute("href")}`, import.meta.url);
+	const manifest = JSON.parse(await readFile(manifestUrl, "utf8"));
+	assert.equal(manifest.lang, "he");
+	assert.equal(manifest.dir, "rtl");
+	assert.equal(manifest.display, "browser");
+	assert.deepEqual(manifest.icons.map(icon => icon.sizes), ["192x192", "512x512"]);
+	const tile = document.querySelector('meta[name="msapplication-TileImage"]');
+	assert.ok(tile, "Windows tiles need a tile image");
+	const icons = [
+		[new URL(`../${touch.getAttribute("href")}`, import.meta.url), 180],
+		[new URL(`../${tile.content}`, import.meta.url), 144],
+		...manifest.icons.map(icon => {
+			assert.equal(icon.type, "image/png");
+			return [new URL(icon.src, manifestUrl), parseInt(icon.sizes)];
+		}),
+	];
+	for (const [url, size] of icons) {
+		const image = inspectImage(await readFile(url));
+		assert.equal(image.width, size);
+		assert.equal(image.height, size);
+		assert.equal(image.format, "png");
+	}
 });
 
 test("topic controls keep their native button semantics", async () => {

@@ -32,6 +32,30 @@ Then open [http://localhost:8000](http://localhost:8000).
 
 No installation or build step is required.
 
+## Page source maintenance
+
+`index.html` is checked in with compact whitespace and remains directly editable and servable. After editing HTML, run `npm run minify:html` before publishing. You can format the file in your editor while working, then run the command again. Run it after `npm run optimize:media` when updating images. The command preserves single spaces between inline elements, literal whitespace in `pre` and `textarea`, SVG attribute casing, and image metadata. It reports both raw and gzip byte counts; gzip is a comparison here, not a server configuration change.
+
+The entry script uses `type="module"`, so browsers defer its execution automatically. Keeping it in the head lets its download start early. Every HTML image has an `alt` attribute. The brand icon intentionally uses `alt=""` because the adjacent text and enclosing link already identify the brand.
+
+## Production caching
+
+The public site is hosted at `https://oren-bechor.github.io/` on GitHub Pages. On September 17, 2026, live HTTP checks confirmed that the page and 29 first-party assets referenced by its HTML returned `Expires` and `Cache-Control: max-age=600`. These included stylesheets, JavaScript, images, and fonts. The browser can reuse fresh cached responses for ten minutes. When both headers are present, [`Cache-Control: max-age` takes precedence](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Expires).
+
+GitHub Pages controls response headers and provides no repository setting for longer cache lifetimes. See the [GitHub Pages caching discussion](https://github.com/orgs/community/discussions/11884). Adding `.htaccess`, `_headers`, or HTML meta tags does not configure its HTTP cache policy. An “Add Expires headers” audit can still flag the short lifetime; inspect its affected URLs before choosing a fix.
+
+Check the deployed responses with:
+
+```bash
+curl -I https://oren-bechor.github.io/
+curl -I 'https://oren-bechor.github.io/css/base.css?v=2'
+curl -I https://oren-bechor.github.io/js/script.js
+curl -I https://oren-bechor.github.io/assets/fonts/varela-round-v21-hebrew.woff2
+curl -I https://oren-bechor.github.io/assets/images/road.jpg
+```
+
+Longer lifetimes require a host or CDN with configurable response headers. Before assigning long-lived caching, use versioned asset URLs that change whenever file contents change; current image and module paths can be replaced in place. Keep HTML short-lived so it can reference updated assets. The external Font Awesome kit controls its own headers.
+
 ## Hero road car
 
 The small red car drives along the hero road for 15 seconds, then waits five seconds before repeating. `js/hero-road-car.js` samples the SVG route and animates position and rotation with the Web Animations API. It recalculates the route after resizing while preserving elapsed time. Reduced motion shows a parked car; without JavaScript the decorative car stays hidden. The original car artwork is unchanged.
@@ -57,6 +81,7 @@ After adding, replacing, removing, or renumbering photos:
 
    ```bash
    npm run optimize:media
+   npm run minify:html
    npm run check:media
    npm test
    ```
@@ -83,12 +108,15 @@ The HTML provides six initial static photos while listed photos load, when loadi
 
 Original image files stay in their supplied paths. The page uses responsive WebP delivery copies for the course icon, wheel, stop sign, car sprites, student photos, and instructor photo. Resizing preserves aspect ratios and transparent margins, so car and roof alignment stay unchanged. The browser tab uses a separate 32px PNG favicon.
 
+The optimizer also creates a 180px Apple touch icon, 192px and 512px Android icons, and a 144px Windows tile icon from the supplied square course icon. HTML links the Apple icon and Windows tile metadata; `site.webmanifest` declares the Android icons and Hebrew name. The manifest uses normal browser display. Publish the generated PNGs, manifest, and HTML together. If icon paths or dimensions change, update both declarations and the optimizer. Tests verify the declared icon dimensions against the PNG files.
+
 The instructor photo comes from `assets/images/oren.jpg`. The same optimizer generates 400px, 480px, 544px, 680px, 768px, 960px, 1080px, and 1460px WebP copies at quality 50 without changing the JPEG. Its lazy-loaded image declares responsive sizes matching the instructor layout. The 544px copy covers the desktop frame, intermediate sizes reduce phone downloads, and the 1460px copy covers the widest tablet frame at 2x density. The header logo requests high fetch priority directly in HTML, alongside the hero stop sign. Publish the original, generated copies, and HTML together after replacing the photo.
 
 The photo-maintenance command above also regenerates responsive delivery copies for all road media. After changing artwork, delivery widths, compression settings, or generated sizing hints, run:
 
 ```bash
 npm run optimize:media
+npm run minify:html
 npm run check:media
 npm test
 ```

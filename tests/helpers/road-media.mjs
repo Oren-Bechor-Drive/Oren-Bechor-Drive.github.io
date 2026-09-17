@@ -10,6 +10,7 @@ const contentTypes = {
 	".jpg": "image/jpeg",
 	".webp": "image/webp",
 	".woff2": "font/woff2",
+	".webmanifest": "application/manifest+json",
 };
 
 // Scenarios own request delays and failures; this module serves project files.
