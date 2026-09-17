@@ -1,15 +1,10 @@
 @media (hover: hover) and (pointer: fine) {
-	.footer-social a:hover {
-		background: var(--surface-highest);
-		text-decoration: underline;
-	}
-
 	.site-menu a:not(.nav-action):hover::after {
 		transform: scaleX(1);
 	}
 
-	.button-primary:hover,
-	.nav-action:hover {
+	.button-primary:hover:not(:disabled),
+	.nav-action:hover:not(:disabled) {
 		background: var(--primary-hover);
 	}
 
@@ -17,7 +12,7 @@
 		background: var(--primary-wash);
 	}
 
-	.button:hover {
+	.button:hover:not(:disabled) {
 		transform: translateY(-2px);
 	}
 

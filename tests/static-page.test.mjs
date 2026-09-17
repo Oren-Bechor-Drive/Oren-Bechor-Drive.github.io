@@ -38,22 +38,26 @@ test("page introduces the instructor before the combined learning section", asyn
 	]);
 });
 
-test("footer social links retain visible labels without the icon kit", async () => {
+test("unavailable course and social actions do not pretend to be working links", async () => {
 	const document = new JSDOM(await read("index.html")).window.document;
-	assert.equal(document.querySelector('script[src*="fontawesome"]'), null);
-	assert.equal(
-		document.querySelector(".site-footer").dataset.iconKit,
-		"https://kit.fontawesome.com/a138530222.js",
-	);
-	const links = [...document.querySelectorAll(".site-footer nav a")];
-	assert.deepEqual(
-		links.map((link) => link.textContent.trim()),
-		["אינסטגרם", "טיקטוק", "יוטיוב", "וואטסאפ"],
-	);
-	for (const link of links) {
-		assert.ok(link.getAttribute("href"), "social links need a destination");
-		assert.equal(link.querySelector("i")?.getAttribute("aria-hidden"), "true");
+	assert.equal(document.querySelector('a[href="#"]'), null);
+	for (const selector of [".nav-action", "#start .button"]) {
+		const action = document.querySelector(selector);
+		assert.equal(action.tagName, "BUTTON");
+		assert.equal(action.disabled, true);
+		assert.match(action.textContent, /אינה זמינה/);
 	}
+	assert.equal(document.querySelector("[data-icon-kit]"), null);
+	const profiles = [...document.querySelectorAll(".footer-social > span")];
+	assert.deepEqual(profiles.map(item => item.textContent.trim()),
+		["אינסטגרם", "טיקטוק", "יוטיוב", "וואטסאפ"]);
+	for (const profile of profiles) {
+		assert.equal(profile.getAttribute("aria-disabled"), "true");
+		const image = profile.querySelector("img");
+		assert.equal(image.getAttribute("alt"), "");
+		assert.ok((await read(image.getAttribute("src"))).includes("<svg"));
+	}
+	assert.match(document.querySelector("#contact-status").textContent, /יתווספו בהמשך/);
 });
 
 test("course icon brands the header and browser tab", async () => {

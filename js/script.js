@@ -1,5 +1,4 @@
 import { initTopicExplorer } from "./topic-explorer.js";
-import { initRoadCarousel } from "./road-carousel.js";
 import { initDisclosureMotion } from "./disclosure-motion.js";
 import { initScrollReveals } from "./scroll-reveal.js";
 import { initHeroRoadCar } from "./hero-road-car.js";
@@ -58,35 +57,27 @@ document.querySelectorAll("[data-topics-link]").forEach((link) => {
 const roadCarousel = document.querySelector("[data-road-carousel]");
 
 if (roadCarousel) {
-	initRoadCarousel(roadCarousel).catch((error) => {
-		console.warn(
-			"Student gallery could not refresh; keeping the static photos.",
-			error,
-		);
-	});
-}
-
-// Footer labels work immediately; fetch the icon kit only near the footer.
-const socialFooter = document.querySelector("[data-icon-kit]");
-if (socialFooter) {
-	const loadIcons = () => {
-		const script = document.createElement("script");
-		script.src = socialFooter.dataset.iconKit;
-		script.crossOrigin = "anonymous";
-		script.async = true;
-		document.head.append(script);
+	const loadGallery = () => {
+		import("./road-carousel.js")
+			.then(({ initRoadCarousel }) => initRoadCarousel(roadCarousel))
+			.catch((error) => {
+				console.warn(
+					"Student gallery could not refresh; keeping the static photos.",
+					error,
+				);
+			});
 	};
 	if ("IntersectionObserver" in window) {
 		const observer = new IntersectionObserver(
 			(entries) => {
 				if (!entries.some((entry) => entry.isIntersecting)) return;
 				observer.disconnect();
-				loadIcons();
+				loadGallery();
 			},
 			{ rootMargin: "300px" },
 		);
-		observer.observe(socialFooter);
-	} else window.addEventListener("load", loadIcons, { once: true });
+		observer.observe(roadCarousel);
+	} else loadGallery();
 }
 
 // Register independent page controls before validating topic markup.

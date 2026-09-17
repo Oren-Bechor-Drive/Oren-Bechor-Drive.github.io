@@ -51,6 +51,8 @@ test(
 			);
 			assert.deepEqual(failures.map(event => event.args.data), []);
 		});
+		await page.locator("[data-road-carousel]").scrollIntoViewIfNeeded();
+		await page.waitForFunction(() => document.querySelector("[data-road-carousel]").getAttribute("aria-busy") === "true");
 		await t.test(
 			"loading wheel covers the stopped road until discovery finishes",
 			async () => {

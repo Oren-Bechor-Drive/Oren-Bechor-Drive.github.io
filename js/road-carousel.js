@@ -154,6 +154,8 @@ export async function initRoadCarousel(root) {
 
 		const cars = records.slice(shown, count).map(({ image }, index) => {
 			const car = templates[(shown + index) % templates.length].cloneNode(true);
+			// The moving row needs its sprites ready before they enter the viewport.
+			car.querySelector("img").loading = "eager";
 			car.querySelector(".road-photo").replaceChildren(image);
 			return car;
 		});

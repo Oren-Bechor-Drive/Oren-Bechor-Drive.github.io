@@ -22,7 +22,8 @@ const testJpeg = Buffer.from(
 test("road-media declarations match their files", async () => {
 	const audit = await auditRoadMedia({ rootDir, htmlPath: "index.html" });
 	assert.deepEqual(audit.issues, []);
-	assert.ok(audit.assets.some(asset => asset.source === "assets/images/road.jpg"));
+	// The CSS background is no longer an HTML preload; still verify its actual bytes.
+	assert.equal(inspectImage(await readFile(path.join(rootDir, "assets/images/road.jpg"))).format, "jpeg");
 	assert.ok(
 		audit.assets.some(
 			(asset) => asset.source === "assets/images/stop-sign.png",

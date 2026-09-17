@@ -29,7 +29,7 @@ Visitors first see a concrete course promise and links to the instructor and top
 ## Capabilities and constraints
 
 - The first release is one welcome page for new visitors.
-- The hero actions scroll to the instructor and unified course section. Section links align immediately below the sticky header, or at the viewport top when the mobile fallback header scrolls with the page. Course-start actions in the header and closing section intentionally use `#` until a real destination is supplied.
+- The hero actions scroll to the instructor and unified course section. Section links align immediately below the sticky header, or at the viewport top when the mobile fallback header scrolls with the page. Course-start controls in the header and closing section are disabled and clearly labeled unavailable until a real destination is supplied.
 - Navigation and all seven topic descriptions remain usable without JavaScript or when the entry module fails to load. Successful initialization enables the mobile menu and interactive topic preview.
 - The instructor gallery presents student photos in numeric order on cars moving left across a road. Car colors vary independently of photo order. The gallery uses a generated photo list with no maximum-count setting. After changing photos, run `npm run optimize:media` and publish its output with the originals; see [README.md](README.md#add-or-update-student-photos) for the full maintenance steps.
 - The gallery is noninteractive. A static row remains during initial loading, after startup failure, and without JavaScript. A later loading failure preserves the already moving row and its responsive timing. Reduced motion disables scrolling; horizontal overflow remains clipped.
@@ -50,7 +50,7 @@ Visitors first see a concrete course promise and links to the instructor and top
 - `DESIGN.md` contains the complete Solar Serenity palette, typography, spacing, shapes, and component treatments.
 - The supplied road background, car artwork, and photos of Oren with students are in `assets/images/`. Student photos are gallery content, not written testimonials or evidence for a pass-rate claim.
 - No written testimonials, prices, enrollment URL, or numerical performance claims were supplied. Future work must not invent them.
-- Public business contact details and real social-profile URLs are not available yet. Existing footer links remain placeholders until the owner supplies destinations.
+- Public business contact details and real social-profile URLs are not available yet. The footer identifies the social channels as unavailable text until the owner supplies destinations.
 
 ## Product principles
 

@@ -198,20 +198,13 @@ test("course content stays visible when IntersectionObserver is unavailable", { 
 		delete window.IntersectionObserver;
 	});
 	const errors = [];
-	let iconRequests = 0;
 	page.on("pageerror", error => errors.push(error.message));
-	await page.route("**/*", route => {
-		if (new URL(route.request().url()).hostname === "kit.fontawesome.com") {
-			iconRequests++;
-			return route.fulfill({ contentType: "text/javascript", body: "" });
-		}
-		return serveRoadMedia(route);
-	});
+	await page.route("**/*", serveRoadMedia);
 	await page.goto("http://gallery.test/");
 	await page.locator(".topic-select").click();
 	await page.locator(".topic-option").nth(1).click();
 	await page.waitForFunction(() => document.querySelector("[data-topic-panel-title]").textContent === document.querySelectorAll(".topic-card")[1].textContent.trim());
-	assert.equal(iconRequests, 1, "without IntersectionObserver the icon kit loads after page load");
+	assert.equal(await page.locator(".footer-social img").count(), 4, "footer icons do not depend on optional browser APIs");
 	assert.deepEqual(errors, [], "missing optional APIs must not interrupt page initialization");
 	for (const { section, targets } of revealCases) {
 		const root = page.locator(section);

@@ -61,7 +61,7 @@ for (const name of photoNames) {
 	// Intermediate candidates serve phones; keep the larger copy when widths differ by less than 5%.
 	const widths = [smallWidth, ...[320, 360, 400].filter(width => width > smallWidth && width * 1.05 <= largeWidth), largeWidth];
 	sources[parseInt(name)] = await delivery(
-		source, `students-pass/${path.parse(name).name}`,
+		source, `students-pass/oren-bachor-students-${path.parse(name).name}`,
 		widths, { quality: 65 }, roadSizes(fraction),
 		// Preserve the reviewed desktop copies, including photo 11's denser background.
 		{ quality: name === "11.png" ? 55 : 78 },

@@ -8,7 +8,7 @@ The hero fills the available viewport below the navigation with the course promi
 
 The page moves through the hero, instructor introduction with its student-photo road carousel, one combined section with the three learning steps and learning-topic preview, and a closing first-lesson action before the footer. Under `#about`, the course has one heading, three introductory paragraphs, a compact learning-step strip, and the complete topic explorer. The paragraphs explain the audience, topics and examples, and how to review material alongside practical driving lessons. The main navigation has one link to the instructor and one to the course. Section links align their destination immediately below the sticky header, or at the viewport top when the mobile fallback header scrolls with the page.
 
-The hero's main action, "מנחה הקורס", leads to the instructor; its secondary action leads to the unified course section at `#about`. The course-start actions in the topbar and closing section intentionally use `href="#"`, as requested, until a real course URL is supplied. No course playback, account, or enrollment flow exists yet.
+The hero's main action, "מנחה הקורס", leads to the instructor; its secondary action leads to the unified course section at `#about`. The course-start controls in the topbar and closing section are disabled buttons labeled "הלמידה עדיין אינה זמינה" until a real course URL is supplied. No course playback, account, or enrollment flow exists yet.
 
 Without JavaScript, or if the entry module fails to load, mobile navigation links remain visible in a header in normal document flow. Successful initialization enables the sticky header and collapsible menu. All seven topic descriptions are readable in the baseline HTML; initialization uses those descriptions for the interactive preview and hides the static summaries.
 
@@ -18,7 +18,7 @@ Topic previews update immediately for keyboard and assistive activation. Pointer
 
 The instructor and unified course section reveal once on scroll. Focus immediately settles the containing section, and printing exposes all content even before it has been scrolled into view.
 
-The footer includes Instagram, TikTok, YouTube, and WhatsApp links, currently pointing to `#`. Their icons load from Font Awesome kit `a138530222` when the footer is within 300px of the viewport. Hebrew link labels remain visible if the external kit is unavailable. Browsers without IntersectionObserver request the kit after page load.
+The footer shows Instagram, TikTok, YouTube, and WhatsApp as unavailable, noninteractive items, with a visible Hebrew note that contact and social links will be added later. Their four SVG icons are served locally from `assets/icons/social/`, with the upstream Font Awesome license and provenance alongside them. The page makes no requests to an external icon kit.
 
 ## Repository and publishing
 
@@ -79,7 +79,7 @@ curl -I https://oren-bechor-drive.github.io/assets/fonts/varela-round-v21-hebrew
 curl -I https://oren-bechor-drive.github.io/assets/images/road.jpg
 ```
 
-Longer lifetimes require a host or CDN with configurable response headers. Before assigning long-lived caching, use versioned asset URLs that change whenever file contents change; current image and module paths can be replaced in place. Keep HTML short-lived so it can reference updated assets. The external Font Awesome kit controls its own headers.
+Longer lifetimes require a host or CDN with configurable response headers. Before assigning long-lived caching, use versioned asset URLs that change whenever file contents change; current image and module paths can be replaced in place. Keep HTML short-lived so it can reference updated assets. The social icons use the same first-party caching policy as the other assets.
 
 ## Hero road car
 
@@ -113,9 +113,11 @@ After adding, replacing, removing, or renumbering photos:
 
 3. Publish the original PNG changes, `assets/images/optimized/`, generated `js/road-photo-sources.js`, and updated `index.html` together, including any deletions.
 
-The generated module is the complete gallery list. New photos appear only after regenerating and publishing it. Regenerate after replacements too, including replacements with the same byte count. Do not edit the generated module by hand. `check:media` catches added or removed photos missing from the list and original-size mismatches.
+The generated module is the complete gallery list. Original PNG filenames remain numeric; generated WebP filenames use `oren-bachor-students-N` with optional width suffixes to describe the delivered images. New photos appear only after regenerating and publishing it. Regenerate after replacements too, including replacements with the same byte count. Do not edit the generated module by hand. `check:media` catches added or removed photos missing from the list and original-size mismatches.
 
 The carousel loads listed photos in numeric order, then repeats. Car colors are randomized independently, and adding photos preserves the travel speed. The gallery calculates loop duration from the rendered row width and car spacing, and recalculates it on viewport resize. The approved cadence is about 11.11 seconds per car on desktop and 9.46 seconds on phones; tune `--road-seconds-per-car` in the corresponding CSS rule to change it. Car sizing follows road height with a separate car-scale setting.
+
+When the road is within 300px of the viewport, the entry script imports the gallery module and initializes it once. Browsers without IntersectionObserver initialize it immediately. Static car sprites, student photos, and the loading wheel use native lazy loading; the six baseline photos remain available without JavaScript. Dynamic photos decode eagerly after initialization so off-DOM lazy loading cannot stall startup.
 
 The browser runs up to four `HEAD` requests concurrently for listed photos to check their content type and original byte count, refilling each available request slot immediately. Confirmed photos start decoding immediately; only consecutive decoded photos enter the visible row. Requests use normal browser caching. It never probes a missing next number to find the end, avoiding routine 404 console errors. A failed request for a listed file is treated as a loading failure.
 
@@ -148,7 +150,7 @@ npm test
 
 Publish generated files with their originals as described under [Add or update student photos](#add-or-update-student-photos). The optimizer synchronizes image candidates and dimensions in the HTML, refreshes the complete photo list, and removes obsolete WebPs only within the generated directory. This maintenance step is required when source images or delivery settings change; opening or serving the checked-in site still requires no build. Student-photo runtime loading falls back to the PNG if a delivery copy fails to decode or the original's Content-Length no longer matches the generated metadata.
 
-The HTML keeps original road-image dimensions and uses width descriptors in `srcset` plus `sizes` for delivery copies. Smaller variants serve ordinary desktop screens; larger variants support high-density screens without enlarging an original. Photo sizing accounts for the `object-fit: cover` crop. The optimizer's size formulas follow the road height, car scale, and photo frame in `css/welcome.css` and `css/responsive.css`; update them if that geometry changes. Car sprite sizing reads each color's `--car-art-width` rule. The hero car uses separate 80px and 160px WebP copies of the red-car artwork with `sizes="clamp(40px, 5vw, 80px)"`, matching its smaller CSS width. Module preload hints fetch carousel dependencies alongside the entry script.
+The HTML keeps original road-image dimensions and uses width descriptors in `srcset` plus `sizes` for delivery copies. Smaller variants serve ordinary desktop screens; larger variants support high-density screens without enlarging an original. Photo sizing accounts for the `object-fit: cover` crop. The optimizer's size formulas follow the road height, car scale, and photo frame in `css/welcome.css` and `css/responsive.css`; update them if that geometry changes. Car sprite sizing reads each color's `--car-art-width` rule. The hero car uses separate 80px and 160px WebP copies of the red-car artwork with `sizes="clamp(40px, 5vw, 80px)"`, matching its smaller CSS width. Module preload hints fetch the initial topic, disclosure, scroll-reveal, and hero-car modules alongside the entry script. Gallery code and its generated photo list load only when the road approaches the viewport. The below-fold road background is not preloaded.
 
 Student photos include intermediate 320px, 360px, and 400px candidates between the smallest desktop copy and the largest copy, capped at the original width. Candidates within 5% of the largest source are omitted in favor of that larger copy. These let phones select a closer fit without downloading the desktop 2x image. Width descriptors always reflect the generated file's actual width.
 
@@ -201,7 +203,7 @@ The Blacksmith GitHub integration must have permission to execute jobs for this 
 
 Animation regressions cover focus during section entrances, visibility in print, immediate keyboard topic selection, live reduced-motion changes, and keeping unchanged topic text still. Hero-car checks cover road position, orientation, and elapsed-time preservation on resize. Gallery tests cover refilling metadata request slots, deferred photo additions at a real animation loop boundary, and resizing the preserved row after a later loading failure. Scroll-reveal tests bound their animation-capture waits so a missing reveal fails instead of hanging the suite.
 
-`tests/progressive-enhancement-browser.test.mjs` exercises navigation and topic selection at desktop and phone widths. It also checks visible navigation and all seven descriptions with JavaScript disabled or the entry module blocked. Section-alignment tests distinguish the sticky header from the mobile fallback's zero scroll offset. The unavailable-IntersectionObserver test checks for browser errors and verifies that topic selection and footer icon loading still initialize.
+`tests/progressive-enhancement-browser.test.mjs` exercises navigation and topic selection at desktop and phone widths. It also checks visible navigation and all seven descriptions with JavaScript disabled or the entry module blocked. Section-alignment tests distinguish the sticky header from the mobile fallback's zero scroll offset. The unavailable-IntersectionObserver test checks for browser errors and verifies that topic selection initializes and the local footer icons remain available.
 
 `tests/seo-metadata.test.mjs` checks consistent canonical and sharing metadata, the existing sharing image's type and dimensions, and linked structured-data entities. `tests/crawler-discovery.test.mjs` checks crawl access, sitemap consistency, and that `llms.txt` links point to real page sections. These checks validate the repository files, not search ranking or production deployment.
 
@@ -220,7 +222,7 @@ npm run check:media
 git diff --check
 ```
 
-The media audit checks marked HTML images and independently checks every image preload's file and MIME type, including the preloaded `road.jpg` background. It matches car templates to the `car-*.png` files and inspects every numbered student photo without a fixed maximum. It validates the scrolling group's direct child templates, matching runtime initialization, and reports misplaced or malformed templates, numbering gaps, invalid PNG filenames, missing or duplicate templates, incorrect fallback photo references or metadata, and a missing or stale generated photo list. The supplied `cars.png` composite is excluded. It checks delivery candidates from both the HTML and the generated gallery list, including missing files and incorrect width descriptors. It checks image headers and dimensions, not full decoding or roof alignment, and does not discover arbitrary image URLs in CSS.
+The media audit checks marked HTML images and independently checks every declared image preload's file and MIME type. It matches car templates to the `car-*.png` files and inspects every numbered student photo without a fixed maximum. It validates the scrolling group's direct child templates, matching runtime initialization, and reports misplaced or malformed templates, numbering gaps, invalid PNG filenames, missing or duplicate templates, incorrect fallback photo references or metadata, and a missing or stale generated photo list. The supplied `cars.png` composite is excluded. It checks delivery candidates from both the HTML and the generated gallery list, including missing files and incorrect width descriptors. It checks image headers and dimensions, not full decoding or roof alignment, and does not discover arbitrary image URLs in CSS.
 
 Browser tests derive the gallery count and last photo from the generated list. Progressive-append scenarios require enough photos to fill the initial viewport and leave a later photo pending; smaller galleries skip those scenarios. Tests also check loading from the generated photo list without missing-file probes, failure preservation, and loop timing across row sizes and viewport changes. `npm test` includes Chromium checks that load the actual page, stylesheets, scripts, and images at desktop and phone sizes, including resizing and reduced motion. They intercept local requests to serve repository files and block external requests, so no dev server or network connection is needed after setup. Verify layout and interaction changes in the collaborative browser at desktop and phone sizes, including reduced motion. If collaborative preview is unavailable, use local Playwright Chromium and report the limitation.
 
@@ -236,6 +238,7 @@ Browser tests derive the gallery count and last photo from the generated list. P
 ## Licensing
 
 Website code is available under the [MIT License](LICENSES/MIT.txt).
+The four social icons are Font Awesome Free 7.3.1 assets under CC BY 4.0; see [their license and attribution](assets/icons/social/README.md).
 Course content, photos, artwork, and branding are excluded.
 See [LICENSE](LICENSE) for the complete scope.
 
@@ -244,3 +247,23 @@ See [LICENSE](LICENSE) for the complete scope.
 - Defer a shared course-content module until a second runtime page needs the same course content.
 - Revisit shared layout and styling when a second page reveals what needs to repeat beyond the existing CSS tokens and styles.
 - Add Firefox and WebKit smoke checks for page loading, navigation, and topic selection.
+
+
+## Security and unavailable actions
+
+The page declares a Content Security Policy before its resource declarations. Scripts, images, fonts, and connections are restricted to the same origin. Inline JavaScript, plugins, frames, form submissions, and base-URL overrides are blocked. Inline styles remain permitted for the existing presentation and animation code. Keep production JavaScript in external modules and check the policy before adding an external service. `meta[name="referrer"]` declares `strict-origin-when-cross-origin` explicitly.
+
+The browser security test verifies working navigation, topic selection, local icons, no external resource requests, and rejection of injected inline and external scripts. Header accessibility checks cover the visible brand wording in its accessible name and subtitle contrast. Unavailable course controls are disabled native buttons; unavailable social items are text with a shared explanation. Replace them with real links only when their destinations are supplied, and update the static-page tests and product/design documentation together.
+
+## GitHub Pages limitations from the SEO audit
+
+The following findings cannot be fully resolved by editing this repository while retaining the current GitHub Pages hosting. No inactive `_headers`, `.htaccess`, or misleading HTTP-header meta tags are included.
+
+- **Longer cache lifetimes:** Pages currently sends `Cache-Control: max-age=600` and `Expires`. Longer asset caching requires a configurable host or CDN and asset URLs that change when their contents change. Keep HTML short-lived. See [Production caching](#production-caching).
+- **Brotli delivery:** The current host negotiates gzip for HTML, CSS, and JavaScript. Brotli-only requests did not receive Brotli on the September 17, 2026 check. Committing `.br` files does not configure content negotiation; that requires host/CDN support. The audit's broader "no compression" warning is false.
+- **Embedding protection:** `X-Frame-Options` and CSP `frame-ancestors` require HTTP response headers. The page's meta CSP cannot prevent other sites from framing it. See [CSP frame-ancestors](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/frame-ancestors).
+- **MIME sniffing protection:** `X-Content-Type-Options: nosniff` requires a response header. Continue serving each file with its correct MIME type; HTML meta tags do not add this protection.
+- **Browser capability policy:** `Permissions-Policy` for the top-level page requires a response header. The current site does not request camera, microphone, or geolocation access.
+- **HSTS expansion:** Pages already sends `Strict-Transport-Security: max-age=31556952`. Adding `includeSubDomains` or changing preload status is a hosting/domain decision, not an HTML change. Existing HTTPS and HSTS protection are active; this is optional hardening, not missing TLS.
+
+The referrer policy and supported CSP directives are implemented in HTML. Header-only audits may still report them as absent because the host does not emit equivalent headers. The four external stylesheets remain separate: the audit's estimated 40ms render-blocking saving does not justify inline CSS, a required build step, or a flash of unstyled content. About information, instructor expertise, and sharing metadata already exist. Captions, sharing buttons, policy pages, editorial statements, publication dates, and a physical address were not established as requirements for this welcome page; add them when useful and supported by real facts, not to satisfy generic audit heuristics.

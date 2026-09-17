@@ -70,7 +70,9 @@ test("optimizer preserves originals, discovers later photos and synchronizes res
 	assert.equal(Object.keys(roadPhotoSources).length, 27);
 	for (const source of originals) assert.deepEqual(await readFile(path.join(cwd, source)), png);
 	assert.deepEqual(await readFile(path.join(cwd, "assets/images/oren.jpg")), instructorPhoto);
-	for (const { srcset, originalBytes } of Object.values(roadPhotoSources)) {
+	assert.deepEqual(Object.keys(roadPhotoSources), Array.from({ length: 27 }, (_, index) => String(index + 1)),
+		"descriptive delivery filenames preserve numeric gallery order");
+	for (const [number, { srcset, originalBytes }] of Object.entries(roadPhotoSources)) {
 		assert.equal(originalBytes, png.length);
 		const widths = srcset.split(", ").map(candidate => parseInt(candidate.split(" ")[1]));
 		assert.equal(widths.at(-1), 405, "retain full source coverage");
@@ -78,6 +80,7 @@ test("optimizer preserves originals, discovers later photos and synchronizes res
 			"avoid nearly identical responsive candidates");
 		for (const candidate of srcset.split(", ")) {
 			const [source, width] = candidate.split(" ");
+			assert.match(source, new RegExp(`^assets/images/optimized/students-pass/oren-bachor-students-${number}(?:-\\d+)?\\.webp$`));
 			const metadata = inspectImage(await readFile(path.join(cwd, source)));
 			assert.equal(metadata.width, parseInt(width));
 			assert.ok(metadata.width <= 405, "never enlarge the supplied source");
@@ -100,19 +103,23 @@ test("optimizer preserves originals, discovers later photos and synchronizes res
 	const directory = path.join(cwd, "assets/images/optimized");
 	const names = (await readdir(directory, { recursive: true })).filter(name => /\.(webp|png)$/.test(name));
 	const before = await Promise.all(names.map(name => readFile(path.join(directory, name))));
-	await writeFile(path.join(directory, "students-pass/1-obsolete.webp"), "old generated copy");
+	const obsolete = ["1.webp", "1-405.webp", "oren-bachor-students-1-obsolete.webp"];
+	for (const name of obsolete)
+		await writeFile(path.join(directory, "students-pass", name), "old generated copy");
 	await optimize();
 	assert.equal(await readFile(path.join(cwd, "index.html"), "utf8"), html);
 	assert.equal(await readFile(path.join(cwd, "js/road-photo-sources.js"), "utf8"), generated);
 	assert.deepEqual(await Promise.all(names.map(name => readFile(path.join(directory, name)))), before);
-	await assert.rejects(readFile(path.join(directory, "students-pass/1-obsolete.webp")), { code: "ENOENT" });
+	for (const name of obsolete)
+		await assert.rejects(readFile(path.join(directory, "students-pass", name)), { code: "ENOENT" });
 	await rm(path.join(cwd, "assets/images/students-pass/27.png"));
 	await optimize();
 	const reducedModule = await readFile(path.join(cwd, "js/road-photo-sources.js"), "utf8");
 	const reduced = await import(`data:text/javascript,${encodeURIComponent(reducedModule)}`);
 	assert.equal(Object.keys(reduced.roadPhotoSources).length, 26);
 	assert.equal(reduced.roadPhotoSources[27], undefined);
-	await assert.rejects(readFile(path.join(directory, "students-pass/27.webp")), { code: "ENOENT" });
+	assert.equal((await readdir(path.join(directory, "students-pass"))).some(name => /^oren-bachor-students-27(?:-|\.)/.test(name)), false,
+		"removing a source photo cleans up all of its delivery widths");
 	await rm(path.join(cwd, "assets/images/students-pass/2.png"));
 	await assert.rejects(optimize(), /numbering gap/);
 	assert.equal(await readFile(path.join(cwd, "js/road-photo-sources.js"), "utf8"), reducedModule,

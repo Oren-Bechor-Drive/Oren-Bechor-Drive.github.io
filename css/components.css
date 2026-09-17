@@ -43,7 +43,7 @@
 }
 
 .brand-copy small {
-	color: var(--text-muted);
+	color: var(--text-soft);
 	font-size: 12px;
 }
 
@@ -54,7 +54,8 @@
 	white-space: nowrap;
 }
 
-.site-menu a {
+.site-menu a,
+.site-menu .nav-action {
 	min-height: 44px;
 	align-content: center;
 	color: var(--text-soft);
@@ -81,9 +82,16 @@
 
 .nav-action {
 	padding-inline: 18px;
+	border: 0;
 	border-radius: var(--radius-control);
 	background: var(--primary-bright);
 	color: var(--on-primary) !important;
+}
+
+.nav-action:disabled {
+	background: var(--surface-high);
+	color: var(--text-soft) !important;
+	cursor: default;
 }
 
 .menu-toggle {

@@ -16,7 +16,7 @@ for (const [width, late] of [
 	[1366, "boundary"],
 	[1366, "resize"],
 ]) {
-	test(`progressive loading keeps position, order and deferred icons at ${width}px${late === "resize" ? " after widening during loading" : late === "boundary" ? " at the next loop boundary" : late ? " with reduced motion during a pending append" : ""}`, async (t) => {
+	test(`progressive loading keeps position and order at ${width}px${late === "resize" ? " after widening during loading" : late === "boundary" ? " at the next loop boundary" : late ? " with reduced motion during a pending append" : ""}`, async (t) => {
 		const browser = await chromium.launch();
 		t.after(() => browser.close());
 		const page = await browser.newPage({ viewport: { width, height: 844 } });
@@ -45,28 +45,25 @@ for (const [width, late] of [
 		page.on("response", response => {
 			if (response.status() >= 400) failedResponses.push(response.url());
 		});
-		let kitRequests = 0;
 		const requestedImages = [];
 		await page.route("**/*", async (route) => {
 			const request = route.request();
 			const url = new URL(request.url());
-			if (url.hostname === "kit.fontawesome.com") {
-				kitRequests++;
-				return route.fulfill({ contentType: "text/javascript", body: "" });
-			}
+
 			if (
 				request.method() !== "HEAD" &&
 				url.pathname.includes("students-pass")
 			) {
 				requestedImages.push(url.pathname);
 				if (
-					Number(url.pathname.match(/\/(\d+)(?:-\d+)?\.(?:png|webp)$/)?.[1]) === (late === "resize" ? 7 : lastPhoto)
+					Number(url.pathname.match(/\/(?:oren-bachor-students-)?(\d+)(?:-\d+)?\.(?:png|webp)$/)?.[1]) === (late === "resize" ? 7 : lastPhoto)
 				)
 					await gate;
 			}
 			await serveRoadMedia(route);
 		});
 		await page.goto("http://gallery.test/", { waitUntil: "domcontentloaded" });
+		await page.locator("[data-road-carousel]").scrollIntoViewIfNeeded();
 		// Initialization may already have added the aria-hidden loop duplicate.
 		const minimumInitialCount = await page.locator('.road-carousel-group:not([aria-hidden="true"])').evaluate(group => {
 			const step = group.firstElementChild.getBoundingClientRect().width + parseFloat(getComputedStyle(group).columnGap);
@@ -88,7 +85,6 @@ for (const [width, late] of [
 			await page.waitForFunction(() => document.querySelector("[data-road-carousel]").dataset.ready !== "true");
 		}
 		assert.equal(await page.locator(".road-loader").isVisible(), false);
-		assert.equal(kitRequests, 0);
 		const leftBefore = await page.evaluate((late) => {
 			if (late === "resize") return null;
 			const animation = document
@@ -174,9 +170,55 @@ for (const [width, late] of [
 			requestedImages.every((src) => src.endsWith(".webp")),
 			"student PNG bodies should not be downloaded",
 		);
-		const kitLoaded = page.waitForResponse(response => new URL(response.url()).hostname === "kit.fontawesome.com");
-		await page.locator(".site-footer").scrollIntoViewIfNeeded();
-		await kitLoaded;
-		assert.equal(kitRequests, 1);
+
 	});
 }
+
+for (const width of [1366, 390]) {
+	test(`gallery discovery waits until the road approaches the viewport at ${width}px`, async (t) => {
+		const browser = await chromium.launch();
+		t.after(() => browser.close());
+		const page = await browser.newPage({ viewport: { width, height: 844 }, reducedMotion: "reduce" });
+		const metadataRequests = [];
+		const galleryModules = [];
+		const requestedPhotos = [];
+		await page.route("**/*", async route => {
+			const request = route.request();
+			const path = new URL(request.url()).pathname;
+			if (/\/js\/road-(?:carousel|photo-sources)\.js$/.test(path)) galleryModules.push(path);
+			if (path.includes("students-pass/")) {
+				if (request.method() === "HEAD") metadataRequests.push(path);
+				else requestedPhotos.push(Number(path.match(/\/(?:oren-bachor-students-)?(\d+)(?:-\d+)?\./)?.[1]));
+			}
+			await serveRoadMedia(route);
+		});
+		await page.goto("http://gallery.test/");
+		await page.waitForFunction(() => document.documentElement.dataset.menuEnhanced === "true");
+		await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+		const gallery = page.locator("[data-road-carousel]");
+		assert.ok(await gallery.evaluate(root => root.getBoundingClientRect().top > innerHeight + 300));
+		assert.deepEqual(metadataRequests, [], "initial rendering must not discover gallery photos");
+		assert.deepEqual(galleryModules, [], "gallery code must wait until the road approaches the viewport");
+		assert.ok(requestedPhotos.every(number => number <= 6), "only baseline photos may download before approaching the road");
+		assert.equal(await gallery.locator(".road-photo img").count(), 6);
+		assert.equal(await gallery.getAttribute("aria-busy"), null);
+		await gallery.evaluate(root => window.scrollTo({ top: scrollY + root.getBoundingClientRect().top - innerHeight - 150, behavior: "instant" }));
+		await page.waitForFunction(count => document.querySelector(".road-carousel-group").children.length === count && document.querySelector("[data-road-carousel]").getAttribute("aria-busy") === "false", photoCount);
+		assert.equal(metadataRequests.length, photoCount);
+		await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+		await gallery.scrollIntoViewIfNeeded();
+		await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+		assert.equal(metadataRequests.length, photoCount, "returning to the road must not initialize it twice");
+	});
+}
+
+test("gallery initializes when IntersectionObserver is unavailable", async t => {
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	const page = await browser.newPage({ reducedMotion: "reduce" });
+	await page.addInitScript(() => { delete window.IntersectionObserver; });
+	await page.route("**/*", serveRoadMedia);
+	await page.goto("http://gallery.test/");
+	await page.waitForFunction(count => document.querySelector(".road-carousel-group").children.length === count, photoCount);
+	assert.equal(await page.locator("[data-road-carousel]").getAttribute("data-ready"), "true");
+});

@@ -8,6 +8,7 @@ import { inspectImage } from "../scripts/road-media-integrity.mjs";
 
 const photoCount = Object.keys(roadPhotoSources).length;
 const root = new URL("../", import.meta.url);
+const deliveryImages = ".brand-mark, .hero-road-car, .hero-visual img, .road-loader img, .road-carousel-group:first-child img, .instructor-photo img";
 
 for (const failure of ["missing delivery copies", "stale original metadata"]) {
 	test(`student photos recover to PNG with ${failure}`, async (t) => {
@@ -26,6 +27,7 @@ for (const failure of ["missing delivery copies", "stale original metadata"]) {
 			await serveRoadMedia(route);
 		});
 		await page.goto("http://gallery.test/");
+		await page.locator("[data-road-carousel]").scrollIntoViewIfNeeded();
 		await page.waitForFunction(count => {
 			const root = document.querySelector("[data-road-carousel]");
 			return root.dataset.ready === "true" && root.getAttribute("aria-busy") === "false" &&
@@ -108,21 +110,28 @@ test("responsive delivery reduces desktop and mobile bytes and preserves density
 				javaScriptEnabled: scenario.javaScriptEnabled,
 			});
 			const downloaded = new Map();
+			// Keep the startup overlay visible long enough to verify its lazy wheel.
+			let releaseDiscovery;
+			const wheelLoaded = new Promise(resolve => { releaseDiscovery = resolve; });
+			t.after(() => releaseDiscovery());
 			await page.route("**/*", async (route) => {
+				if (route.request().method() === "HEAD") await wheelLoaded;
 				const served = await serveRoadMedia(route);
+				if (served?.source.match(/\/wheel(?:-\d+)?\.webp$/)) releaseDiscovery();
 				if (served?.byteLength && /\.(png|webp|jpg)$/.test(served.source))
 					downloaded.set(served.source, served.byteLength);
 			});
 			await page.goto("http://gallery.test/");
+			await page.locator("[data-road-carousel]").scrollIntoViewIfNeeded();
 			if (scenario.javaScriptEnabled !== false) {
 				await page.waitForFunction(count => document.querySelector(".road-carousel-group").children.length === count, photoCount);
 			}
-			await page.waitForFunction(() => [...document.images].every(i => i.complete && i.naturalWidth > 0));
+			await page.waitForFunction(selector => [...document.querySelectorAll(selector)].filter(i => !i.closest(".road-loader") || i.getClientRects().length > 0).every(i => i.complete && i.naturalWidth > 0), deliveryImages);
 			// Measure image density after the entrance rotation has settled.
 			await page.locator(".hero-visual").evaluate(async element => {
 				await Promise.all(element.getAnimations().map(animation => animation.finished));
 			});
-			const images = await page.locator(".brand-mark, .hero-road-car, .hero-visual img, .road-loader img, .road-carousel-group:first-child img, .instructor-photo img").evaluateAll(images => images.map(img => ({
+			const images = await page.locator(deliveryImages).evaluateAll(images => images.filter(img => img.currentSrc).map(img => ({
 				src: new URL(img.src).pathname.slice(1), current: new URL(img.currentSrc).pathname.slice(1),
 				width: parseFloat(getComputedStyle(img).width), height: parseFloat(getComputedStyle(img).height),
 				photo: !!img.closest(".road-photo"), cropped: getComputedStyle(img).objectFit === "cover", sizes: img.sizes,
@@ -144,16 +153,16 @@ test("responsive delivery reduces desktop and mobile bytes and preserves density
 				assert.ok(roadMediaBytes < (115 + 9 * photoCount) * 1024, `desktop road image budget exceeded: ${roadMediaBytes}`);
 			if (scenario.width <= 412 && scenario.deviceScaleFactor <= 2) {
 				assert.ok(roadMediaBytes < (120 + 12 * photoCount) * 1024, `mobile road image budget exceeded: ${roadMediaBytes}`);
-				if (scenario.deviceScaleFactor > 1)
+				if (scenario.deviceScaleFactor > 1 && scenario.javaScriptEnabled !== false)
 					assert.ok(downloaded.get("assets/images/optimized/wheel-256.webp") <= 13 * 1024,
 						"high-density wheel exceeds its compression budget");
 			}
 			if (scenario.deviceScaleFactor === 1 && scenario.javaScriptEnabled !== false) {
 				for (const [source, budget] of [
 					["assets/images/optimized/wheel.webp", 6 * 1024],
-					["assets/images/optimized/students-pass/11.webp", 8 * 1024],
+					[roadPhotoSources[11]?.srcset.split(",")[0].trim().split(" ")[0], 8 * 1024],
 				]) {
-					if (source.includes("students-pass/11.") && !roadPhotoSources[11]) continue;
+					if (!source) continue;
 					assert.ok(downloaded.has(source), `missing desktop image: ${source}`);
 					assert.ok(downloaded.get(source) <= budget, `${source} exceeds its compression budget`);
 				}
