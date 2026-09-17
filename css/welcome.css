@@ -114,8 +114,9 @@
 }
 
 .button-primary {
+	color: var(--on-primary);
 	background: var(--primary-bright);
-	box-shadow: 0 8px 24px rgb(0 105 112 / 0.13);
+	box-shadow: 0 8px 24px rgb(38 71 150 / 0.13);
 }
 
 .button-secondary {
@@ -299,8 +300,8 @@
 	background: var(--primary);
 	color: var(--white);
 	box-shadow:
-		0 24px 48px -12px rgb(0 86 92 / 0.18),
-		0 8px 20px -4px rgb(109 205 214 / 0.16);
+		0 24px 48px -12px rgb(30 57 120 / 0.18),
+		0 8px 20px -4px rgb(38 71 150 / 0.16);
 	text-align: center;
 	text-wrap: balance;
 }
@@ -328,14 +329,14 @@
 
 .topic-panel p {
 	margin: 0;
-	color: #e7f3f5;
+	color: #eaf0ff;
 	font-size: 17px;
 }
 
 .topic-panel .topic-note {
 	margin-block-start: 54px;
 	padding-block-start: 18px;
-	border-block-start: 1px solid rgb(231 243 245 / 0.2);
+	border-block-start: 1px solid rgb(234 240 255 / 0.2);
 	font-size: 14px;
 }
 

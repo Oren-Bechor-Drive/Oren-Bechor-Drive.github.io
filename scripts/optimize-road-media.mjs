@@ -92,7 +92,7 @@ await delivery(
 	"assets/images/wheel.png", "wheel", [128, 256], { quality: 65, alphaQuality: 60 }, "128px",
 );
 await delivery(
-	"assets/images/stop-sign.png", "stop-sign", [144, 380, 760, 800], { quality: 85 },
+	"assets/images/stop-sign.png", "stop-sign", [144, 380, 760, 800], { quality: 80 },
 	"(max-width: 768px) clamp(96px, 16svh, 144px), clamp(220px, 40svh, 400px)",
 );
 await delivery("assets/icons/course-icon.png", "course-icon", [42, 84], { quality: 85 }, "42px");
@@ -102,7 +102,7 @@ await delivery(
 	"assets/images/oren.jpg", "oren", [400, 480, 544, 680, 768, 960, 1080, 1460], { quality: 50 },
 	"(max-width: 440px) calc(100vw - 32px), (max-width: 768px) calc(100vw - 40px), (max-width: 1024px) calc((100vw - 104px) / 2), (max-width: 1216px) calc((100vw - 136px) / 2), 540px",
 );
-// A separate favicon prevents the browser tab from downloading the 512px original.
+// A separate favicon prevents the browser tab from downloading the full-size original.
 await sharp("assets/icons/course-icon.png")
 	.resize({ width: 32, withoutEnlargement: true })
 	.png()

@@ -3,8 +3,8 @@
 	inset-block-start: 0;
 	z-index: 10;
 	height: var(--header-height);
-	border-block-end: 1px solid rgb(189 201 202 / 0.65);
-	background: rgb(240 251 254 / 0.94);
+	border-block-end: 1px solid rgb(190 201 223 / 0.65);
+	background: rgb(242 245 252 / 0.94);
 	backdrop-filter: blur(14px);
 }
 
@@ -30,7 +30,7 @@
 	height: 42px;
 	flex: 0 0 42px;
 	border-radius: 12px;
-	box-shadow: inset 0 0 0 1px rgb(0 86 92 / 0.1);
+	box-shadow: inset 0 0 0 1px rgb(30 57 120 / 0.1);
 }
 
 .brand-copy {
@@ -83,7 +83,7 @@
 	padding-inline: 18px;
 	border-radius: var(--radius-control);
 	background: var(--primary-bright);
-	color: var(--text) !important;
+	color: var(--on-primary) !important;
 }
 
 .menu-toggle {

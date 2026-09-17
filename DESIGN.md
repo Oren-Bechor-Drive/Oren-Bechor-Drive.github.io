@@ -1,26 +1,26 @@
 ---
 name: Solar Serenity
 colors:
-  surface: '#f0fbfe'
-  surface-dim: '#d1dcde'
-  surface-bright: '#f0fbfe'
+  surface: '#f2f5fc'
+  surface-dim: '#cfd8ea'
+  surface-bright: '#f2f5fc'
   surface-container-lowest: '#ffffff'
-  surface-container-low: '#eaf6f8'
-  surface-container: '#e5f0f2'
-  surface-container-high: '#dfeaec'
-  surface-container-highest: '#d9e5e7'
+  surface-container-low: '#ecf0fa'
+  surface-container: '#e5ebf7'
+  surface-container-high: '#dee5f3'
+  surface-container-highest: '#d7e0f0'
   on-surface: '#131d1f'
   on-surface-variant: '#3e494a'
   inverse-surface: '#283234'
-  inverse-on-surface: '#e7f3f5'
+  inverse-on-surface: '#eaf0ff'
   outline: '#6e797a'
-  outline-variant: '#bdc9ca'
-  surface-tint: '#006970'
-  primary: '#006970'
+  outline-variant: '#bec9df'
+  surface-tint: '#264796'
+  primary: '#264796'
   on-primary: '#ffffff'
-  primary-container: '#6dcdd6'
-  on-primary-container: '#00565c'
-  inverse-primary: '#75d5de'
+  primary-container: '#dbe5ff'
+  on-primary-container: '#1e3978'
+  inverse-primary: '#b0c3ef'
   secondary: '#705d00'
   on-secondary: '#ffffff'
   secondary-container: '#fade7b'
@@ -33,10 +33,10 @@ colors:
   on-error: '#ffffff'
   error-container: '#ffdad6'
   on-error-container: '#93000a'
-  primary-fixed: '#92f2fb'
-  primary-fixed-dim: '#75d5de'
-  on-primary-fixed: '#002022'
-  on-primary-fixed-variant: '#004f54'
+  primary-fixed: '#dbe5ff'
+  primary-fixed-dim: '#b0c3ef'
+  on-primary-fixed: '#0d1b40'
+  on-primary-fixed-variant: '#203c7e'
   secondary-fixed: '#fde17e'
   secondary-fixed-dim: '#dfc565'
   on-secondary-fixed: '#221b00'
@@ -45,9 +45,9 @@ colors:
   tertiary-fixed-dim: '#ffb3b1'
   on-tertiary-fixed: '#410007'
   on-tertiary-fixed-variant: '#7f282b'
-  background: '#f0fbfe'
+  background: '#f2f5fc'
   on-background: '#131d1f'
-  surface-variant: '#d9e5e7'
+  surface-variant: '#d7e0f0'
 typography:
   display-lg:
     fontFamily: '"Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif'
@@ -143,7 +143,7 @@ spacing:
 
 ## Brand & Style
 
-This design system blends **Clean Minimalism** with **Warm Sunny Modernism**. It pairs pristine white foundations and soft tinted surfaces with an energized, sunlit palette—vibrant cyan-teal, radiant golden amber, and lively poppy coral. Replacing cooler secondary tones with luminous sunny colors shifts the emotional tone from quiet, introspective calm to an optimistic, warm, and inviting clarity.
+This design system blends **Clean Minimalism** with **Warm Sunny Modernism**. It pairs pristine white foundations and soft tinted surfaces with an energized, sunlit palette—vibrant royal blue, radiant golden amber, and lively poppy coral. Replacing cooler secondary tones with luminous sunny colors shifts the emotional tone from quiet, introspective calm to an optimistic, warm, and inviting clarity.
 
 ### Brand Personality & Tone
 - **Optimistic & Radiant:** Warm amber-yellow secondary tones infuse warmth and vitality, turning clinical cleanliness into an inviting, daylight-inspired ambiance.
@@ -151,14 +151,16 @@ This design system blends **Clean Minimalism** with **Warm Sunny Modernism**. It
 - **Effortless & Balanced:** Generous white breathing room, muted base surfaces, and balanced visual hierarchies prevent the enriched saturation from overwhelming the senses.
 
 ### Design Style
-The aesthetic marries Scandinavian white-space restraint with optimistic, tactile contemporary UI: pure `#FFFFFF` primary cards floating over soft, light-tinted backgrounds, complemented by warm golden amber accents and punchy cyan-teal interactive primaries.
+The aesthetic marries Scandinavian white-space restraint with optimistic, tactile contemporary UI: pure `#FFFFFF` primary cards floating over soft, light-tinted backgrounds, complemented by warm golden amber accents and punchy royal blue interactive primaries.
 
 ## Colors
 
-The palette transitions former deeper notes into luminous sunny tones, while elevating the chroma of the cyan, yellow/amber, and coral accents for heightened presence against luminous white and soft off-white canvas surfaces.
+The primary blue `#264796` is sampled from the user-supplied learner-sign reference. Primary actions and the course icon and stop-sign artwork use this blue; hover states use `#1e3978`, and filled primary controls use white text. All primary tints and blue-tinted surfaces derive from this hue. Amber and coral retain their secondary and semantic roles.
 
-### Primary Color (`#6DCDD6` - Vibrant Bright Cyan)
-The primary driver for high-priority actions, focus rings, and primary interactive components. Luminous and modern, it provides crisp contrast and clear visual weight against clean white canvases. Its tint surface wash is `#EBF5F6`.
+The palette transitions former deeper notes into luminous sunny tones, while elevating the chroma of the blue, yellow/amber, and coral accents for heightened presence against luminous white and soft off-white canvas surfaces.
+
+### Primary Color (`#264796` - Reference Blue)
+The primary driver for high-priority actions, focus rings, and primary interactive components. Luminous and modern, it provides crisp contrast and clear visual weight against clean white canvases. Its tint surface wash is `#edf1fa`.
 
 ### Secondary Color (`#F6DB78` - Warm Sunny Amber)
 This warm golden amber serves as the secondary anchor. It is used for secondary actions, highlight ribbons, verified indicators, and warm positive feedback. Its ambient companion surface is `#FFFDF5`.
@@ -168,8 +170,8 @@ A saturated, lively coral red that delivers punchy notifications, alerts, and cr
 
 ### Neutral & Surfaces
 - **Canvas Base (`#FFFFFF`):** High-luminescence ground layer for cards, inputs, and modal dialogs.
-- **Backdrop Surface (`#F4F8F8`):** Soft, clean, ultra-light cyan-gray for canvas grounds, sidebars, and grouped lists.
-- **Borders:** Low-noise framing via `#DFE7E8` (subtle) and `#C5D1D3` (structural/hover).
+- **Backdrop Surface (`#f5f7fb`):** Soft, clean, ultra-light blue-gray for canvas grounds, sidebars, and grouped lists.
+- **Borders:** Low-noise framing via `#dfe5f0` (subtle) and `#c5cfe2` (structural/hover).
 - **Text:** Deep charcoal `#141D1E` for headers and body copy; slate `#687375` for labels; and `#8C9799` for tertiary metadata.
 
 ## Typography
@@ -199,10 +201,10 @@ A fluid responsive grid paired with rhythmic spatial steps prioritizes spaciousn
 Visual hierarchy uses tonal surface layering combined with soft, warm-tinted ambient drop shadows rather than heavy borders.
 
 ### Elevation Levels
-- **Level 0 (Inset Ground):** Surface `#F4F8F8` with an inner 1px border `#DFE7E8`. Ideal for input wells, search panels, and code callouts.
-- **Level 1 (Default Containers):** Solid `#FFFFFF` card surface, 1px border `#DFE7E8`, and diffused shadow: `0 2px 8px -2px rgba(20, 29, 30, 0.04), 0 1px 3px 0 rgba(20, 29, 30, 0.02)`.
-- **Level 2 (Hovered Cards & Dropdowns):** Solid `#FFFFFF`, 1px border `#C5D1D3`, and elevated ambient shadow: `0 12px 28px -6px rgba(20, 29, 30, 0.07), 0 4px 10px -2px rgba(20, 29, 30, 0.03)`.
-- **Level 3 (Modals & Float Overlays):** Solid `#FFFFFF`, 1px border `#C5D1D3`, and broad light spread: `0 24px 48px -12px rgba(20, 29, 30, 0.09), 0 8px 20px -4px rgba(109, 205, 214, 0.06)`.
+- **Level 0 (Inset Ground):** Surface `#f5f7fb` with an inner 1px border `#dfe5f0`. Ideal for input wells, search panels, and code callouts.
+- **Level 1 (Default Containers):** Solid `#FFFFFF` card surface, 1px border `#dfe5f0`, and diffused shadow: `0 2px 8px -2px rgba(20, 29, 30, 0.04), 0 1px 3px 0 rgba(20, 29, 30, 0.02)`.
+- **Level 2 (Hovered Cards & Dropdowns):** Solid `#FFFFFF`, 1px border `#c5cfe2`, and elevated ambient shadow: `0 12px 28px -6px rgba(20, 29, 30, 0.07), 0 4px 10px -2px rgba(20, 29, 30, 0.03)`.
+- **Level 3 (Modals & Float Overlays):** Solid `#FFFFFF`, 1px border `#c5cfe2`, and broad light spread: `0 24px 48px -12px rgba(20, 29, 30, 0.09), 0 8px 20px -4px rgba(38, 71, 150, 0.06)`.
 
 ## Shapes
 
@@ -217,31 +219,31 @@ The design system maintains a balanced, rounded shape profile (`roundedness: 2`)
 ## Components
 
 ### Buttons
-- **Primary:** Solid vibrant cyan (`#6DCDD6`) background, `#141D1E` text, `0.5rem` border radius, padding 10px 20px. Hover: `#55BCC6`. Focus: 3px outer glow in `rgba(109, 205, 214, 0.25)`.
+- **Primary:** Solid royal blue (`#264796`) background, `#FFFFFF` text, `0.5rem` border radius, padding 10px 20px. Hover: `#1e3978`. Focus: 3px outer glow in `rgba(38, 71, 150, 0.25)`.
 - **Secondary (Sunny Accent):** Solid warm amber (`#F6DB78`) fill with `#141D1E` text for warm conversion triggers, or sunny surface fill (`#FFFDF5`) with `#806C14` text for low-friction actions. Hover: `#E5CA61` (on solid) or `#FEF9E6` (on wash).
-- **Tertiary / Ghost:** Borderless `#FFFFFF` surface, `#141D1E` text with subtle border `#DFE7E8`. Hover: `#F4F8F8` background.
+- **Tertiary / Ghost:** Borderless `#FFFFFF` surface, `#141D1E` text with subtle border `#dfe5f0`. Hover: `#f5f7fb` background.
 
 ### Cards
-- **Base Style:** Pure `#FFFFFF` surface with Level 1 elevation and 1px `#DFE7E8` border.
+- **Base Style:** Pure `#FFFFFF` surface with Level 1 elevation and 1px `#dfe5f0` border.
 - **Featured Card (Sunny Accent):** Pure `#FFFFFF` background, 2px top accent line or 1px border in `#F6DB78`, accompanied by a subtle `#FFFDF5` header banner.
 - **Interactive Cards:** Transition smoothly to Level 2 elevation on hover with a 200ms ease curve.
 
 ### Chips & Badges
 - **Sunny Amber (Active / Highlighting / Success):** Background `#FFFDF5`, text `#806C14`, border `1px solid rgba(246, 219, 120, 0.30)`.
-- **Vibrant Cyan (Informational):** Background `#EBF5F6`, text `#2A737A`, border `1px solid rgba(109, 205, 214, 0.25)`.
+- **Reference Blue (Informational):** Background `#edf1fa`, text `#264796`, border `1px solid rgba(38, 71, 150, 0.25)`.
 - **Poppy Coral (Alerts / Critical):** Background `#FDF3F3`, text `#B84646`, border `1px solid rgba(217, 108, 108, 0.25)`.
-- **Neutral:** Background `#F4F8F8`, text `#687375`, border `1px solid #DFE7E8`.
+- **Neutral:** Background `#f5f7fb`, text `#687375`, border `1px solid #dfe5f0`.
 - Formatted as full pills (`9999px`), `label-sm` font, padding 4px 10px.
 
 ### Input Fields & Selects
-- **Text Inputs:** `#FFFFFF` fill, 1px border `#DFE7E8`, `0.5rem` radius, padding 12px 16px, text `#141D1E`, placeholder `#8C9799`. Active focus creates a crisp `#6DCDD6` border accompanied by a 3px diffused outer halo (`rgba(109, 205, 214, 0.16)`).
+- **Text Inputs:** `#FFFFFF` fill, 1px border `#dfe5f0`, `0.5rem` radius, padding 12px 16px, text `#141D1E`, placeholder `#8C9799`. Active focus creates a crisp `#264796` border accompanied by a 3px diffused outer halo (`rgba(38, 71, 150, 0.16)`).
 
 ### Checkboxes, Radios & Switches
-- **Checkboxes & Radios:** Unchecked state features an empty `#FFFFFF` fill and `#C5D1D3` border. Checked state transitions to a vibrant cyan `#6DCDD6` fill with a crisp check/bullet.
-- **Toggle Switches:** Unchecked track in `#DFE7E8` with white thumb; checked track transitions to `#F6DB78` (warm sunny accent) to signal active status.
+- **Checkboxes & Radios:** Unchecked state features an empty `#FFFFFF` fill and `#c5cfe2` border. Checked state transitions to a royal blue `#264796` fill with a crisp check/bullet.
+- **Toggle Switches:** Unchecked track in `#dfe5f0` with white thumb; checked track transitions to `#F6DB78` (warm sunny accent) to signal active status.
 
 ### Lists & Navigation Rails
-- Row dividers utilize 1px `#DFE7E8`. Active navigation list items feature a `#FFFDF5` surface background with `#F6DB78` left accent edge (3px) and bold `#141D1E` label copy.
+- Row dividers utilize 1px `#dfe5f0`. Active navigation list items feature a `#FFFDF5` surface background with `#F6DB78` left accent edge (3px) and bold `#141D1E` label copy.
 
 ## Current Welcome Page
 
@@ -250,12 +252,12 @@ The approved composition is the hero, the instructor introduction with its stude
 ### Hero, Learning Steps, and Instructor Gallery
 
 - The instructor uses the supplied `oren.jpg` photo, with responsive WebP copies, rounded corners, and a cover crop positioned at 50% 75% to keep Oren visible in shallow frames. The two-line title identifies Oren Bachor as the driving instructor and course presenter. One Hebrew paragraph introduces his certification, more than eight years of experience, and explanations of real road situations. On desktop the photo and text sit at opposite outer edges, with each column capped at 540px. At 768px and below, use one column in both reading and visual order: centered title, photo, description. The introduction is constrained to 1280px and shares one small viewport below the sticky header with the road gallery beneath it. Allow natural growth on short screens or for enlarged text.
-- Use a full-width warm amber (`#F6DB78`) instructor section to distinguish it from the pale cyan hero. The top of the amber aligns with the bottom of the sticky header when navigating to `#instructor`.
-- The hero contains the concrete course promise, supporting copy, a primary “מנחה הקורס” button linking to `#instructor`, a secondary “צפו בנושאי הקורס” button linking to `#about`, and the supplied stop sign. It fills the initial viewport below the header. The secondary hero button has a white background with teal text and border, and a pale teal hover. Header and closing course-start actions intentionally use `#` until a real course destination is supplied.
+- Use a full-width warm amber (`#F6DB78`) instructor section to distinguish it from the pale blue hero. The top of the amber aligns with the bottom of the sticky header when navigating to `#instructor`.
+- The hero contains the concrete course promise, supporting copy, a primary “מנחה הקורס” button linking to `#instructor`, a secondary “צפו בנושאי הקורס” button linking to `#about`, and the supplied stop sign. It fills the initial viewport below the header. The secondary hero button has a white background with blue text and border, and a pale blue hover. Header and closing course-start actions intentionally use `#` until a real course destination is supplied.
 - Place the supplied road background below the compact instructor introduction. The introduction and road together fit below the sticky header on typical laptop and phone screens. Preserve gallery geometry and cadence; `hero-road` remains the gallery’s existing technical identifier.
-- Present the course as one white `#about` section with one heading and introduction, a pale teal strip containing the three learning steps, a short topic-selection prompt, the topic explorer, and the note that the course supports driving lessons. Keep all seven topics and their descriptions. Use three step columns on desktop and a vertical list on phones. The entire course shares one content width, spacing rhythm, and scroll-reveal root; omit a divider or second section title between the steps and explorer.
+- Present the course as one white `#about` section with one heading and introduction, a pale blue strip containing the three learning steps, a short topic-selection prompt, the topic explorer, and the note that the course supports driving lessons. Keep all seven topics and their descriptions. Use three step columns on desktop and a vertical list on phones. The entire course shares one content width, spacing rhythm, and scroll-reveal root; omit a divider or second section title between the steps and explorer.
 - The topbar has one instructor link and one “על הקורס” link. Both course navigation actions target `#about`. Use only the sticky header height as the global scroll offset, with no extra section scroll margins, so section backgrounds align immediately below the header. The mobile fallback header is in normal document flow and uses a zero scroll offset.
-- End with a centered pale cyan section headed “מוכנים להבין את הכביש טוב יותר?”, the supplied supporting sentence, and one primary “התחילו בשיעור הראשון” button.
+- End with a centered pale blue section headed “מוכנים להבין את הכביש טוב יותר?”, the supplied supporting sentence, and one primary “התחילו בשיעור הראשון” button.
 - The road spans the viewport, repeats horizontally, fills its height, and has square corners. Its height responds to the small viewport height, with a 180–264px desktop range and a 140–188px phone range.
 - Center the visible car silhouettes despite differing transparent margins in their source files. Size cars relative to the road height and retain a separate car-scale setting; phone layouts show neighboring cars partially clipped.
 - Place student photos on the car roofs with 8px rounded corners and a subtle 3px transparent edge fade. Keep the middle of each photo opaque, crop with `object-fit: cover`, and preserve the original image files.
@@ -267,7 +269,7 @@ The approved composition is the hero, the instructor introduction with its stude
 
 A small supplied red car follows the hero road from top to bottom in 15 seconds at a steady speed, turns with the bends, then waits off screen for five seconds before repeating. Keep it behind the sign and copy and noninteractive. Sample the road in rendered coordinates so the car retains its proportions on phones and follows the route after resizing. Reduced motion parks it near the start of the road; without JavaScript, omit the decorative car.
 
-The hero heading, paragraph, and buttons share a right edge on desktop and remain centered at 768px and below. Underline only “להבין” and “לקבל” in warm yellow (`#F6DB78`). A static, faint teal road curve follows the supplied drawn route: enter at the top center, sweep into a broad low loop to the left of the stop sign, climb diagonally behind the sign and copy into a high right-hand bend, then return to the bottom center. The curve fills the hero and stays behind all content. Keep it decorative, noninteractive, and lighter on mobile so it does not compete with the centered copy.
+The hero heading, paragraph, and buttons share a right edge on desktop and remain centered at 768px and below. Underline only “להבין” and “לקבל” in warm yellow (`#F6DB78`). A static, faint blue road curve follows the supplied drawn route: enter at the top center, sweep into a broad low loop to the left of the stop sign, climb diagonally behind the sign and copy into a high right-hand bend, then return to the bottom center. The curve fills the hero and stays behind all content. Keep it decorative, noninteractive, and lighter on mobile so it does not compete with the centered copy.
 
 The hero stop sign enters once at full opacity, pivoting around its bottom center. Inspect the production entrance by reloading the welcome page at desktop and phone widths. Use the `brake` keyframes with `--stop-sign-duration: 3s` and linear entry: hold off screen to the left at `translateX(calc(-50vw - 100%)) rotate(-20deg)` through 8%, then arrive at `translateX(10%) rotate(-20deg)` at 40%. Correct back to `translateX(6%) rotate(8deg)` at 46%, then `translateX(0) rotate(0)` at 48%, using `--ease-out` for both corrections. The corrections take 180ms and 60ms; the sign settles at 1.44s and stays upright. Reduced motion shows the static sign immediately.
 
@@ -281,12 +283,12 @@ The instructor introduction and unified course section reveal once as they enter
 
 Topic preview changes animate only the title and description container; the unchanged explanatory note stays still. A new pointer or touch selection fades and moves the outgoing content by 6px, replaces it after 110ms, and returns it over 180ms with `--ease-out`. Selecting the active topic does not restart feedback. Keyboard and assistive activation update immediately. Enabling reduced motion settles any pending update and removes movement and delay from later selections.
 
-The footer includes a right-to-left row of Instagram, TikTok, YouTube, and WhatsApp links. Use 24px Font Awesome brand icons in the primary teal, with visible Hebrew labels and at least 44px touch targets. Links wrap as needed on small screens and retain visible keyboard focus.
+The footer includes a right-to-left row of Instagram, TikTok, YouTube, and WhatsApp links. Use 24px Font Awesome brand icons in the primary blue, with visible Hebrew labels and at least 44px touch targets. Links wrap as needed on small screens and retain visible keyboard focus.
 
-On this welcome page, use a solid 3px primary teal (`#006970`) outline for keyboard focus instead of the general translucent focus glow described above, so it remains visible on white, cyan, and amber surfaces.
+On this welcome page, use a solid 3px primary blue (`#264796`) outline for keyboard focus instead of the general translucent focus glow described above, so it remains visible on white, blue, and amber surfaces.
 
 Without JavaScript or when the entry module is unavailable, the mobile header stays in document flow with visible navigation links, and section links align to the viewport top. Successful initialization enables the sticky header, its scroll offset, and the collapsible menu. Show all seven topic descriptions as static content before enhancement; the interactive preview uses those descriptions and replaces the static presentation after initialization.
 
 The current page uses a maximum 1280px content width, with 48px side margins above 1024px, 32px at 1024px and below, 20px at 768px and below, and 16px at 440px and below. The main layout and menu switch at 768px; the topic dropdown switches below 640px. These are the implemented page breakpoints rather than a mandatory column grid.
 
-The page uses `#F0FBFE` for its base surface and `#131D1F` for primary text. `css/base.css` holds runtime tokens, `css/components.css` holds navigation styles, `css/welcome.css` holds section layouts, and `css/responsive.css` holds motion, interaction states, responsive overrides, and accessibility preferences. Keep this stylesheet load order.
+The page uses `#f2f5fc` for its base surface and `#131D1F` for primary text. `css/base.css` holds runtime tokens, `css/components.css` holds navigation styles, `css/welcome.css` holds section layouts, and `css/responsive.css` holds motion, interaction states, responsive overrides, and accessibility preferences. Keep this stylesheet load order.
