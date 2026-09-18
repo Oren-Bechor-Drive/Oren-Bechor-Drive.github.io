@@ -112,6 +112,31 @@ textarea {
 	outline-offset: 4px;
 }
 
+/* Font Awesome Classic Solid, locally hosted with its upstream license. */
+.direction-icon,
+.subject-chevron,
+.topic-tab::after,
+.topic-select::after,
+.question-select::after {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	flex-shrink: 0;
+	background-color: currentColor;
+	mask-position: center;
+	mask-size: contain;
+	mask-repeat: no-repeat;
+}
+
+.icon-arrow-right-long { mask-image: url("../assets/icons/directions/arrow-right-long.svg"); }
+.icon-arrow-left-long { mask-image: url("../assets/icons/directions/arrow-left-long.svg"); }
+.icon-arrow-down-long { mask-image: url("../assets/icons/directions/arrow-down-long.svg"); }
+.icon-arrow-up-long { mask-image: url("../assets/icons/directions/arrow-up-long.svg"); }
+.icon-chevron-right { mask-image: url("../assets/icons/directions/chevron-right.svg"); }
+.icon-chevron-left, .topic-tab::after { mask-image: url("../assets/icons/directions/chevron-left.svg"); }
+.icon-chevron-down, .subject-chevron, .topic-select::after, .question-select::after { mask-image: url("../assets/icons/directions/chevron-down.svg"); }
+.icon-chevron-up, .subject[open] .subject-chevron, .topic-select[aria-expanded="true"]::after { mask-image: url("../assets/icons/directions/chevron-up.svg"); }
+
 .skip-link {
 	position: fixed;
 	inset-block-start: 12px;

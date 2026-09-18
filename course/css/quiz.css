@@ -3,7 +3,9 @@
 .quiz-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-block: 24px; }
 .quiz-toolbar p { margin: 0; color: var(--primary); font-weight: 700; }
 .quiz-toolbar > div { display: flex; align-items: center; gap: 12px; font-size: 14px; }
-.quiz-toolbar select { min-height: 44px; padding: 8px 12px; border: 1px solid var(--border-strong); border-radius: var(--radius-control); color: var(--text); background: var(--white); }
+.question-select { position: relative; display: inline-flex; color: var(--text); }
+.question-select::after { content: ""; position: absolute; inset-inline-end: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+.quiz-toolbar select { appearance: none; min-height: 44px; padding: 8px 12px; padding-inline-end: 36px; border: 1px solid var(--border-strong); border-radius: var(--radius-control); color: var(--text); background: var(--white); }
 .quiz-form { padding: 0; }
 .quiz-question { min-width: 0; margin: 0 0 24px; padding: 24px 28px 28px; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-card); }
 .quiz-question legend { padding: 0 8px; font-size: 22px; font-weight: 700; }

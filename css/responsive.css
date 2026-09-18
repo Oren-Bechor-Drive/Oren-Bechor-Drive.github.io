@@ -475,23 +475,13 @@
 
 	.topic-select::after {
 		content: "";
-		width: 9px;
-		height: 9px;
-		flex-shrink: 0;
 		margin-inline-end: 4px;
-		border-right: 2px solid var(--primary);
-		border-bottom: 2px solid var(--primary);
-		transform: translateY(-2px) rotate(45deg);
-		transition: transform 180ms var(--ease-out);
+		background-color: var(--primary);
 	}
 
 	.topic-select[aria-expanded="true"] {
 		border-color: var(--primary-bright);
 		background: var(--primary-wash);
-	}
-
-	.topic-select[aria-expanded="true"]::after {
-		transform: translateY(2px) rotate(225deg);
 	}
 
 	.topic-options {
