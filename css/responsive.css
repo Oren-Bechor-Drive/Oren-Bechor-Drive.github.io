@@ -56,6 +56,12 @@
 		animation-delay: 325ms;
 	}
 
+	.hero-copy:focus-within > p,
+	.hero-copy:focus-within > .hero-actions {
+		/* Override the animated transform before native focus scrolling, ahead of focusin. */
+		transform: none !important;
+	}
+
 	.hero-visual {
 		--stop-sign-duration: 3s;
 		transform-origin: bottom center;

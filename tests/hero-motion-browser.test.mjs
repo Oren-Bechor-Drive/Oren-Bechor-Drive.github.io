@@ -4,6 +4,36 @@ import { chromium } from "playwright";
 
 import { serveRoadMedia } from "./helpers/road-media.mjs";
 
+test("early hero focus keeps the button visible without scrolling the page", async (t) => {
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	for (const width of [1366, 390]) {
+		await t.test(`${width}px`, async () => {
+			const page = await browser.newPage({ viewport: { width, height: 844 }, reducedMotion: "no-preference" });
+			t.after(() => page.close());
+			await page.route("**/*", serveRoadMedia);
+			await page.goto("http://gallery.test/");
+			// Make native focus scrolling immediate so a smooth-scroll delay cannot hide it.
+			const startsBelowViewport = await page.evaluate(() => {
+				document.documentElement.style.scrollBehavior = "auto";
+				for (const element of document.querySelectorAll(".hero-copy > *")) {
+					const animation = element.getAnimations()[0];
+					animation.pause();
+					animation.currentTime = 0;
+				}
+				return document.querySelector(".hero-actions a").getBoundingClientRect().top >= innerHeight;
+			});
+			assert.equal(startsBelowViewport, true, "focus must exercise the off-screen entrance even on a slow load");
+			await page.locator(".hero-actions a").first().focus();
+			const state = await page.evaluate(() => {
+				const bounds = document.activeElement.getBoundingClientRect();
+				return { scrollY, visible: bounds.top >= 0 && bounds.bottom <= innerHeight };
+			});
+			assert.deepEqual(state, { scrollY: 0, visible: true });
+		});
+	}
+});
+
 test("stop sign enters from the left, overshoots, and corrects back once", async (t) => {
 	const browser = await chromium.launch();
 	t.after(() => browser.close());
@@ -116,20 +146,35 @@ test("hero slides title from the right and description with buttons from below a
 			const settled = await sample(end);
 			assert.ok(start[0].x - early[0].x > late[0].x - settled[0].x, "motion slows as it finishes");
 			assert.deepEqual(settled, Array.from({ length: 3 }, () => ({ opacity: 1, x: 0, y: 0 })));
-			assert.equal(await page.locator(".hero").evaluate(element => getComputedStyle(element).overflow), "hidden",
-				"the hero clips its off-screen entrances now that the gallery is below the instructor");
 			await sample(0);
+			const attemptedScroll = await page.locator(".hero").evaluate(element => {
+				// Exercise scrollability directly instead of relying on focus/animation timing.
+				element.scrollTop = 1;
+				const scrollTop = element.scrollTop;
+				element.scrollTop = 0;
+				return scrollTop;
+			});
+			assert.equal(attemptedScroll, 0, "off-screen entrances must not make the hero internally scrollable");
 			await page.locator(".hero-actions a").first().focus();
 			const focusState = await page.evaluate(() => ({
 				scrollTop: document.querySelector(".hero").scrollTop,
+				buttonVisible: (() => {
+					const bounds = document.activeElement.getBoundingClientRect();
+					return bounds.top >= 0 && bounds.bottom <= innerHeight;
+				})(),
 				positions: [...document.querySelectorAll(".hero-copy > p, .hero-actions")].map(element =>
 					new DOMMatrixReadOnly(getComputedStyle(element).transform).m42),
 			}));
 			assert.equal(focusState.scrollTop, 0, "focusing an entering button must not scroll the hero internally");
+			assert.equal(focusState.buttonVisible, true, "focus must keep the settled button in the viewport");
 			assert.deepEqual(focusState.positions, [0, 0], "focus settles the description and buttons immediately");
 			await page.locator(".hero-actions a").last().focus();
 			assert.equal(await page.locator(".hero-actions").evaluate(element =>
 				new DOMMatrixReadOnly(getComputedStyle(element).transform).m42), 0, "moving focus must not restart the entrance");
+			await page.locator(".hero-actions a").last().evaluate(element => element.blur());
+			assert.deepEqual(await page.locator(".hero-copy > p, .hero-actions").evaluateAll(elements =>
+				elements.map(element => new DOMMatrixReadOnly(getComputedStyle(element).transform).m42)),
+			[0, 0], "leaving the hero must not restart its finished entrances");
 			await page.emulateMedia({ reducedMotion: "reduce" });
 			await page.waitForFunction(() => [...document.querySelectorAll(".hero-copy > *")]
 				.every(element => element.getAnimations().length === 0 && getComputedStyle(element).opacity === "1"
