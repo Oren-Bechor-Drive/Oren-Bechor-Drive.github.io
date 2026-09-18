@@ -40,21 +40,30 @@ function initQuestionSelector() {
 		item.id = `question-option-${index}`;
 		item.textContent = option.textContent;
 		item.setAttribute("role", "option");
-		item.addEventListener("pointerdown", event => event.preventDefault());
+		item.addEventListener("pointerdown", (event) => event.preventDefault());
 		item.addEventListener("click", () => choose(index));
 		list.append(item);
 		return item;
 	});
 	const setOpen = initDisclosureMotion(trigger, list, "(min-width: 0px)");
 	let active = 0;
-	function isOpen() { return trigger.getAttribute("aria-expanded") === "true"; }
+	function isOpen() {
+		return trigger.getAttribute("aria-expanded") === "true";
+	}
 	function highlight(index) {
 		active = Math.max(0, Math.min(options.length - 1, index));
-		options.forEach((option, i) => { option.dataset.active = String(i === active); });
+		options.forEach((option, i) => {
+			option.dataset.active = String(i === active);
+		});
 		trigger.setAttribute("aria-activedescendant", options[active].id);
 		const item = options[active];
 		if (item.offsetTop < list.scrollTop) list.scrollTop = item.offsetTop;
-		else if (item.offsetTop + item.offsetHeight > list.scrollTop + list.clientHeight) list.scrollTop = item.offsetTop + item.offsetHeight - list.clientHeight;
+		else if (
+			item.offsetTop + item.offsetHeight >
+			list.scrollTop + list.clientHeight
+		)
+			list.scrollTop =
+				item.offsetTop + item.offsetHeight - list.clientHeight;
 	}
 	function open() {
 		const rect = trigger.getBoundingClientRect();
@@ -74,15 +83,16 @@ function initQuestionSelector() {
 		close();
 		showQuestion(index);
 	}
-	trigger.addEventListener("click", () => isOpen() ? close() : open());
-	trigger.addEventListener("keydown", event => {
+	trigger.addEventListener("click", () => (isOpen() ? close() : open()));
+	trigger.addEventListener("keydown", (event) => {
 		if (["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) {
 			event.preventDefault();
 			const wasOpen = isOpen();
 			if (!wasOpen) open();
 			if (event.key === "Home") highlight(0);
 			else if (event.key === "End") highlight(options.length - 1);
-			else if (wasOpen) highlight(active + (event.key === "ArrowDown" ? 1 : -1));
+			else if (wasOpen)
+				highlight(active + (event.key === "ArrowDown" ? 1 : -1));
 		} else if ((event.key === "Enter" || event.key === " ") && isOpen()) {
 			event.preventDefault();
 			choose(active);
@@ -91,16 +101,22 @@ function initQuestionSelector() {
 			close();
 		} else if (event.key === "Tab") close();
 	});
-	document.addEventListener("pointerdown", event => { if (!wrapper.contains(event.target)) close(); });
-	wrapper.addEventListener("focusout", event => { if (!wrapper.contains(event.relatedTarget)) close(); });
+	document.addEventListener("pointerdown", (event) => {
+		if (!wrapper.contains(event.target)) close();
+	});
+	wrapper.addEventListener("focusout", (event) => {
+		if (!wrapper.contains(event.relatedTarget)) close();
+	});
 	window.addEventListener("resize", close);
 	wrapper.append(trigger, list);
 	label.htmlFor = trigger.id;
 	jump.hidden = true;
 	wrapper.classList.add("is-enhanced");
-	return index => {
+	return (index) => {
 		trigger.textContent = jump.options[index].textContent;
-		options.forEach((option, i) => option.setAttribute("aria-selected", String(i === index)));
+		options.forEach((option, i) =>
+			option.setAttribute("aria-selected", String(i === index)),
+		);
 	};
 }
 
@@ -108,28 +124,38 @@ function showQuestion(index, focus = true) {
 	current = index;
 	result.hidden = true;
 	session.hidden = false;
-	questions.forEach((question, i) => { question.hidden = i !== current; });
+	questions.forEach((question, i) => {
+		question.hidden = i !== current;
+	});
 	position.textContent = `שאלה ${current + 1} מתוך ${questions.length}`;
 	jump.value = String(current);
 	selector(current);
 	previous.disabled = current === 0;
-	next.textContent = current === questions.length - 1 ? "סיום השאלון" : "השאלה הבאה";
+	next.textContent =
+		current === questions.length - 1 ? "סיום השאלון" : "השאלה הבאה";
 	if (focus) questions[current].querySelector("legend").focus();
 }
 
 function finish() {
-	const answered = questions.filter(question => question.querySelector("input:checked")).length;
-	document.querySelector("[data-quiz-count]").textContent = `סימנתם תשובה ב-${answered} מתוך ${questions.length} שאלות.`;
+	const answered = questions.filter((question) =>
+		question.querySelector("input:checked"),
+	).length;
+	document.querySelector("[data-quiz-count]").textContent =
+		`סימנתם תשובה ב-${answered} מתוך ${questions.length} שאלות.`;
 	session.hidden = true;
 	result.hidden = false;
 	document.querySelector("#quiz-result-title").focus();
 }
 
 // Radio inputs keep selections while questions are hidden. No placeholder has a score.
-form.addEventListener("submit", event => event.preventDefault());
+form.addEventListener("submit", (event) => event.preventDefault());
 previous.addEventListener("click", () => showQuestion(current - 1));
-next.addEventListener("click", () => current < questions.length - 1 ? showQuestion(current + 1) : finish());
-document.querySelector("[data-quiz-review]").addEventListener("click", () => showQuestion(current));
+next.addEventListener("click", () =>
+	current < questions.length - 1 ? showQuestion(current + 1) : finish(),
+);
+document
+	.querySelector("[data-quiz-review]")
+	.addEventListener("click", () => showQuestion(current));
 document.querySelector("[data-quiz-fallback]").hidden = true;
 document.querySelector("[data-quiz-toolbar]").hidden = false;
 document.querySelector("[data-quiz-controls]").hidden = false;

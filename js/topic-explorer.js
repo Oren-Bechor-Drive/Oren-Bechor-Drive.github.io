@@ -8,12 +8,20 @@ export function initTopicExplorer(root) {
 	const summaries = root.querySelector("[data-topic-summaries]");
 	const descriptions = [...(summaries?.querySelectorAll("p") ?? [])];
 
-	if (cards.length === 0 || !panel || !title || !description || descriptions.length !== cards.length) {
+	if (
+		cards.length === 0 ||
+		!panel ||
+		!title ||
+		!description ||
+		descriptions.length !== cards.length
+	) {
 		throw new Error("Missing required topic panel elements");
 	}
 
 	const browserWindow = root.ownerDocument.defaultView;
-	const motionPreference = browserWindow?.matchMedia?.("(prefers-reduced-motion: reduce)");
+	const motionPreference = browserWindow?.matchMedia?.(
+		"(prefers-reduced-motion: reduce)",
+	);
 	const document = root.ownerDocument;
 	const picker = document.createElement("div");
 	picker.className = "topic-picker";
@@ -41,7 +49,7 @@ export function initTopicExplorer(root) {
 		option.tabIndex = -1;
 		option.setAttribute("role", "option");
 		option.textContent = card.textContent.trim();
-		option.addEventListener("click", event => {
+		option.addEventListener("click", (event) => {
 			select(card, { animate: event.detail > 0 });
 			setOpen(false, true);
 		});
@@ -51,7 +59,11 @@ export function initTopicExplorer(root) {
 	picker.append(label, dropdown, menu);
 	root.prepend(picker);
 	root.dataset.topicDropdown = "true";
-	const setDisclosureOpen = initDisclosureMotion(dropdown, menu, "(max-width: 639px)");
+	const setDisclosureOpen = initDisclosureMotion(
+		dropdown,
+		menu,
+		"(max-width: 639px)",
+	);
 
 	function setOpen(open, restoreFocus = false) {
 		setDisclosureOpen(open);
@@ -102,7 +114,8 @@ export function initTopicExplorer(root) {
 	function updateContent(card) {
 		browserWindow?.clearTimeout(pendingUpdate);
 		title.textContent = card.textContent.trim();
-		description.textContent = descriptions[cards.indexOf(card)].textContent.trim();
+		description.textContent =
+			descriptions[cards.indexOf(card)].textContent.trim();
 		panel.dataset.updating = "false";
 	}
 
@@ -142,7 +155,9 @@ export function initTopicExplorer(root) {
 	});
 
 	cards.forEach((card, index) => {
-		card.addEventListener("click", event => select(card, { animate: event.detail > 0 }));
+		card.addEventListener("click", (event) =>
+			select(card, { animate: event.detail > 0 }),
+		);
 		card.addEventListener("keydown", (event) => {
 			let nextIndex;
 			if (event.key === "ArrowLeft")
@@ -164,6 +179,8 @@ export function initTopicExplorer(root) {
 	panel.hidden = false;
 	const rail = root.querySelector(".topic-rail");
 	if (rail) rail.hidden = false;
-	const prompt = root.closest(".course-topics")?.querySelector(".topic-prompt");
+	const prompt = root
+		.closest(".course-topics")
+		?.querySelector(".topic-prompt");
 	if (prompt) prompt.textContent = "בחרו נושא וראו מה תלמדו";
 }

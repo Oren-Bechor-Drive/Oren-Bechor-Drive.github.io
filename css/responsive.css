@@ -125,7 +125,8 @@
 		transition-delay: 90ms;
 	}
 
-	.about[data-scroll-state="pending"] :is(.about-title-block, .learning-steps) {
+	.about[data-scroll-state="pending"]
+		:is(.about-title-block, .learning-steps) {
 		transform: translateY(20px);
 	}
 
@@ -133,7 +134,8 @@
 		transform: translateY(16px);
 	}
 
-	.about[data-scroll-motion="ready"] :is(.about-title-block, .learning-steps) {
+	.about[data-scroll-motion="ready"]
+		:is(.about-title-block, .learning-steps) {
 		transition-duration: 480ms;
 	}
 
@@ -171,7 +173,6 @@
 		grid-template-columns: minmax(310px, 1fr) minmax(0, 1fr);
 		gap: 24px;
 	}
-
 }
 
 @media (max-width: 768px) {

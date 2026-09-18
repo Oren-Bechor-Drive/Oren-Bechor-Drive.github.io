@@ -13,14 +13,17 @@ initHeroRoadCar(document.querySelector(".hero"));
 
 // Settle off-screen controls before the browser scrolls the focused button into view.
 document.querySelector(".hero-actions")?.addEventListener("focusin", () => {
-	document.querySelectorAll(".hero-copy > p, .hero-actions").forEach(element => {
-		element.getAnimations().forEach(animation => animation.finish());
-	});
+	document
+		.querySelectorAll(".hero-copy > p, .hero-actions")
+		.forEach((element) => {
+			element.getAnimations().forEach((animation) => animation.finish());
+		});
 });
 
-const setMenu = menuToggle && menu
-	? initDisclosureMotion(menuToggle, menu, "(max-width: 768px)", true)
-	: () => {};
+const setMenu =
+	menuToggle && menu
+		? initDisclosureMotion(menuToggle, menu, "(max-width: 768px)", true)
+		: () => {};
 if (menuToggle && menu) document.documentElement.dataset.menuEnhanced = "true";
 
 function closeMenu({ returnFocus = false } = {}) {

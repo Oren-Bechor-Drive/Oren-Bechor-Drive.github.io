@@ -42,7 +42,8 @@ for (const malformed of [false, true]) {
 			originalCars.every((image) => !image.draggable),
 			"Car images must not start native drag interactions",
 		);
-		if (malformed) document.querySelector("[data-topic-panel-title]").remove();
+		if (malformed)
+			document.querySelector("[data-topic-panel-title]").remove();
 		const entry = document.querySelector('script[type="module"][src]');
 		assert.ok(entry, "HTML must load a module entry");
 		const entryUrl = new URL(
@@ -70,11 +71,23 @@ for (const malformed of [false, true]) {
 		assert.equal(menu.dataset.open, "false");
 
 		document.querySelector("[data-topics-link]").click();
-		await new Promise((resolve) => dom.window.requestAnimationFrame(resolve));
+		await new Promise((resolve) =>
+			dom.window.requestAnimationFrame(resolve),
+		);
 		assert.equal(document.activeElement, document.querySelector("#about"));
-		assert.equal(warning.mock.callCount(), 1, "the fixture's unavailable gallery reports one warning");
-		assert.match(warning.mock.calls[0].arguments[0], /Student gallery could not refresh/);
-		assert.match(warning.mock.calls[0].arguments[1].message, /photo 1: HTTP 404/);
+		assert.equal(
+			warning.mock.callCount(),
+			1,
+			"the fixture's unavailable gallery reports one warning",
+		);
+		assert.match(
+			warning.mock.calls[0].arguments[0],
+			/Student gallery could not refresh/,
+		);
+		assert.match(
+			warning.mock.calls[0].arguments[1].message,
+			/photo 1: HTTP 404/,
+		);
 		if (!malformed) {
 			const card = document.querySelectorAll(".topic-card")[1];
 			card.click();

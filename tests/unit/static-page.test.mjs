@@ -4,7 +4,8 @@ import test from "node:test";
 import { JSDOM } from "jsdom";
 import { inspectImage } from "../../scripts/road-media-integrity.mjs";
 
-const read = (path) => readFile(new URL(`../../${path}`, import.meta.url), "utf8");
+const read = (path) =>
+	readFile(new URL(`../../${path}`, import.meta.url), "utf8");
 
 test("page exposes its Hebrew semantic structure", async () => {
 	const document = new JSDOM(await read("index.html")).window.document;
@@ -20,7 +21,9 @@ test("page introduces the instructor before the combined learning section", asyn
 		(section) => section.id,
 	);
 	const navigationTargets = [
-		...document.querySelectorAll('#site-menu a[href^="#"]:not(.nav-action)'),
+		...document.querySelectorAll(
+			'#site-menu a[href^="#"]:not(.nav-action)',
+		),
 	].map((link) => link.getAttribute("href"));
 
 	assert.deepEqual(sectionIds, ["top", "instructor", "about", "start"]);
@@ -32,10 +35,7 @@ test("page introduces the instructor before the combined learning section", asyn
 		main.nextElementSibling,
 		document.querySelector("body > footer"),
 	);
-	assert.deepEqual(navigationTargets, [
-		"#instructor",
-		"#about",
-	]);
+	assert.deepEqual(navigationTargets, ["#instructor", "#about"]);
 });
 
 test("unavailable course and social actions do not pretend to be working links", async () => {
@@ -49,15 +49,20 @@ test("unavailable course and social actions do not pretend to be working links",
 	}
 	assert.equal(document.querySelector("[data-icon-kit]"), null);
 	const profiles = [...document.querySelectorAll(".footer-social > span")];
-	assert.deepEqual(profiles.map(item => item.textContent.trim()),
-		["אינסטגרם", "טיקטוק", "יוטיוב", "וואטסאפ"]);
+	assert.deepEqual(
+		profiles.map((item) => item.textContent.trim()),
+		["אינסטגרם", "טיקטוק", "יוטיוב", "וואטסאפ"],
+	);
 	for (const profile of profiles) {
 		assert.equal(profile.getAttribute("aria-disabled"), "true");
 		const image = profile.querySelector("img");
 		assert.equal(image.getAttribute("alt"), "");
 		assert.ok((await read(image.getAttribute("src"))).includes("<svg"));
 	}
-	assert.match(document.querySelector("#contact-status").textContent, /יתווספו בהמשך/);
+	assert.match(
+		document.querySelector("#contact-status").textContent,
+		/יתווספו בהמשך/,
+	);
 });
 
 test("course icon brands the header and browser tab", async () => {
@@ -71,7 +76,10 @@ test("course icon brands the header and browser tab", async () => {
 	assert.equal(brandIcon.getAttribute("width"), "42");
 	assert.equal(brandIcon.getAttribute("height"), "42");
 	assert.equal(brandIcon.getAttribute("alt"), "לוגו");
-	assert.equal(favicon?.getAttribute("href"), "assets/images/optimized/favicon.png?v=2");
+	assert.equal(
+		favicon?.getAttribute("href"),
+		"assets/images/optimized/favicon.png?v=2",
+	);
 	assert.equal(favicon?.getAttribute("type"), "image/png");
 });
 
@@ -91,18 +99,24 @@ test("mobile and Windows icons reference PNG files at their declared dimensions"
 	assert.equal(touch?.getAttribute("sizes"), "180x180");
 	const manifestLink = document.querySelector('link[rel="manifest"]');
 	assert.ok(manifestLink, "mobile browsers need a linked manifest");
-	const manifestUrl = new URL(`../../${manifestLink.getAttribute("href")}`, import.meta.url);
+	const manifestUrl = new URL(
+		`../../${manifestLink.getAttribute("href")}`,
+		import.meta.url,
+	);
 	const manifest = JSON.parse(await readFile(manifestUrl, "utf8"));
 	assert.equal(manifest.lang, "he");
 	assert.equal(manifest.dir, "rtl");
 	assert.equal(manifest.display, "browser");
-	assert.deepEqual(manifest.icons.map(icon => icon.sizes), ["192x192", "512x512"]);
+	assert.deepEqual(
+		manifest.icons.map((icon) => icon.sizes),
+		["192x192", "512x512"],
+	);
 	const tile = document.querySelector('meta[name="msapplication-TileImage"]');
 	assert.ok(tile, "Windows tiles need a tile image");
 	const icons = [
 		[new URL(`../../${touch.getAttribute("href")}`, import.meta.url), 180],
 		[new URL(`../../${tile.content}`, import.meta.url), 144],
-		...manifest.icons.map(icon => {
+		...manifest.icons.map((icon) => {
 			assert.equal(icon.type, "image/png");
 			return [new URL(icon.src, manifestUrl), parseInt(icon.sizes)];
 		}),
@@ -121,7 +135,10 @@ test("topic controls keep their native button semantics", async () => {
 	assert.ok(controls.length > 0, "topic controls must exist");
 	for (const control of controls) {
 		assert.equal(control.tagName, "BUTTON");
-		assert.ok(!control.hasAttribute("role") || control.getAttribute("role") === "button");
+		assert.ok(
+			!control.hasAttribute("role") ||
+				control.getAttribute("role") === "button",
+		);
 	}
 	assert.equal(
 		document.querySelector(".topic-rail").getAttribute("role"),

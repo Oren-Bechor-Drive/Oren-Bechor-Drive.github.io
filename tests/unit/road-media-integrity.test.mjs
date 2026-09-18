@@ -23,7 +23,12 @@ test("road-media declarations match their files", async () => {
 	const audit = await auditRoadMedia({ rootDir, htmlPath: "index.html" });
 	assert.deepEqual(audit.issues, []);
 	// The CSS background is no longer an HTML preload; still verify its actual bytes.
-	assert.equal(inspectImage(await readFile(path.join(rootDir, "assets/images/road.jpg"))).format, "jpeg");
+	assert.equal(
+		inspectImage(
+			await readFile(path.join(rootDir, "assets/images/road.jpg")),
+		).format,
+		"jpeg",
+	);
 	assert.ok(
 		audit.assets.some(
 			(asset) => asset.source === "assets/images/stop-sign.png",
@@ -55,7 +60,10 @@ test("image metadata supports JPEG, WebP, and PNG", () => {
 	});
 	assert.deepEqual(
 		inspectImage(
-			Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=", "base64"),
+			Buffer.from(
+				"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=",
+				"base64",
+			),
 		),
 		{ format: "png", mime: "image/png", width: 1, height: 1 },
 	);
@@ -63,15 +71,22 @@ test("image metadata supports JPEG, WebP, and PNG", () => {
 
 for (const missing of [true, false]) {
 	test(`image preloads without an img declaration report ${missing ? "missing files" : "MIME mismatches"}`, async (t) => {
-		const temporaryRoot = await mkdtemp(path.join(os.tmpdir(), "road-preload-"));
+		const temporaryRoot = await mkdtemp(
+			path.join(os.tmpdir(), "road-preload-"),
+		);
 		t.after(() => rm(temporaryRoot, { recursive: true, force: true }));
-		await writeFile(path.join(temporaryRoot, "index.html"),
-			'<link rel="preload" as="image" href="road.jpg?rev=1" type="image/webp">');
-		if (!missing) await writeFile(path.join(temporaryRoot, "road.jpg"), testJpeg);
+		await writeFile(
+			path.join(temporaryRoot, "index.html"),
+			'<link rel="preload" as="image" href="road.jpg?rev=1" type="image/webp">',
+		);
+		if (!missing)
+			await writeFile(path.join(temporaryRoot, "road.jpg"), testJpeg);
 		const audit = await auditRoadMedia({ rootDir: temporaryRoot });
-		assert.deepEqual(audit.issues, [missing
-			? "road.jpg: file does not exist"
-			: "road.jpg: preload type is image/webp, expected image/jpeg"]);
+		assert.deepEqual(audit.issues, [
+			missing
+				? "road.jpg: file does not exist"
+				: "road.jpg: preload type is image/webp, expected image/jpeg",
+		]);
 	});
 }
 
@@ -148,8 +163,10 @@ async function galleryFixture(
 			png,
 		);
 	await mkdir(path.join(rootDir, "js"));
-	await writeFile(path.join(rootDir, "js/road-photo-sources.js"),
-		`export const roadPhotoSources = ${JSON.stringify(Object.fromEntries(photos.map(number => [number, { originalBytes: png.length }])))};\n`);
+	await writeFile(
+		path.join(rootDir, "js/road-photo-sources.js"),
+		`export const roadPhotoSources = ${JSON.stringify(Object.fromEntries(photos.map((number) => [number, { originalBytes: png.length }])))};\n`,
+	);
 	await writeFile(
 		path.join(rootDir, "index.html"),
 		`<div data-road-carousel><ul class="road-carousel-group"><li class="road-car road-car-cyan">
@@ -183,21 +200,48 @@ test("gallery audit collects invalid names and multiple gaps while inspecting la
 	const audit = await auditRoadMedia({ rootDir });
 	assert.equal(audit.issues.length, 4);
 	for (const name of ["01.png", "2.PNG"])
-		assert.ok(audit.issues.some(issue => issue.includes(name) && issue.includes("filename")));
+		assert.ok(
+			audit.issues.some(
+				(issue) => issue.includes(name) && issue.includes("filename"),
+			),
+		);
 	for (const name of ["2.png", "4.png"])
-		assert.ok(audit.issues.some(issue => issue.includes(name) && issue.includes("numbering gap")));
-	assert.deepEqual(audit.assets.filter(asset => asset.source.includes("students-pass"))
-		.map(asset => path.basename(asset.source)), ["1.png", "3.png", "12.png"]);
+		assert.ok(
+			audit.issues.some(
+				(issue) =>
+					issue.includes(name) && issue.includes("numbering gap"),
+			),
+		);
+	assert.deepEqual(
+		audit.assets
+			.filter((asset) => asset.source.includes("students-pass"))
+			.map((asset) => path.basename(asset.source)),
+		["1.png", "3.png", "12.png"],
+	);
 });
 
 for (const missing of [false, true]) {
 	test(`gallery audit continues after an ${missing ? "absent" : "empty"} photo directory`, async (t) => {
 		const rootDir = await galleryFixture(t, { photos: [] });
-		if (missing) await rm(path.join(rootDir, "assets/images/students-pass"), { recursive: true });
+		if (missing)
+			await rm(path.join(rootDir, "assets/images/students-pass"), {
+				recursive: true,
+			});
 		const audit = await auditRoadMedia({ rootDir });
-		assert.ok(audit.issues.some(issue => issue.includes("no numbered student photos")));
-		assert.equal(audit.issues.some(issue => issue.includes("directory does not exist")), missing);
-		assert.ok(audit.assets.some(asset => asset.source.endsWith("car-cyan.png")));
+		assert.ok(
+			audit.issues.some((issue) =>
+				issue.includes("no numbered student photos"),
+			),
+		);
+		assert.equal(
+			audit.issues.some((issue) =>
+				issue.includes("directory does not exist"),
+			),
+			missing,
+		);
+		assert.ok(
+			audit.assets.some((asset) => asset.source.endsWith("car-cyan.png")),
+		);
 	});
 }
 
@@ -210,7 +254,8 @@ test("gallery audit owns palette checks and ignores the composite source artwork
 	const audit = await auditRoadMedia({ rootDir });
 	assert.ok(
 		audit.issues.some(
-			(issue) => issue.includes("car-red.png") && issue.includes("template"),
+			(issue) =>
+				issue.includes("car-red.png") && issue.includes("template"),
 		),
 	);
 	assert.ok(audit.issues.every((issue) => !issue.includes("cars.png")));
@@ -230,19 +275,22 @@ test("gallery audit reports missing sprites, broken photos and fallback metadata
 	assert.ok(
 		audit.issues.some(
 			(issue) =>
-				issue.includes("car-cyan.png") && issue.includes("file does not exist"),
+				issue.includes("car-cyan.png") &&
+				issue.includes("file does not exist"),
 		),
 	);
 	assert.ok(
 		audit.issues.some(
 			(issue) =>
-				issue.includes("3.png") && issue.includes("file does not exist"),
+				issue.includes("3.png") &&
+				issue.includes("file does not exist"),
 		),
 	);
 	assert.ok(
 		audit.issues.some(
 			(issue) =>
-				issue.includes("2.png") && issue.includes("unsupported image format"),
+				issue.includes("2.png") &&
+				issue.includes("unsupported image format"),
 		),
 	);
 });
@@ -261,7 +309,8 @@ test("gallery audit checks fallback dimensions, order and canonical photo names"
 	const audit = await auditRoadMedia({ rootDir });
 	assert.ok(
 		audit.issues.some(
-			(issue) => issue.includes("2.png") && issue.includes("declared 9x1"),
+			(issue) =>
+				issue.includes("2.png") && issue.includes("declared 9x1"),
 		),
 	);
 	assert.ok(
@@ -289,13 +338,19 @@ test("gallery audit rejects duplicate and non-sprite templates", async (t) => {
 	);
 	const audit = await auditRoadMedia({ rootDir });
 	assert.ok(
-		audit.issues.some((issue) => issue.includes("duplicate carousel template")),
+		audit.issues.some((issue) =>
+			issue.includes("duplicate carousel template"),
+		),
 	);
 	assert.ok(
-		audit.issues.some((issue) => issue.includes("not an available car sprite")),
+		audit.issues.some((issue) =>
+			issue.includes("not an available car sprite"),
+		),
 	);
 	assert.ok(
-		audit.issues.some((issue) => issue.includes("exactly one fallback photo")),
+		audit.issues.some((issue) =>
+			issue.includes("exactly one fallback photo"),
+		),
 	);
 });
 
@@ -354,26 +409,51 @@ test("responsive width descriptors must match the actual delivery file", async (
 	const rootDir = await galleryFixture(t);
 	const htmlPath = path.join(rootDir, "index.html");
 	const html = await readFile(htmlPath, "utf8");
-	await writeFile(htmlPath, html.replace(
-		'src="assets/images/students-pass/1.png"',
-		'src="assets/images/students-pass/1.png" srcset="assets/images/students-pass/1.png 240w" sizes="240px"',
-	));
+	await writeFile(
+		htmlPath,
+		html.replace(
+			'src="assets/images/students-pass/1.png"',
+			'src="assets/images/students-pass/1.png" srcset="assets/images/students-pass/1.png 240w" sizes="240px"',
+		),
+	);
 	const audit = await auditRoadMedia({ rootDir });
-	assert.ok(audit.issues.some(issue => issue.includes("240w") && issue.includes("1px")));
+	assert.ok(
+		audit.issues.some(
+			(issue) => issue.includes("240w") && issue.includes("1px"),
+		),
+	);
 });
 
-for (const change of ["added photo", "removed photo", "replaced photo", "missing list"]) {
+for (const change of [
+	"added photo",
+	"removed photo",
+	"replaced photo",
+	"missing list",
+]) {
 	test(`gallery audit catches a stale generated photo list: ${change}`, async (t) => {
 		const rootDir = await galleryFixture(t);
 		const photo = path.join(rootDir, "assets/images/students-pass/3.png");
 		if (change === "added photo")
-			await writeFile(path.join(rootDir, "assets/images/students-pass/4.png"), await readFile(photo));
+			await writeFile(
+				path.join(rootDir, "assets/images/students-pass/4.png"),
+				await readFile(photo),
+			);
 		if (change === "removed photo") await rm(photo);
 		if (change === "replaced photo")
-			await writeFile(photo, Buffer.concat([await readFile(photo), Buffer.from("changed")]));
-		if (change === "missing list") await rm(path.join(rootDir, "js/road-photo-sources.js"));
+			await writeFile(
+				photo,
+				Buffer.concat([await readFile(photo), Buffer.from("changed")]),
+			);
+		if (change === "missing list")
+			await rm(path.join(rootDir, "js/road-photo-sources.js"));
 		const audit = await auditRoadMedia({ rootDir });
-		assert.ok(audit.issues.some(issue => issue.includes("road-photo-sources.js") && issue.includes("npm run optimize:media")));
+		assert.ok(
+			audit.issues.some(
+				(issue) =>
+					issue.includes("road-photo-sources.js") &&
+					issue.includes("npm run optimize:media"),
+			),
+		);
 	});
 }
 
@@ -383,12 +463,28 @@ for (const problem of ["missing file", "wrong width", "valid candidate"]) {
 		const listPath = path.join(rootDir, "js/road-photo-sources.js");
 		const module = await readFile(listPath, "utf8");
 		const sources = JSON.parse(module.match(/= (\{[\s\S]*\});/)[1]);
-		const source = problem === "missing file" ? "missing-delivery.png" : "assets/images/students-pass/3.png";
+		const source =
+			problem === "missing file"
+				? "missing-delivery.png"
+				: "assets/images/students-pass/3.png";
 		sources[3].srcset = `${source} ${problem === "wrong width" ? 240 : 1}w`;
-		await writeFile(listPath, `export const roadPhotoSources = ${JSON.stringify(sources)};\n`);
+		await writeFile(
+			listPath,
+			`export const roadPhotoSources = ${JSON.stringify(sources)};\n`,
+		);
 		const audit = await auditRoadMedia({ rootDir });
 		if (problem === "valid candidate") assert.deepEqual(audit.issues, []);
-		else assert.ok(audit.issues.some(issue => issue.includes(source) &&
-			issue.includes(problem === "missing file" ? "file does not exist" : "1px")));
+		else
+			assert.ok(
+				audit.issues.some(
+					(issue) =>
+						issue.includes(source) &&
+						issue.includes(
+							problem === "missing file"
+								? "file does not exist"
+								: "1px",
+						),
+				),
+			);
 	});
 }

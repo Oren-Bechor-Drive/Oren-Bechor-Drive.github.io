@@ -11,7 +11,9 @@ const document = new JSDOM(
 ).window.document;
 
 function meta(key) {
-	const nodes = document.head.querySelectorAll(`meta[name="${key}"], meta[property="${key}"]`);
+	const nodes = document.head.querySelectorAll(
+		`meta[name="${key}"], meta[property="${key}"]`,
+	);
 	assert.equal(nodes.length, 1, `${key} must have one unambiguous value`);
 	assert.ok(nodes[0].content.trim(), `${key} must not be empty`);
 	return nodes[0].content;
@@ -39,22 +41,41 @@ test("share image URLs resolve to a supplied image with accurate dimensions and 
 	assert.equal(meta("twitter:image:alt"), meta("og:image:alt"));
 	assert.match(meta("og:image:alt"), /\p{Script=Hebrew}/u);
 	assert.equal(meta("twitter:card"), "summary");
-	const bytes = await readFile(new URL(`../..${imageUrl.pathname}`, import.meta.url));
+	const bytes = await readFile(
+		new URL(`../..${imageUrl.pathname}`, import.meta.url),
+	);
 	const image = inspectImage(bytes);
 	assert.equal(Number(meta("og:image:width")), image.width);
 	assert.equal(Number(meta("og:image:height")), image.height);
-	assert.equal(meta("og:image:type"), `image/${image.format === "jpg" ? "jpeg" : image.format}`);
+	assert.equal(
+		meta("og:image:type"),
+		`image/${image.format === "jpg" ? "jpeg" : image.format}`,
+	);
 });
 
 test("structured data links the page, website, course and visible instructor", () => {
-	const scripts = document.head.querySelectorAll('script[type="application/ld+json"]');
-	assert.equal(scripts.length, 1, "structured data must be available in baseline HTML");
+	const scripts = document.head.querySelectorAll(
+		'script[type="application/ld+json"]',
+	);
+	assert.equal(
+		scripts.length,
+		1,
+		"structured data must be available in baseline HTML",
+	);
 	const data = JSON.parse(scripts[0].textContent);
 	assert.equal(data["@context"], "https://schema.org");
-	const entities = new Map(data["@graph"].map(entity => [entity["@id"], entity]));
-	assert.equal(entities.size, data["@graph"].length, "entity IDs must be unique");
-	const byType = type => {
-		const matches = [...entities.values()].filter(entity => entity["@type"] === type);
+	const entities = new Map(
+		data["@graph"].map((entity) => [entity["@id"], entity]),
+	);
+	assert.equal(
+		entities.size,
+		data["@graph"].length,
+		"entity IDs must be unique",
+	);
+	const byType = (type) => {
+		const matches = [...entities.values()].filter(
+			(entity) => entity["@type"] === type,
+		);
 		assert.equal(matches.length, 1, `missing or ambiguous ${type}`);
 		return matches[0];
 	};
@@ -71,7 +92,9 @@ test("structured data links the page, website, course and visible instructor", (
 	assert.equal(entities.get(page.mainEntity["@id"]), course);
 	assert.equal(entities.get(course.provider["@id"]), person);
 	assert.equal(person.image, meta("og:image"));
-	assert.ok(document.querySelector("#instructor").textContent.includes(person.name));
+	assert.ok(
+		document.querySelector("#instructor").textContent.includes(person.name),
+	);
 	for (const entity of [site, page, course]) {
 		assert.equal(entity.inLanguage, document.documentElement.lang);
 	}
@@ -81,6 +104,10 @@ test("structured data links the page, website, course and visible instructor", (
 		const url = new URL(entity.url);
 		assert.equal(url.origin, new URL(siteUrl).origin);
 		assert.equal(url.pathname, "/");
-		if (url.hash) assert.ok(document.getElementById(url.hash.slice(1)), `${entity.url} must resolve to visible content`);
+		if (url.hash)
+			assert.ok(
+				document.getElementById(url.hash.slice(1)),
+				`${entity.url} must resolve to visible content`,
+			);
 	}
 });

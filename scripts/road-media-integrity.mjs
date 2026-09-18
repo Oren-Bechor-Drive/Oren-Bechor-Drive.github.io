@@ -57,8 +57,8 @@ export async function auditSiteMedia({ rootDir }) {
 	const issues = [];
 	for (const htmlPath of pages) {
 		const audit = await auditRoadMedia({ rootDir, htmlPath });
-		assets.push(...audit.assets.map(asset => ({ htmlPath, ...asset })));
-		issues.push(...audit.issues.map(issue => `${htmlPath}: ${issue}`));
+		assets.push(...audit.assets.map((asset) => ({ htmlPath, ...asset })));
+		issues.push(...audit.issues.map((issue) => `${htmlPath}: ${issue}`));
 	}
 	return { pages, assets, issues };
 }
@@ -66,9 +66,14 @@ export async function auditSiteMedia({ rootDir }) {
 function inspectSvg(buffer) {
 	let dom;
 	try {
-		dom = new JSDOM(buffer.toString("utf8"), { contentType: "image/svg+xml" });
+		dom = new JSDOM(buffer.toString("utf8"), {
+			contentType: "image/svg+xml",
+		});
 		const root = dom.window.document.documentElement;
-		if (root.localName !== "svg" || root.namespaceURI !== "http://www.w3.org/2000/svg") {
+		if (
+			root.localName !== "svg" ||
+			root.namespaceURI !== "http://www.w3.org/2000/svg"
+		) {
 			throw new Error("not an SVG document");
 		}
 		// SVGs are scalable: validate XML and MIME, not raster dimensions.
@@ -121,9 +126,10 @@ export async function auditRoadMedia({ rootDir, htmlPath = "index.html" }) {
 				? path.resolve(rootDir, `.${decodedSource}`)
 				: path.resolve(path.dirname(absoluteHtmlPath), decodedSource);
 			const bytes = await readFile(absoluteImagePath);
-			inspected = path.extname(decodedSource).toLowerCase() === ".svg"
-				? inspectSvg(bytes)
-				: inspectImage(bytes);
+			inspected =
+				path.extname(decodedSource).toLowerCase() === ".svg"
+					? inspectSvg(bytes)
+					: inspectImage(bytes);
 		} catch (error) {
 			issues.push(
 				`${source}: ${error.code === "ENOENT" ? "file does not exist" : error.message}`,
@@ -149,10 +155,19 @@ export async function auditRoadMedia({ rootDir, htmlPath = "index.html" }) {
 	async function inspectSrcset(srcset) {
 		const deliveries = [];
 		for (const [deliverySource, descriptor] of srcsetCandidates(srcset)) {
-			const delivery = await inspectSource(cleanReference(deliverySource));
+			const delivery = await inspectSource(
+				cleanReference(deliverySource),
+			);
 			if (delivery) deliveries.push(delivery);
-			if (delivery && delivery.format !== "svg" && /^\d+w$/.test(descriptor) && parseInt(descriptor) !== delivery.width) {
-				issues.push(`${deliverySource}: srcset declares ${descriptor}, file is ${delivery.width}px wide`);
+			if (
+				delivery &&
+				delivery.format !== "svg" &&
+				/^\d+w$/.test(descriptor) &&
+				parseInt(descriptor) !== delivery.width
+			) {
+				issues.push(
+					`${deliverySource}: srcset declares ${descriptor}, file is ${delivery.width}px wide`,
+				);
 			}
 		}
 		return deliveries;
@@ -160,15 +175,22 @@ export async function auditRoadMedia({ rootDir, htmlPath = "index.html" }) {
 
 	for (const image of document.querySelectorAll("img")) {
 		const source = cleanReference(image.getAttribute("src") ?? "");
-		const marked = image.matches("img[data-road-media], [data-road-carousel] .road-car > img, [data-road-carousel] .road-photo img");
+		const marked = image.matches(
+			"img[data-road-media], [data-road-carousel] .road-car > img, [data-road-carousel] .road-photo img",
+		);
 		const srcset = image.getAttribute("srcset");
 		const hasCandidates = !srcsetCandidates(srcset).next().done;
-		const inspected = source || marked || !hasCandidates ? await inspectSource(source) : null;
+		const inspected =
+			source || marked || !hasCandidates
+				? await inspectSource(source)
+				: null;
 		await inspectSrcset(srcset);
 		if (!inspected) continue;
 		if (!marked) continue;
 		if (inspected.format === "svg") {
-			issues.push(`${source}: marked road media requires JPEG, WebP, or PNG`);
+			issues.push(
+				`${source}: marked road media requires JPEG, WebP, or PNG`,
+			);
 			continue;
 		}
 		const declaredWidth = Number(image.getAttribute("width"));
@@ -185,21 +207,28 @@ export async function auditRoadMedia({ rootDir, htmlPath = "index.html" }) {
 		if (!alt) issues.push(`${source}: alternative text is empty`);
 		inspected.alt = alt;
 	}
-	for (const source of document.querySelectorAll("picture > source[srcset]")) {
+	for (const source of document.querySelectorAll(
+		"picture > source[srcset]",
+	)) {
 		await inspectSrcset(source.getAttribute("srcset"));
 	}
 
 	// Background images can be preloaded without a corresponding img element.
-	for (const preload of document.querySelectorAll('link[rel~="preload"][as="image"]')) {
+	for (const preload of document.querySelectorAll(
+		'link[rel~="preload"][as="image"]',
+	)) {
 		const source = cleanReference(preload.getAttribute("href") ?? "");
 		const srcset = preload.getAttribute("imagesrcset");
 		const hasCandidates = !srcsetCandidates(srcset).next().done;
-		const inspected = source || !hasCandidates ? await inspectSource(source) : null;
+		const inspected =
+			source || !hasCandidates ? await inspectSource(source) : null;
 		const deliveries = await inspectSrcset(srcset);
 		const declaredType = preload.getAttribute("type");
 		for (const asset of new Set([inspected, ...deliveries])) {
 			if (asset && declaredType !== null && declaredType !== asset.mime) {
-				issues.push(`${asset.source}: preload type is ${declaredType}, expected ${asset.mime}`);
+				issues.push(
+					`${asset.source}: preload type is ${declaredType}, expected ${asset.mime}`,
+				);
 			}
 		}
 	}
@@ -218,7 +247,13 @@ export async function auditRoadMedia({ rootDir, htmlPath = "index.html" }) {
 	return { assets, issues };
 }
 
-async function auditGallery(gallery, pageDir, issues, inspectSource, inspectSrcset) {
+async function auditGallery(
+	gallery,
+	pageDir,
+	issues,
+	inspectSource,
+	inspectSrcset,
+) {
 	async function filesIn(directory) {
 		try {
 			return (
@@ -282,8 +317,11 @@ async function auditGallery(gallery, pageDir, issues, inspectSource, inspectSrcs
 		}
 	}
 
-	const { directory: photoDirectory, names: numberedPhotos, issues: photoIssues } =
-		await discoverStudentPhotos(pageDir);
+	const {
+		directory: photoDirectory,
+		names: numberedPhotos,
+		issues: photoIssues,
+	} = await discoverStudentPhotos(pageDir);
 	issues.push(...photoIssues);
 	for (const name of numberedPhotos) {
 		await inspectSource(`${photoDirectory}/${name}`);
@@ -293,18 +331,36 @@ async function auditGallery(gallery, pageDir, issues, inspectSource, inspectSrcs
 	const listPath = "js/road-photo-sources.js";
 	try {
 		const module = await readFile(path.join(pageDir, listPath), "utf8");
-		const sources = JSON.parse(module.match(/export const roadPhotoSources = (\{[\s\S]*\});\s*$/)?.[1]);
-		for (const source of Object.values(sources)) await inspectSrcset(source.srcset);
-		const listedNames = Object.keys(sources).map(number => `${number}.png`);
-		if (listedNames.length !== numberedPhotos.length || numberedPhotos.some(name => !listedNames.includes(name)))
-			issues.push(`${listPath}: photo list is stale; run npm run optimize:media`);
+		const sources = JSON.parse(
+			module.match(
+				/export const roadPhotoSources = (\{[\s\S]*\});\s*$/,
+			)?.[1],
+		);
+		for (const source of Object.values(sources))
+			await inspectSrcset(source.srcset);
+		const listedNames = Object.keys(sources).map(
+			(number) => `${number}.png`,
+		);
+		if (
+			listedNames.length !== numberedPhotos.length ||
+			numberedPhotos.some((name) => !listedNames.includes(name))
+		)
+			issues.push(
+				`${listPath}: photo list is stale; run npm run optimize:media`,
+			);
 		for (const name of numberedPhotos) {
-			const bytes = await readFile(path.join(pageDir, photoDirectory, name));
+			const bytes = await readFile(
+				path.join(pageDir, photoDirectory, name),
+			);
 			if (sources[parseInt(name)]?.originalBytes !== bytes.length)
-				issues.push(`${listPath}: ${name} metadata is stale; run npm run optimize:media`);
+				issues.push(
+					`${listPath}: ${name} metadata is stale; run npm run optimize:media`,
+				);
 		}
 	} catch (error) {
-		issues.push(`${listPath}: cannot read generated photo list (${error.message}); run npm run optimize:media`);
+		issues.push(
+			`${listPath}: cannot read generated photo list (${error.message}); run npm run optimize:media`,
+		);
 	}
 
 	const fallback = cars.flatMap((car) => [
@@ -327,7 +383,9 @@ async function runCli() {
 		rootDir: process.cwd(),
 	});
 	if (audit.issues.length === 0) {
-		console.log(`Site media OK: ${audit.assets.length} image references across ${audit.pages.length} pages`);
+		console.log(
+			`Site media OK: ${audit.assets.length} image references across ${audit.pages.length} pages`,
+		);
 		return;
 	}
 	for (const issue of audit.issues) console.error(`- ${issue}`);

@@ -26,33 +26,57 @@ test(
 		});
 		const session = await page.context().newCDPSession(page);
 		const trace = [];
-		session.on("Tracing.dataCollected", ({ value }) => trace.push(...value));
+		session.on("Tracing.dataCollected", ({ value }) =>
+			trace.push(...value),
+		);
 		await session.send("Tracing.start", {
 			categories: "devtools.timeline",
 			transferMode: "ReportEvents",
 		});
 		await page.goto("http://gallery.test/");
-		await page.evaluate(() => new Promise(resolve =>
-			requestAnimationFrame(() => requestAnimationFrame(resolve)),
-		));
-		const traceComplete = new Promise(resolve =>
+		await page.evaluate(
+			() =>
+				new Promise((resolve) =>
+					requestAnimationFrame(() => requestAnimationFrame(resolve)),
+				),
+		);
+		const traceComplete = new Promise((resolve) =>
 			session.once("Tracing.tracingComplete", resolve),
 		);
 		await session.send("Tracing.end");
 		await traceComplete;
-		await t.test("the stop-sign entrance runs without compositor failures", () => {
-			const entrances = trace.filter(event =>
-				event.name === "Animation" && event.args?.data?.displayName === "brake",
-			);
-			assert.ok(entrances.length > 0, "the browser must run the stop-sign entrance");
-			const ids = new Set(entrances.map(event => event.id2.local));
-			const failures = trace.filter(event =>
-				event.name === "Animation" && ids.has(event.id2?.local) && event.args?.data?.compositeFailed,
-			);
-			assert.deepEqual(failures.map(event => event.args.data), []);
-		});
+		await t.test(
+			"the stop-sign entrance runs without compositor failures",
+			() => {
+				const entrances = trace.filter(
+					(event) =>
+						event.name === "Animation" &&
+						event.args?.data?.displayName === "brake",
+				);
+				assert.ok(
+					entrances.length > 0,
+					"the browser must run the stop-sign entrance",
+				);
+				const ids = new Set(entrances.map((event) => event.id2.local));
+				const failures = trace.filter(
+					(event) =>
+						event.name === "Animation" &&
+						ids.has(event.id2?.local) &&
+						event.args?.data?.compositeFailed,
+				);
+				assert.deepEqual(
+					failures.map((event) => event.args.data),
+					[],
+				);
+			},
+		);
 		await page.locator("[data-road-carousel]").scrollIntoViewIfNeeded();
-		await page.waitForFunction(() => document.querySelector("[data-road-carousel]").getAttribute("aria-busy") === "true");
+		await page.waitForFunction(
+			() =>
+				document
+					.querySelector("[data-road-carousel]")
+					.getAttribute("aria-busy") === "true",
+		);
 		await t.test(
 			"loading wheel covers the stopped road until discovery finishes",
 			async () => {
@@ -74,9 +98,15 @@ test(
 				assert.equal(state.roadAnimations, 0);
 				assert.match(state.blur, /blur\([1-9]/);
 				await page.emulateMedia({ reducedMotion: "reduce" });
-				await page.waitForFunction(() => document.querySelector(".hero-visual").getAnimations().length === 0);
+				await page.waitForFunction(
+					() =>
+						document.querySelector(".hero-visual").getAnimations()
+							.length === 0,
+				);
 				assert.equal(
-					await page.locator(".hero-visual").evaluate(element => element.getAnimations().length),
+					await page
+						.locator(".hero-visual")
+						.evaluate((element) => element.getAnimations().length),
 					0,
 				);
 				assert.equal(
@@ -91,14 +121,28 @@ test(
 		releaseDiscovery();
 		await page.locator('[data-road-carousel][data-ready="true"]').waitFor();
 		assert.equal(await page.locator(".road-loader").isVisible(), false);
-		const loadedSources = await page.locator(".road-carousel-group").first()
-			.locator(".road-photo img").evaluateAll(images => images.map(image => image.currentSrc));
-		assert.ok(loadedSources.length > 0 && loadedSources.every(source => source.endsWith(".webp")),
-			"motion checks must exercise optimized student photo delivery");
+		const loadedSources = await page
+			.locator(".road-carousel-group")
+			.first()
+			.locator(".road-photo img")
+			.evaluateAll((images) => images.map((image) => image.currentSrc));
+		assert.ok(
+			loadedSources.length > 0 &&
+				loadedSources.every((source) => source.endsWith(".webp")),
+			"motion checks must exercise optimized student photo delivery",
+		);
 		// Measure the resting layout after the hero's off-screen entrance.
-		await page.locator(".hero-copy > *").evaluateAll(elements => Promise.all(
-			elements.flatMap(element => element.getAnimations().map(animation => animation.finished)),
-		));
+		await page
+			.locator(".hero-copy > *")
+			.evaluateAll((elements) =>
+				Promise.all(
+					elements.flatMap((element) =>
+						element
+							.getAnimations()
+							.map((animation) => animation.finished),
+					),
+				),
+			);
 
 		for (const [name, width, height, secondsPerCar] of [
 			["desktop", 1440, 900, 11.111111],
@@ -133,14 +177,19 @@ test(
 								(animation) =>
 									animation.animationName === "road-scroll",
 							);
-						const instructor = document.querySelector("#instructor");
+						const instructor =
+							document.querySelector("#instructor");
 						const roadBounds = root.getBoundingClientRect();
 						return {
 							insideInstructor: instructor.contains(root),
 							roadBottom: roadBounds.bottom,
-							instructorBottom: instructor.getBoundingClientRect().bottom,
-							instructorHeight: instructor.getBoundingClientRect().height,
-							headerHeight: document.querySelector(".site-header").getBoundingClientRect().height,
+							instructorBottom:
+								instructor.getBoundingClientRect().bottom,
+							instructorHeight:
+								instructor.getBoundingClientRect().height,
+							headerHeight: document
+								.querySelector(".site-header")
+								.getBoundingClientRect().height,
 							roadTop: roadBounds.top,
 							introductionBottom: document
 								.querySelector(".instructor-layout")
@@ -208,7 +257,11 @@ test(
 
 		await t.test("reduced motion", async () => {
 			await page.emulateMedia({ reducedMotion: "reduce" });
-			await page.waitForFunction(() => document.querySelector(".hero-visual").getAnimations().length === 0);
+			await page.waitForFunction(
+				() =>
+					document.querySelector(".hero-visual").getAnimations()
+						.length === 0,
+			);
 			assert.equal(
 				await page
 					.locator(".road-carousel-track")

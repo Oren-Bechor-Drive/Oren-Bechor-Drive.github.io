@@ -34,7 +34,10 @@ export async function initRoadCarousel(root, photoSources) {
 				reject(signal.reason);
 			};
 			const timer = browserWindow.setTimeout(
-				() => controller.abort(new Error("Student gallery loading timed out")),
+				() =>
+					controller.abort(
+						new Error("Student gallery loading timed out"),
+					),
 				LOAD_TIMEOUT_MS,
 			);
 			if (signal.aborted) abort();
@@ -84,40 +87,54 @@ export async function initRoadCarousel(root, photoSources) {
 			while (records[count]?.image) count += 1;
 		}
 		// Decoding and metadata requests can finish together. Skip geometry until a row can change.
-		const allShown = count && count === shown && metadataComplete && count === records.length;
+		const allShown =
+			count &&
+			count === shown &&
+			metadataComplete &&
+			count === records.length;
 		if (
 			!resized &&
-			(!count || count <= shown || (!shown && count < templates.length && !metadataComplete))
+			(!count ||
+				count <= shown ||
+				(!shown && count < templates.length && !metadataComplete))
 		) {
-			if (allShown)
-				root.dataset.ready = "true";
+			if (allShown) root.dataset.ready = "true";
 			return;
 		}
 
 		// Read layout once, before changing either row or the animation duration.
 		const groupStyle = browserWindow.getComputedStyle(group);
 		const gap = parseFloat(groupStyle.columnGap);
-		const carStep = group.firstElementChild.getBoundingClientRect().width + gap;
+		const carStep =
+			group.firstElementChild.getBoundingClientRect().width + gap;
 		const viewportWidth = root.getBoundingClientRect().width;
 		const oldDistance = group.getBoundingClientRect().width;
 		const secondsPerCar = Number(
-			browserWindow.getComputedStyle(root).getPropertyValue("--road-seconds-per-car"),
+			browserWindow
+				.getComputedStyle(root)
+				.getPropertyValue("--road-seconds-per-car"),
 		);
 		const minimumWidth = parseFloat(groupStyle.minWidth);
 		const padding =
-			parseFloat(groupStyle.paddingLeft) + parseFloat(groupStyle.paddingRight);
+			parseFloat(groupStyle.paddingLeft) +
+			parseFloat(groupStyle.paddingRight);
 		const animation = track
 			.getAnimations?.()
 			.find((item) => item.animationName === "road-scroll");
 		const oldDuration =
-			parseFloat(root.style.getPropertyValue("--road-loop-duration")) * 1000;
+			parseFloat(root.style.getPropertyValue("--road-loop-duration")) *
+			1000;
 		const offset =
 			animation && oldDuration > 0
-				? ((Number(animation.currentTime) % oldDuration) / oldDuration) * oldDistance
+				? ((Number(animation.currentTime) % oldDuration) /
+						oldDuration) *
+					oldDistance
 				: 0;
 		// Widening may expose the duplicate everywhere. Hold that row until it can cover the viewport.
 		const restart =
-			!stopped && resized && shown &&
+			!stopped &&
+			resized &&
+			shown &&
 			(!metadataComplete || shown < records.length) &&
 			oldDistance <= viewportWidth;
 		const initialCount = Math.max(
@@ -128,7 +145,9 @@ export async function initRoadCarousel(root, photoSources) {
 			? Math.min(initialCount, records.length)
 			: initialCount;
 		const canAppend =
-			!stopped && count >= minimum && count > shown &&
+			!stopped &&
+			count >= minimum &&
+			count > shown &&
 			(restart || !animation || offset + viewportWidth <= oldDistance);
 		// Equal-width flex items plus gaps and end padding determine the new row width.
 		const distance = canAppend
@@ -137,21 +156,30 @@ export async function initRoadCarousel(root, photoSources) {
 		const duration = (distance / carStep) * secondsPerCar;
 
 		const canUpdateTiming =
-			(resized || canAppend) && distance > 0 && carStep > 0 && secondsPerCar > 0;
+			(resized || canAppend) &&
+			distance > 0 &&
+			carStep > 0 &&
+			secondsPerCar > 0;
 		if (canUpdateTiming)
 			root.style.setProperty("--road-loop-duration", `${duration}s`);
-		if (animation && resized && !canAppend && canUpdateTiming && oldDistance > 0)
+		if (
+			animation &&
+			resized &&
+			!canAppend &&
+			canUpdateTiming &&
+			oldDistance > 0
+		)
 			animation.currentTime = (offset / oldDistance) * duration * 1000;
 		resized = false;
 		if (restart) delete root.dataset.ready;
 		if (!canAppend) {
-			if (allShown)
-				root.dataset.ready = "true";
+			if (allShown) root.dataset.ready = "true";
 			return;
 		}
 
 		const cars = records.slice(shown, count).map(({ image }, index) => {
-			const car = templates[(shown + index) % templates.length].cloneNode(true);
+			const car =
+				templates[(shown + index) % templates.length].cloneNode(true);
 			// The moving row needs its sprites ready before they enter the viewport.
 			car.querySelector("img").loading = "eager";
 			car.querySelector(".road-photo").replaceChildren(image);
@@ -188,7 +216,8 @@ export async function initRoadCarousel(root, photoSources) {
 		// A replacement PNG with a different size uses the original until re-optimized.
 		if (
 			optimized &&
-			response.headers.get("Content-Length") === String(optimized.originalBytes)
+			response.headers.get("Content-Length") ===
+				String(optimized.originalBytes)
 		) {
 			image.sizes = optimized.sizes;
 			image.srcset = optimized.srcset;
@@ -244,7 +273,9 @@ export async function initRoadCarousel(root, photoSources) {
 	}
 
 	async function loadListedPhotos() {
-		const numbers = Object.keys(photoSources).map(Number).sort((a, b) => a - b);
+		const numbers = Object.keys(photoSources)
+			.map(Number)
+			.sort((a, b) => a - b);
 		let next = 0;
 		async function loadNext() {
 			while (next < numbers.length) {

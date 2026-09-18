@@ -9,14 +9,20 @@ export async function discoverStudentPhotos(rootDir) {
 	const names = [];
 	let entries = [];
 	try {
-		entries = await readdir(path.join(rootDir, directory), { withFileTypes: true });
+		entries = await readdir(path.join(rootDir, directory), {
+			withFileTypes: true,
+		});
 	} catch (error) {
-		issues.push(`${directory}: ${error.code === "ENOENT" ? "directory does not exist" : error.message}`);
+		issues.push(
+			`${directory}: ${error.code === "ENOENT" ? "directory does not exist" : error.message}`,
+		);
 	}
 	for (const entry of entries) {
 		if (!entry.isFile() || !/\.png$/i.test(entry.name)) continue;
 		if (!/^[1-9]\d*\.png$/.test(entry.name)) {
-			issues.push(`${directory}/${entry.name}: filename must be a positive number followed by .png`);
+			issues.push(
+				`${directory}/${entry.name}: filename must be a positive number followed by .png`,
+			);
 		} else names.push(entry.name);
 	}
 	names.sort((a, b) => parseInt(a) - parseInt(b));
@@ -24,9 +30,12 @@ export async function discoverStudentPhotos(rootDir) {
 	for (const name of names) {
 		const number = parseInt(name);
 		if (number !== expected)
-			issues.push(`${directory}/${expected}.png: numbering gap before ${name}`);
+			issues.push(
+				`${directory}/${expected}.png: numbering gap before ${name}`,
+			);
 		expected = number + 1;
 	}
-	if (names.length === 0) issues.push(`${directory}: no numbered student photos`);
+	if (names.length === 0)
+		issues.push(`${directory}: no numbered student photos`);
 	return { directory, names, issues };
 }

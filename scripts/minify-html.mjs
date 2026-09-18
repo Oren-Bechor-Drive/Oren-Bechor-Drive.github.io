@@ -10,4 +10,6 @@ const result = await minify(source, {
 	keepClosingSlash: true,
 });
 await writeFile("index.html", `${result.trim()}\n`);
-console.log(`HTML: ${Buffer.byteLength(source)} → ${Buffer.byteLength(result.trim()) + 1} bytes; gzip: ${gzipSync(source).length} → ${gzipSync(`${result.trim()}\n`).length} bytes.`);
+console.log(
+	`HTML: ${Buffer.byteLength(source)} → ${Buffer.byteLength(result.trim()) + 1} bytes; gzip: ${gzipSync(source).length} → ${gzipSync(`${result.trim()}\n`).length} bytes.`,
+);

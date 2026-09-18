@@ -18,14 +18,18 @@ export function initScrollReveals(document) {
 		root.dataset.scrollState = "visible";
 		observer.unobserve(root);
 		if (instant) {
-			root.querySelectorAll(".scroll-reveal-target").forEach(target => {
-				target.getAnimations().forEach(animation => animation.finish());
+			root.querySelectorAll(".scroll-reveal-target").forEach((target) => {
+				target
+					.getAnimations()
+					.forEach((animation) => animation.finish());
 			});
 		}
 	}
 
 	for (const root of roots) {
-		root.addEventListener("focusin", () => reveal(root, true), { once: true });
+		root.addEventListener("focusin", () => reveal(root, true), {
+			once: true,
+		});
 		if (root.contains(document.activeElement)) reveal(root, true);
 		else root.dataset.scrollState = "pending";
 	}

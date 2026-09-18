@@ -23,7 +23,9 @@ export async function serveRoadMedia(route) {
 		await route.abort();
 		return;
 	}
-	const source = (url.pathname.endsWith("/") ? `${url.pathname}index.html` : url.pathname).slice(1);
+	const source = (
+		url.pathname.endsWith("/") ? `${url.pathname}index.html` : url.pathname
+	).slice(1);
 	let bytes;
 	try {
 		bytes = await readFile(new URL(source, root));
@@ -34,7 +36,8 @@ export async function serveRoadMedia(route) {
 	}
 	const isHead = request.method() === "HEAD";
 	await route.fulfill({
-		contentType: contentTypes[path.extname(source)] ?? "application/octet-stream",
+		contentType:
+			contentTypes[path.extname(source)] ?? "application/octet-stream",
 		headers: { "content-length": String(bytes.length) },
 		body: isHead ? "" : bytes,
 	});
