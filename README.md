@@ -22,6 +22,34 @@ The footer shows Instagram, TikTok, YouTube, and WhatsApp as unavailable, nonint
 
 ## Repository and publishing
 
+The page folders follow the learning flow. Each page has its own `index.html`, so ordinary static hosting serves directory URLs:
+
+```text
+index.html
+course/
+  index.html
+  css/                         Shared course, lesson and quiz styles
+  js/                          Library search and quiz interaction
+  right-of-way/
+    index.html
+    quizzes/
+      priority/index.html
+      left-turn/index.html
+      right-turn/index.html
+      u-turn/index.html
+css/                           Site-wide base and homepage styles
+js/                            Homepage enhancements and generated photo list
+assets/                        Shared images, fonts and icons
+scripts/                       Maintenance and verification tools
+tests/
+  unit/                        Node checks
+  browser/                     Playwright Chromium journeys
+  helpers/                     Shared test utilities
+docs/                          Architecture, supplied references and plans
+```
+
+Open the library at `/course/`, the reading page at `/course/right-of-way/`, and quizzes at `/course/right-of-way/quizzes/<section-id>/`. The former root-level preview URLs have moved; update saved preview bookmarks. Links and assets stay relative so the same files can also be served under a directory prefix. The public homepage and crawler URLs are unchanged.
+
 The repository is [Oren-Bechor-Drive/Oren-Bechor-Drive.github.io](https://github.com/Oren-Bechor-Drive/Oren-Bechor-Drive.github.io), owned by the `Oren-Bechor-Drive` organization. The public site is [https://oren-bechor-drive.github.io/](https://oren-bechor-drive.github.io/).
 
 GitHub Pages publishes from the root of `main`, using the "Deploy from a branch" source in the repository's Pages settings. The repository name matches the organization account's `<owner>.github.io` name, so the site is served at the domain root with no repository path prefix. See [GitHub's site types](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#types-of-github-pages-sites). Keep asset paths and the manifest's `start_url` relative.
@@ -47,28 +75,28 @@ No installation or build step is required.
 
 ### Course library preview
 
-Open `/course.html` to review the approved open subject-library layout. It uses the welcome page's seven learning topics, with searchable descriptions and expandable outlines drawn from `docs/reference/the-idea.pdf`. All topics can be opened independently. Search also matches outline text and common topic synonyms. The last opened topic is saved in this browser only, under `oren-course:last-topic`; a return link appears on the next visit. No viewed/completed progress or accounts are implied.
+Open `/course/` to review the approved open subject-library layout. It uses the welcome page's seven learning topics, with searchable descriptions and expandable outlines drawn from `docs/reference/the-idea.pdf`. All topics can be opened independently. Search also matches outline text and common topic synonyms. The last opened topic is saved in this browser only, under `oren-course:last-topic`; a return link appears on the next visit. No viewed/completed progress or accounts are implied.
 
-This is a course preview, marked `noindex` and omitted from the public sitemap. Expanding the right-of-way and turns topic reveals a "ללמידה" link to `/right-of-way.html`. This first reading draft adapts PDF pages 12-18 into four independently accessible sections: priority, left turns, right turns, and U-turns. `css/lesson.css` supplies its reading layout; native contents links work without JavaScript. The supplied PDF remains the content source, with the [official road-safety textbook](https://www.gov.il/BlobFolder/reports/driving_textbook/he/publications_2017_nohagim_aheret_nohagim_nachon.pdf) consulted for the priority hierarchy. Per the user's direction, source labels and links appear only in maintenance documentation, not on the learning page. Oren's review of the edited teaching copy remains a release prerequisite; generalized claims about pedestrian priority and fixed steering amounts in the PDF are not reproduced as instructions. Videos and the other learning pages are still outstanding, so the welcome page's course-start controls remain unavailable.
+This is a course preview, marked `noindex` and omitted from the public sitemap. Expanding the right-of-way and turns topic reveals a "ללמידה" link to `/course/right-of-way/`. This first reading draft adapts PDF pages 12-18 into four independently accessible sections: priority, left turns, right turns, and U-turns. `course/css/lesson.css` supplies its reading layout; native contents links work without JavaScript. The supplied PDF remains the content source, with the [official road-safety textbook](https://www.gov.il/BlobFolder/reports/driving_textbook/he/publications_2017_nohagim_aheret_nohagim_nachon.pdf) consulted for the priority hierarchy. Per the user's direction, source labels and links appear only in maintenance documentation, not on the learning page. Oren's review of the edited teaching copy remains a release prerequisite; generalized claims about pedestrian priority and fixed steering amounts in the PDF are not reproduced as instructions. Videos and the other learning pages are still outstanding, so the welcome page's course-start controls remain unavailable.
 
-Each sub-subject has its own white section and compact descriptive video placeholders after key points. These use text with accessible labels, without missing media requests. Each section's practice button opens its own static page: `/quiz-priority.html`, `/quiz-left-turn.html`, `/quiz-right-turn.html`, or `/quiz-u-turn.html`. Each page owns its title, lesson return links, and 20 placeholder questions, including six video questions and four placeholder choices per question. Editing one quiz's content does not affect the others. The shared `js/quiz.js` reads the question fieldsets from that page and supplies direct question selection, previous/next navigation, and a selection-count summary with review. It contains no subject registry or lesson destinations. There is no answer key, grading, locking, or persistence across reloads. Selected choices remain while navigating within the current quiz. Without JavaScript, all 20 questions remain visible and usable. Replace placeholder content with instructor-approved questions and actual video assets in a future content pass; do not infer correct answers from placeholder options.
+Each sub-subject has its own white section and compact descriptive video placeholders after key points. These use text with accessible labels, without missing media requests. Each section's practice button opens its own static page: `/course/right-of-way/quizzes/priority/`, `/course/right-of-way/quizzes/left-turn/`, `/course/right-of-way/quizzes/right-turn/`, or `/course/right-of-way/quizzes/u-turn/`. Each page owns its title, lesson return links, and 20 placeholder questions, including six video questions and four placeholder choices per question. Editing one quiz's content does not affect the others. The shared `course/js/quiz.js` reads the question fieldsets from that page and supplies direct question selection, previous/next navigation, and a selection-count summary with review. It contains no subject registry or lesson destinations. There is no answer key, grading, locking, or persistence across reloads. Selected choices remain while navigating within the current quiz. Without JavaScript, all 20 questions remain visible and usable. Replace placeholder content with instructor-approved questions and actual video assets in a future content pass; do not infer correct answers from placeholder options.
 
-The library, learning page and practice-quiz pages use a clickable home brand and a blank profile slot reserved for future account actions. No profile menu or login state is implemented. Native topic disclosures and navigation work without JavaScript; search and remembered topics are optional enhancements. `css/course.css` extends the existing tokens, and `js/course-library.js` reads its content from the baseline HTML. No generated images or new dependencies are needed.
+The library, learning page and practice-quiz pages use a clickable home brand and a blank profile slot reserved for future account actions. No profile menu or login state is implemented. Native topic disclosures and navigation work without JavaScript; search and remembered topics are optional enhancements. `course/css/course.css` extends the existing tokens, and `course/js/course-library.js` reads its content from the baseline HTML. No generated images or new dependencies are needed.
 
 The learning page's contents links use native smooth scrolling, scoped to `html.lesson-page`. Sub-subject sections are not programmatically focusable, so navigating to them does not focus or outline the whole reading section. Reduced motion uses immediate scrolling. Fragment URLs, keyboard links, and navigation with JavaScript disabled retain their native behavior.
 
-The preview is served with the same command above. On the tailnet, use `http://<tailscale-ip>:8000/course.html`. Its browser tests cover desktop and phone sizes, search and recovery, return visits, keyboard topic selection, disabled or blocked JavaScript, and unavailable or stale browser storage.
+The preview is served with the same command above. On the tailnet, use `http://<tailscale-ip>:8000/course/`. Its browser tests cover desktop and phone sizes, search and recovery, return visits, keyboard topic selection, disabled or blocked JavaScript, and unavailable or stale browser storage.
 
 For a preview over an already configured Tailscale connection, keep this server running and use `http://<tailscale-ip>:8000/` from another device on the same tailnet. Find the address with `tailscale ip -4` and check the connection with `tailscale status`. On Linux, start a stopped daemon with `sudo systemctl start tailscaled`, then connect with `tailscale up`. This is a development preview; the public canonical URL remains the GitHub Pages address.
 
 ### Add learning sections and quizzes
 
-Keep teaching content in static HTML so it remains usable without JavaScript. For a new learning page, use a root-level HTML file with `.lesson-content` and link it from the library with `.subject-learn`.
+Keep teaching content in static HTML so it remains usable without JavaScript. Create each learning page at `course/<topic>/index.html` with `.lesson-content` and link to its directory from `course/index.html` with `.subject-learn`. Keep the homepage as the only root HTML page.
 
 1. Give each `.lesson-section` a unique, stable `id` and an `aria-labelledby` pointing to its heading. Add a matching `.lesson-contents` anchor. Keep the ID when changing a heading so bookmarks still work.
-2. Copy a quiz page to a new root-level HTML file. Set its `<title>`, `<h1>`, and both `[data-lesson-link]` destinations to the correct lesson section. Link the section's `.lesson-quiz-link` directly to this file, without a subject query parameter.
-3. Edit that quiz's `.quiz-question` fieldsets, legends, referenced prompts, video slots, and radio labels. Keep unique question IDs, a distinct radio-group name per question, and unique choice values within the group. Keep loading `js/quiz.js`; no new subject registration or JavaScript change is needed. Current forms use `data-quiz-placeholder` to identify the approved placeholder layout. Remove that marker and update visible notices only when real content is approved.
-4. Run `npm test`, `npm run check:media` when adding pages, image declarations or preloads, and `git diff --check`. `scripts/learning-content.mjs` interprets root-level learning pages once for structural and browser checks, with file-specific diagnostics for malformed relationships. Tests exercise every valid quiz with JavaScript enabled, disabled and blocked. Interaction checks use discovered question counts and video positions; the separate 20-question/four-choice assertions apply to forms marked `data-quiz-placeholder`.
+2. Copy a quiz page to `course/<topic>/quizzes/<section-id>/index.html`. Set its `<title>`, `<h1>`, and both `[data-lesson-link]` destinations to the correct lesson section, such as `../../#priority`. Link the section's `.lesson-quiz-link` to `quizzes/<section-id>/`, without a subject query parameter. Rebase relative home, stylesheet, script, font and image paths when changing folder depth. Keep shared course styles in `course/css/` and interaction modules in `course/js/`.
+3. Edit that quiz's `.quiz-question` fieldsets, legends, referenced prompts, video slots, and radio labels. Keep unique question IDs, a distinct radio-group name per question, and unique choice values within the group. Keep loading `course/js/quiz.js`; no new subject registration or JavaScript change is needed. Current forms use `data-quiz-placeholder` to identify the approved placeholder layout. Remove that marker and update visible notices only when real content is approved.
+4. Run `npm test`, `npm run check:media` when adding pages, image declarations or preloads, and `git diff --check`. `scripts/learning-content.mjs` discovers nested learning pages through `scripts/site-pages.mjs` and interprets their relationships once for structural and browser checks. Directory links and explicit `index.html` links resolve to the same authored page; malformed relationships retain file-specific diagnostics. Tests exercise every valid quiz with JavaScript enabled, disabled and blocked. Interaction checks use discovered question counts and video positions; the separate 20-question/four-choice assertions apply to forms marked `data-quiz-placeholder`.
 
 The former shared `quiz.html?subject=...` preview has been replaced by these static quiz pages. Use the current links on the learning page.
 
@@ -181,7 +209,7 @@ Student photos include intermediate 320px, 360px, and 400px candidates between t
 
 WebP quality is 65 for intermediate and large student photos, 78 for the smallest student photos, 80 for cars and the stop sign, and 85 for the logo. The red gallery car keeps RGB quality 80 with alpha quality 73 to reduce transparency data; the other cars and the small hero copies retain the default alpha quality. The smallest version of photo 11 uses quality 55 for its dense background. Both wheel sizes use quality 65 and alpha quality 60. Check faces, lettering, and transparent edges at their displayed sizes after changing these settings.
 
-`tests/image-delivery-browser.test.mjs` checks actual browser source selection, image bytes, high-density coverage, and rendering without JavaScript. It covers desktop at 1x and 2x, phones at 1x, 1.75x, and 2x, and a 768px tablet at 2x. Density checks include the hero car and instructor photo, account for cover cropping, and allow 0.5% for fractional rendering geometry. Road-media download budgets scale with the generated photo count: desktop allows 115 KiB plus 9 KiB per photo, and mobile allows 120 KiB plus 12 KiB per photo. With 15 photos these are 250 KiB and 300 KiB. The instructor photo has separate budgets of 50 KiB at 1x, 90 KiB on high-density phones, 180 KiB on 2x desktop, and 300 KiB on the widest 2x tablet. Its selected source must stay within 20% of the required width. Both desktop and phone delivery are checked with JavaScript disabled. The high-density 412px phone check also limits oversized student-photo candidates. The 128px and 256px wheel downloads are capped at 6 KiB and 13 KiB; the smallest photo 11 is capped at 8 KiB.
+`tests/browser/image-delivery-browser.test.mjs` checks actual browser source selection, image bytes, high-density coverage, and rendering without JavaScript. It covers desktop at 1x and 2x, phones at 1x, 1.75x, and 2x, and a 768px tablet at 2x. Density checks include the hero car and instructor photo, account for cover cropping, and allow 0.5% for fractional rendering geometry. Road-media download budgets scale with the generated photo count: desktop allows 115 KiB plus 9 KiB per photo, and mobile allows 120 KiB plus 12 KiB per photo. With 15 photos these are 250 KiB and 300 KiB. The instructor photo has separate budgets of 50 KiB at 1x, 90 KiB on high-density phones, 180 KiB on 2x desktop, and 300 KiB on the widest 2x tablet. Its selected source must stay within 20% of the required width. Both desktop and phone delivery are checked with JavaScript disabled. The high-density 412px phone check also limits oversized student-photo candidates. The 128px and 256px wheel downloads are capped at 6 KiB and 13 KiB; the smallest photo 11 is capped at 8 KiB.
 
 ## Font delivery
 
@@ -197,8 +225,8 @@ Alignment compensates for transparent margins in each source image. Student phot
 
 ## Project files
 
-- `index.html` contains the Hebrew, right-to-left welcome page. `course.html` contains the open learning-topic library; `right-of-way.html` contains its first reading draft; each `quiz-*.html` page owns one learning section's practice questions.
-- `css/course.css`, `css/lesson.css`, and `css/quiz.css` style the course preview. `js/course-library.js` enhances library search and last-topic return; `js/quiz.js` enhances independently authored question fieldsets.
+- `index.html` contains the Hebrew, right-to-left welcome page. `course/index.html` contains the open learning-topic library; `course/right-of-way/index.html` contains its first reading draft; each `course/right-of-way/quizzes/*/index.html` page owns one learning section's practice questions.
+- `course/css/course.css`, `course/css/lesson.css`, and `course/css/quiz.css` style the course preview. `course/js/course-library.js` enhances library search and last-topic return; `course/js/quiz.js` enhances independently authored question fieldsets.
 - `robots.txt` and `sitemap.xml` expose the canonical welcome page to crawlers; `llms.txt` summarizes the course and links to its public sections.
 - `css/base.css` defines design tokens, global defaults, and shared layout widths.
 - `css/components.css` styles the header and navigation.
@@ -210,29 +238,31 @@ Alignment compensates for transparent margins in each source image. Student phot
 - `js/hero-road-car.js` animates the small red car along the hero's SVG road.
 - `js/scroll-reveal.js` reveals the instructor and unified course section once as each enters the viewport.
 - `js/road-carousel.js` builds the looping student gallery from the supplied photo list. `js/script.js` supplies the lazily imported generated list in production.
-- `scripts/road-media-integrity.mjs` discovers authored HTML pages and audits local image sources, responsive candidates and preloads, including ordinary SVGs and scaled brand images. Marked road media, car templates and numbered student photos retain their stricter checks.
+- `scripts/site-pages.mjs` discovers authored HTML for both learning and media checks, sharing the directory exclusions listed in [Architecture](docs/ARCHITECTURE.md#media-verification).
+- `scripts/road-media-integrity.mjs` audits local image sources, responsive candidates and preloads across those pages, including ordinary SVGs and scaled brand images. Marked road media, car templates and numbered student photos retain their stricter checks.
 - `scripts/learning-content.mjs` interprets and validates learning sections and their practice-quiz relationships for structural and browser tests. It returns plain records and file-specific issues without a runtime content registry.
 - `js/road-photo-sources.js` is the generated complete photo list and responsive delivery metadata.
 - `scripts/optimize-road-media.mjs` regenerates that list and WebP delivery copies without changing originals.
 - `scripts/student-photos.mjs` owns student photo discovery, numeric ordering, and filename diagnostics for the optimizer and media audit. The optimizer stops on findings; the audit collects them and continues checking media.
 - `assets/images/` contains the stop-sign illustration, road background, car artwork, instructor photo, and numbered student photos. `assets/icons/` contains the course icon. Typography uses Varela Round globally, with local WOFF2 files under `assets/fonts/`.
 - `docs/reference/the-idea.pdf` is the supplied course brief.
-- `tests/` contains static page, behavior-level, media-integrity, and Chromium gallery tests.
-- `tests/helpers/road-media.mjs` serves repository files in browser tests with consistent MIME types and original byte counts for HEAD requests. Individual tests own delays, failures, and download observations.
+- `tests/unit/` contains Node checks for static pages, behavior, learning content, media integrity and maintenance scripts. Run them with `npm run test:unit`.
+- `tests/browser/` contains Chromium journeys for the welcome page, course, quizzes, accessibility, motion and image delivery. Run them with `npm run test:browser`; `npm test` runs both groups.
+- `tests/helpers/road-media.mjs` serves repository files and directory index pages in browser tests with consistent MIME types and original byte counts for HEAD requests. Individual tests own delays, failures, and download observations.
 
 ### Automated checks
 
-[The Tests workflow](.github/workflows/tests.yml) runs on every push and pull request, and can also be started manually from GitHub Actions. It uses Node.js 24 on GitHub's hosted Ubuntu 24.04 runner, `ubuntu-24.04`, installs the locked dependencies with `npm ci`, checks them with `npm audit`, and installs Chromium with its system dependencies, then runs `npm run check:media` and the full `npm test` suite. This includes static and behavior tests, optimizer tests, and all Chromium gallery and image-delivery checks. New tests matching `tests/*.test.mjs` are included automatically.
+[The Tests workflow](.github/workflows/tests.yml) runs on every push and pull request, and can also be started manually from GitHub Actions. It uses Node.js 24 on GitHub's hosted Ubuntu 24.04 runner, `ubuntu-24.04`, installs the locked dependencies with `npm ci`, checks them with `npm audit`, and installs Chromium with its system dependencies, then runs `npm run check:media` and the full `npm test` suite. This includes static and behavior tests, optimizer tests, and all Chromium gallery and image-delivery checks. New tests matching `tests/*/*.test.mjs` are included automatically.
 
 The workflow uses `actions/setup-node` with `cache: npm` to reuse downloaded dependencies between runs.
 
 Animation regressions cover focus during section entrances, visibility in print, immediate keyboard topic selection, live reduced-motion changes, and keeping unchanged topic text still. Hero-car checks cover road position, orientation, and elapsed-time preservation on resize. Gallery tests cover refilling metadata request slots, deferred photo additions at a real animation loop boundary, and resizing the preserved row after a later loading failure. Scroll-reveal tests bound their animation-capture waits so a missing reveal fails instead of hanging the suite.
 
-`tests/progressive-enhancement-browser.test.mjs` exercises navigation and topic selection at desktop and phone widths. It also checks visible navigation and all seven descriptions with JavaScript disabled or the entry module blocked. Section-alignment tests distinguish the sticky header from the mobile fallback's zero scroll offset. The unavailable-IntersectionObserver test checks for browser errors and verifies that topic selection initializes and the local footer icons remain available.
+`tests/browser/progressive-enhancement-browser.test.mjs` exercises navigation and topic selection at desktop and phone widths. It also checks visible navigation and all seven descriptions with JavaScript disabled or the entry module blocked. Section-alignment tests distinguish the sticky header from the mobile fallback's zero scroll offset. The unavailable-IntersectionObserver test checks for browser errors and verifies that topic selection initializes and the local footer icons remain available.
 
 Learning-content fixture tests exercise malformed authored HTML through the same verifier used by the real-page tests. Quiz browser tests follow authored order rather than fixed question IDs; additional one-question and five-question fixtures cover nonnumeric IDs and a video in the first question. Gallery behavior tests supply independent photo lists and verify that concurrent instances do not mutate generated metadata. The site-media tests cover nested pages, ordinary logos/SVGs, missing candidates and preloads, and command failure outside the welcome page.
 
-`tests/seo-metadata.test.mjs` checks consistent canonical and sharing metadata, the existing sharing image's type and dimensions, and linked structured-data entities. `tests/crawler-discovery.test.mjs` checks crawl access, sitemap consistency, and that `llms.txt` links point to real page sections. These checks validate the repository files, not search ranking or production deployment.
+`tests/unit/seo-metadata.test.mjs` checks consistent canonical and sharing metadata, the existing sharing image's type and dimensions, and linked structured-data entities. `tests/unit/crawler-discovery.test.mjs` checks crawl access, sitemap consistency, and that `llms.txt` links point to real page sections. These checks validate the repository files, not search ranking or production deployment.
 
 CI audits the checked-in media. Photo and artwork changes still require running `npm run optimize:media` locally and publishing its output with the originals. The workflow does not deploy the site.
 

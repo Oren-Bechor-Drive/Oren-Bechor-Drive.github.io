@@ -8,6 +8,7 @@ import { PNG } from "image-size/types/png";
 import { WEBP } from "image-size/types/webp";
 import { JSDOM } from "jsdom";
 import { discoverStudentPhotos } from "./student-photos.mjs";
+import { discoverSitePages } from "./site-pages.mjs";
 
 const EXTENSION_FORMATS = new Map([
 	[".jpg", "jpeg"],
@@ -50,26 +51,8 @@ function cleanReference(reference) {
 	return reference.split(/[?#]/, 1)[0];
 }
 
-const EXCLUDED_PAGE_DIRECTORIES = new Set([
-	"assets", "css", "js", "docs", "scripts", "tools", "tests", "test",
-	"fixtures", "node_modules", "vendor", "coverage", "dist", "build",
-]);
-
 export async function auditSiteMedia({ rootDir }) {
-	const pages = [];
-	async function discover(directory = "") {
-		for (const entry of await readdir(path.join(rootDir, directory), { withFileTypes: true })) {
-			if (entry.name.startsWith(".")) continue;
-			const relativePath = path.posix.join(directory, entry.name);
-			if (entry.isDirectory() && !EXCLUDED_PAGE_DIRECTORIES.has(entry.name)) {
-				await discover(relativePath);
-			} else if (entry.isFile() && /\.html?$/i.test(entry.name)) {
-				pages.push(relativePath);
-			}
-		}
-	}
-	await discover();
-	pages.sort();
+	const pages = await discoverSitePages(rootDir);
 	const assets = [];
 	const issues = [];
 	for (const htmlPath of pages) {

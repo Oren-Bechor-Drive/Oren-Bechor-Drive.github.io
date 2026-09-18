@@ -1,8 +1,16 @@
-import { readFile, readdir } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { JSDOM } from "jsdom";
+import { discoverSitePages } from "./site-pages.mjs";
 
 const origin = "https://learning.invalid";
+const libraryFile = "course/index.html";
+
+function pageURL(href, file) {
+	const url = new URL(href, `${origin}/${file}`);
+	if (url.pathname.endsWith("/")) url.pathname += "index.html";
+	return url;
+}
 
 // Development-only interpretation of authored HTML. Runtime pages remain independent.
 export async function readLearningContent(rootDir) {
@@ -12,7 +20,7 @@ export async function readLearningContent(rootDir) {
 	const quizzes = [];
 	const quizOwners = new Map();
 	const report = (location, message) => issues.push(`${location}: ${message}`);
-	for (const file of (await readdir(rootDir)).filter(file => file.endsWith(".html")).sort()) {
+	for (const file of await discoverSitePages(rootDir)) {
 		try {
 			pages.set(file, new JSDOM(await readFile(path.join(rootDir, file), "utf8")).window.document);
 		} catch (error) {
@@ -23,7 +31,7 @@ export async function readLearningContent(rootDir) {
 	function localPage(href, file) {
 		if (!href) return null;
 		try {
-			const url = new URL(href, `${origin}/${file}`);
+			const url = pageURL(href, file);
 			if (url.origin !== origin || url.search || url.hash) return null;
 			return decodeURIComponent(url.pathname.slice(1));
 		} catch { return null; }
@@ -41,7 +49,7 @@ export async function readLearningContent(rootDir) {
 		const document = pages.get(file);
 		const location = `${lessonFile}#${section.id}`;
 		if (!document) {
-			report(location, `quiz file '${file}' does not exist among authored root HTML pages`);
+			report(location, `quiz file '${file}' does not exist among authored HTML pages`);
 			return;
 		}
 		if (quizOwners.has(file)) {
@@ -58,7 +66,7 @@ export async function readLearningContent(rootDir) {
 		if (!returns.length) report(file, `missing return link to ${location}`);
 		for (const link of returns) {
 			let destination;
-			try { destination = new URL(link.getAttribute("href"), `${origin}/${file}`).href; } catch {}
+			try { destination = pageURL(link.getAttribute("href"), file).href; } catch {}
 			if (destination !== `${origin}/${location}`) report(file, `return link must target ${location}`);
 		}
 		const form = document.querySelector(".quiz-form");
@@ -110,12 +118,12 @@ export async function readLearningContent(rootDir) {
 		if (JSON.stringify(contents) !== JSON.stringify(sections.map(section => `#${section.id}`).sort())) report(file, "contents must link to each section exactly once");
 		lessons.push({ file, sections, sourceLabels: document.querySelectorAll(".lesson-source").length, sourceLinks: document.querySelectorAll('a[href*="the-idea.pdf"], a[href^="https://"]').length });
 	}
-	if (!lessons.length) report("course.html", "no learning pages discovered");
-	const library = pages.get("course.html");
-	if (!library) report("course.html", "missing course library");
+	if (!lessons.length) report(libraryFile, "no learning pages discovered");
+	const library = pages.get(libraryFile);
+	if (!library) report(libraryFile, "missing course library");
 	for (const link of library?.querySelectorAll(".subject-learn") ?? []) {
-		const file = localPage(link.getAttribute("href"), "course.html");
-		if (!lessons.some(lesson => lesson.file === file)) report("course.html", `learning link '${link.getAttribute("href")}' does not name a learning page`);
+		const file = localPage(link.getAttribute("href"), libraryFile);
+		if (!lessons.some(lesson => lesson.file === file)) report(libraryFile, `learning link '${link.getAttribute("href")}' does not name a learning page`);
 	}
 	for (const [file, document] of pages) {
 		if (document.querySelector(".quiz-form") && !quizOwners.has(file)) report(file, "quiz is not linked from a learning section");

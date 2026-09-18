@@ -21,7 +21,7 @@
 - Keep production code in plain HTML, CSS, and JavaScript with no build step to run or serve the checked-in site. Image delivery changes require the maintenance steps in `README.md`.
 - Preserve semantic HTML, keyboard access, visible focus, mobile behavior, progressive enhancement, and reduced-motion support.
 - Keep navigation and all topic descriptions usable when JavaScript is disabled or the entry module fails to load. Use the baseline HTML descriptions as the interactive preview's content source.
-- When adding learning sections or practice quizzes, follow [Add learning sections and quizzes](README.md#add-learning-sections-and-quizzes). Each quiz owns its static content and return links; `js/quiz.js` owns shared interaction. Preserve the current HTML formatting.
+- When adding learning sections or practice quizzes, follow [Add learning sections and quizzes](README.md#add-learning-sections-and-quizzes). Each quiz owns its static content and return links; `course/js/quiz.js` owns shared interaction. Preserve the current HTML formatting.
 - Keep course copy, search and sharing metadata, structured data, and `llms.txt` consistent with supplied facts. Add real contact details, profile URLs, or enrollment destinations only when supplied.
 - Preserve user-supplied image bytes unless the user explicitly requests an image edit. Keep marked road-media metadata accurate when paths or images change.
 - When changing image sources, delivery widths, compression, or sizing hints, follow [Optimize delivery images](README.md#optimize-delivery-images) for regeneration, publishing, and browser delivery checks.

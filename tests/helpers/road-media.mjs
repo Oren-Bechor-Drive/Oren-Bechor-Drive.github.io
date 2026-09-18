@@ -23,7 +23,7 @@ export async function serveRoadMedia(route) {
 		await route.abort();
 		return;
 	}
-	const source = url.pathname === "/" ? "index.html" : url.pathname.slice(1);
+	const source = (url.pathname.endsWith("/") ? `${url.pathname}index.html` : url.pathname).slice(1);
 	let bytes;
 	try {
 		bytes = await readFile(new URL(source, root));
