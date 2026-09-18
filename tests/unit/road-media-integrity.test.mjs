@@ -190,6 +190,23 @@ test("gallery audit includes every numbered photo without a fixed maximum", asyn
 	);
 });
 
+test("gallery audit accepts the generated list after JavaScript formatting", async (t) => {
+	const rootDir = await galleryFixture(t);
+	await writeFile(
+		path.join(rootDir, "js/road-photo-sources.js"),
+		`export const roadPhotoSources = {
+	1: { originalBytes: 68 },
+	2: { originalBytes: 68 },
+	3: { originalBytes: 68 },
+};
+`,
+	);
+
+	const audit = await auditRoadMedia({ rootDir });
+
+	assert.deepEqual(audit.issues, []);
+});
+
 test("gallery audit collects invalid names and multiple gaps while inspecting later photos", async (t) => {
 	const rootDir = await galleryFixture(t, { photos: [1, 3, 12] });
 	const directory = path.join(rootDir, "assets/images/students-pass");

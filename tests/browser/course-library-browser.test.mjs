@@ -217,18 +217,20 @@ test("course preview preserves the welcome page's seven topic descriptions", asy
 		new JSDOM(
 			await readFile(new URL(`../../${path}`, import.meta.url), "utf8"),
 		).window.document;
+	const visibleText = (element) =>
+		element.textContent.replace(/\s+/g, " ").trim();
 	const welcome = await read("index.html");
 	const course = await read("course/index.html");
 	const descriptions = [
 		...welcome.querySelectorAll("[data-topic-summaries] section"),
 	].map((section) => [
-		section.querySelector("h3").textContent,
-		section.querySelector("p").textContent,
+		visibleText(section.querySelector("h3")),
+		visibleText(section.querySelector("p")),
 	]);
 	const summaries = [...course.querySelectorAll(".subject summary")].map(
 		(summary) => [
-			summary.querySelector("h3").textContent,
-			summary.querySelector("p").textContent,
+			visibleText(summary.querySelector("h3")),
+			visibleText(summary.querySelector("p")),
 		],
 	);
 	for (const description of descriptions)
@@ -238,7 +240,7 @@ test("course preview preserves the welcome page's seven topic descriptions", asy
 		);
 	assert.equal(summaries.length, 9);
 	assert.equal(
-		course.querySelector("[data-search-status]").textContent,
+		visibleText(course.querySelector("[data-search-status]")),
 		"9 נושאים לבחירה",
 	);
 	assert.equal(course.documentElement.lang, "he");

@@ -327,14 +327,12 @@ async function auditGallery(
 		await inspectSource(`${photoDirectory}/${name}`);
 	}
 
-	// The generator writes a JSON object in this module; inspect data without executing it.
+	// Load the generated JavaScript as a module so formatting cannot change its meaning.
 	const listPath = "js/road-photo-sources.js";
 	try {
 		const module = await readFile(path.join(pageDir, listPath), "utf8");
-		const sources = JSON.parse(
-			module.match(
-				/export const roadPhotoSources = (\{[\s\S]*\});\s*$/,
-			)?.[1],
+		const { roadPhotoSources: sources } = await import(
+			`data:text/javascript;charset=utf-8,${encodeURIComponent(module)}`,
 		);
 		for (const source of Object.values(sources))
 			await inspectSrcset(source.srcset);
