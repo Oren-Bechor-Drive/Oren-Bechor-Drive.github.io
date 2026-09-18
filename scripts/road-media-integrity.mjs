@@ -14,6 +14,7 @@ const EXTENSION_FORMATS = new Map([
 	[".jpeg", "jpeg"],
 	[".webp", "webp"],
 	[".png", "png"],
+	[".svg", "svg"],
 ]);
 
 const FORMAT_MIMES = new Map([
@@ -49,24 +50,97 @@ function cleanReference(reference) {
 	return reference.split(/[?#]/, 1)[0];
 }
 
+const EXCLUDED_PAGE_DIRECTORIES = new Set([
+	"assets", "css", "js", "docs", "scripts", "tools", "tests", "test",
+	"fixtures", "node_modules", "vendor", "coverage", "dist", "build",
+]);
+
+export async function auditSiteMedia({ rootDir }) {
+	const pages = [];
+	async function discover(directory = "") {
+		for (const entry of await readdir(path.join(rootDir, directory), { withFileTypes: true })) {
+			if (entry.name.startsWith(".")) continue;
+			const relativePath = path.posix.join(directory, entry.name);
+			if (entry.isDirectory() && !EXCLUDED_PAGE_DIRECTORIES.has(entry.name)) {
+				await discover(relativePath);
+			} else if (entry.isFile() && /\.html?$/i.test(entry.name)) {
+				pages.push(relativePath);
+			}
+		}
+	}
+	await discover();
+	pages.sort();
+	const assets = [];
+	const issues = [];
+	for (const htmlPath of pages) {
+		const audit = await auditRoadMedia({ rootDir, htmlPath });
+		assets.push(...audit.assets.map(asset => ({ htmlPath, ...asset })));
+		issues.push(...audit.issues.map(issue => `${htmlPath}: ${issue}`));
+	}
+	return { pages, assets, issues };
+}
+
+function inspectSvg(buffer) {
+	let dom;
+	try {
+		dom = new JSDOM(buffer.toString("utf8"), { contentType: "image/svg+xml" });
+		const root = dom.window.document.documentElement;
+		if (root.localName !== "svg" || root.namespaceURI !== "http://www.w3.org/2000/svg") {
+			throw new Error("not an SVG document");
+		}
+		// SVGs are scalable: validate XML and MIME, not raster dimensions.
+		return { format: "svg", mime: "image/svg+xml" };
+	} catch (error) {
+		throw new Error("invalid SVG document", { cause: error });
+	} finally {
+		dom?.window.close();
+	}
+}
+
+function* srcsetCandidates(srcset) {
+	// URLs end at whitespace, not commas: embedded data URLs contain commas.
+	let remaining = srcset ?? "";
+	while (remaining) {
+		remaining = remaining.replace(/^[\s,]+/, "");
+		const source = remaining.match(/^\S+/)?.[0];
+		if (!source) return;
+		remaining = remaining.slice(source.length);
+		if (source.endsWith(",")) {
+			yield [source.replace(/,+$/, ""), ""];
+			continue;
+		}
+		const descriptor = remaining.split(",", 1)[0];
+		remaining = remaining.slice(descriptor.length + 1);
+		yield [source, descriptor.trim()];
+	}
+}
+
 export async function auditRoadMedia({ rootDir, htmlPath = "index.html" }) {
 	const absoluteHtmlPath = path.resolve(rootDir, htmlPath);
 	const html = await readFile(absoluteHtmlPath, "utf8");
-	const document = new JSDOM(html).window.document;
+	const dom = new JSDOM(html);
+	const document = dom.window.document;
 	const issues = [];
 	const assets = [];
 
 	const inspectedSources = new Map();
 
 	async function inspectSource(source) {
+		source = cleanReference(source.trim());
+		// Audit local declarations only. Never fetch external or embedded assets.
+		if (/^(?:[a-z][a-z\d+.-]*:|\/\/)/i.test(source)) return null;
 		if (inspectedSources.has(source)) return inspectedSources.get(source);
-		const absoluteImagePath = path.resolve(
-			path.dirname(absoluteHtmlPath),
-			source,
-		);
 		let inspected;
 		try {
-			inspected = inspectImage(await readFile(absoluteImagePath));
+			if (!source) throw new Error("image source is empty");
+			const decodedSource = decodeURIComponent(source);
+			const absoluteImagePath = decodedSource.startsWith("/")
+				? path.resolve(rootDir, `.${decodedSource}`)
+				: path.resolve(path.dirname(absoluteHtmlPath), decodedSource);
+			const bytes = await readFile(absoluteImagePath);
+			inspected = path.extname(decodedSource).toLowerCase() === ".svg"
+				? inspectSvg(bytes)
+				: inspectImage(bytes);
 		} catch (error) {
 			issues.push(
 				`${source}: ${error.code === "ENOENT" ? "file does not exist" : error.message}`,
@@ -90,23 +164,30 @@ export async function auditRoadMedia({ rootDir, htmlPath = "index.html" }) {
 	}
 
 	async function inspectSrcset(srcset) {
-		for (const candidate of (srcset ?? "").split(",")) {
-			const [deliverySource, descriptor] = candidate.trim().split(/\s+/);
-			if (!deliverySource) continue;
+		const deliveries = [];
+		for (const [deliverySource, descriptor] of srcsetCandidates(srcset)) {
 			const delivery = await inspectSource(cleanReference(deliverySource));
-			if (delivery && /^\d+w$/.test(descriptor) && parseInt(descriptor) !== delivery.width) {
+			if (delivery) deliveries.push(delivery);
+			if (delivery && delivery.format !== "svg" && /^\d+w$/.test(descriptor) && parseInt(descriptor) !== delivery.width) {
 				issues.push(`${deliverySource}: srcset declares ${descriptor}, file is ${delivery.width}px wide`);
 			}
 		}
+		return deliveries;
 	}
 
-	for (const image of document.querySelectorAll(
-		"img[data-road-media], [data-road-carousel] .road-car > img, [data-road-carousel] .road-photo img",
-	)) {
+	for (const image of document.querySelectorAll("img")) {
 		const source = cleanReference(image.getAttribute("src") ?? "");
-		const inspected = await inspectSource(source);
-		await inspectSrcset(image.getAttribute("srcset"));
+		const marked = image.matches("img[data-road-media], [data-road-carousel] .road-car > img, [data-road-carousel] .road-photo img");
+		const srcset = image.getAttribute("srcset");
+		const hasCandidates = !srcsetCandidates(srcset).next().done;
+		const inspected = source || marked || !hasCandidates ? await inspectSource(source) : null;
+		await inspectSrcset(srcset);
 		if (!inspected) continue;
+		if (!marked) continue;
+		if (inspected.format === "svg") {
+			issues.push(`${source}: marked road media requires JPEG, WebP, or PNG`);
+			continue;
+		}
 		const declaredWidth = Number(image.getAttribute("width"));
 		const declaredHeight = Number(image.getAttribute("height"));
 		const alt = image.getAttribute("alt")?.trim() ?? "";
@@ -121,15 +202,22 @@ export async function auditRoadMedia({ rootDir, htmlPath = "index.html" }) {
 		if (!alt) issues.push(`${source}: alternative text is empty`);
 		inspected.alt = alt;
 	}
+	for (const source of document.querySelectorAll("picture > source[srcset]")) {
+		await inspectSrcset(source.getAttribute("srcset"));
+	}
 
 	// Background images can be preloaded without a corresponding img element.
-	for (const preload of document.querySelectorAll('link[rel="preload"][as="image"]')) {
+	for (const preload of document.querySelectorAll('link[rel~="preload"][as="image"]')) {
 		const source = cleanReference(preload.getAttribute("href") ?? "");
-		const inspected = await inspectSource(source);
-		if (inspected && preload.getAttribute("type") !== inspected.mime) {
-			issues.push(
-				`${source}: preload type is ${preload.getAttribute("type")}, expected ${inspected.mime}`,
-			);
+		const srcset = preload.getAttribute("imagesrcset");
+		const hasCandidates = !srcsetCandidates(srcset).next().done;
+		const inspected = source || !hasCandidates ? await inspectSource(source) : null;
+		const deliveries = await inspectSrcset(srcset);
+		const declaredType = preload.getAttribute("type");
+		for (const asset of new Set([inspected, ...deliveries])) {
+			if (asset && declaredType !== null && declaredType !== asset.mime) {
+				issues.push(`${asset.source}: preload type is ${declaredType}, expected ${asset.mime}`);
+			}
 		}
 	}
 
@@ -143,6 +231,7 @@ export async function auditRoadMedia({ rootDir, htmlPath = "index.html" }) {
 			inspectSrcset,
 		);
 	}
+	dom.window.close();
 	return { assets, issues };
 }
 
@@ -251,12 +340,11 @@ async function auditGallery(gallery, pageDir, issues, inspectSource, inspectSrcs
 }
 
 async function runCli() {
-	const audit = await auditRoadMedia({
+	const audit = await auditSiteMedia({
 		rootDir: process.cwd(),
-		htmlPath: "index.html",
 	});
 	if (audit.issues.length === 0) {
-		console.log(`Road media OK: ${audit.assets.length} images`);
+		console.log(`Site media OK: ${audit.assets.length} image references across ${audit.pages.length} pages`);
 		return;
 	}
 	for (const issue of audit.issues) console.error(`- ${issue}`);

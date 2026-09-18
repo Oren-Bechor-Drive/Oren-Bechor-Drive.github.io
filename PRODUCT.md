@@ -29,6 +29,8 @@ Visitors first see a concrete course promise and links to the instructor and top
 ## Capabilities and constraints
 
 - The first release is one welcome page for new visitors.
+- `course.html` is an approved preview for the next course area: an open library of the seven named learning topics, optional search, native expandable outlines, and a browser-local return link to the last opened topic. Learners can choose any topic at any time. Its right-of-way topic links to the first reading draft, `right-of-way.html`, adapted from PDF pages 12-18 with four freely navigable sections. Both pages are marked `noindex`; enrollment and video playback are not available. The shared course header has a home-link brand and blank space for a future profile menu. The other learning pages, instructor review of the draft, and video assets remain outstanding.
+- Each sub-subject is a separate reading section with descriptive video placeholders after key points. Its practice button opens a 20-question multiple-choice quiz preview in its own `quiz-<section-id>.html` page, also marked `noindex`. Questions, answers, and videos are all placeholders. Learners can select and revisit answers, skip questions, and review their selections without scores or access restrictions. Source labels are omitted from the learning interface and preserved in maintenance documentation.
 - The hero actions scroll to the instructor and unified course section. Section links align immediately below the sticky header, or at the viewport top when the mobile fallback header scrolls with the page. Course-start controls in the header and closing section are disabled and clearly labeled unavailable until a real destination is supplied.
 - Navigation and all seven topic descriptions remain usable without JavaScript or when the entry module fails to load. Successful initialization enables the mobile menu and interactive topic preview.
 - The instructor gallery presents student photos in numeric order on cars moving left across a road. Car colors vary independently of photo order. The gallery uses a generated photo list with no maximum-count setting. After changing photos, run `npm run optimize:media` and publish its output with the originals; see [README.md](README.md#add-or-update-student-photos) for the full maintenance steps.
@@ -37,6 +39,8 @@ Visitors first see a concrete course promise and links to the instructor and top
 - Visitor-facing website copy is Hebrew and uses a right-to-left reading direction.
 - Search and sharing descriptions, structured data, and the public `llms.txt` overview describe the same course and instructor facts as the welcome page. They do not imply that enrollment or lesson playback is available on this site.
 - The page must work on desktop and mobile without a framework or a build step to serve the checked-in files. Updating gallery photos requires the maintenance step above.
+- Course content stays in independently editable learning and practice-quiz pages. Development checks discover their relationships and report missing or inconsistent links before publication; these checks do not generate content or run in the learner's browser.
+- Site-wide image checks cover the course preview as well as the welcome page. Student galleries use an explicit student photo list for each initialization; this does not add learner-facing controls or change gallery behavior.
 
 ## Brand commitments
 

@@ -16,6 +16,22 @@ _Avoid_: Enrollment flow, lesson player, instructor introduction
 A named area of driving knowledge, such as right-of-way, lane choice, intersections, or trip planning.
 _Avoid_: Feature, category
 
+**Course library**:
+The collection of named learning topics that a learner may browse and open in any order.
+_Avoid_: Dashboard, mandatory learning path
+
+**Learning section**:
+A sub-subject within a learning topic, with its own explanations and practice quiz. Learners may start with any section.
+_Avoid_: Locked step, required stage
+
+**Practice quiz**:
+A set of multiple-choice questions about one learning section. The current preview uses placeholder questions and gives no score.
+_Avoid_: Driving test, certification exam
+
+**Video placeholder**:
+A reserved space describing an explanation video or a video question that has not been supplied yet.
+_Avoid_: Video player, playable lesson
+
 **Topic preview**:
 The welcome-page experience where a learner selects a learning topic and reads what it teaches.
 _Avoid_: Course dashboard, lesson player
@@ -35,6 +51,10 @@ _Avoid_: Testimonial, pass-rate evidence
 **Student gallery**:
 The collection of student photos presented on the road carousel below the instructor introduction.
 _Avoid_: Lesson gallery, course dashboard
+
+**Student photo list**:
+The complete ordered collection of numbered student photos available to a student gallery.
+_Avoid_: Fixed photo limit, car list
 
 **Welcome direction**:
 A distinct way to introduce the course to a new learner, such as the Learning Journey, Instructor-led, or Course-dashboard direction.

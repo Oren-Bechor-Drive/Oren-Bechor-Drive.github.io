@@ -58,8 +58,13 @@ const roadCarousel = document.querySelector("[data-road-carousel]");
 
 if (roadCarousel) {
 	const loadGallery = () => {
-		import("./road-carousel.js")
-			.then(({ initRoadCarousel }) => initRoadCarousel(roadCarousel))
+		Promise.all([
+			import("./road-carousel.js"),
+			import("./road-photo-sources.js"),
+		])
+			.then(([{ initRoadCarousel }, { roadPhotoSources }]) =>
+				initRoadCarousel(roadCarousel, roadPhotoSources),
+			)
 			.catch((error) => {
 				console.warn(
 					"Student gallery could not refresh; keeping the static photos.",

@@ -1,9 +1,7 @@
-import { roadPhotoSources } from "./road-photo-sources.js";
-
 const METADATA_CONCURRENCY = 4;
 const LOAD_TIMEOUT_MS = 8000;
 
-export async function initRoadCarousel(root) {
+export async function initRoadCarousel(root, photoSources) {
 	const document = root.ownerDocument;
 	const browserWindow = document.defaultView;
 	const group = root.querySelector(".road-carousel-group");
@@ -182,7 +180,7 @@ export async function initRoadCarousel(root) {
 			`assets/images/students-pass/${number}.png`,
 			document.baseURI,
 		).href;
-		const optimized = roadPhotoSources[number];
+		const optimized = photoSources[number];
 		image.alt = `אורן בכור ותלמידיו לאחר מעבר הטסט, תמונה ${number}`;
 		image.draggable = false;
 		image.decoding = "async";
@@ -246,7 +244,7 @@ export async function initRoadCarousel(root) {
 	}
 
 	async function loadListedPhotos() {
-		const numbers = Object.keys(roadPhotoSources).map(Number).sort((a, b) => a - b);
+		const numbers = Object.keys(photoSources).map(Number).sort((a, b) => a - b);
 		let next = 0;
 		async function loadNext() {
 			while (next < numbers.length) {

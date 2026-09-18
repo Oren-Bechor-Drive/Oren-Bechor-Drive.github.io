@@ -23,15 +23,12 @@ async function setup(
 	);
 	const dom = new JSDOM(html, { url: "https://example.com/course/", pretendToBeVisual: true });
 	t.after(() => dom.window.close());
-	// Model generated lists of different sizes without adding a test-only runtime API.
-	const publishedSources = { ...roadPhotoSources };
-	for (const number of Object.keys(roadPhotoSources)) delete roadPhotoSources[number];
-	for (let number = 1; number <= count; number++)
-		roadPhotoSources[number] = publishedSources[number] ?? {};
-	t.after(() => {
-		for (const number of Object.keys(roadPhotoSources)) delete roadPhotoSources[number];
-		Object.assign(roadPhotoSources, publishedSources);
-	});
+	const photoSources = Object.freeze(Object.fromEntries(
+		Array.from({ length: count }, (_, index) => [
+			index + 1,
+			Object.freeze({ ...roadPhotoSources[index + 1] }),
+		]),
+	));
 	const { window } = dom;
 	window.fetch = async (url, options) => {
 		assert.equal(options.method, "HEAD");
@@ -68,11 +65,48 @@ async function setup(
 			return { width };
 		},
 	);
-	return root;
+	return { root, photoSources };
 }
 
+test("independent galleries load their own frozen photo lists without changing the generated catalog", async (t) => {
+	const publishedSources = structuredClone(roadPhotoSources);
+	const first = await setup(t, { count: 3 });
+	const second = await setup(t, { count: 1 });
+	await Promise.all([
+		initRoadCarousel(first.root, first.photoSources),
+		initRoadCarousel(second.root, second.photoSources),
+	]);
+	const photos = root => [...root.querySelectorAll(".road-carousel-group:first-child .road-photo img")]
+		.map(image => Number(image.src.match(/\/(\d+)\.png$/)[1]));
+	assert.deepEqual(photos(first.root), [1, 2, 3]);
+	assert.deepEqual(photos(second.root), [1]);
+	assert.deepEqual(roadPhotoSources, publishedSources);
+});
+
+test("optimized delivery uses metadata from the supplied photo list", async (t) => {
+	const { root } = await setup(t, { count: 1 });
+	const photoSources = Object.freeze({
+		1: Object.freeze({
+			originalBytes: 123,
+			srcset: "assets/images/fixture-small.webp 320w, assets/images/fixture-large.webp 640w",
+			sizes: "(max-width: 600px) 320px, 640px",
+		}),
+	});
+	const window = root.ownerDocument.defaultView;
+	const fetch = window.fetch;
+	window.fetch = async (...args) => {
+		const response = await fetch(...args);
+		response.headers.set("Content-Length", "123");
+		return response;
+	};
+	await initRoadCarousel(root, photoSources);
+	const image = root.querySelector(".road-photo img");
+	assert.equal(image.srcset, "assets/images/fixture-small.webp 320w, assets/images/fixture-large.webp 640w");
+	assert.equal(image.sizes, "(max-width: 600px) 320px, 640px");
+});
+
 test("photo publications do not read layout after changing the connected row in a frame", async (t) => {
-	const root = await setup(t);
+	const { root, photoSources } = await setup(t);
 	const window = root.ownerDocument.defaultView;
 	const group = root.querySelector(".road-carousel-group");
 	let rowChanged = false;
@@ -98,20 +132,20 @@ test("photo publications do not read layout after changing the connected row in 
 		assert.equal(rowChanged, false, "style reads must precede row changes");
 		return computedStyle(...args);
 	});
-	await initRoadCarousel(root);
+	await initRoadCarousel(root, photoSources);
 	assert.equal(group.children.length, 27);
 	assert.equal(group.replaceChildren.mock.callCount(), 1);
 	assert.equal(group.append.mock.callCount(), 0, "photos decoded together should publish in one batch");
 });
 
 test("numbered photos extend beyond the car count and repeat in numeric order", async (t) => {
-	const root = await setup(t);
+	const { root, photoSources } = await setup(t);
 	const originalTemplates = [...root.querySelectorAll(".road-car")].map(car => car.cloneNode(true));
 	const originalCars = [...root.querySelectorAll(".road-car > img")].map((i) =>
 		i.getAttribute("src"),
 	);
 	t.mock.method(Math, "random", () => 0);
-	await initRoadCarousel(root);
+	await initRoadCarousel(root, photoSources);
 	const groups = root.querySelectorAll(".road-carousel-group");
 	assert.equal(groups.length, 2);
 	const photos = [...groups[0].querySelectorAll(".road-photo img")];
@@ -142,15 +176,15 @@ test("numbered photos extend beyond the car count and repeat in numeric order", 
 	secondRoot.querySelector(".road-carousel-group").replaceChildren(...originalTemplates);
 	root.after(secondRoot);
 	t.mock.method(Math, "random", () => 0.999);
-	await initRoadCarousel(secondRoot);
+	await initRoadCarousel(secondRoot, photoSources);
 	const secondSources = [...secondRoot.querySelector(".road-carousel-group").querySelectorAll(".road-car > img")].map(image => image.getAttribute("src"));
 	assert.notDeepEqual(secondSources, carSources, "random input changes the car order");
 	assert.deepEqual([...secondRoot.querySelector(".road-carousel-group").querySelectorAll(".road-photo img")].map(image => image.src), photos.map(image => image.src), "car randomization does not change photo order");
 	assert.ok(carSources.every((src) => originalCars.includes(src)));
 });
 
-test("a short generated list loads only its listed photos", async (t) => {
-	const root = await setup(t, { count: 3 });
+test("a short supplied list loads only its listed photos", async (t) => {
+	const { root, photoSources } = await setup(t, { count: 3 });
 	const window = root.ownerDocument.defaultView;
 	const fetch = window.fetch;
 	const requested = [];
@@ -158,13 +192,13 @@ test("a short generated list loads only its listed photos", async (t) => {
 		requested.push(Number(new URL(args[0]).pathname.match(/\/(\d+)\.png$/)[1]));
 		return fetch(...args);
 	};
-	await initRoadCarousel(root);
+	await initRoadCarousel(root, photoSources);
 	assert.deepEqual(requested, [1, 2, 3]);
 	assert.equal(root.querySelector(".road-carousel-group").children.length, 3);
 });
 
 test("loading remains busy through photo decoding and clears when ready", async (t) => {
-	const root = await setup(t, { count: 1 });
+	const { root, photoSources } = await setup(t, { count: 1 });
 	const window = root.ownerDocument.defaultView;
 	let releasePhoto;
 	let decodingStarted;
@@ -180,7 +214,7 @@ test("loading remains busy through photo decoding and clears when ready", async 
 		await decoded;
 		return originalDecode.call(this);
 	};
-	const loading = initRoadCarousel(root);
+	const loading = initRoadCarousel(root, photoSources);
 	assert.equal(root.getAttribute("aria-busy"), "true");
 	await decoding;
 	assert.equal(root.getAttribute("aria-busy"), "true");
@@ -198,27 +232,27 @@ for (const options of [
 	{ contentType: "text/html" },
 ]) {
 	test(`loading failure preserves the static photo gallery: ${JSON.stringify(options)}`, async (t) => {
-		const root = await setup(t, options);
+		const { root, photoSources } = await setup(t, options);
 		const before = root.innerHTML;
-		await assert.rejects(initRoadCarousel(root));
+		await assert.rejects(initRoadCarousel(root, photoSources));
 		assert.equal(root.innerHTML, before);
 		assert.notEqual(root.dataset.ready, "true");
 		assert.equal(root.getAttribute("aria-busy"), "false");
 	});
 }
 
-test("an empty generated list preserves the fallback without starting a loop", async (t) => {
-	const root = await setup(t, { count: 0 });
+test("an empty supplied list preserves the fallback without starting a loop", async (t) => {
+	const { root, photoSources } = await setup(t, { count: 0 });
 	const before = root.innerHTML;
-	await initRoadCarousel(root);
+	await initRoadCarousel(root, photoSources);
 	assert.equal(root.innerHTML, before);
 	assert.notEqual(root.dataset.ready, "true");
 	assert.equal(root.getAttribute("aria-busy"), "false");
 });
 
 test("loop duration follows rendered travel distance and updates on resize", async (t) => {
-	const root = await setup(t, { count: 15 });
-	await initRoadCarousel(root);
+	const { root, photoSources } = await setup(t, { count: 15 });
+	await initRoadCarousel(root, photoSources);
 	const duration = () =>
 		parseFloat(root.style.getPropertyValue("--road-loop-duration"));
 	assert.ok(Math.abs(duration() - 166.666665) < 0.001);
@@ -235,8 +269,8 @@ test("loop duration follows rendered travel distance and updates on resize", asy
 });
 
 test("a short row accounts for viewport space in its travel duration", async (t) => {
-	const root = await setup(t, { count: 1 });
-	await initRoadCarousel(root);
+	const { root, photoSources } = await setup(t, { count: 1 });
+	await initRoadCarousel(root, photoSources);
 	const duration = parseFloat(
 		root.style.getPropertyValue("--road-loop-duration"),
 	);
@@ -244,7 +278,7 @@ test("a short row accounts for viewport space in its travel duration", async (t)
 });
 
 test("metadata loading overlaps requests and decoding while a later HEAD is pending", async (t) => {
-	const root = await setup(t, { count: 8 });
+	const { root, photoSources } = await setup(t, { count: 8 });
 	const window = root.ownerDocument.defaultView;
 	const fetch = window.fetch;
 	let release;
@@ -266,7 +300,7 @@ test("metadata loading overlaps requests and decoding while a later HEAD is pend
 		else await firstThree;
 		return fetch(url, options);
 	};
-	const loading = initRoadCarousel(root);
+	const loading = initRoadCarousel(root, photoSources);
 	try {
 		await waitFor(() => requests.length >= 4, "four HEAD requests must start before any response is released");
 		assert.equal(requests.length, 4, "metadata concurrency must be bounded to four requests");
@@ -284,7 +318,7 @@ test("metadata loading overlaps requests and decoding while a later HEAD is pend
 });
 
 test("metadata loading refills available request slots while a sibling is pending", async (t) => {
-	const root = await setup(t, { count: 8 });
+	const { root, photoSources } = await setup(t, { count: 8 });
 	const window = root.ownerDocument.defaultView;
 	const fetch = window.fetch;
 	let releaseFourth;
@@ -302,7 +336,7 @@ test("metadata loading refills available request slots while a sibling is pendin
 		activeRequests--;
 		return response;
 	};
-	const loading = initRoadCarousel(root);
+	const loading = initRoadCarousel(root, photoSources);
 	try {
 		await waitFor(
 			() => requested.includes(8),
@@ -318,7 +352,7 @@ test("metadata loading refills available request slots while a sibling is pendin
 });
 
 test("the initial row starts before the last photo decodes", async (t) => {
-	const root = await setup(t, { count: 15 });
+	const { root, photoSources } = await setup(t, { count: 15 });
 	const window = root.ownerDocument.defaultView;
 	const decode = window.HTMLImageElement.prototype.decode;
 	let release;
@@ -329,7 +363,7 @@ test("the initial row starts before the last photo decodes", async (t) => {
 		if (this.src.endsWith("/15.png")) await gate;
 		return decode.call(this);
 	};
-	const loading = initRoadCarousel(root);
+	const loading = initRoadCarousel(root, photoSources);
 	try {
 		await waitFor(() => root.dataset.ready === "true", "the initial row must start while photo 15 is pending");
 		assert.equal(root.dataset.ready, "true");
@@ -346,7 +380,7 @@ test("the initial row starts before the last photo decodes", async (t) => {
 });
 
 test("a later loading failure preserves the already running row", async (t) => {
-	const root = await setup(t, { count: 8 });
+	const { root, photoSources } = await setup(t, { count: 8 });
 	const window = root.ownerDocument.defaultView;
 	const fetch = window.fetch;
 	let release;
@@ -358,7 +392,7 @@ test("a later loading failure preserves the already running row", async (t) => {
 		}
 		return fetch(url, options);
 	};
-	const loading = initRoadCarousel(root);
+	const loading = initRoadCarousel(root, photoSources);
 	const rejected = assert.rejects(loading, /photo 7: HTTP 503/);
 	let runningRow;
 	try {
@@ -376,7 +410,7 @@ test("a later loading failure preserves the already running row", async (t) => {
 });
 
 test("a row kept after a later failure updates phone cadence without publishing partial photos", async (t) => {
-	const root = await setup(t, { count: 8 });
+	const { root, photoSources } = await setup(t, { count: 8 });
 	const window = root.ownerDocument.defaultView;
 	const group = root.querySelector(".road-carousel-group");
 	const track = group.parentElement;
@@ -405,7 +439,7 @@ test("a row kept after a later failure updates phone cadence without publishing 
 		if (this.src.endsWith("/7.png")) markSevenDecoded();
 	};
 
-	const loading = initRoadCarousel(root);
+	const loading = initRoadCarousel(root, photoSources);
 	const rejected = assert.rejects(loading, /photo 8: HTTP 503/);
 	await waitFor(() => root.dataset.ready === "true", "the first six photos must start");
 	assert.equal(group.children.length, 6);
@@ -438,7 +472,7 @@ test("a row kept after a later failure updates phone cadence without publishing 
 });
 
 test("a stalled metadata request has a deadline and cannot mutate the fallback later", async (t) => {
-	const root = await setup(t);
+	const { root, photoSources } = await setup(t);
 	const window = root.ownerDocument.defaultView;
 	t.mock.timers.enable({ apis: ["setTimeout"] });
 	let release;
@@ -451,7 +485,7 @@ test("a stalled metadata request has a deadline and cannot mutate the fallback l
 		return fetch(...args);
 	};
 	const before = root.innerHTML;
-	const loading = initRoadCarousel(root);
+	const loading = initRoadCarousel(root, photoSources);
 	const rejected = assert.rejects(loading, /timed out/i);
 	t.mock.timers.tick(7999);
 	await flushTasks();
@@ -465,7 +499,7 @@ test("a stalled metadata request has a deadline and cannot mutate the fallback l
 });
 
 test("six decoded photos start even when HEAD 7 stalls", async (t) => {
-	const root = await setup(t, { count: 8 });
+	const { root, photoSources } = await setup(t, { count: 8 });
 	const window = root.ownerDocument.defaultView;
 	const fetch = window.fetch;
 	let release;
@@ -476,7 +510,7 @@ test("six decoded photos start even when HEAD 7 stalls", async (t) => {
 		if (url.endsWith("/7.png")) await gate;
 		return fetch(url, options);
 	};
-	const loading = initRoadCarousel(root);
+	const loading = initRoadCarousel(root, photoSources);
 	try {
 		await waitFor(() => root.dataset.ready === "true", "six decoded photos must start while HEAD 7 is pending");
 		assert.equal(root.dataset.ready, "true");
@@ -487,7 +521,7 @@ test("six decoded photos start even when HEAD 7 stalls", async (t) => {
 });
 
 test("a failed listed photo rejects without retrying or waiting for later metadata requests", async (t) => {
-	const root = await setup(t, { count: 4 });
+	const { root, photoSources } = await setup(t, { count: 4 });
 	const window = root.ownerDocument.defaultView;
 	const fetch = window.fetch;
 	let release;
@@ -501,7 +535,7 @@ test("a failed listed photo rejects without retrying or waiting for later metada
 	};
 	const before = root.innerHTML;
 	try {
-		await assert.rejects(initRoadCarousel(root), /photo 2: HTTP 404/);
+		await assert.rejects(initRoadCarousel(root, photoSources), /photo 2: HTTP 404/);
 		assert.equal(requests.filter(url => url.endsWith("/2.png")).length, 1);
 		assert.equal(root.getAttribute("aria-busy"), "false");
 	} finally {
@@ -513,12 +547,12 @@ test("a failed listed photo rejects without retrying or waiting for later metada
 
 for (const scenario of ["responsive", "changed original", "broken delivery"]) {
 	test(`listed photo delivery keeps PNG recovery: ${scenario}`, async (t) => {
-		const root = await setup(t, { count: 1 });
+		const { root, photoSources } = await setup(t, { count: 1 });
 		const window = root.ownerDocument.defaultView;
 		const fetch = window.fetch;
 		window.fetch = async (...args) => {
 			const response = await fetch(...args);
-			response.headers.set("Content-Length", String(roadPhotoSources[1].originalBytes + (scenario === "changed original" ? 1 : 0)));
+			response.headers.set("Content-Length", String(photoSources[1].originalBytes + (scenario === "changed original" ? 1 : 0)));
 			return response;
 		};
 		const decode = window.HTMLImageElement.prototype.decode;
@@ -528,7 +562,7 @@ for (const scenario of ["responsive", "changed original", "broken delivery"]) {
 			if (scenario === "broken delivery" && this.srcset) throw new Error("Invalid WebP");
 			return decode.call(this);
 		};
-		await initRoadCarousel(root);
+		await initRoadCarousel(root, photoSources);
 		const image = root.querySelector(".road-photo img");
 		assert.ok(image.src.endsWith("/assets/images/students-pass/1.png"));
 		if (scenario === "responsive") {

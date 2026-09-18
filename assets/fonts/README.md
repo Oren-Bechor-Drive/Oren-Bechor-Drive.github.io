@@ -14,6 +14,8 @@ The [license source](https://github.com/google/fonts/blob/main/ofl/varelaround/O
 
 ## Delivery and maintenance
 
-Both subsets use `font-display: swap` and are preloaded with `crossorigin` in [index.html](../../index.html). Hebrew letters use the Hebrew subset; ASCII punctuation and digits use the Latin subset. Keep both font files and their preloads even though the visible copy is Hebrew. The bundled font has weight 400; the browser synthesizes the heavier weights used by the page.
+Both subsets use `font-display: swap` and are preloaded with `crossorigin` in the welcome page, course library, learning page, and practice-quiz pages. Hebrew letters use the Hebrew subset; ASCII punctuation and digits use the Latin subset. Keep both font files and their preloads even though the visible copy is Hebrew. The bundled font has weight 400; the browser synthesizes the heavier weights used by the pages.
 
 If the files change, update the CSS URLs, Unicode ranges, HTML preload URLs, and source table together. Preserve the supplied font bytes and license text during punctuation or documentation edits. Run `npm test` from the repository root to check font loading and avoid duplicate downloads. See [font delivery](../../README.md#font-delivery) for the complete workflow.
+
+The site-wide media audit checks image declarations, not font files. Keep browser font-delivery checks alongside the content and image checks when adding another authored page.
