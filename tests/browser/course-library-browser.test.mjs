@@ -12,6 +12,87 @@ const topicControl = (page, id) => page.locator(`.topic-tab[data-topic="${id}"]:
 const topicOutline = (page, id) => page.locator(`.topic-reader[data-subject="${id}"] .subject-outline:visible, #${id} .subject-outline:visible`);
 const visibleTopics = page => page.locator(".topic-tab:visible, .subject:visible");
 
+test("desktop topic motion follows pointer input and settles for keyboard and reduced motion", async t => {
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+	await page.route("**/*", serveRoadMedia);
+	await page.goto("http://gallery.test/course/");
+	// Slow only the observation window, so loaded CI machines can sample mid-transition.
+	await page.evaluate(() => {
+		const sheet = [...document.styleSheets].find(sheet => sheet.href.endsWith("/course/css/course.css"));
+		sheet.insertRule('.topic-reader[data-motion="true"] > * { transition-duration: 10s; }', sheet.cssRules.length);
+	});
+	const sample = () => page.evaluate(() => {
+		return Number(getComputedStyle(document.querySelector(".topic-reader > h3")).opacity);
+	});
+	const frames = () => page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+	await topicControl(page, "signs-and-speed").click();
+	await frames();
+	assert.ok(await sample() < 1, "pointer selection enters gradually");
+	await topicControl(page, "right-of-way").dispatchEvent("click", { detail: 1 });
+	assert.equal(await page.locator('.topic-reader[data-subject="right-of-way"]').count(), 1, "rapid selection immediately updates to the latest topic");
+	await page.keyboard.press("Tab");
+	await frames();
+	assert.equal(await sample(), 1, "keyboard interaction settles active motion");
+	await topicControl(page, "roundabouts").focus();
+	await page.keyboard.press("Enter");
+	await frames();
+	assert.equal(await sample(), 1, "keyboard selection has no entrance delay");
+	await topicControl(page, "overtaking").click();
+	await page.emulateMedia({ reducedMotion: "reduce" });
+	await frames();
+	assert.equal(await sample(), 1, "enabling reduced motion settles an active transition");
+	await topicControl(page, "right-of-way").click();
+	await frames();
+	assert.equal(await sample(), 1, "reduced motion leaves subsequent selections immediately readable");
+	assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+	await page.close();
+});
+
+test("mobile cards animate their full height in both directions and reverse without jumping", async t => {
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	const page = await browser.newPage({ viewport: { width: 390, height: 900 }, hasTouch: true });
+	await page.route("**/*", serveRoadMedia);
+	await page.goto("http://gallery.test/course/");
+	const sampleToggle = id => page.locator(`#${id}`).evaluate(subject => {
+		const before = subject.getBoundingClientRect().height;
+		subject.querySelector("summary").dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, detail: 1 }));
+		const animation = subject.getAnimations()[0];
+		animation.pause();
+		animation.currentTime = 0;
+		const start = subject.getBoundingClientRect().height;
+		animation.currentTime = 50;
+		return { before, start, middle: subject.getBoundingClientRect().height, open: subject.open };
+	});
+	const opening = await sampleToggle("learning-foundations");
+	assert.ok(Math.abs(opening.before - opening.start) < 1, "description does not jump into the summary before the card grows");
+	assert.ok(opening.middle > opening.start, "opening increases the entire card height");
+	const closing = await sampleToggle("learning-foundations");
+	assert.ok(Math.abs(closing.before - closing.start) < 1, "rapid reversal starts from the visible height");
+	assert.ok(closing.middle < closing.start, "closing reduces the entire card height");
+	assert.equal(closing.open, true, "closing content stays rendered until the animation finishes");
+	await sampleToggle("learning-foundations");
+	await sampleToggle("right-of-way");
+	await page.keyboard.press("Tab");
+	assert.deepEqual(await page.locator(".subject[open]").evaluateAll(elements => elements.map(el => el.id)), ["right-of-way"], "keyboard input settles both the outgoing and incoming card");
+	await topicControl(page, "roundabouts").focus();
+	await page.keyboard.press("Enter");
+	assert.equal(await page.locator(".subject").evaluateAll(elements => elements.flatMap(el => el.getAnimations()).length), 0, "keyboard selections are immediate");
+	await sampleToggle("signs-and-speed");
+	await page.emulateMedia({ reducedMotion: "reduce" });
+	await page.waitForFunction(() => [...document.querySelectorAll(".subject")].every(subject => subject.getAnimations().length === 0));
+	await topicControl(page, "signs-and-speed").tap();
+	assert.equal(await page.locator(".subject[open]").count(), 0, "reduced motion closes immediately");
+	await page.emulateMedia({ reducedMotion: "no-preference" });
+	await topicControl(page, "learning-foundations").tap();
+	await page.waitForFunction(() => document.querySelector("#learning-foundations").style.height === "");
+	await topicControl(page, "learning-foundations").tap();
+	await page.waitForFunction(() => !document.querySelector("#learning-foundations").open);
+	assert.equal(await page.locator("#learning-foundations").evaluate(el => el.style.height), "", "finished animations release fixed sizing");
+});
+
 test("library learning content has contextual validation diagnostics", () => assert.deepEqual(issues, []));
 
 test("course preview preserves the welcome page's seven topic descriptions", async () => {

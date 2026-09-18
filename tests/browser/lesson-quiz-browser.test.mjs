@@ -29,6 +29,11 @@ for (const quiz of quizzes.filter(quiz => quiz.placeholder)) {
 	});
 }
 
+async function selectQuestion(page, index) {
+	await page.getByRole("combobox", { name: "מעבר לשאלה" }).click();
+	await page.getByRole("option").nth(index).click();
+}
+
 async function exerciseQuiz(page, count) {
 	const questions = page.locator(".quiz-question");
 	await page.locator("[data-quiz-controls]").waitFor({ state: "visible" });
@@ -41,7 +46,7 @@ async function exerciseQuiz(page, count) {
 		await page.locator("[data-quiz-next]").click();
 		await page.locator("[data-quiz-previous]").click();
 		assert.equal(await questions.first().locator("input").first().isChecked(), true);
-		await page.getByLabel("מעבר לשאלה").selectOption(String(last));
+		await selectQuestion(page, last);
 		await questions.last().locator("input").last().check();
 	}
 	await page.locator("[data-quiz-next]").click();
@@ -50,7 +55,7 @@ async function exerciseQuiz(page, count) {
 	await page.getByRole("button", { name: "חזרה לשאלות", exact: true }).click();
 	assert.equal(await questions.nth(last).isVisible(), true);
 	assert.equal(await questions.nth(last).locator("input:checked").count(), 1);
-	await page.getByLabel("מעבר לשאלה").selectOption("0");
+	await selectQuestion(page, 0);
 	assert.equal(await questions.first().locator("input").first().isChecked(), true);
 	assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
 }
@@ -69,7 +74,7 @@ for (const quiz of quizzes) {
 			// Visit each video question wherever the author placed it.
 			for (const [index, question] of quiz.questions.entries()) {
 				if (!question.videoCount) continue;
-				await page.getByLabel("מעבר לשאלה").selectOption(String(index));
+				await selectQuestion(page, index);
 				assert.equal(await page.locator(".quiz-question").nth(index).locator(".video-placeholder").first().isVisible(), true);
 			}
 			await page.locator(".lesson-back").click();

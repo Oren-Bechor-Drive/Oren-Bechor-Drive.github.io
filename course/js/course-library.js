@@ -12,6 +12,8 @@ const topicList = document.querySelector(".topic-list");
 const reader = document.querySelector(".topic-reader");
 const subjectList = document.querySelector(".subject-list");
 const desktop = matchMedia("(min-width: 900px)");
+const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+const disclosures = new Map();
 const storageKey = "oren-course:last-topic";
 let selectedSubject = subjects[0];
 
@@ -25,12 +27,13 @@ const tabs = new Map(subjects.map(subject => {
 	tab.setAttribute("role", "tab");
 	tab.setAttribute("aria-controls", reader.id);
 	tab.textContent = subject.querySelector("h3").textContent;
-	tab.addEventListener("click", () => selectSubject(subject));
+	tab.addEventListener("click", event => selectSubject(subject, event.detail > 0));
 	topicList.append(tab);
 	return [subject.id, tab];
 }));
 
-function renderSubject(subject) {
+function renderSubject(subject, animate = false) {
+	reader.dataset.motion = String(animate && subject !== selectedSubject);
 	selectedSubject = subject;
 	reader.dataset.subject = subject.id;
 	reader.setAttribute("aria-labelledby", tabs.get(subject.id).id);
@@ -42,8 +45,8 @@ function renderSubject(subject) {
 	}
 }
 
-function selectSubject(subject) {
-	renderSubject(subject);
+function selectSubject(subject, animate = false) {
+	renderSubject(subject, animate);
 	try { localStorage.setItem(storageKey, subject.id); } catch {}
 }
 
@@ -96,7 +99,7 @@ function openLinkedSubject(focus = false) {
 	if (!subject) return;
 	clearSearch();
 	selectSubject(subject);
-	subject.open = true;
+	openDisclosure(subject);
 	const control = desktop.matches ? tabs.get(subject.id) : subject.querySelector("summary");
 	if (focus) control.focus({ preventScroll: true });
 	(desktop.matches ? browser : subject).scrollIntoView({ block: "start" });
@@ -105,11 +108,59 @@ function openLinkedSubject(focus = false) {
 // Storage is optional. A blocked or stale record must not affect topic browsing.
 try { showLastTopic(localStorage.getItem(storageKey)); } catch {}
 
+// Measure the whole card so the description inside summary moves with the outline.
+// Keep closing content rendered until its height reaches the compact summary.
+function setDisclosure(subject, open, animate = false) {
+	const height = subject.getBoundingClientRect().height;
+	disclosures.get(subject)?.animation.cancel();
+	disclosures.delete(subject);
+	subject.style.height = "";
+	subject.style.overflow = "";
+	subject.open = open;
+	if (!animate || reducedMotion.matches || desktop.matches) return;
+	const target = subject.getBoundingClientRect().height;
+	subject.open = true;
+	subject.style.height = `${height}px`;
+	subject.style.overflow = "clip";
+	const animation = subject.animate({ height: [`${height}px`, `${target}px`] }, {
+		duration: 200,
+		easing: getComputedStyle(subject).getPropertyValue("--ease-out").trim(),
+		fill: "forwards",
+	});
+	disclosures.set(subject, { animation, open });
+	animation.onfinish = () => setDisclosure(subject, open);
+}
+
+function settleDisclosures() {
+	for (const [subject, { open }] of disclosures) setDisclosure(subject, open);
+}
+
+function openDisclosure(subject, animate = false) {
+	for (const other of subjects) {
+		if (other !== subject && other.open) setDisclosure(other, false, animate);
+	}
+	setDisclosure(subject, true, animate);
+}
+
 for (const subject of subjects) {
-	subject.querySelector("summary").addEventListener("click", () => {
-		if (!subject.open) selectSubject(subject);
+	// Native named details retain exclusive behavior if this module does not load.
+	subject.removeAttribute("name");
+	subject.querySelector("summary").addEventListener("click", event => {
+		event.preventDefault();
+		const open = !(disclosures.get(subject)?.open ?? subject.open);
+		if (open) {
+			selectSubject(subject);
+			openDisclosure(subject, event.detail > 0);
+		} else setDisclosure(subject, false, event.detail > 0);
 	});
 }
+
+// Keyboard interaction settles pointer transitions before focus or state changes.
+document.addEventListener("keydown", () => {
+	reader.dataset.motion = "false";
+	settleDisclosures();
+}, true);
+reducedMotion.addEventListener("change", settleDisclosures);
 
 topicList.addEventListener("keydown", event => {
 	const visible = [...tabs.values()].filter(tab => !tab.hidden);
@@ -127,8 +178,9 @@ topicList.addEventListener("keydown", event => {
 });
 
 desktop.addEventListener("change", () => {
+	settleDisclosures();
 	const focused = browser.contains(document.activeElement) || subjectList.contains(document.activeElement);
-	if (!desktop.matches && !selectedSubject.hidden) selectedSubject.open = true;
+	if (!desktop.matches && !selectedSubject.hidden) openDisclosure(selectedSubject);
 	updatePresentation();
 	if (focused && !selectedSubject.hidden) {
 		const control = desktop.matches ? tabs.get(selectedSubject.id) : selectedSubject.querySelector("summary");

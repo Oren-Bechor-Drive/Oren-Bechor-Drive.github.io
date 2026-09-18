@@ -12,6 +12,7 @@ for (const javaScriptEnabled of [true, false]) {
 			const page = await browser.newPage({ viewport: { width, height: 900 }, javaScriptEnabled, reducedMotion: "no-preference" });
 			await page.route("**/*", serveRoadMedia);
 			await page.goto("http://gallery.test/course/right-of-way/");
+			const offset = (await page.locator(".course-header").boundingBox()).height + 24;
 			const link = page.locator('.lesson-contents a[href="#u-turn"]');
 			await link.focus();
 			const start = await page.evaluate(() => scrollY);
@@ -24,10 +25,10 @@ for (const javaScriptEnabled of [true, false]) {
 				const position = await page.evaluate(() => ({ y: scrollY, top: document.getElementById("u-turn").getBoundingClientRect().top }));
 				samples.push(position.y);
 				top = position.top;
-				if (Math.abs(top - 24) < 2) break;
+				if (Math.abs(top - offset) < 2) break;
 				await setTimeout(50);
 			} while (Date.now() < deadline);
-			assert.ok(Math.abs(top - 24) < 2, "the section reaches its scroll offset");
+			assert.ok(Math.abs(top - offset) < 2, "the section reaches its scroll offset below the sticky header");
 			const state = await page.evaluate(() => ({
 				behavior: getComputedStyle(document.documentElement).scrollBehavior,
 				focusedSection: document.activeElement.matches(".lesson-section"),
@@ -44,7 +45,7 @@ for (const javaScriptEnabled of [true, false]) {
 			await page.goto("http://gallery.test/course/right-of-way/");
 			await page.locator('.lesson-contents a[href="#left-turn"]').click();
 			const reducedTop = await page.locator("#left-turn").evaluate(element => element.getBoundingClientRect().top);
-			assert.ok(Math.abs(reducedTop - 24) < 2, "reduced motion reaches its destination immediately");
+			assert.ok(Math.abs(reducedTop - offset) < 2, "reduced motion reaches its destination immediately");
 			await page.close();
 		}
 	});

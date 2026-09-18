@@ -6,7 +6,7 @@ html.lesson-page { scroll-behavior: smooth; }
 .lesson-intro > p { max-width: 65ch; margin: 16px 0 0; font-size: 18px; color: var(--text-soft); }
 .lesson-intro .lesson-draft { font-size: 14px; }
 .lesson-layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 40px; align-items: start; margin-block-end: 48px; }
-.lesson-contents { position: sticky; top: 24px; }
+.lesson-contents { position: sticky; top: calc(var(--header-height) + 24px); }
 .lesson-contents h2 { font-size: 18px; margin: 0; }
 .lesson-contents p { font-size: 14px; color: var(--text-soft); margin: 8px 0 16px; }
 .lesson-contents ul { list-style: none; padding: 0; margin: 0; }
