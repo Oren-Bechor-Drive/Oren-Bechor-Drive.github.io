@@ -200,9 +200,15 @@ export async function readLearningContent(rootDir) {
 			const title = heading?.textContent.trim() ?? "";
 			if (!title || !element.contains(heading))
 				report(location, "section needs its declared heading");
+			const declaredFormat = element.getAttribute("data-lesson-format");
+			const format = declaredFormat === null ? "quiz" : declaredFormat;
+			if (!["quiz", "reading"].includes(format))
+				report(location, `unknown lesson format '${format}'`);
 			const links = [...element.querySelectorAll(".lesson-quiz-link")];
-			if (links.length !== 1)
-				report(location, "section needs exactly one quiz link");
+			if (format === "reading" && links.length)
+				report(location, "reading-only section must not have a quiz link");
+			if (format === "quiz" && links.length !== 1)
+				report(location, "quiz section needs exactly one quiz link");
 			const quizFile = localPage(links[0]?.getAttribute("href"), file);
 			if (links.length && !quizFile)
 				report(
@@ -212,13 +218,15 @@ export async function readLearningContent(rootDir) {
 			const section = {
 				id: element.id,
 				title,
-				quizFile,
+				format,
+				quizFile: format === "quiz" ? quizFile : null,
 				videoCount: element.querySelectorAll(
 					'.video-placeholder[role="img"][aria-label]',
 				).length,
 			};
 			sections.push(section);
-			if (quizFile && title) readQuiz(quizFile, file, section);
+			if (format === "quiz" && quizFile && title)
+				readQuiz(quizFile, file, section);
 		}
 		if (!sections.length)
 			report(file, "learning page needs at least one section");
@@ -235,7 +243,7 @@ export async function readLearningContent(rootDir) {
 			sections,
 			sourceLabels: document.querySelectorAll(".lesson-source").length,
 			sourceLinks: document.querySelectorAll(
-				'a[href*="the-idea.pdf"], a[href^="https://"]',
+				'a[href*="the-idea.pdf"], a[href^="https://"]:not(.official-resource[href^="https://www.gov.il/"])',
 			).length,
 		});
 	}

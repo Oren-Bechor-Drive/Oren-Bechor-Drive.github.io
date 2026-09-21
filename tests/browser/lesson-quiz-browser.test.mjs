@@ -205,7 +205,7 @@ for (const count of [1, 5]) {
 		// Adapt an actual page's shell. Only fixture questions vary; the real entry module runs.
 		const dom = new JSDOM(
 			await readFile(
-				"course/right-of-way/quizzes/priority/index.html",
+				"course/priority-hierarchy/quizzes/priority/index.html",
 				"utf8",
 			),
 		);
@@ -237,7 +237,7 @@ for (const count of [1, 5]) {
 		});
 		await page.route("**/*", (route) =>
 			new URL(route.request().url()).pathname ===
-			"/course/right-of-way/quizzes/priority/fixture.html"
+			"/course/priority-hierarchy/quizzes/priority/fixture.html"
 				? route.fulfill({
 						contentType: "text/html",
 						body: dom.serialize(),
@@ -245,7 +245,7 @@ for (const count of [1, 5]) {
 				: serveRoadMedia(route),
 		);
 		await page.goto(
-			"http://gallery.test/course/right-of-way/quizzes/priority/fixture.html",
+			"http://gallery.test/course/priority-hierarchy/quizzes/priority/fixture.html",
 		);
 		await exerciseQuiz(page, count);
 		assert.equal(

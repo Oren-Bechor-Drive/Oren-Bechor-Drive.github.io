@@ -5,16 +5,12 @@ const input = document.querySelector("#topic-search");
 const clearButton = document.querySelector(".clear-search");
 const status = document.querySelector("[data-search-status]");
 const empty = document.querySelector(".search-empty");
-const lastTopic = document.querySelector(".last-topic");
-const lastTopicLink = document.querySelector("[data-last-topic-link]");
 const browser = document.querySelector(".library-browser");
 const topicList = document.querySelector(".topic-list");
 const reader = document.querySelector(".topic-reader");
 const subjectList = document.querySelector(".subject-list");
 const desktop = matchMedia("(min-width: 900px)");
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
-const disclosures = new Map();
-const storageKey = "oren-course:last-topic";
 let selectedSubject = subjects[0];
 
 // Both presentations use the authored outlines as their only content source.
@@ -29,7 +25,7 @@ const tabs = new Map(
 		tab.setAttribute("aria-controls", reader.id);
 		tab.textContent = subject.querySelector("h3").textContent;
 		tab.addEventListener("click", (event) =>
-			selectSubject(subject, event.detail > 0),
+			renderSubject(subject, event.detail > 0),
 		);
 		topicList.append(tab);
 		return [subject.id, tab];
@@ -51,13 +47,6 @@ function renderSubject(subject, animate = false) {
 		tab.setAttribute("aria-selected", String(selected));
 		tab.tabIndex = selected ? 0 : -1;
 	}
-}
-
-function selectSubject(subject, animate = false) {
-	renderSubject(subject, animate);
-	try {
-		localStorage.setItem(storageKey, subject.id);
-	} catch {}
 }
 
 function updatePresentation() {
@@ -97,6 +86,7 @@ function filterSubjects() {
 	status.textContent = words.length
 		? `נמצאו ${count} נושאים`
 		: `${subjects.length} נושאים לבחירה`;
+	topicDisclosures.filterChanged();
 }
 
 function clearSearch() {
@@ -104,21 +94,12 @@ function clearSearch() {
 	filterSubjects();
 }
 
-function showLastTopic(id) {
-	const subject = subjectsById.get(id);
-	if (!subject) return;
-	document.querySelector("[data-last-topic-name]").textContent =
-		subject.querySelector("h3").textContent;
-	lastTopicLink.hash = id;
-	lastTopic.hidden = false;
-}
-
 function openLinkedSubject(focus = false) {
 	const subject = subjectsById.get(location.hash.slice(1));
 	if (!subject) return;
 	clearSearch();
-	selectSubject(subject);
-	openDisclosure(subject);
+	renderSubject(subject);
+	topicDisclosures.open(subject);
 	const control = desktop.matches
 		? tabs.get(subject.id)
 		: subject.querySelector("summary");
@@ -126,74 +107,133 @@ function openLinkedSubject(focus = false) {
 	(desktop.matches ? browser : subject).scrollIntoView({ block: "start" });
 }
 
-// Storage is optional. A blocked or stale record must not affect topic browsing.
-try {
-	showLastTopic(localStorage.getItem(storageKey));
-} catch {}
+function initTopicDisclosures() {
+	const transitions = new Map();
+	let positionFrame;
 
-// Measure the whole card so the description inside summary moves with the outline.
-// Keep closing content rendered until its height reaches the compact summary.
-function setDisclosure(subject, open, animate = false) {
-	const height = subject.getBoundingClientRect().height;
-	disclosures.get(subject)?.animation.cancel();
-	disclosures.delete(subject);
-	subject.style.height = "";
-	subject.style.overflow = "";
-	subject.open = open;
-	if (!animate || reducedMotion.matches || desktop.matches) return;
-	const target = subject.getBoundingClientRect().height;
-	subject.open = true;
-	subject.style.height = `${height}px`;
-	subject.style.overflow = "clip";
-	const animation = subject.animate(
-		{ height: [`${height}px`, `${target}px`] },
-		{
-			duration: 200,
-			easing: getComputedStyle(subject)
-				.getPropertyValue("--ease-out")
-				.trim(),
-			fill: "forwards",
-		},
-	);
-	disclosures.set(subject, { animation, open });
-	animation.onfinish = () => setDisclosure(subject, open);
-}
-
-function settleDisclosures() {
-	for (const [subject, { open }] of disclosures) setDisclosure(subject, open);
-}
-
-function openDisclosure(subject, animate = false) {
-	for (const other of subjects) {
-		if (other !== subject && other.open)
-			setDisclosure(other, false, animate);
+	function cancelPositionTracking() {
+		cancelAnimationFrame(positionFrame);
+		positionFrame = undefined;
 	}
-	setDisclosure(subject, true, animate);
-}
 
-for (const subject of subjects) {
-	// Native named details retain exclusive behavior if this module does not load.
-	subject.removeAttribute("name");
-	subject.querySelector("summary").addEventListener("click", (event) => {
-		event.preventDefault();
-		const open = !(disclosures.get(subject)?.open ?? subject.open);
-		if (open) {
-			selectSubject(subject);
-			openDisclosure(subject, event.detail > 0);
-		} else setDisclosure(subject, false, event.detail > 0);
+	// Measure the whole card so the description inside summary moves with the outline.
+	// Keep closing content rendered until its height reaches the compact summary.
+	function setOpen(subject, open, animate = false) {
+		const height = subject.getBoundingClientRect().height;
+		transitions.get(subject)?.animation.cancel();
+		transitions.delete(subject);
+		subject.style.height = "";
+		subject.style.overflow = "";
+		subject.open = open;
+		if (!animate || reducedMotion.matches || desktop.matches) return;
+		const target = subject.getBoundingClientRect().height;
+		subject.open = true;
+		subject.style.height = `${height}px`;
+		subject.style.overflow = "clip";
+		const animation = subject.animate(
+			{ height: [`${height}px`, `${target}px`] },
+			{
+				duration: 200,
+				easing: getComputedStyle(subject)
+					.getPropertyValue("--ease-out")
+					.trim(),
+				fill: "forwards",
+			},
+		);
+		transitions.set(subject, { animation, open });
+		animation.onfinish = () => setOpen(subject, open);
+	}
+
+	function settle() {
+		for (const [subject, { open }] of transitions) setOpen(subject, open);
+	}
+
+	function preserveSummaryPosition(subject, top) {
+		const summary = subject.querySelector("summary");
+		const scrollPadding = Number.parseFloat(
+			getComputedStyle(document.documentElement).scrollPaddingTop,
+		);
+		const targetTop = Math.max(top, scrollPadding);
+		const adjust = () => {
+			positionFrame = undefined;
+			if (desktop.matches) return;
+			window.scrollBy(0, summary.getBoundingClientRect().top - targetTop);
+			if (transitions.size) positionFrame = requestAnimationFrame(adjust);
+		};
+		positionFrame = requestAnimationFrame(adjust);
+	}
+
+	function openExclusively(subject, animate = false) {
+		for (const other of subjects) {
+			if (other !== subject && other.open) setOpen(other, false, animate);
+		}
+		setOpen(subject, true, animate);
+	}
+
+	for (const subject of subjects) {
+		// Native named details retain exclusive behavior if this module does not load.
+		subject.removeAttribute("name");
+		subject.querySelector("summary").addEventListener("click", (event) => {
+			event.preventDefault();
+			cancelPositionTracking();
+			const open = !(transitions.get(subject)?.open ?? subject.open);
+			if (open) {
+				const summaryTop = event.currentTarget.getBoundingClientRect().top;
+				const precedingSubjectIsOpen = subjects.some(
+					(other) =>
+						other !== subject &&
+						other.open &&
+						other.compareDocumentPosition(subject) &
+							Node.DOCUMENT_POSITION_FOLLOWING,
+				);
+				renderSubject(subject);
+				openExclusively(subject, event.detail > 0);
+				if (!desktop.matches && precedingSubjectIsOpen)
+					preserveSummaryPosition(subject, summaryTop);
+			} else setOpen(subject, false, event.detail > 0);
+		});
+	}
+
+	// Keyboard and viewport changes finish disclosure motion before changing focus.
+	document.addEventListener(
+		"keydown",
+		() => {
+			cancelPositionTracking();
+			settle();
+		},
+		true,
+	);
+	desktop.addEventListener("change", () => {
+		cancelPositionTracking();
+		settle();
+		if (!desktop.matches && !selectedSubject.hidden)
+			openExclusively(selectedSubject);
 	});
+
+	// Reduced motion finishes at the final height before position tracking stops.
+	reducedMotion.addEventListener("change", settle);
+	document.addEventListener("pointerdown", cancelPositionTracking, true);
+	document.addEventListener("wheel", cancelPositionTracking, { passive: true });
+
+	return {
+		filterChanged: cancelPositionTracking,
+		open(subject) {
+			cancelPositionTracking();
+			openExclusively(subject);
+		},
+	};
 }
 
-// Keyboard interaction settles pointer transitions before focus or state changes.
+const topicDisclosures = initTopicDisclosures();
+
+// Keyboard interaction also settles pointer motion in the desktop preview.
 document.addEventListener(
 	"keydown",
 	() => {
 		reader.dataset.motion = "false";
-		settleDisclosures();
 	},
 	true,
 );
-reducedMotion.addEventListener("change", settleDisclosures);
 
 topicList.addEventListener("keydown", (event) => {
 	const visible = [...tabs.values()].filter((tab) => !tab.hidden);
@@ -207,17 +247,14 @@ topicList.addEventListener("keydown", (event) => {
 	else if (event.key === "End") next = visible.length - 1;
 	else return;
 	event.preventDefault();
-	selectSubject(subjectsById.get(visible[next].dataset.topic));
+	renderSubject(subjectsById.get(visible[next].dataset.topic));
 	visible[next].focus();
 });
 
 desktop.addEventListener("change", () => {
-	settleDisclosures();
 	const focused =
 		browser.contains(document.activeElement) ||
 		subjectList.contains(document.activeElement);
-	if (!desktop.matches && !selectedSubject.hidden)
-		openDisclosure(selectedSubject);
 	updatePresentation();
 	if (focused && !selectedSubject.hidden) {
 		const control = desktop.matches
@@ -238,9 +275,6 @@ document.querySelector("[data-show-all]").addEventListener("click", () => {
 	input.focus();
 });
 window.addEventListener("hashchange", () => openLinkedSubject(true));
-lastTopicLink.addEventListener("click", () => {
-	if (lastTopicLink.hash === location.hash) openLinkedSubject(true);
-});
 form.hidden = false;
 renderSubject(selectedSubject);
 filterSubjects();

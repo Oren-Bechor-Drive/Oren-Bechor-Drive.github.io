@@ -13,6 +13,11 @@
 	justify-content: space-between;
 	gap: 12px;
 	margin-block: 24px;
+	padding: 14px 16px;
+	border: 1px solid rgb(197 207 226 / 0.72);
+	border-radius: var(--radius-control);
+	background: rgb(255 255 255 / 0.72);
+	box-shadow: var(--shadow-one);
 }
 .quiz-toolbar p {
 	margin: 0;
@@ -64,6 +69,10 @@
 	color: var(--text);
 	background: var(--white);
 	cursor: pointer;
+	transition:
+		border-color 160ms ease,
+		background-color 160ms ease,
+		box-shadow 160ms ease;
 }
 .question-trigger::after {
 	content: "";
@@ -78,6 +87,7 @@
 .question-trigger[aria-expanded="true"] {
 	border-color: var(--primary);
 	background: var(--primary-wash);
+	box-shadow: 0 0 0 3px rgb(38 71 150 / 0.1);
 }
 .question-trigger[aria-expanded="true"]::after {
 	mask-image: url("../../assets/icons/directions/chevron-up.svg");
@@ -94,6 +104,7 @@
 	padding: 6px;
 	overflow-y: auto;
 	overscroll-behavior: contain;
+	scrollbar-width: none;
 	list-style: none;
 	border: 1px solid var(--border-strong);
 	border-radius: 12px;
@@ -102,9 +113,6 @@
 		0 12px 28px -6px rgb(20 29 30 / 7%),
 		0 4px 10px -2px rgb(20 29 30 / 3%);
 	transform-origin: top left;
-}
-.question-options {
-	scrollbar-width: none;
 }
 .question-options::-webkit-scrollbar {
 	display: none;
@@ -175,13 +183,15 @@
 	margin: 0 0 24px;
 	padding: 24px 28px 28px;
 	background: var(--white);
-	border: 1px solid var(--border);
+	border: 1px solid rgb(197 207 226 / 0.72);
 	border-radius: var(--radius-card);
+	box-shadow: 0 20px 50px -40px rgb(30 57 120 / 0.48), var(--shadow-one);
 }
 .quiz-question legend {
 	padding: 0 8px;
 	font-size: 22px;
 	font-weight: 700;
+	color: var(--primary);
 }
 .quiz-question > p {
 	margin: 0 0 24px;
@@ -196,17 +206,21 @@
 	gap: 12px;
 	padding: 14px 16px;
 	min-height: 52px;
-	border: 1px solid var(--border-strong);
+	border: 1px solid var(--border);
 	border-radius: var(--radius-control);
+	background: var(--surface-low);
 	cursor: pointer;
-}
-.quiz-answers label:hover {
-	background: var(--primary-wash);
+	transition:
+		background-color 160ms ease,
+		border-color 160ms ease,
+		box-shadow 160ms ease,
+		transform 140ms var(--ease-out);
 }
 .quiz-answers label:has(input:checked) {
 	background: var(--primary-wash);
 	border-color: var(--primary);
 	color: var(--primary);
+	box-shadow: 0 8px 18px -16px rgb(30 57 120 / 0.7);
 }
 .quiz-answers label:has(input:focus-visible) {
 	outline: 3px solid var(--primary);
@@ -235,6 +249,11 @@
 	border-radius: var(--radius-control);
 	color: var(--primary);
 	cursor: pointer;
+	transition:
+		background-color 160ms ease,
+		border-color 160ms ease,
+		color 160ms ease,
+		transform 140ms var(--ease-out);
 }
 .quiz-previous:disabled {
 	background: var(--surface-high);
@@ -246,7 +265,8 @@
 	padding: 32px;
 	border-radius: var(--radius-card);
 	background: var(--white);
-	border: 1px solid var(--border);
+	border: 1px solid rgb(197 207 226 / 0.72);
+	box-shadow: 0 20px 50px -40px rgb(30 57 120 / 0.48), var(--shadow-one);
 }
 .quiz-result h2 {
 	margin: 0;
@@ -264,6 +284,19 @@
 	align-items: center;
 	min-height: 44px;
 	color: var(--primary);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.quiz-answers label:hover {
+		background: var(--primary-wash);
+		border-color: var(--border-strong);
+	}
+	@media (prefers-reduced-motion: no-preference) {
+		.quiz-answers label:hover,
+		.quiz-previous:hover:not(:disabled) {
+			transform: translateY(-1px);
+		}
+	}
 }
 
 @media (max-width: 639px) {

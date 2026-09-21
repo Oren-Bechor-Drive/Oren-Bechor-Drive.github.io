@@ -18,6 +18,33 @@ const topicOutline = (page, id) =>
 	);
 const visibleTopics = (page) =>
 	page.locator(".topic-tab:visible, .subject:visible");
+const waitForTwoFrames = (page) =>
+	page.evaluate(
+		() =>
+			new Promise((resolve) =>
+				requestAnimationFrame(() => requestAnimationFrame(resolve)),
+			),
+	);
+
+async function startMobileSubjectSwitch(page) {
+	await page.goto("http://gallery.test/course/");
+	await topicControl(page, "signs-and-speed").dispatchEvent("click", {
+		detail: 1,
+	});
+	await page.waitForFunction(
+		() => document.querySelector("#signs-and-speed").style.height === "",
+	);
+	const target = topicControl(page, "right-of-way");
+	await target.evaluate((summary) =>
+		summary.scrollIntoView({ block: "center" }),
+	);
+	const top = await target.evaluate(
+		(summary) => summary.getBoundingClientRect().top,
+	);
+	const box = await target.boundingBox();
+	await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+	return { target, top };
+}
 
 test("desktop topic motion follows pointer input and settles for keyboard and reduced motion", async (t) => {
 	const browser = await chromium.launch();
@@ -40,51 +67,37 @@ test("desktop topic motion follows pointer input and settles for keyboard and re
 	const sample = () =>
 		page.evaluate(() => {
 			return Number(
-				getComputedStyle(document.querySelector(".topic-reader > h3"))
-					.opacity,
+				getComputedStyle(document.querySelector(".topic-reader > h3")).opacity,
 			);
 		});
-	const frames = () =>
-		page.evaluate(
-			() =>
-				new Promise((resolve) =>
-					requestAnimationFrame(() => requestAnimationFrame(resolve)),
-				),
-		);
 	await topicControl(page, "signs-and-speed").click();
-	await frames();
+	await waitForTwoFrames(page);
 	assert.ok((await sample()) < 1, "pointer selection enters gradually");
 	await topicControl(page, "right-of-way").dispatchEvent("click", {
 		detail: 1,
 	});
 	assert.equal(
-		await page
-			.locator('.topic-reader[data-subject="right-of-way"]')
-			.count(),
+		await page.locator('.topic-reader[data-subject="right-of-way"]').count(),
 		1,
 		"rapid selection immediately updates to the latest topic",
 	);
 	await page.keyboard.press("Tab");
-	await frames();
-	assert.equal(
-		await sample(),
-		1,
-		"keyboard interaction settles active motion",
-	);
+	await waitForTwoFrames(page);
+	assert.equal(await sample(), 1, "keyboard interaction settles active motion");
 	await topicControl(page, "roundabouts").focus();
 	await page.keyboard.press("Enter");
-	await frames();
+	await waitForTwoFrames(page);
 	assert.equal(await sample(), 1, "keyboard selection has no entrance delay");
 	await topicControl(page, "overtaking").click();
 	await page.emulateMedia({ reducedMotion: "reduce" });
-	await frames();
+	await waitForTwoFrames(page);
 	assert.equal(
 		await sample(),
 		1,
 		"enabling reduced motion settles an active transition",
 	);
 	await topicControl(page, "right-of-way").click();
-	await frames();
+	await waitForTwoFrames(page);
 	assert.equal(
 		await sample(),
 		1,
@@ -111,16 +124,20 @@ test("mobile cards animate their full height in both directions and reverse with
 	const sampleToggle = (id) =>
 		page.locator(`#${id}`).evaluate((subject) => {
 			const before = subject.getBoundingClientRect().height;
-			subject
-				.querySelector("summary")
-				.dispatchEvent(
-					new MouseEvent("click", {
-						bubbles: true,
-						cancelable: true,
-						detail: 1,
-					}),
+			subject.querySelector("summary").dispatchEvent(
+				new MouseEvent("click", {
+					bubbles: true,
+					cancelable: true,
+					detail: 1,
+				}),
+			);
+			const animation = subject
+				.getAnimations()
+				.find((candidate) =>
+					candidate.effect
+						.getKeyframes()
+						.some((keyframe) => "height" in keyframe),
 				);
-			const animation = subject.getAnimations()[0];
 			animation.pause();
 			animation.currentTime = 0;
 			const start = subject.getBoundingClientRect().height;
@@ -172,7 +189,13 @@ test("mobile cards animate their full height in both directions and reverse with
 			.locator(".subject")
 			.evaluateAll(
 				(elements) =>
-					elements.flatMap((el) => el.getAnimations()).length,
+					elements
+						.flatMap((el) => el.getAnimations())
+						.filter((animation) =>
+							animation.effect
+								.getKeyframes()
+								.some((keyframe) => "height" in keyframe),
+						).length,
 			),
 		0,
 		"keyboard selections are immediate",
@@ -181,7 +204,14 @@ test("mobile cards animate their full height in both directions and reverse with
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	await page.waitForFunction(() =>
 		[...document.querySelectorAll(".subject")].every(
-			(subject) => subject.getAnimations().length === 0,
+			(subject) =>
+				subject
+					.getAnimations()
+					.every((animation) =>
+						animation.effect
+							.getKeyframes()
+							.every((keyframe) => !("height" in keyframe)),
+					),
 		),
 	);
 	await topicControl(page, "signs-and-speed").tap();
@@ -193,8 +223,7 @@ test("mobile cards animate their full height in both directions and reverse with
 	await page.emulateMedia({ reducedMotion: "no-preference" });
 	await topicControl(page, "learning-foundations").tap();
 	await page.waitForFunction(
-		() =>
-			document.querySelector("#learning-foundations").style.height === "",
+		() => document.querySelector("#learning-foundations").style.height === "",
 	);
 	await topicControl(page, "learning-foundations").tap();
 	await page.waitForFunction(
@@ -209,14 +238,155 @@ test("mobile cards animate their full height in both directions and reverse with
 	);
 });
 
+test("mobile subject switching preserves the activated summary's viewport position", async (t) => {
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	for (const reducedMotion of ["no-preference", "reduce"]) {
+		const page = await browser.newPage({
+			viewport: { width: 390, height: 844 },
+			hasTouch: true,
+			reducedMotion,
+		});
+		await page.route("**/*", serveRoadMedia);
+		const { target, top } = await startMobileSubjectSwitch(page);
+		await page.waitForFunction(
+			() =>
+				!document.querySelector("#signs-and-speed").open &&
+				document.querySelector("#right-of-way").style.height === "",
+		);
+		await waitForTwoFrames(page);
+		const after = await target.evaluate((summary) => {
+			const header = document
+				.querySelector(".course-header")
+				.getBoundingClientRect();
+			return {
+				headerBottom: header.bottom,
+				top: summary.getBoundingClientRect().top,
+			};
+		});
+		assert.ok(
+			Math.abs(after.top - top) < 2,
+			`${reducedMotion}: the activated summary stays where it was tapped`,
+		);
+		assert.ok(
+			after.top >= after.headerBottom,
+			`${reducedMotion}: the activated summary remains below the sticky header`,
+		);
+		await page.close();
+	}
+	const page = await browser.newPage({
+		viewport: { width: 390, height: 844 },
+		hasTouch: true,
+	});
+	await page.route("**/*", serveRoadMedia);
+	const { target, top } = await startMobileSubjectSwitch(page);
+	await page.emulateMedia({ reducedMotion: "reduce" });
+	await page.waitForFunction(
+		() =>
+			!document.querySelector("#signs-and-speed").open &&
+			document.querySelector("#right-of-way").style.height === "",
+	);
+	await waitForTwoFrames(page);
+	assert.ok(
+		Math.abs(
+			(await target.evaluate((summary) => summary.getBoundingClientRect().top)) -
+				top,
+		) < 2,
+		"enabling reduced motion finishes the position correction at the settled height",
+	);
+	await page.close();
+});
+
+test("mobile fragment navigation supersedes active subject position tracking", async (t) => {
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	const page = await browser.newPage({
+		viewport: { width: 390, height: 844 },
+		hasTouch: true,
+	});
+	await page.route("**/*", serveRoadMedia);
+	await startMobileSubjectSwitch(page);
+	await page.evaluate(() => {
+		location.hash = "roundabouts";
+	});
+	await waitForTwoFrames(page);
+	const position = await topicControl(page, "roundabouts").evaluate((summary) => ({
+		scrollPadding: Number.parseFloat(
+			getComputedStyle(document.documentElement).scrollPaddingTop,
+		),
+		top: summary.getBoundingClientRect().top,
+	}));
+	assert.ok(
+		Math.abs(position.top - position.scrollPadding) < 2,
+		"the fragment target keeps the scroll position chosen by fragment navigation",
+	);
+});
+
+test("mobile filtering supersedes active subject position tracking", async (t) => {
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	let page = await browser.newPage({
+		viewport: { width: 390, height: 844 },
+		hasTouch: true,
+	});
+	await page.route("**/*", serveRoadMedia);
+	await startMobileSubjectSwitch(page);
+	await page.locator("#topic-search").evaluate((input) => {
+		input.value = "zzz";
+		input.dispatchEvent(new InputEvent("input", { bubbles: true }));
+	});
+	await waitForTwoFrames(page);
+	assert.equal(
+		await page.evaluate(() => scrollY),
+		await page.evaluate(() => document.documentElement.scrollHeight - innerHeight),
+		"filtering keeps the browser's clamped scroll position",
+	);
+	await page.close();
+
+	page = await browser.newPage({
+		viewport: { width: 390, height: 844 },
+		hasTouch: true,
+	});
+	await page.route("**/*", serveRoadMedia);
+	await page.goto("http://gallery.test/course/");
+	const search = page.getByRole("searchbox");
+	await search.fill("מהירות");
+	await topicControl(page, "signs-and-speed").dispatchEvent("click", {
+		detail: 1,
+	});
+	await page.waitForFunction(
+		() => document.querySelector("#signs-and-speed").style.height === "",
+	);
+	const target = topicControl(page, "right-of-way");
+	await target.evaluate((summary) => summary.scrollIntoView({ block: "center" }));
+	const box = await target.boundingBox();
+	await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+	await page.evaluate(() => {
+		document.documentElement.style.scrollBehavior = "auto";
+	});
+	await page
+		.getByRole("button", { name: "ניקוי החיפוש" })
+		.evaluate((button) => button.click());
+	const resetPosition = await page.evaluate(() => scrollY);
+	await waitForTwoFrames(page);
+	assert.ok(
+		Math.abs((await page.evaluate(() => scrollY)) - resetPosition) < 2,
+		"a programmatic reset click is not undone by stale position tracking",
+	);
+	assert.equal(
+		await search.evaluate((element) => element === document.activeElement),
+		true,
+	);
+	await page.close();
+});
+
 test("library learning content has contextual validation diagnostics", () =>
 	assert.deepEqual(issues, []));
 
 test("course preview preserves the welcome page's seven topic descriptions", async () => {
 	const read = async (path) =>
-		new JSDOM(
-			await readFile(new URL(`../../${path}`, import.meta.url), "utf8"),
-		).window.document;
+		new JSDOM(await readFile(new URL(`../../${path}`, import.meta.url), "utf8"))
+			.window.document;
 	const visibleText = (element) =>
 		element.textContent.replace(/\s+/g, " ").trim();
 	const welcome = await read("index.html");
@@ -238,24 +408,26 @@ test("course preview preserves the welcome page's seven topic descriptions", asy
 			summaries.find(([title]) => title === description[0]),
 			description,
 		);
-	assert.equal(summaries.length, 9);
+	assert.equal(summaries.length, 10);
 	assert.equal(
 		visibleText(course.querySelector("[data-search-status]")),
-		"9 נושאים לבחירה",
+		"10 נושאים לבחירה",
 	);
 	assert.equal(course.documentElement.lang, "he");
 	assert.equal(course.documentElement.dir, "rtl");
-	assert.equal(
-		course.querySelector('meta[name="robots"]').content,
-		"noindex",
-	);
+	assert.equal(course.querySelector('meta[name="robots"]').content, "noindex");
 	assert.match(
 		course.querySelector(".course-preview-note").textContent,
 		/עדיין אינם זמינים/,
 	);
+	assert.equal(
+		course.querySelector(".last-topic"),
+		null,
+		"the removed last-topic return panel is absent from the course library",
+	);
 });
 
-test("course headers reserve blank profile space and only link the brand to home", async () => {
+test("course headers expose an unavailable profile control and only link the brand to home", async () => {
 	for (const file of [
 		"course/index.html",
 		...lessons.map((lesson) => lesson.file),
@@ -272,10 +444,13 @@ test("course headers reserve blank profile space and only link the brand to home
 			).pathname,
 			"/index.html",
 		);
-		const profile = header.querySelector(".course-profile-slot");
-		assert.equal(profile.getAttribute("aria-hidden"), "true");
-		assert.equal(profile.textContent.trim(), "");
-		assert.equal(profile.querySelector("button, a, [tabindex]"), null);
+		const profile = header.querySelector(".course-profile");
+		assert.equal(profile.tagName, "BUTTON");
+		assert.equal(profile.disabled, true);
+		assert.equal(profile.getAttribute("aria-label"), "הפרופיל עדיין אינו זמין");
+		assert.ok(
+			profile.querySelector(".course-profile-icon[aria-hidden='true']"),
+		);
 	}
 });
 
@@ -294,10 +469,7 @@ for (const mode of ["enhanced", "disabled", "blocked module"]) {
 				});
 				await page.route("**/*", (route) =>
 					mode === "blocked module" &&
-					route
-						.request()
-						.url()
-						.endsWith("/course/js/course-library.js")
+					route.request().url().endsWith("/course/js/course-library.js")
 						? route.abort()
 						: serveRoadMedia(route),
 				);
@@ -319,26 +491,16 @@ for (const mode of ["enhanced", "disabled", "blocked module"]) {
 					const control = topicControl(page, id);
 					await control.focus();
 					await page.keyboard.press("Enter");
-					assert.equal(
-						await topicOutline(page, id).isVisible(),
-						true,
-					);
+					assert.equal(await topicOutline(page, id).isVisible(), true);
 					assert.equal(
 						await topicOutline(page, id).textContent(),
-						await page
-							.locator(`#${id} .subject-outline`)
-							.textContent(),
+						await page.locator(`#${id} .subject-outline`).textContent(),
 						"the reader preserves the complete authored outline",
 					);
 					if (desktop) {
+						assert.equal(await control.getAttribute("aria-selected"), "true");
 						assert.equal(
-							await control.getAttribute("aria-selected"),
-							"true",
-						);
-						assert.equal(
-							await page
-								.getByRole("tab", { selected: true })
-								.count(),
+							await page.getByRole("tab", { selected: true }).count(),
 							1,
 						);
 						assert.deepEqual(
@@ -351,29 +513,21 @@ for (const mode of ["enhanced", "disabled", "blocked module"]) {
 							positions,
 							"selecting any topic never reflows the topic list",
 						);
-						const list = await page
-							.getByRole("tablist")
-							.boundingBox();
-						const reader = await page
-							.getByRole("tabpanel")
-							.boundingBox();
+						const list = await page.getByRole("tablist").boundingBox();
+						const reader = await page.getByRole("tabpanel").boundingBox();
 						assert.ok(
 							reader.x + reader.width < list.x,
 							"the reading panel sits to the left of the RTL topic list",
 						);
 						assert.equal(
-							await page
-								.getByRole("tabpanel")
-								.getAttribute("aria-labelledby"),
+							await page.getByRole("tabpanel").getAttribute("aria-labelledby"),
 							await control.getAttribute("id"),
 						);
 					} else {
 						assert.deepEqual(
 							await page
 								.locator(".subject[open]")
-								.evaluateAll((elements) =>
-									elements.map((el) => el.id),
-								),
+								.evaluateAll((elements) => elements.map((el) => el.id)),
 							[id],
 						);
 						assert.ok(
@@ -382,16 +536,12 @@ for (const mode of ["enhanced", "disabled", "blocked module"]) {
 						);
 					}
 					assert.equal(
-						await control.evaluate(
-							(el) => el === document.activeElement,
-						),
+						await control.evaluate((el) => el === document.activeElement),
 						true,
 					);
 					assert.equal(
 						await page.evaluate(
-							() =>
-								document.documentElement.scrollWidth <=
-								innerWidth,
+							() => document.documentElement.scrollWidth <= innerWidth,
 						),
 						true,
 					);
@@ -415,10 +565,7 @@ for (const mode of ["enhanced", "disabled", "blocked module"]) {
 				});
 				await page.route("**/*", (route) =>
 					mode === "blocked module" &&
-					route
-						.request()
-						.url()
-						.endsWith("/course/js/course-library.js")
+					route.request().url().endsWith("/course/js/course-library.js")
 						? route.abort()
 						: serveRoadMedia(route),
 				);
@@ -434,10 +581,7 @@ for (const mode of ["enhanced", "disabled", "blocked module"]) {
 				await topicControl(page, "right-of-way").focus();
 				await page.keyboard.press("Enter");
 				await page.locator(".subject-learn:visible").click();
-				assert.equal(
-					new URL(page.url()).pathname,
-					"/course/right-of-way/",
-				);
+				assert.equal(new URL(page.url()).pathname, "/course/right-of-way/");
 				assert.equal(
 					await page.locator("h1").innerText(),
 					"זכויות קדימה ופניות",
@@ -445,16 +589,11 @@ for (const mode of ["enhanced", "disabled", "blocked module"]) {
 				for (const lesson of lessons) {
 					await page.goto(`http://gallery.test/${lesson.file}`);
 					for (const { id } of [...lesson.sections].reverse()) {
-						await page
-							.locator(`.lesson-contents a[href="#${id}"]`)
-							.click();
+						await page.locator(`.lesson-contents a[href="#${id}"]`).click();
 						assert.equal(new URL(page.url()).hash, `#${id}`);
 						const top = await page
 							.locator(`#${id}`)
-							.evaluate(
-								(element) =>
-									element.getBoundingClientRect().top,
-							);
+							.evaluate((element) => element.getBoundingClientRect().top);
 						assert.ok(
 							top >= 0 && top < 200,
 							`${id} is reachable independently at ${width}px`,
@@ -462,19 +601,14 @@ for (const mode of ["enhanced", "disabled", "blocked module"]) {
 					}
 					assert.equal(
 						await page.evaluate(
-							() =>
-								document.documentElement.scrollWidth <=
-								innerWidth,
+							() => document.documentElement.scrollWidth <= innerWidth,
 						),
 						true,
 					);
 					assert.equal(
 						await page
 							.locator(".course-brand img")
-							.evaluate(
-								(image) =>
-									image.complete && image.naturalWidth > 0,
-							),
+							.evaluate((image) => image.complete && image.naturalWidth > 0),
 						true,
 					);
 					await page
@@ -504,13 +638,15 @@ test(
 		});
 		await page.route("**/*", serveRoadMedia);
 		await page.goto("http://gallery.test/course/#right-of-way");
-		assert.equal(
-			await topicOutline(page, "right-of-way").isVisible(),
-			true,
-		);
+		// Chromium completes native fragment targeting during the first render.
+		await waitForTwoFrames(page);
+		assert.equal(await topicOutline(page, "right-of-way").isVisible(), true);
 		await topicControl(page, "right-of-way").focus();
 		await page.keyboard.press("ArrowDown");
-		assert.equal(await topicOutline(page, "roundabouts").isVisible(), true);
+		assert.equal(
+			await topicOutline(page, "priority-hierarchy").isVisible(),
+			true,
+		);
 		await page.keyboard.press("End");
 		assert.equal(
 			await topicOutline(page, "licensing-and-points").isVisible(),
@@ -518,10 +654,7 @@ test(
 		);
 		await page.keyboard.press("Home");
 		await page.keyboard.press("ArrowDown");
-		assert.equal(
-			await topicOutline(page, "signs-and-speed").isVisible(),
-			true,
-		);
+		assert.equal(await topicOutline(page, "signs-and-speed").isVisible(), true);
 		await page.keyboard.press("Tab");
 		assert.equal(
 			await page
@@ -531,9 +664,11 @@ test(
 		);
 		await page.setViewportSize({ width: 390, height: 844 });
 		await page.locator(".subject-list").waitFor({ state: "visible" });
-		assert.equal(
-			await topicOutline(page, "signs-and-speed").isVisible(),
-			true,
+		assert.equal(await topicOutline(page, "signs-and-speed").isVisible(), true);
+		await page.waitForFunction(
+			() =>
+				document.activeElement ===
+				document.querySelector("#signs-and-speed summary"),
 		);
 		assert.equal(
 			await topicControl(page, "signs-and-speed").evaluate(
@@ -563,12 +698,15 @@ test(
 			"no stale outline appears beside an empty result",
 		);
 		await page.getByRole("button", { name: "הצגת כל הנושאים" }).click();
-		assert.equal(await page.getByRole("tab").count(), 9);
+		assert.equal(
+			await page.getByRole("tab").count(),
+			await page.locator(".subject").count(),
+		);
 	},
 );
 
 test(
-	"library supports search, reset, arbitrary topic selection and return visits",
+	"library supports search, reset, arbitrary topic selection and fragment links",
 	{ timeout: 30_000 },
 	async (t) => {
 		const browser = await chromium.launch();
@@ -582,11 +720,6 @@ test(
 			page.on("pageerror", (error) => errors.push(error.message));
 			await page.route("**/*", serveRoadMedia);
 			await page.goto("http://gallery.test/course/");
-			assert.equal(
-				await page.locator(".last-topic").isVisible(),
-				false,
-				"no invented history on the first visit",
-			);
 			const search = page.getByRole("searchbox");
 			for (const [query, id] of [
 				["מלווה", "licensing-and-points"],
@@ -594,6 +727,7 @@ test(
 				["תיאוריה", "learning-foundations"],
 				["סיכום", "learning-foundations"],
 				["מצמד", "right-of-way"],
+				["שוטר", "priority-hierarchy"],
 				["הילוך", "driving-test"],
 			]) {
 				await search.fill(query);
@@ -604,66 +738,40 @@ test(
 				);
 				assert.equal(await topicControl(page, id).isVisible(), true);
 			}
-			assert.equal(
-				await page.evaluate(() =>
-					localStorage.getItem("oren-course:last-topic"),
-				),
-				null,
-				"searching alone does not invent a topic visit",
-			);
 			await search.fill("כיכר");
 			assert.equal(await visibleTopics(page).count(), 1);
-			assert.equal(
-				await topicControl(page, "roundabouts").isVisible(),
-				true,
-			);
+			assert.equal(await topicControl(page, "roundabouts").isVisible(), true);
 			await topicControl(page, "roundabouts").focus();
 			await page.keyboard.press("Enter");
-			assert.equal(
-				await topicOutline(page, "roundabouts").isVisible(),
-				true,
-			);
-			await page.waitForFunction(
-				() =>
-					localStorage.getItem("oren-course:last-topic") ===
-					"roundabouts",
-			);
+			assert.equal(await topicOutline(page, "roundabouts").isVisible(), true);
 			await search.fill("zzz");
 			assert.equal(await visibleTopics(page).count(), 0);
 			assert.equal(await page.locator(".search-empty").isVisible(), true);
 			await page.getByRole("button", { name: "הצגת כל הנושאים" }).click();
-			assert.equal(await visibleTopics(page).count(), 9);
 			assert.equal(
-				await search.evaluate(
-					(element) => element === document.activeElement,
-				),
+				await visibleTopics(page).count(),
+				await page.locator(".subject").count(),
+			);
+			assert.equal(
+				await search.evaluate((element) => element === document.activeElement),
 				true,
 			);
 			await search.fill("  פנייה   שמאלה  ");
-			assert.equal(
-				await topicControl(page, "right-of-way").isVisible(),
-				true,
-			);
-			await page.reload();
-			assert.equal(await page.locator(".last-topic").isVisible(), true);
-			assert.match(
-				await page.locator("[data-last-topic-name]").innerText(),
-				/מעגלי תנועה/,
-			);
+			assert.equal(await topicControl(page, "right-of-way").isVisible(), true);
+			await page.getByRole("button", { name: "ניקוי החיפוש" }).click();
 			await topicControl(page, "learning-foundations").click();
 			await search.fill("zzz");
-			await page.locator("[data-last-topic-link]").click();
+			await page.evaluate(() => {
+				location.hash = "roundabouts";
+			});
 			await topicOutline(page, "roundabouts").waitFor({
 				state: "visible",
 			});
-			assert.equal(
-				await topicOutline(page, "roundabouts").isVisible(),
-				true,
-			);
+			assert.equal(await topicOutline(page, "roundabouts").isVisible(), true);
 			assert.equal(
 				await page.locator(".subject-outline:visible").count(),
 				1,
-				"return links show only the requested outline",
+				"fragment links show only the requested outline",
 			);
 			assert.equal(await search.inputValue(), "");
 			assert.equal(
@@ -682,9 +790,7 @@ test(
 			assert.equal(
 				await page
 					.locator(".course-brand img")
-					.evaluate(
-						(image) => image.complete && image.naturalWidth > 0,
-					),
+					.evaluate((image) => image.complete && image.naturalWidth > 0),
 				true,
 			);
 			assert.deepEqual(errors, []);
@@ -693,97 +799,86 @@ test(
 	},
 );
 
-for (const failure of [
-	"disabled",
-	"blocked module",
-	"blocked storage",
-	"stale storage",
-]) {
-	test(
-		`topic browsing survives ${failure}`,
-		{ timeout: 20_000 },
-		async (t) => {
-			const browser = await chromium.launch();
-			t.after(() => browser.close());
-			for (const width of [1440, 320]) {
-				const page = await browser.newPage({
-					javaScriptEnabled: failure !== "disabled",
-					viewport: { width, height: 900 },
-				});
-				if (failure === "blocked storage")
-					await page.addInitScript(() => {
-						Object.defineProperty(window, "localStorage", {
-							get() {
-								throw new DOMException(
-									"Storage blocked",
-									"SecurityError",
-								);
-							},
-						});
-					});
-				if (failure === "stale storage")
-					await page.addInitScript(() =>
-						localStorage.setItem(
-							"oren-course:last-topic",
-							"removed-topic",
-						),
-					);
-				await page.route("**/*", (route) =>
-					failure === "blocked module" &&
-					route
-						.request()
-						.url()
-						.endsWith("/course/js/course-library.js")
-						? route.abort()
-						: serveRoadMedia(route),
-				);
-				await page.goto("http://gallery.test/course/");
-				assert.equal(await visibleTopics(page).count(), 9);
-				assert.equal(
-					await page.locator("[data-search-status]").innerText(),
-					"9 נושאים לבחירה",
-				);
-				assert.equal(
-					await page.locator(".last-topic").isVisible(),
-					false,
-				);
-				if (["disabled", "blocked module"].includes(failure))
-					assert.equal(
-						await page.getByRole("searchbox").isVisible(),
-						false,
-					);
-				await topicControl(page, "driving-test").focus();
+test("topic browsing does not read or write browser storage", async (t) => {
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	for (const width of [1440, 390]) {
+		const page = await browser.newPage({
+			viewport: { width, height: 900 },
+			reducedMotion: "reduce",
+		});
+		await page.addInitScript(() => {
+			window.__courseStorageAccesses = [];
+			for (const method of ["getItem", "setItem"]) {
+				const original = Storage.prototype[method];
+				Storage.prototype[method] = function (...args) {
+					window.__courseStorageAccesses.push([method, ...args]);
+					return original.apply(this, args);
+				};
+			}
+		});
+		await page.route("**/*", serveRoadMedia);
+		await page.goto("http://gallery.test/course/");
+		await topicControl(page, "right-of-way").click();
+		assert.deepEqual(
+			await page.evaluate(() => window.__courseStorageAccesses),
+			[],
+			`topic browsing stays session-free at ${width}px`,
+		);
+		await page.close();
+	}
+});
+
+for (const failure of ["disabled", "blocked module"]) {
+	test(`topic browsing survives ${failure}`, { timeout: 20_000 }, async (t) => {
+		const browser = await chromium.launch();
+		t.after(() => browser.close());
+		for (const width of [1440, 320]) {
+			const page = await browser.newPage({
+				javaScriptEnabled: failure !== "disabled",
+				viewport: { width, height: 900 },
+			});
+			await page.route("**/*", (route) =>
+				failure === "blocked module" &&
+				route.request().url().endsWith("/course/js/course-library.js")
+					? route.abort()
+					: serveRoadMedia(route),
+			);
+			await page.goto("http://gallery.test/course/");
+			const topicCount = await page.locator(".subject").count();
+			assert.equal(await visibleTopics(page).count(), topicCount);
+			assert.equal(
+				await page.locator("[data-search-status]").innerText(),
+				`${topicCount} נושאים לבחירה`,
+			);
+			assert.equal(await page.getByRole("searchbox").isVisible(), false);
+			await topicControl(page, "driving-test").focus();
+			await page.keyboard.press("Enter");
+			assert.equal(
+				await topicOutline(page, "driving-test").isVisible(),
+				true,
+				"test preparation opens without completing earlier topics",
+			);
+			for (const id of ["learning-foundations", "licensing-and-points"]) {
+				await topicControl(page, id).focus();
 				await page.keyboard.press("Enter");
 				assert.equal(
-					await topicOutline(page, "driving-test").isVisible(),
+					await topicOutline(page, id).isVisible(),
 					true,
-					"test preparation opens without completing earlier topics",
+					`${id} opens with ${failure}`,
 				);
-				for (const id of [
-					"learning-foundations",
-					"licensing-and-points",
-				]) {
-					await topicControl(page, id).focus();
-					await page.keyboard.press("Enter");
-					assert.equal(
-						await topicOutline(page, id).isVisible(),
-						true,
-						`${id} opens with ${failure}`,
-					);
-				}
-				assert.equal(
-					await page.evaluate(
-						() =>
-							document.documentElement.scrollWidth <= innerWidth,
-					),
-					true,
-				);
-				await page
-					.getByRole("link", { name: "חזרה לדף הבית", exact: true })
-					.click();
-				assert.equal(new URL(page.url()).pathname, "/index.html");
-				await page.close();
 			}
-		},
-	);
+			assert.equal(
+				await page.evaluate(
+					() => document.documentElement.scrollWidth <= innerWidth,
+				),
+				true,
+			);
+			await page
+				.getByRole("link", { name: "חזרה לדף הבית", exact: true })
+				.click();
+			assert.equal(new URL(page.url()).pathname, "/index.html");
+			await page.close();
+		}
+	});
 }

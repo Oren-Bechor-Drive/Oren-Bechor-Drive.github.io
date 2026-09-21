@@ -30,7 +30,7 @@ test("course headers match home and remain visible above scrolled content", asyn
 		for (const path of [
 			"course/",
 			"course/right-of-way/",
-			"course/right-of-way/quizzes/priority/",
+			"course/priority-hierarchy/quizzes/priority/",
 		]) {
 			await page.goto(`http://gallery.test/${path}`);
 			assert.equal(
@@ -67,7 +67,7 @@ test("course headers match home and remain visible above scrolled content", asyn
 		viewport: { width: 390, height: 844 },
 	});
 	await page.route("**/*", serveRoadMedia);
-	await page.goto("http://gallery.test/course/right-of-way/#priority");
+	await page.goto("http://gallery.test/course/priority-hierarchy/#priority");
 	assert.equal((await page.locator(".course-header").boundingBox()).y, 0);
 	assert.ok((await page.locator("#priority").boundingBox()).y >= 66);
 });

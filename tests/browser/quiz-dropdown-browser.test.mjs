@@ -9,7 +9,7 @@ test("question dropdown supports keyboard exploration, cancellation and selectio
 	const page = await browser.newPage();
 	await page.route("**/*", serveRoadMedia);
 	await page.goto(
-		"http://gallery.test/course/right-of-way/quizzes/priority/",
+		"http://gallery.test/course/priority-hierarchy/quizzes/priority/",
 	);
 	const trigger = page.getByRole("combobox", { name: "מעבר לשאלה" });
 	await trigger.focus();
@@ -75,7 +75,7 @@ for (const width of [1440, 390]) {
 		});
 		await page.route("**/*", serveRoadMedia);
 		await page.goto(
-			"http://gallery.test/course/right-of-way/quizzes/priority/",
+			"http://gallery.test/course/priority-hierarchy/quizzes/priority/",
 		);
 		const trigger = page.getByRole("combobox", { name: "מעבר לשאלה" });
 		const list = page.locator(".question-options");

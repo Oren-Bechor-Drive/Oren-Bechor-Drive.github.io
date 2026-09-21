@@ -1,45 +1,61 @@
 # PDF coverage in the course library
 
-Reviewed all 26 pages of [the supplied PDF](the-idea.pdf) against [the course library](../../course/index.html) on 2026-09-18. This is the only PDF found in the repository, including hidden and ignored project files, excluding Git internals and installed dependencies.
+Reviewed all 26 pages of [the supplied PDF](the-idea.pdf) against the [course library](../../course/index.html) on 2026-09-21. This is the only PDF found in the repository, excluding Git internals and installed dependencies. The supplied PDF bytes remain unchanged.
 
-Page numbers below refer to actual PDF pages. The contents page uses slide numbers that do not match the final document order.
+Page numbers below refer to actual PDF pages. The contents page uses slide numbers that do not match the final document order. "Reading page" means the source contains developed explanatory material and the course now adapts it. "Listed only" means the PDF names a subject without supplying enough teaching material to write a lesson faithfully.
 
-The library mentions the source subjects in nine searchable, native expandable outlines. These are planned subjects, not completed lessons. The seven existing topic summaries remain consistent with the welcome page. The right-of-way reading draft covers only part of its expanded outline.
+The library has ten searchable outlines, and all ten link to newly created or expanded reading pages. Priority hierarchy is separate from right-of-way and turns. The four existing placeholder quizzes remain attached to the three turn sections and the standalone priority section. New PDF adaptations are reading-only until instructor-approved questions exist.
 
-| PDF page | Subjects reviewed | Library destination |
-| --- | --- | --- |
-| 1 | Course purpose, practical learning of road rules | Introduction, `learning-foundations`, footer |
-| 2 | Instructor introduction, theory and practical learning, real driving videos, supplement to driving lessons | Existing instructor credit, `learning-foundations`, footer. Personal biography and the purchase prompt are not learning subjects. |
-| 3 | Contents: definitions, turns and priority, turn hazards, U-turn restrictions, priority hierarchy, signs on traffic lights, road types, roundabouts, planning, lane recognition, official resources, signs, speed, overtaking, signalized and unsignalized intersections, test failures, summary and conclusions | All nine outlines. Definitions and summary/conclusions are explicitly listed in `learning-foundations`. |
-| 4 | Theory versus practice, driving culture, reasoning behind actions, learning from real cases, review between lessons and questions for the instructor | `learning-foundations` |
-| 5 | Give way, stop, roundabout, two-way road, no U-turn, speed bumps, no entry, one-way road signs | `signs-and-speed` |
-| 6 | Urban roads, traffic calming, nonurban roads with and without a built divider, highways, vehicle classes, sign overrides and validity, changing limits, reasonable speed, rain, fog, congestion, schools, slow driving | `signs-and-speed` |
-| 7 | Case study of sign disobedience or speeding | `signs-and-speed` |
-| 8 | Approaching intersections and speed bumps, approach speed, checking behind, deciding whether to stop or proceed | `roundabouts` |
-| 9 | Two-lane roundabout recognition, entry and exit lanes, right/left/U-turn/straight routes, checking both lanes, signaling | `roundabouts` |
-| 10 | Single-lane roundabout approach, pedestrians at entry and exit, traffic from the left, motorcycles, speed, lane position, anticipating exit conflicts, signaling | `roundabouts` |
-| 11 | Proposed footage of single-lane and two-lane roundabout behavior | `roundabouts` |
-| 12 | U-turn definition, location restrictions, lane choice, radius and vehicle size, no-left-turn versus no-U-turn signs, signaling | `right-of-way` |
-| 13 | U-turn control, steering/speed/clutch coordination, conflicts, visibility, opposing traffic, pedestrians, mirrors, ambiguous signaling | `right-of-way` |
-| 14 | Left-turn priority from the right and opposite direction, signs and junction layout, two turning lanes, planning the next turn, traffic lights and pedestrians | `right-of-way`, `trip-planning` |
-| 15 | Left-turn hazards: time in the junction, multiple conflicts, blind spots | `right-of-way` |
-| 16 | Right-turn positioning and control, mirrors, motorcycles, pedestrians, signalized turns and clearing the junction | `right-of-way`, `driving-test` |
-| 17 | Priority when leaving parking, yards or fuel stations and turning off the main road, motorcycles, curb collision and drifting into opposing traffic | `right-of-way` |
-| 18 | Police, lights, signs and rules; unlit or flashing traffic lights; signs mounted on lights | `right-of-way`, `signs-and-speed` |
-| 19 | One-way road recognition, continuous divider versus traffic island, travel direction, parking on the left | `roads-and-lanes` |
-| 20 | Merge lanes, thick closely spaced broken markings, directional arrows, right-only and left-only lanes, checking adjacent traffic | `roads-and-lanes`, `trip-planning` |
-| 21 | Overtaking restrictions: solid line, limited visibility, stopped vehicle at crossing, no-overtaking sign; repeated no-U-turn video labels | `overtaking`, `right-of-way` |
-| 22 | Crossing between one-way roads, blocked one-way/two-way roads, obstacles, traffic ahead/behind, return to the right, merging, leaving turn-only lanes | `trip-planning` |
-| 23 | Penalty-points table: sidewalk driving, passenger seat belts, unsafe towing, mobile machinery, trailers and semitrailers, unsuitable towing vehicle, multiple trailers, motorcycle towing, lights, traffic obstruction, stop signs, passing a sign on the correct side, roundabout priority, phone use | `licensing-and-points` |
-| 24 | Points system, traffic law resources, new drivers and young-driver accompaniment, sign chart, information for traffic defendants, license renewal/copy, offenses by new drivers | `licensing-and-points` |
-| 25 | Optional outline: turn priority, left-turn hazards, signalized turns, two lanes for left/right turns, uphill/downhill priority, priority hierarchy | `right-of-way` |
-| 26 | Test failures: wrong left-turn position on two-way road, stop-sign disobedience/line overshoot, pedestrian priority, emergency braking and rear mirror, parked-car clearance, parking priority and safe exit/reversing, mirrors, slow junction clearance, wide right turns, wrong starting gear/stalling, unsafe lane changes, not returning right, blocked junction entry, red lights | `driving-test` |
+| PDF page | Subjects reviewed | Library destination | Coverage status |
+| --- | --- | --- | --- |
+| 1 | Course purpose, practical learning of road rules | Introduction, `learning-foundations`, footer | Product context |
+| 2 | Instructor introduction, theory and practical learning, real driving videos, supplement to driving lessons | Existing instructor credit, `learning-foundations`, footer | Product context. Personal biography and purchase prompt are not learning subjects. |
+| 3 | Contents: definitions, turns and priority, turn hazards, U-turn restrictions, priority hierarchy, signs on traffic lights, road types, roundabouts, planning, lane recognition, official resources, signs, speed, overtaking, intersections, test failures, summary and conclusions | All ten outlines | Definitions and summary/conclusions are listed only; developed destinations are covered below. |
+| 4 | Theory versus practice, driving culture, reasoning, learning from real cases, review between lessons and instructor questions | `course/learning-foundations/` | Reading page |
+| 5 | Give way, stop, roundabout, two-way road, no U-turn, speed bumps, no entry, one-way road signs | `course/signs-and-speed/` | Reading page |
+| 6 | Urban, traffic-calming, nonurban and motorway speeds; vehicle classes; sign overrides; reasonable speed; changing conditions; slow driving | `course/signs-and-speed/` | Reading page, with verified private/light-commercial values and corrected vehicle-class handling |
+| 7 | Proposed case study of sign disobedience or speeding | `signs-and-speed` outline | Video prompt only; no identifiable case footage was supplied |
+| 8 | Approaching intersections and speed bumps, approach speed, checking behind, deciding whether to stop or proceed | `course/roundabouts/#approach` | Reading section |
+| 9 | Two-lane roundabout recognition, entry and exit lanes, route choice, checking both lanes, signaling | `course/roundabouts/#two-lane` | Reading section, with signaling qualified by local markings and instructor guidance |
+| 10 | Single-lane roundabout approach, pedestrians, traffic from the left, motorcycles, speed, lane position, exit conflicts, signaling | `course/roundabouts/#single-lane` | Reading section |
+| 11 | Proposed footage of single-lane and two-lane roundabout behavior | `roundabouts` outline | Video prompt only; footage was not supplied |
+| 12 | U-turn definition, location restrictions, lane choice, radius and vehicle size, no-left-turn versus no-U-turn signs, signaling | `course/right-of-way/#u-turn` | Expanded quiz section |
+| 13 | U-turn control, hand/foot coordination, conflicts, visibility, opposing traffic, pedestrians, mirrors, ambiguous signaling | `course/right-of-way/#u-turn` | Expanded quiz section |
+| 14 | Left-turn priority, signs and junction layout, two turning lanes, planning the next turn, traffic lights and pedestrians | `course/right-of-way/#left-turn`, `course/trip-planning/` | Expanded quiz section and reading page |
+| 15 | Left-turn hazards: time in the junction, multiple conflicts, blind spots | `course/right-of-way/#left-turn` | Expanded quiz section |
+| 16 | Right-turn positioning and control, mirrors, motorcycles, pedestrians, signalized turns and clearing the junction | `course/right-of-way/#right-turn`, `course/driving-test/` | Expanded quiz section and reading page |
+| 17 | Priority when leaving parking, yards or fuel stations and turning off the main road; motorcycles; curb collision; opposing lane drift | `course/right-of-way/#right-turn` | Expanded quiz section |
+| 18 | Police, lights, signs and rules; unlit or flashing traffic lights; signs mounted on lights | `course/priority-hierarchy/` | Standalone quiz section |
+| 19 | One-way road recognition, continuous divider versus traffic island, travel direction, parking on the left | `course/roads-and-lanes/#road-direction` | Reading section |
+| 20 | Merge lanes, thick broken markings, arrows, turn-only lanes, checking adjacent traffic | `course/roads-and-lanes/#lane-markings`, `course/trip-planning/#merge` | Reading sections |
+| 21 | Overtaking restrictions: solid line, limited visibility, stopped vehicle at crossing, no-overtaking sign | `course/overtaking/` | Reading page. Repeated no-U-turn video labels add no new content. |
+| 22 | Crossing between one-way roads, blocked roads, obstacles, traffic ahead/behind, return right, merging, leaving turn-only lanes | `course/trip-planning/` | Reading page |
+| 23 | Penalty-points examples: sidewalk, seat belts, towing, lights, obstruction, stop signs, roundabout priority, phone use | `course/licensing-and-points/#points` | Reading section. Categories retained; stale allocations omitted. |
+| 24 | Points system, traffic-law resources, new drivers and accompaniment, sign chart, defendants, license services, new-driver offenses | `course/licensing-and-points/` | Reading page |
+| 25 | Optional outline: turn priority and hazards, signalized turns, two turn lanes, uphill/downhill priority, priority hierarchy | `right-of-way`, `priority-hierarchy` outlines | Repeated developed subjects are covered. Uphill/downhill priority remains listed only because no explanation is supplied. |
+| 26 | Test failures: turn position, stop line, pedestrians, emergency braking and mirror, clearance, parking, reversing, mirrors, junction clearance, wide turns, gear/stalling, lane changes, return right, blocked junction, red lights | `course/driving-test/` | Reading page |
 
-## Source limits
+## Source-faithful safety review
 
-- The contents page lists definitions and summary/conclusions without separate developed slides in the supplied file. They are included as planned subjects without invented lesson text.
-- Page 24 includes an unexplained resource label, `חוק 2`. It is covered by the traffic-law resources subject; the library does not invent a law title or destination for it.
-- Page 25 labels its outline optional and possibly removable. Its distinct subjects, including uphill/downhill priority and two right-turn lanes, are retained for coverage.
-- Blank video slots add no identifiable subject. Repeated video labels are covered once under the relevant topic.
-- The library names speed and penalty-points subjects without copying numerical limits, point allocations, regulation numbers or categorical driving instructions. This review checks subject coverage, not current legal accuracy. Teaching copy and official resource destinations still need review before publication as lessons.
-- The supplied PDF is unchanged. No videos, official resource links, purchase destinations or completed lessons were added.
+The learner copy stays close to the instructor's scenarios but does not repeat several PDF shortcuts as universal rules:
+
+- PDF page 14 says there is no pedestrian priority when turning left or driving straight at a signalized intersection. The lesson instead requires checking the crossing and protecting anyone already crossing; the governing signal and signs still control the movement.
+- PDF page 16 describes clearing a junction after the light changes while waiting for pedestrians. The lesson teaches entering only when the junction can be cleared and protecting pedestrians, without presenting a red light as permission to enter.
+- PDF page 17 describes absolute priority when turning right from a main road. The lesson qualifies this by signals, signs, crossings and conflicting road users at the actual junction.
+- PDF page 18 frames the hierarchy around a broken signal. The standalone lesson explains the broader order and treats a dark or yellow-flashing signal as a specific branch.
+- PDF pages 9-10 use simplified roundabout signaling rules. The lesson focuses on lane choice, local markings, communicating intent and instructor guidance rather than one signal pattern for every roundabout.
+- Exact steering-wheel fractions on page 16 are omitted because steering geometry and junction shape vary by vehicle.
+- PDF page 26 lists emergency braking alongside an interior-mirror check, but the lesson does not present them as a rigid sequence. Continuous rear monitoring supports routine planning; when danger is imminent, the learner copy says to brake immediately without delaying for a mirror check. [UK Highway Code rule 118](https://www.gov.uk/guidance/the-highway-code/general-rules-techniques-and-advice-for-all-drivers-and-riders-103-to-158) supports that general safety principle and is not presented as Israeli law.
+
+The [official road-safety textbook](https://www.gov.il/BlobFolder/reports/driving_textbook/he/publications_2017_nohagim_aheret_nohagim_nachon.pdf) was used to check U-turn restrictions and priority concepts. The [July 2025 official driving-instructor exam answer key](https://www.gov.il/BlobFolder/dynamiccollectorresultitem/drivingteacher-07-25-type2/he/final-exams_drivingteacher-07-25-type2-answers.pdf) confirms the 50/80/90/110 km/h defaults for an ordinary motor vehicle and the 30 km/h traffic-calming limit. It also separates buses and heavy commercial vehicles, so the PDF's combined heavy-vehicle/bus row is not reproduced. A sign or vehicle-license restriction can set a different limit.
+
+The [Ministry of Transport points-system guide](https://www.gov.il/he/pages/scoring_system_traffic_offens) was updated on 2025-10-22, and [the Knesset announced approval of further point-system changes in June 2026](https://m.knesset.gov.il/apps/committees/2214/news/27484). The lesson therefore explains the system and preserves the PDF's offense categories without publishing the PDF's numerical allocations as current law.
+
+## Remaining source limits
+
+- Definitions and summary/conclusions appear only in the contents and remain visibly unavailable rather than being invented.
+- Page 24 includes an unexplained resource label, `חוק 2`; no title or destination is invented for it.
+- Blank video slots and repeated labels add no identifiable teaching content.
+- Page 24 embeds nine official government resource URLs. The licensing lesson preserves them as descriptive links. Automated checks received `403` responses from the current gov.il page shell while the supplied sign-chart PDF returned `200`; this is recorded as a verification limitation, not treated as proof that the official pages are unavailable.
+- Videos and new quiz questions were not supplied. The reading-only marker records this honestly without treating a fabricated quiz as required content.
+- Instructor review remains required before these teaching adaptations are treated as final course material.

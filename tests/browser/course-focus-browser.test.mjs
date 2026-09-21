@@ -47,7 +47,7 @@ test("search and answer choices avoid pointer outlines while keeping keyboard fo
 			"search keeps a visible focus border",
 		);
 		await page.goto(
-			"http://gallery.test/course/right-of-way/quizzes/priority/",
+			"http://gallery.test/course/priority-hierarchy/quizzes/priority/",
 		);
 		const answer = page.locator(".quiz-answers label:visible").first();
 		await answer[width === 390 ? "tap" : "click"]();

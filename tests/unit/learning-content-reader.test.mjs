@@ -205,6 +205,67 @@ test("newly added sections are discovered and cannot share a quiz destination", 
 	);
 });
 
+test("explicit reading-only sections need no fabricated quiz", async (t) => {
+	const reading =
+		'<section class="lesson-section" data-lesson-format="reading" id="reading" aria-labelledby="reading-title"><h2 id="reading-title">קריאה מודרכת</h2><p>תוכן לימוד מלא ללא שאלון.</p><a class="official-resource" href="https://www.gov.il/he/pages/example">מידע רשמי</a></section>';
+	const content = await readLearningContent(
+		await fixture(t, {
+			"lesson.html": lesson
+				.replace("</nav>", '<a href="#reading">קריאה מודרכת</a></nav>')
+				.replace("</main>", `${reading}</main>`),
+		}),
+	);
+	assert.deepEqual(content.issues, []);
+	assert.equal(content.lessons[0].sections[1].format, "reading");
+	assert.equal(content.lessons[0].sections[1].quizFile, null);
+	assert.equal(content.lessons[0].sourceLinks, 0);
+});
+
+test("only approved government resources bypass the source-link count", async (t) => {
+	const reading =
+		'<section class="lesson-section" data-lesson-format="reading" id="reading" aria-labelledby="reading-title"><h2 id="reading-title">קריאה</h2><a class="official-resource" href="https://example.com/resource">משאב חיצוני</a></section>';
+	const content = await readLearningContent(
+		await fixture(t, {
+			"lesson.html": lesson
+				.replace("</nav>", '<a href="#reading">קריאה</a></nav>')
+				.replace("</main>", `${reading}</main>`),
+		}),
+	);
+	assert.equal(content.lessons[0].sourceLinks, 1);
+});
+
+for (const [name, section, expected] of [
+	[
+		"reading-only section with a quiz",
+		'<section class="lesson-section" data-lesson-format="reading" id="reading" aria-labelledby="reading-title"><h2 id="reading-title">קריאה</h2><a class="lesson-quiz-link" href="practice.html">תרגול</a></section>',
+		/reading:.*must not have a quiz link/,
+	],
+	[
+		"unknown lesson format",
+		'<section class="lesson-section" data-lesson-format="later" id="reading" aria-labelledby="reading-title"><h2 id="reading-title">קריאה</h2></section>',
+		/reading:.*unknown lesson format/,
+	],
+	[
+		"empty lesson format",
+		'<section class="lesson-section" data-lesson-format id="reading" aria-labelledby="reading-title"><h2 id="reading-title">קריאה</h2></section>',
+		/reading:.*unknown lesson format/,
+	],
+]) {
+	test(`learning content reports ${name}`, async (t) => {
+		const content = await readLearningContent(
+			await fixture(t, {
+				"lesson.html": lesson
+					.replace("</nav>", '<a href="#reading">קריאה</a></nav>')
+					.replace("</main>", `${section}</main>`),
+			}),
+		);
+		assert.ok(
+			content.issues.some((issue) => expected.test(issue)),
+			content.issues.join("\n"),
+		);
+	});
+}
+
 test("unreadable library destinations and partial lesson markup produce diagnostics", async (t) => {
 	const content = await readLearningContent(
 		await fixture(t, {

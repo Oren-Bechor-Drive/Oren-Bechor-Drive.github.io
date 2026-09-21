@@ -21,8 +21,12 @@ The collection of named learning topics that a learner may browse and open in an
 _Avoid_: Dashboard, mandatory learning path
 
 **Learning section**:
-A sub-subject within a learning topic, with its own explanations and practice quiz. Learners may start with any section.
+A sub-subject within a learning topic, with its own explanations. It may be reading-only or have an approved practice quiz. Learners may start with any section.
 _Avoid_: Locked step, required stage
+
+**Reading-only section**:
+A learning section whose supplied material supports an explanation but not an authored practice quiz.
+_Avoid_: Missing quiz, incomplete requirement
 
 **Practice quiz**:
 A set of multiple-choice questions about one learning section. The current preview uses placeholder questions and gives no score.

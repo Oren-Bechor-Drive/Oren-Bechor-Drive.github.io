@@ -10,13 +10,17 @@ html.lesson-page {
 	margin-block-start: 24px;
 	color: var(--primary);
 	font-size: 14px;
+	text-decoration-thickness: 1px;
+	transition: transform 160ms var(--ease-out);
 }
 .lesson-intro {
-	margin-block: 24px 40px;
+	max-width: 820px;
+	margin-block: 30px 48px;
 }
 .lesson-intro h1 {
 	margin: 0;
-	font-size: 36px;
+	color: var(--primary);
+	font-size: clamp(34px, 4vw, 44px);
 	line-height: 1.3;
 	letter-spacing: -0.02em;
 	text-wrap: balance;
@@ -28,18 +32,30 @@ html.lesson-page {
 	color: var(--text-soft);
 }
 .lesson-intro .lesson-draft {
-	font-size: 14px;
+	display: inline-block;
+	width: fit-content;
+	padding: 5px 10px;
+	border: 1px solid rgb(246 219 120 / 0.55);
+	border-radius: 999px;
+	background: var(--secondary-wash);
+	color: var(--secondary);
+	font-size: 13px;
 }
 .lesson-layout {
 	display: grid;
-	grid-template-columns: 220px minmax(0, 1fr);
-	gap: 40px;
+	grid-template-columns: 236px minmax(0, 1fr);
+	gap: 44px;
 	align-items: start;
 	margin-block-end: 48px;
 }
 .lesson-contents {
 	position: sticky;
 	top: calc(var(--header-height) + 24px);
+	padding: 22px;
+	border: 1px solid rgb(197 207 226 / 0.72);
+	border-radius: var(--radius-card);
+	background: rgb(255 255 255 / 0.72);
+	box-shadow: var(--shadow-one);
 }
 .lesson-contents h2 {
 	font-size: 18px;
@@ -63,9 +79,12 @@ html.lesson-page {
 	border-block-end: 1px solid var(--border);
 	color: var(--primary);
 	text-decoration: none;
+	transition:
+		color 160ms ease,
+		transform 160ms var(--ease-out);
 }
 .lesson-contents a:hover {
-	text-decoration: underline;
+	color: var(--primary-hover);
 }
 .lesson-content {
 	min-width: 0;
@@ -73,8 +92,9 @@ html.lesson-page {
 .lesson-section {
 	padding: 36px 40px;
 	background: var(--white);
-	border: 1px solid var(--border);
+	border: 1px solid rgb(197 207 226 / 0.72);
 	border-radius: var(--radius-card);
+	box-shadow: 0 20px 50px -40px rgb(30 57 120 / 0.5), var(--shadow-one);
 }
 .lesson-section + .lesson-section {
 	margin-block-start: 28px;
@@ -83,6 +103,11 @@ html.lesson-page {
 	margin: 0 0 20px;
 	font-size: 28px;
 	line-height: 1.4;
+	text-decoration: underline;
+	text-decoration-color: var(--secondary-bright);
+	text-decoration-thickness: 0.1em;
+	text-underline-offset: 0.1em;
+	text-decoration-skip-ink: none;
 }
 .lesson-content h3 {
 	margin: 28px 0 12px;
@@ -91,6 +116,7 @@ html.lesson-page {
 }
 .lesson-content p {
 	margin-block: 12px;
+	max-width: 72ch;
 }
 .lesson-content ul {
 	padding-inline-start: 22px;
@@ -120,6 +146,7 @@ html.lesson-page {
 	margin-block: 24px;
 	padding: 20px;
 	background: var(--secondary-wash);
+	border: 1px solid rgb(246 219 120 / 0.5);
 	border-radius: var(--radius-control);
 }
 .lesson-takeaway p {
@@ -133,7 +160,8 @@ html.lesson-page {
 	margin-block: 16px 24px;
 	border: 1px dashed var(--border-strong);
 	border-radius: var(--radius-control);
-	background: var(--surface);
+	background:
+		linear-gradient(135deg, rgb(237 241 250 / 0.75), rgb(255 255 255 / 0.85));
 	color: var(--text-soft);
 	font-size: 14px;
 	text-align: center;
@@ -162,6 +190,13 @@ html.lesson-page {
 	padding-block-start: 24px;
 	border-block-start: 1px solid var(--border);
 }
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+	.lesson-back:hover,
+	.lesson-contents a:hover {
+		transform: translateX(-2px);
+	}
+}
 .lesson-end .course-button {
 	margin-block: 12px;
 }
@@ -173,26 +208,27 @@ html.lesson-page {
 	}
 	.lesson-contents {
 		position: static;
+		padding: 22px 24px;
 	}
 	.lesson-contents ul {
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 0 24px;
 	}
+	.lesson-contents li:only-child {
+		grid-column: 1 / -1;
+	}
 }
 
 @media (max-width: 639px) {
 	.lesson-intro {
-		margin-block: 20px 28px;
+		margin-block: 24px 34px;
 	}
 	.lesson-intro h1 {
-		font-size: 28px;
+		font-size: 30px;
 	}
 	.lesson-intro > p {
 		font-size: 16px;
-	}
-	.lesson-intro .lesson-draft {
-		font-size: 13px;
 	}
 	.lesson-section {
 		padding: 24px 20px;
@@ -206,6 +242,9 @@ html.lesson-page {
 	}
 	.lesson-takeaway {
 		padding: 16px;
+	}
+	.lesson-contents {
+		padding: 18px 20px;
 	}
 }
 
@@ -225,5 +264,6 @@ html.lesson-page {
 	.lesson-section {
 		padding: 0;
 		border: 0;
+		box-shadow: none;
 	}
 }
