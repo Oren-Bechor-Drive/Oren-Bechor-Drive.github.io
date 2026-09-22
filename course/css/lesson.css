@@ -152,7 +152,8 @@ html.lesson-page {
 .lesson-takeaway p {
 	margin: 8px 0 0;
 }
-.video-placeholder {
+.video-placeholder,
+.image-placeholder {
 	display: grid;
 	place-items: center;
 	min-height: 80px;
@@ -160,8 +161,7 @@ html.lesson-page {
 	margin-block: 16px 24px;
 	border: 1px dashed var(--border-strong);
 	border-radius: var(--radius-control);
-	background:
-		linear-gradient(135deg, rgb(237 241 250 / 0.75), rgb(255 255 255 / 0.85));
+	background: var(--surface-low);
 	color: var(--text-soft);
 	font-size: 14px;
 	text-align: center;

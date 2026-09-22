@@ -12,12 +12,10 @@ test("quiz content is valid before browser journeys are registered", () => {
 });
 const quizzes = content.issues.length ? [] : content.quizzes;
 
-test("learning sections retain accessible video slots without source labels", () => {
+test("learning sections omit source labels", () => {
 	for (const lesson of content.lessons) {
 		assert.equal(lesson.sourceLabels, 0);
 		assert.equal(lesson.sourceLinks, 0);
-		for (const section of lesson.sections)
-			assert.ok(section.videoCount > 0);
 	}
 });
 
@@ -27,7 +25,7 @@ for (const quiz of quizzes.filter((quiz) => quiz.placeholder)) {
 		assert.equal(quiz.questions.length, 20);
 		assert.equal(
 			quiz.questions.filter((question) => question.videoCount > 0).length,
-			6,
+			0,
 		);
 		for (const question of quiz.questions)
 			assert.equal(question.optionCount, 4);
@@ -214,9 +212,11 @@ for (const count of [1, 5]) {
 		const template = document
 			.querySelector(".quiz-question")
 			.cloneNode(true);
-		const video = document
-			.querySelector(".video-placeholder")
-			.cloneNode(true);
+		const video = document.createElement("div");
+		video.className = "video-placeholder";
+		video.setAttribute("role", "img");
+		video.setAttribute("aria-label", "מקום לסרטון בשאלת התרגול");
+		video.textContent = "כאן יופיע סרטון לשאלת התרגול";
 		const form = document.querySelector(".quiz-form");
 		form.removeAttribute("data-quiz-placeholder");
 		form.replaceChildren();
