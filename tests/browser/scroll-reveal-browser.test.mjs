@@ -290,6 +290,17 @@ test(
 				"pending",
 		);
 		const targets = revealCases[1].targets;
+		// The pending attribute can precede the initial opacity transition settling.
+		await page.waitForFunction(
+			(selectors) =>
+				selectors.every(
+					(selector) =>
+						getComputedStyle(document.querySelector(`#about ${selector}`))
+							.opacity === "0",
+				),
+			targets,
+			{ timeout: 2_000 },
+		);
 		assert.ok(
 			(await motionState(root, targets)).every(
 				(state) =>

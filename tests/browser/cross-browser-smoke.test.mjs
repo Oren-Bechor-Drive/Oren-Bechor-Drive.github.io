@@ -142,7 +142,7 @@ async function exerciseFallback(browser, mode) {
 		viewport: { width: 390, height: 844 },
 		reducedMotion: "reduce",
 	});
-	await page.route("**/*", (route) => {
+	await page.route("**/*", async (route) => {
 		const pathname = new URL(route.request().url()).pathname;
 		if (
 			mode === "blocked" &&
@@ -151,6 +151,9 @@ async function exerciseFallback(browser, mode) {
 			)
 		)
 			return route.abort();
+		// Keep the quiz's first layout pending after its document commits.
+		if (pathname === "/course/css/quiz.css")
+			await new Promise((resolve) => setTimeout(resolve, 500));
 		return serveRoadMedia(route);
 	});
 
@@ -171,6 +174,10 @@ async function exerciseFallback(browser, mode) {
 	await page.locator('.lesson-contents a[href="#priority"]').click();
 	assert.equal(new URL(page.url()).hash, "#priority");
 	await page.locator("#priority .lesson-quiz-link").click();
+	// Firefox can finish the click before render-blocking stylesheets load.
+	await page.waitForURL("**/course/priority-hierarchy/quizzes/priority/", {
+		waitUntil: "load",
+	});
 	assert.equal(await page.locator(".quiz-question:visible").count(), 20);
 	assert.equal(await page.locator("[data-quiz-controls]").isVisible(), false);
 	assert.equal(await page.locator("[data-quiz-fallback]").isVisible(), true);
