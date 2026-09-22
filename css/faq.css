@@ -1,0 +1,135 @@
+.faq {
+	background: var(--white);
+}
+
+.faq-layout {
+	display: grid;
+	grid-template-columns: minmax(240px, 0.72fr) minmax(0, 1.28fr);
+	align-items: start;
+	gap: clamp(40px, 7vw, 88px);
+}
+
+.faq-kicker {
+	margin: 0 0 8px;
+	color: var(--secondary);
+	font-size: 14px;
+	font-weight: 700;
+}
+
+.faq-heading h2 {
+	margin: 0;
+	font-size: clamp(30px, 4vw, 40px);
+	line-height: 1.25;
+	letter-spacing: -0.02em;
+}
+
+.faq-heading > p:last-child {
+	max-width: 42ch;
+	margin: 18px 0 0;
+	color: var(--text-soft);
+	font-size: 17px;
+}
+
+.faq-list {
+	display: grid;
+	gap: 12px;
+}
+
+.faq-item {
+	overflow: clip;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-card);
+	background: var(--surface);
+}
+
+.faq-item[open] {
+	border-color: var(--border-strong);
+	background: var(--white);
+	box-shadow: var(--shadow-one);
+}
+
+.faq-item summary {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 20px;
+	align-items: center;
+	gap: 20px;
+	min-height: 72px;
+	padding: 18px 22px;
+	cursor: pointer;
+	font-size: 19px;
+	font-weight: 600;
+	line-height: 1.45;
+	list-style: none;
+}
+
+.faq-item summary:focus-visible {
+	outline: none;
+	box-shadow: inset 0 0 0 3px var(--primary);
+}
+
+.faq-item summary::-webkit-details-marker {
+	display: none;
+}
+
+.faq-item summary::after {
+	display: block;
+	width: 16px;
+	height: 16px;
+	background: currentColor;
+	content: "";
+	mask: url("../assets/icons/directions/chevron-down.svg") center / contain no-repeat;
+}
+
+.faq-item[data-motion="pointer"] summary::after {
+	transition: transform 220ms var(--ease-out);
+}
+
+.faq-item[open]:not([data-expanded]) summary::after,
+.faq-item[data-expanded="true"] summary::after {
+	transform: rotate(180deg);
+}
+
+.faq-answer {
+	padding: 0 22px 22px;
+}
+
+.faq-answer::before {
+	display: block;
+	height: 1px;
+	margin-block-end: 18px;
+	background: var(--border);
+	content: "";
+}
+
+.faq-answer p {
+	margin: 0;
+	color: var(--text-soft);
+	font-size: 16px;
+	line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+	.faq-layout {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 28px;
+	}
+}
+
+@media (max-width: 440px) {
+	.faq-item summary {
+		gap: 14px;
+		min-height: 64px;
+		padding: 16px 18px;
+		font-size: 17px;
+	}
+
+	.faq-answer {
+		padding: 0 18px 18px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.faq-item[data-motion="pointer"] summary::after {
+		transition: none;
+	}
+}

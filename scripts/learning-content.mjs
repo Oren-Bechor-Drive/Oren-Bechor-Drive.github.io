@@ -1,19 +1,14 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { JSDOM } from "jsdom";
-import { discoverSitePages } from "./site-pages.mjs";
+import { readSitePages } from "./site-pages.mjs";
 
 const origin = "https://learning.invalid";
 const libraryFile = "course/index.html";
 
-function pageURL(href, file) {
-	const url = new URL(href, `${origin}/${file}`);
-	if (url.pathname.endsWith("/")) url.pathname += "index.html";
-	return url;
-}
-
 // Development-only interpretation of authored HTML. Runtime pages remain independent.
 export async function readLearningContent(rootDir) {
+	const site = await readSitePages(rootDir);
 	const issues = [];
 	const pages = new Map();
 	const lessons = [];
@@ -21,7 +16,7 @@ export async function readLearningContent(rootDir) {
 	const quizOwners = new Map();
 	const report = (location, message) =>
 		issues.push(`${location}: ${message}`);
-	for (const file of await discoverSitePages(rootDir)) {
+	for (const file of site.pages) {
 		try {
 			pages.set(
 				file,
@@ -33,12 +28,15 @@ export async function readLearningContent(rootDir) {
 		}
 	}
 
-	function localPage(href, file) {
+	async function localPage(href, file) {
 		if (!href) return null;
 		try {
-			const url = pageURL(href, file);
+			const url = new URL(href, `${origin}/${file}`);
 			if (url.origin !== origin || url.search || url.hash) return null;
-			return decodeURIComponent(url.pathname.slice(1));
+			const target = await site.resolveFile(
+				decodeURIComponent(url.pathname.slice(1)),
+			);
+			return target.file ?? target.requested;
 		} catch {
 			return null;
 		}
@@ -53,7 +51,7 @@ export async function readLearningContent(rootDir) {
 		}
 	}
 
-	function readQuiz(file, lessonFile, section) {
+	async function readQuiz(file, lessonFile, section) {
 		const document = pages.get(file);
 		const location = `${lessonFile}#${section.id}`;
 		if (!document) {
@@ -96,9 +94,15 @@ export async function readLearningContent(rootDir) {
 		for (const link of returns) {
 			let destination;
 			try {
-				destination = pageURL(link.getAttribute("href"), file).href;
+				const url = new URL(link.getAttribute("href"), `${origin}/${file}`);
+				if (url.origin === origin && !url.search) {
+					const target = await site.resolveFile(
+						decodeURIComponent(url.pathname.slice(1)),
+					);
+					destination = `${target.file}#${decodeURIComponent(url.hash.slice(1))}`;
+				}
 			} catch {}
-			if (destination !== `${origin}/${location}`)
+			if (destination !== location)
 				report(file, `return link must target ${location}`);
 		}
 		const form = document.querySelector(".quiz-form");
@@ -209,7 +213,7 @@ export async function readLearningContent(rootDir) {
 				report(location, "reading-only section must not have a quiz link");
 			if (format === "quiz" && links.length !== 1)
 				report(location, "quiz section needs exactly one quiz link");
-			const quizFile = localPage(links[0]?.getAttribute("href"), file);
+			const quizFile = await localPage(links[0]?.getAttribute("href"), file);
 			if (links.length && !quizFile)
 				report(
 					location,
@@ -226,7 +230,7 @@ export async function readLearningContent(rootDir) {
 			};
 			sections.push(section);
 			if (format === "quiz" && quizFile && title)
-				readQuiz(quizFile, file, section);
+				await readQuiz(quizFile, file, section);
 		}
 		if (!sections.length)
 			report(file, "learning page needs at least one section");
@@ -243,7 +247,7 @@ export async function readLearningContent(rootDir) {
 			sections,
 			sourceLabels: document.querySelectorAll(".lesson-source").length,
 			sourceLinks: document.querySelectorAll(
-				'a[href*="the-idea.pdf"], a[href^="https://"]:not(.official-resource[href^="https://www.gov.il/"])',
+				'a[href*="the-idea.pdf"], a[href^="https://"]:not(.official-resource[href^="https://www.gov.il/"]):not(.official-resource[href^="https://data.gov.il/"])',
 			).length,
 		});
 	}
@@ -251,7 +255,7 @@ export async function readLearningContent(rootDir) {
 	const library = pages.get(libraryFile);
 	if (!library) report(libraryFile, "missing course library");
 	for (const link of library?.querySelectorAll(".subject-learn") ?? []) {
-		const file = localPage(link.getAttribute("href"), libraryFile);
+		const file = await localPage(link.getAttribute("href"), libraryFile);
 		if (!lessons.some((lesson) => lesson.file === file))
 			report(
 				libraryFile,

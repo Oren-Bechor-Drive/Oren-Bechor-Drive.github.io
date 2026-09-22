@@ -2,6 +2,7 @@ import { initTopicExplorer } from "./topic-explorer.js";
 import { initDisclosureMotion } from "./disclosure-motion.js";
 import { initScrollReveals } from "./scroll-reveal.js";
 import { initHeroRoadCar } from "./hero-road-car.js";
+import { initFaqDisclosures } from "./faq-disclosures.js";
 
 const menuToggle = document.querySelector("[data-menu-toggle]");
 const menu = document.querySelector("[data-menu]");
@@ -10,6 +11,7 @@ const courseSection = document.querySelector("#about");
 
 initScrollReveals(document);
 initHeroRoadCar(document.querySelector(".hero"));
+initFaqDisclosures(document.querySelector("#faq"));
 
 // Settle off-screen controls before the browser scrolls the focused button into view.
 document.querySelector(".hero-actions")?.addEventListener("focusin", () => {

@@ -1,12 +1,12 @@
 # Driving course website
 
-This repository contains the public welcome page and the course-library preview for Oren Bachor's Hebrew driving course. The welcome page introduces the course. The preview adds independently accessible reading sections and placeholder practice quizzes; it remains marked noindex.
+This repository contains the public welcome page with its FAQ, a static 404 recovery page, and the course-library preview for Oren Bachor's Hebrew driving course. The welcome page introduces the course. The preview adds independently accessible reading sections and placeholder practice quizzes; it remains marked noindex.
 
 The hero fills the available viewport below the navigation with the course promise, two actions, and the stop sign. The student-photo road carousel now sits below the compact instructor introduction; together they fit one viewport below the sticky header on typical laptop and phone screens. On mobile, the instructor content stacks in reading order: title, image, then one description. The blue stop-sign illustration appears above the hero copy. Shorter screens and enlarged text can extend the hero naturally.
 
 ## Current page flow
 
-The page moves through the hero, instructor introduction with its student-photo road carousel, one combined section with the three learning steps and learning-topic preview, and a closing first-lesson action before the footer. Under `#about`, the course has one heading, three introductory paragraphs, a compact learning-step strip, and the complete topic explorer. The paragraphs explain the audience, topics and examples, and how to review material alongside practical driving lessons. The main navigation has one link to the instructor and one to the course. Section links align their destination immediately below the sticky header, or at the viewport top when the mobile fallback header scrolls with the page.
+The page moves through the hero, instructor introduction with its student-photo road carousel, one combined section with the three learning steps and learning-topic preview, the FAQ at `#faq`, and a closing first-lesson action before the footer. Under `#about`, the course has one heading, three introductory paragraphs, a compact learning-step strip, and the complete topic explorer. The paragraphs explain the audience, topics and examples, and how to review material alongside practical driving lessons. Desktop and mobile navigation link to the instructor, course, and FAQ. Section links align their destination immediately below the sticky header, or at the viewport top when the mobile fallback header scrolls with the page.
 
 The hero's main action, "מנחה הקורס", leads to the instructor; its secondary action leads to the unified course section at `#about`. The course-start controls in the topbar and closing section are disabled buttons labeled "הלמידה עדיין אינה זמינה" until a real course URL is supplied. No course playback, account, or enrollment flow exists yet.
 
@@ -18,7 +18,7 @@ Topic previews update immediately for keyboard and assistive activation. Pointer
 
 The instructor and unified course section reveal once on scroll. Focus immediately settles the containing section, and printing exposes all content even before it has been scrolled into view.
 
-The footer shows Instagram, TikTok, YouTube, and WhatsApp as unavailable, noninteractive items, with a visible Hebrew note that contact and social links will be added later. Their four SVG icons are served locally from `assets/icons/social/`, with the upstream Font Awesome license and provenance alongside them. The page makes no requests to an external icon kit.
+The footer centers its social row and contact-status note at desktop and mobile sizes. It shows Instagram, TikTok, YouTube, and WhatsApp as unavailable, noninteractive items, with a visible Hebrew note that contact and social links will be added later. Their four SVG icons are served locally from `assets/icons/social/`, with the upstream Font Awesome license and provenance alongside them. The page makes no requests to an external icon kit.
 
 ## Repository and publishing
 
@@ -26,6 +26,7 @@ The page folders follow the learning flow. Each page has its own `index.html`, s
 
 ```text
 index.html
+404.html                       Domain-root recovery page for missing URLs
 course/
   index.html
   css/                         Shared course, lesson and quiz styles
@@ -46,12 +47,12 @@ assets/                        Shared images, fonts and icons
 scripts/                       Maintenance and verification tools
 tests/
   unit/                        Node checks
-  browser/                     Playwright Chromium journeys
+  browser/                     Playwright browser journeys
   helpers/                     Shared test utilities
 docs/                          Architecture, supplied references and plans
 ```
 
-Open the library at `/course/`, a reading page at `/course/<topic>/`, and quizzes at `/course/<topic>/quizzes/<section-id>/`. Links and assets stay relative so the same files can also be served under a directory prefix. The public homepage and crawler URLs are unchanged.
+Open the homepage FAQ at `/#faq`, the library at `/course/`, a reading page at `/course/<topic>/`, and quizzes at `/course/<topic>/quizzes/<section-id>/`. Ordinary pages keep links and assets relative so the same files can also be served under a directory prefix. `404.html` is the exception: GitHub Pages can return it at any missing nested URL, so it uses domain-root paths for its assets and recovery links. The current organization site is published at the domain root. Any host or path-prefix migration must update and retest those 404 references.
 
 The repository is [Oren-Bechor-Drive/Oren-Bechor-Drive.github.io](https://github.com/Oren-Bechor-Drive/Oren-Bechor-Drive.github.io), owned by the `Oren-Bechor-Drive` organization. The public site is [https://oren-bechor-drive.github.io/](https://oren-bechor-drive.github.io/).
 
@@ -76,6 +77,14 @@ Then open [http://localhost:8000](http://localhost:8000).
 
 No installation or build step is required.
 
+### Homepage FAQ and missing-page recovery
+
+The homepage FAQ at `#faq` sits immediately before `#start`. It uses five native `details` and `summary` rows for the former help page's first five questions: the audience, the relationship to practical lessons, free topic order, videos, and practice quizzes. The navigation links to the section at desktop and mobile sizes. The rows remain usable without JavaScript.
+
+The FAQ uses the requested completed-course marketing copy for its video and practice-quiz answers. This copy does not describe the current preview's runtime state. The course pages remain `noindex`; their 16 video and 12 image/diagram slots and all 80 quiz questions remain placeholders. Account and enrollment controls also remain disabled. The preview has no grading or saved progress.
+
+`404.html` is a noindex recovery page for arbitrary missing paths. It contains one centered error message and two recovery actions for the welcome page and course library. A large yellow ring contains the centered 404 text. The page has no header, footer, topic preview, canonical URL, or JavaScript, and it stays out of the sitemap.
+
 ### Course library preview
 
 Open `/course/` to review the approved open subject-library layout. Its ten learning topics include the welcome page's seven topics, learning foundations, a separate priority-hierarchy topic, and new-driver, licensing and penalty-points information. Searchable descriptions and expandable outlines cover the subjects in `docs/reference/the-idea.pdf`. The [PDF coverage map](docs/reference/course-topic-coverage.md) distinguishes developed teaching material from subjects listed only in the contents. All topics can be opened independently, and search matches outline text and common topic synonyms. No viewed/completed progress or accounts are implied.
@@ -96,7 +105,7 @@ For a preview over an already configured Tailscale connection, keep this server 
 
 ### Add learning sections and quizzes
 
-Keep teaching content in static HTML so it remains usable without JavaScript. Create each learning page at `course/<topic>/index.html` with `.lesson-content` and link to its directory from `course/index.html` with `.subject-learn`. Keep the homepage as the only root HTML page.
+Keep teaching content in static HTML so it remains usable without JavaScript. Create each learning page at `course/<topic>/index.html` with `.lesson-content` and link to its directory from `course/index.html` with `.subject-learn`. Keep learner pages in their topic directories. The required root-level `404.html` is reserved for GitHub Pages recovery behavior.
 
 1. Give each `.lesson-section` a unique, stable `id` and an `aria-labelledby` pointing to its heading. Add a matching `.lesson-contents` anchor. Keep the ID when changing a heading so bookmarks still work.
 2. For a section with an approved quiz, copy a quiz page to `course/<topic>/quizzes/<section-id>/index.html`. Set its `<title>`, `<h1>`, and both `[data-lesson-link]` destinations to the correct lesson section, such as `../../#priority`. Link the section's `.lesson-quiz-link` to `quizzes/<section-id>/`, without a subject query parameter. For a reading-only section, set `data-lesson-format="reading"` and omit the quiz link. The verifier rejects unknown formats and reading-only sections that also claim a quiz.
@@ -115,9 +124,9 @@ The entry script uses `type="module"`, so browsers defer its execution automatic
 
 `index.html` includes a Hebrew search title and description, a canonical URL, Open Graph and X card metadata, and JSON-LD describing the website, welcome page, course, and instructor. Keep these descriptions aligned with the visible course and instructor copy. The sharing image reuses the supplied `assets/images/oren.jpg`; no separate artwork or image-generation step is required. Social sharing metadata works without having social-profile accounts.
 
-The public canonical URL is `https://oren-bechor-drive.github.io/`. If the site moves, update the canonical link, social URLs, JSON-LD identifiers and URLs, `robots.txt`, `sitemap.xml`, and `llms.txt` together. The sitemap lists the single public welcome page; section anchors are not separate pages. Add new published pages when they exist, and add `lastmod` only if an accurate modification date can be maintained. `robots.txt` allows public crawling and points to the sitemap.
+The public canonical URL is `https://oren-bechor-drive.github.io/`. If the site moves, update the canonical links, social URLs, JSON-LD identifiers and URLs, `robots.txt`, `sitemap.xml`, and `llms.txt` together. The sitemap lists only the public welcome page; section anchors are not separate pages. The course preview remains `noindex` and excluded. `404.html` is also `noindex` and excluded because it represents arbitrary missing URLs. Add `lastmod` only if an accurate modification date can be maintained. `robots.txt` allows public crawling and points to the sitemap.
 
-`llms.txt` provides a short Hebrew overview and links to the existing course and instructor sections, following the [llms.txt proposal](https://llmstxt.org/). The page links it with `rel="describedby"`. Keep the summary and links aligned with the page when course facts, section IDs, or available enrollment/playback capabilities change. It is maintained directly, with no generation or runtime step, and does not replace the page or sitemap.
+`llms.txt` provides a short Hebrew overview and links to the existing course, instructor, topic, and FAQ sections on the homepage, following the [llms.txt proposal](https://llmstxt.org/). The page links it with `rel="describedby"`. Keep the summary and links aligned with the page when course facts, section IDs, or available enrollment/playback capabilities change. It is maintained directly, with no generation or runtime step, and does not replace the page or sitemap.
 
 After editing metadata, run `npm run minify:html`, `npm test`, and `git diff --check`. Run `npm run check:media` as well when changing HTML image declarations, preload metadata, or assets. Publish `index.html`, `robots.txt`, `sitemap.xml`, and `llms.txt` together. After deployment, check those public URLs and use Search Console URL Inspection to verify what Google can fetch. Repository tests cannot confirm indexing or social-platform preview caches.
 
@@ -172,6 +181,8 @@ After adding, replacing, removing, or renumbering photos:
 3. Publish the original PNG changes, `assets/images/optimized/`, generated `js/road-photo-sources.js`, and updated `index.html` together, including any deletions.
 
 The generated module is the complete gallery list. Original PNG filenames remain numeric; generated WebP filenames use `oren-bachor-students-N` with optional width suffixes to describe the delivered images. New photos appear only after regenerating and publishing it. Regenerate after replacements too, including replacements with the same byte count. Do not edit the generated module by hand. `check:media` catches added or removed photos missing from the list and original-size mismatches.
+
+The optimizer prepares all output in a temporary `.road-media-*` directory before changing published files. A bad input leaves the previous output intact. If publication fails, it restores replaced and obsolete files and removes newly installed files. Fix the reported cause and run the command again. If rollback itself fails, the error names a retained recovery directory; its `backup/` tree holds any originals that could not be restored. Restore those files to their matching repository paths before retrying, and remove the recovery directory only after checking the result. Run one optimizer at a time per repository. This recovery covers ordinary command failures, not process termination or machine crashes.
 
 The carousel loads listed photos in numeric order, then repeats. Car colors are randomized independently, and adding photos preserves the travel speed. The gallery calculates loop duration from the rendered row width and car spacing, and recalculates it on viewport resize. The approved cadence is about 11.11 seconds per car on desktop and 9.46 seconds on phones; tune `--road-seconds-per-car` in the corresponding CSS rule to change it. Car sizing follows road height with a separate car-scale setting.
 
@@ -232,13 +243,14 @@ Alignment compensates for transparent margins in each source image. Student phot
 
 ## Project files
 
-- `index.html` contains the Hebrew, right-to-left welcome page. `course/index.html` contains the ten-topic library; each topic directory contains its own reading page, and the four quiz directories own their practice questions.
+- `index.html` contains the Hebrew, right-to-left welcome page and its five-row FAQ. `404.html` handles missing paths at the domain root. `course/index.html` contains the ten-topic library; each topic directory contains its own reading page, and the four quiz directories own their practice questions.
 - `course/css/course.css`, `course/css/lesson.css`, and `course/css/quiz.css` style the course preview. `course/js/course-library.js` enhances library search and topic browsing; `course/js/quiz.js` enhances independently authored question fieldsets.
-- `robots.txt` and `sitemap.xml` expose the canonical welcome page to crawlers; `llms.txt` summarizes the course and links to its public sections.
+- `robots.txt` and `sitemap.xml` expose the canonical welcome page to crawlers; `llms.txt` summarizes the course and links to its homepage sections.
 - `css/base.css` defines design tokens, global defaults, and shared layout widths.
 - `css/components.css` styles the header and navigation.
 - `css/welcome.css` styles the welcome-page sections and their controls.
-- `css/responsive.css` contains interaction states, animations, breakpoints, and accessibility preferences. Load the four stylesheets in this order to preserve the cascade.
+- `css/faq.css` styles the homepage FAQ and its responsive layout.
+- `css/responsive.css` contains interaction states, animations, breakpoints, and accessibility preferences. Load the five stylesheets in the order used by `index.html` to preserve the cascade.
 - `js/script.js` adds the mobile menu and initializes page enhancements.
 - `js/topic-explorer.js` owns the topic preview interaction.
 - `js/disclosure-motion.js` shares mobile menu and topic-list visibility, input handling, and press feedback.
@@ -248,18 +260,19 @@ Alignment compensates for transparent margins in each source image. Student phot
 - `scripts/site-pages.mjs` discovers authored HTML for both learning and media checks, sharing the directory exclusions listed in [Architecture](docs/ARCHITECTURE.md#media-verification).
 - `scripts/road-media-integrity.mjs` audits local image sources, responsive candidates and preloads across those pages, including ordinary SVGs and scaled brand images. Marked road media, car templates and numbered student photos retain their stricter checks.
 - `scripts/learning-content.mjs` interprets and validates learning sections and their practice-quiz relationships for structural and browser tests. It returns plain records and file-specific issues without a runtime content registry.
+- `scripts/site-links.mjs` audits local `href`, `src`, and HTML fragment targets across authored pages. It resolves directory URLs and an optional deployment prefix without fetching external destinations.
 - `js/road-photo-sources.js` is the generated complete photo list and responsive delivery metadata.
 - `scripts/optimize-road-media.mjs` regenerates that list and WebP delivery copies without changing originals.
 - `scripts/student-photos.mjs` owns student photo discovery, numeric ordering, and filename diagnostics for the optimizer and media audit. The optimizer stops on findings; the audit collects them and continues checking media.
 - `assets/images/` contains the stop-sign illustration, road background, car artwork, instructor photo, and numbered student photos. `assets/icons/` contains the course icon. Typography uses Varela Round globally, with local WOFF2 files under `assets/fonts/`.
 - `docs/reference/the-idea.pdf` is the supplied course brief.
 - `tests/unit/` contains Node checks for static pages, behavior, learning content, media integrity and maintenance scripts. Run them with `npm run test:unit`.
-- `tests/browser/` contains Chromium journeys for the welcome page, course, quizzes, accessibility, motion and image delivery. Run them with `npm run test:browser`; `npm test` runs both groups.
+- `tests/browser/` contains exhaustive Chromium journeys plus focused Firefox and WebKit smoke journeys for desktop, mobile, navigation, lessons, quizzes, and progressive-enhancement fallbacks. Run them with `npm run test:browser`; `npm test` runs both groups.
 - `tests/helpers/road-media.mjs` serves repository files and directory index pages in browser tests with consistent MIME types and original byte counts for HEAD requests. Individual tests own delays, failures, and download observations.
 
 ### Automated checks
 
-[The Tests workflow](.github/workflows/tests.yml) runs on every push and pull request, and can also be started manually from GitHub Actions. It uses Node.js 24 on GitHub's hosted Ubuntu 24.04 runner, `ubuntu-24.04`, installs the locked dependencies with `npm ci`, checks them with `npm audit`, and installs Chromium with its system dependencies, then runs `npm run check:media` and the full `npm test` suite. This includes static and behavior tests, optimizer tests, and all Chromium gallery and image-delivery checks. New tests matching `tests/*/*.test.mjs` are included automatically.
+[The Tests workflow](.github/workflows/tests.yml) runs on every push and pull request, and can also be started manually from GitHub Actions. It uses Node.js 24 on GitHub's hosted Ubuntu 24.04 runner, `ubuntu-24.04`, installs the locked dependencies with `npm ci`, checks them with `npm audit`, and installs Chromium, Firefox, and WebKit with their system dependencies. It then runs `npm run check:media`, `npm run check:links`, and the full `npm test` suite. This includes static and behavior tests, optimizer tests, exhaustive Chromium coverage, and focused Firefox and WebKit smoke coverage. New tests matching `tests/*/*.test.mjs` are included automatically.
 
 The workflow uses `actions/setup-node` with `cache: npm` to reuse downloaded dependencies between runs.
 
@@ -275,20 +288,23 @@ CI audits the checked-in media. Photo and artwork changes still require running 
 
 ### Local checks
 
-Development checks require Node.js 22.22.2 or newer in the 22.x line, 24.15.0 or newer in the 24.x line, or 26 or newer, plus Playwright's Chromium browser. CI uses Node.js 24. Install the locked development dependencies and browser once, then run the checks:
+Development checks require Node.js 22.22.2 or newer in the 22.x line, 24.15.0 or newer in the 24.x line, or 26 or newer, plus Playwright's Chromium, Firefox, and WebKit engines. CI uses Node.js 24 on Ubuntu 24.04. Install the locked development dependencies and supported browser engines once, then run the checks:
 
 ```bash
 npm ci
-npx playwright install chromium
+npx playwright install --with-deps chromium firefox webkit
 npm audit
-npm test
 npm run check:media
+npm run check:links
+npm test
 git diff --check
 ```
 
+`npm run check:links` discovers the same authored HTML pages as the media audit. It checks local `href` and `src` declarations, directory pages, query strings, and HTML fragments. It reports missing files, missing fragments, malformed local references, empty `src` values, unreadable HTML, and references outside a configured deployment prefix. It skips external and embedded URLs and makes no network requests. Responsive image candidates, CSS URLs, image metadata, MIME types, and rendered navigation stay with the media audit and browser tests. The CLI checks the current domain-root deployment; use `auditSiteLinks({ rootDir, deploymentPrefix })` in a focused test for a prefixed deployment.
+
 The media audit discovers authored root and nested HTML pages and reports each finding with its page. It checks local `img` sources, `srcset`, picture candidates and image preload `href`/`imagesrcset`; declared preload MIME types must match. Ordinary JPEG, WebP and PNG headers and responsive widths are checked, while ordinary SVGs must be valid SVG XML. Display-sized logos may differ from intrinsic image dimensions. Marked road media retains exact original dimensions and alternative-text checks. Student-gallery checks still cover car templates, numeric photo order, generated delivery copies and stale photo-list metadata. The supplied `cars.png` composite remains excluded from car templates. External/embedded URLs are skipped without fetching. This audit does not discover CSS image URLs, validate video files, decode full raster images or inspect rendered cropping. See [media verification](docs/ARCHITECTURE.md#media-verification) for discovery exclusions and focused test interfaces.
 
-Browser tests derive the gallery count and last photo from the generated list. Progressive-append scenarios require enough photos to fill the initial viewport and leave a later photo pending; smaller galleries skip those scenarios. Tests also check loading from the generated photo list without missing-file probes, failure preservation, and loop timing across row sizes and viewport changes. `npm test` includes Chromium checks that load the actual page, stylesheets, scripts, and images at desktop and phone sizes, including resizing and reduced motion. They intercept local requests to serve repository files and block external requests, so no dev server or network connection is needed after setup. Verify layout and interaction changes in the collaborative browser at desktop and phone sizes, including reduced motion. If collaborative preview is unavailable, use local Playwright Chromium and report the limitation.
+Browser tests derive the gallery count and last photo from the generated list. Progressive-append scenarios require enough photos to fill the initial viewport and leave a later photo pending; smaller galleries skip those scenarios. Tests also check loading from the generated photo list without missing-file probes, failure preservation, and loop timing across row sizes and viewport changes. `npm test` includes Chromium checks that load the actual page, stylesheets, scripts, and images at desktop and phone sizes, including resizing and reduced motion. Focused Firefox and WebKit smoke journeys cover desktop and mobile navigation, topic selection, lessons, quizzes, and JavaScript-disabled or blocked fallbacks. The tests intercept local requests to serve repository files and block external requests, so no dev server or network connection is needed after setup. Verify layout and interaction changes in the collaborative browser at desktop and phone sizes, including reduced motion. If collaborative preview is unavailable, use local Playwright Chromium and report the limitation.
 
 ## Documentation
 
@@ -296,6 +312,10 @@ Browser tests derive the gallery count and last photo from the generated list. P
 - [DESIGN.md](DESIGN.md): visual system and the approved welcome-page composition.
 - [CONTEXT.md](CONTEXT.md): course and gallery terminology.
 - [Architecture](docs/ARCHITECTURE.md): content verification, site-wide media coverage and student-gallery ownership.
+- [Paid-service architecture draft](docs/plans/paid-service-architecture.md): provider-neutral future service boundaries, data model and failure handling. It does not describe shipped capabilities.
+- [Operations](docs/OPERATIONS.md): current content review, publication, live checks, support intake and rollback procedures.
+- [Official source review](docs/reference/official-source-review-2026-09-22.md): dated official-resource audit, evidence and limits.
+- [Site quality review](docs/reviews/site-quality-2026-09-22.md): current responsive, accessibility and local resource audit with remaining manual checks.
 - [AGENTS.md](AGENTS.md): contributor boundaries and required checks.
 - [Font sources and license](assets/fonts/README.md): the local font files and their delivery requirements.
 - [Supplied course brief](docs/reference/the-idea.pdf): original instructor and course material.
@@ -309,10 +329,127 @@ See [LICENSE](LICENSE) for the complete scope.
 
 ## Todo
 
-- Defer a shared course-content module until a second runtime page needs the same course content.
-- Revisit shared header markup when profile behavior exists; the preview already shares course, lesson and quiz styles.
-- Add Firefox and WebKit smoke checks for page loading, navigation, and topic selection.
+Roadmap reviewed against the repository on 2026-09-22. This backlog covers the path from the current public welcome page and course preview to a paid learning service. It records future work, not available capabilities or authorization to implement every item. `PRODUCT.md` still describes the current release. Update it and the relevant architecture and domain documentation when each future capability is approved for implementation.
 
+Already present: the public welcome page with its five-row FAQ, a noindex 404 page, a searchable ten-topic library, ten reading pages covering the developed PDF topics, four placeholder practice quizzes, responsive Hebrew RTL layouts, baseline navigation and reading without JavaScript, media and local-link audits, search/sharing metadata for the public page, and CI with unit and Chromium coverage plus Firefox and WebKit smoke checks. Extend these rather than rebuilding them. The preview still has 16 video and 12 image/diagram placeholders, no real quiz questions or grading, and no accounts, payments or persistent progress.
+
+Work through the sections below in dependency order. Content production and public-page work can proceed alongside service planning. A paid launch depends on approved teaching material, working account and billing journeys, server-enforced access, and the launch checks below. Optional additions at the end are not launch requirements.
+
+### Existing items reviewed
+
+- [ ] Keep shared runtime course-content extraction deferred until a second runtime consumer needs the same content. `scripts/learning-content.mjs` already shares development-time interpretation across verification tools; it does not justify a new browser content registry. Keep baseline HTML as the source for interactive descriptions.
+- [ ] Revisit shared course-header markup when account/profile behavior is implemented. Course, reading and quiz pages already share styles; any reuse must preserve independently served HTML and the no-build-step frontend.
+- [x] Add Firefox and WebKit smoke checks for page loading, navigation, library selection, reading anchors and quiz interaction. CI retains the exhaustive Chromium coverage and installs all three engines.
+- [x] Add `npm run check:links` for local files and HTML fragments, with deployment-prefix fixtures and CI execution after the media audit.
+
+### Product and owner decisions
+
+- [ ] Agree on the first paid release's learning topics, media and practice coverage. Separate material required at launch from later additions, and identify an owner for content approval, support and billing operations.
+- [ ] Define what stays public, what is a free sample, and what requires a subscription. Keep learning topics accessible in any order within a learner's access; payment must not introduce mandatory learning sequences.
+- [ ] Supply the business identity, support contact, social-profile destinations and enrollment destination. Do not invent contact details, testimonials, outcome claims or a physical address.
+- [ ] Set subscription plans, currency, displayed prices, billing intervals, access periods and renewal behavior. Decide whether trials, discounts, one-time purchases, plan changes or pauses belong in the first release; do not imply they exist before implementation.
+- [ ] Agree on cancellation, refund, failed-payment grace, expired-access and account-deletion policies, including what happens to progress when a learner returns.
+- [ ] Establish the intended learner age range and have qualified reviewers determine applicable consumer, privacy, accessibility, tax and minor-consent requirements before sales begin. Record approved requirements and policy owners rather than assuming legal rules.
+- [ ] Define launch acceptance criteria, expected usage, service costs and an operating budget for video delivery, authentication, transactional email, payments and storage.
+
+### Teaching content, media and practice
+
+- [ ] Have Oren review every adapted reading page and the safety qualifications in the [coverage map](docs/reference/course-topic-coverage.md). Record approval and resolve corrections before treating preview copy as final teaching material.
+- [ ] Obtain source material for definitions, summary/conclusions and uphill/downhill priority, which are currently listed without developed explanations. Decide whether each needs a new page or a section in an existing topic; resolve the unexplained resource label only when its meaning and destination are supplied.
+- [x] Complete the bounded 2026-09-22 review of official resource links and higher-risk driving, licensing, penalty-points and right-of-way claims. Record the evidence and limits in the [official source review](docs/reference/official-source-review-2026-09-22.md).
+- [ ] Assign and run recurring official-source reviews, resolve the documented publication-timing limit, and obtain Oren's approval of the teaching material. Do not copy stale numerical claims from the PDF.
+- [ ] Produce or obtain the 16 planned videos and 12 images/diagrams. Confirm each asset's teaching purpose, rights and permission to show identifiable people or vehicles; preserve supplied originals and record source/approval information.
+- [ ] Add Hebrew captions, transcripts, useful alternative text and descriptions of essential visual information. Review text embedded in road diagrams for readability on phones.
+- [ ] Add accessible video playback with keyboard controls, playback speed, captions, loading/error states and retry. Verify mobile playback, slow connections and delivery costs; choose hosting and encoding based on the approved public/paid split.
+- [ ] Replace all 80 placeholder questions across the four existing quizzes with instructor-approved scenarios, choices, answer keys and explanations. Select question media from the scenario and remove placeholder notices/markers only when the content is ready.
+- [ ] Define scoring, answer feedback, skipped-question handling, retries and attempt review before adding grading to the shared quiz interaction. Keep the experience a practice quiz, without certification or driving-test claims.
+- [ ] Add practice quizzes to other learning sections only where approved questions support them. Reading-only sections remain valid; do not create quizzes solely to make every topic look identical.
+- [ ] Extend learning-content verification for approved answer keys and new media/content relationships. Preserve file-specific diagnostics, per-quiz ownership and the distinction between placeholder-layout tests and shared interaction tests.
+
+### Public pages and navigation
+
+Proposed page names below describe responsibilities. Choose final paths during implementation and preserve existing course URLs and section anchors.
+
+- [ ] Add a course-details and pricing page with actual inclusions, free samples, access duration, renewal terms and a working enrollment action once those facts are approved.
+- [x] Add the homepage FAQ at `#faq` with the approved five completed-course questions and answers, native disclosures, and desktop and mobile navigation links. Retire the separate help page and its footer link.
+- [ ] Expand the homepage FAQ with approved subscription, cancellation, refund, account-recovery and support information when those services and policies exist.
+- [ ] Add a contact/support page with supplied destinations, response expectations and accessible success/error states. If using a form, provide server validation, abuse controls and a delivery/failure path.
+- [ ] Add privacy, terms of use/sale, cancellation/refund and accessibility pages based on approved business practices and qualified review. Add cookie/storage disclosures and consent controls where the chosen services require them.
+- [x] Add a noindex 404 page with a centered error message and root-absolute links to the welcome page and library. Keep its domain-root paths coordinated with any host or path migration.
+- [ ] Add maintenance or service-unavailable recovery and return links for interrupted account or checkout journeys when those journeys exist.
+- [ ] Replace disabled course-start and social controls only when real destinations are ready. Update navigation, footer links and the shared course header for the published page set.
+- [ ] Review every new page and transactional message in Hebrew with RTL layout, mixed-direction email/number handling, keyboard access, visible focus, zoom and mobile behavior. Follow `DESIGN.md` for new UI.
+- [x] Link `llms.txt` to the homepage FAQ and keep the sitemap limited to the canonical homepage. Keep the course preview and 404 page `noindex` and out of the sitemap.
+- [ ] Publish future approved public pages with accurate metadata, sitemap entries and `llms.txt` content. Keep preview and private or account pages out of public discovery; `noindex` is not access control.
+
+### Backend, hosting and data
+
+- [x] Write a [provider-neutral paid-service architecture draft](docs/plans/paid-service-architecture.md) for identity, learner data, subscriptions, payment events, email and protected media. It is a future recommendation and does not implement or approve a service.
+- [ ] Approve the service architecture, select providers, and implement and deploy the trusted service, database, private storage and adapters. Keep the public frontend in plain HTML, CSS and JavaScript without a required build step.
+- [ ] Select hosting and service providers after confirming regional availability, business eligibility, Hebrew/RTL support, recurring billing needs, data handling, export options and operating costs. Record decisions before integrating provider-specific behavior.
+- [ ] Decide the public and service domains, HTTPS setup, staging/production separation and migration plan. Resolve the documented GitHub Pages header/caching limitations where needed, with redirects and coordinated URL/metadata updates if the public host changes.
+- [ ] Turn the draft logical data model into approved storage schemas and migrations for learners, roles, progress, quiz attempts, subscriptions, access entitlements, payment-event records and policy acceptance. Use stable identifiers and approved retention/deletion rules; the architecture draft is not an implemented migration.
+- [ ] Implement server-side validation and authorization for each protected operation. Keep service credentials in managed server secrets, separate environments, and define rotation and recovery procedures.
+- [ ] Define API error responses, retries, rate limits and concurrency behavior. Configure origin restrictions, CSRF protection where applicable and response security headers; update the current CSP only for the services actually integrated.
+- [ ] Keep paid lesson bodies, answer data that must remain private, and protected media out of publicly deployed files. The current static preview is publicly retrievable; a client-side lock or hidden link cannot enforce a subscription.
+- [ ] Serve restricted content only after server-side entitlement checks, including direct URL requests. Use private media storage and scoped, expiring delivery access where needed; prevent shared caches from exposing private responses.
+- [ ] Set up backups, tested restores, deployment rollback and monitored database migrations before storing live learner or billing data.
+
+### Accounts and learner area
+
+- [ ] Choose supported sign-in methods and implement registration, identity verification, sign-in and sign-out. Add password reset or expiring-link recovery as appropriate, with accessible invalid, expired, reused and rate-limited states.
+- [ ] Implement secure sessions, expiry, revocation and safe return-to destinations after login. Check behavior across reloads, tabs and devices, and prevent account enumeration or open redirects.
+- [ ] Replace the disabled profile control with account navigation for signed-out and signed-in states. Add a profile/settings page for supported identity changes, notification preferences and session management.
+- [ ] Add a learner home or continue-learning page with saved position and optional bookmarks. Keep the course library and all entitled topics independently reachable.
+- [ ] Define what counts as viewed or completed, then persist reading/video position, completion and quiz attempts across devices. Handle failed saves, concurrent updates and deleted/updated learning sections without silently losing progress.
+- [ ] Add account-data export and deletion workflows, reauthentication for sensitive changes, and approved handling of billing records and active subscriptions during deletion.
+- [ ] Provide clear states for unverified, signed-out, expired-session, suspended and deleted accounts, with support and recovery routes. Public navigation and topic descriptions must remain usable if JavaScript or the account service fails.
+- [ ] Configure transactional email delivery and sender authentication for verification, recovery, account changes and security notices. Use Hebrew templates, monitor delivery failures and separate optional marketing consent from service messages.
+
+### Paid subscriptions and access
+
+- [ ] Set up the approved payment provider, business verification and separate test/live credentials. Use provider-hosted payment collection or its supported secure components so the site does not collect raw card details.
+- [ ] Build checkout entry, order review, payment-pending, success, cancellation and failure pages/states. Preserve the selected plan through sign-in and offer a safe retry without duplicate purchases.
+- [ ] Create checkout sessions on the server from trusted plan identifiers and prices. Bind purchases to the correct learner and define how existing subscribers or duplicate checkout attempts are handled.
+- [ ] Verify payment webhook signatures, deduplicate events, handle retries and out-of-order delivery, and reconcile missed events with the provider. A checkout return URL must never grant access by itself.
+- [ ] Model subscription and entitlement changes for initial payment, renewal, failed payment, grace periods, scheduled cancellation, expiry, refunds and disputes. Define access timing for every supported state and enforce it on the server.
+- [ ] Add a billing/subscription page showing plan, status, next renewal or access-end date, payment-method management and billing history. Implement accessible cancellation and confirmation according to the approved policy.
+- [ ] Deliver renewal, failed-payment, cancellation and refund messages with the correct dates and recovery links. Connect receipts/invoices and tax handling to the approved accounting process; verify actual issued documents.
+- [ ] Implement refunds and payment-dispute handling for authorized staff, including access changes and an audit record. Provide reconciliation tools for cases where provider billing and local access disagree.
+- [ ] Implement trials, coupons, upgrades/downgrades, prorations or pauses only if selected in the product decisions. Test their pricing and access transitions explicitly before advertising them.
+- [ ] Test the full subscription lifecycle in the provider sandbox and complete a controlled live purchase, renewal-path verification, cancellation and refund check before opening paid enrollment.
+
+### Administration and support
+
+- [ ] Provide a restricted staff area or supported operational tools to find learners, inspect subscription/access state, resolve support requests and manage approved content releases. Start with the tasks staff actually need.
+- [ ] Separate learner, support, content-editor and billing permissions as needed. Require strong staff authentication and audit sensitive access, refunds, entitlement overrides and account changes.
+- [x] Document the current repository content-review, publication, live-check and rollback procedure in the [operations runbook](docs/OPERATIONS.md). This procedure records instructor approval but does not supply it.
+- [ ] Obtain instructor approval for each required revision and decide whether repository editing remains sufficient before introducing a CMS.
+- [ ] Add a way to report teaching errors, broken media and quiz issues with the relevant topic/question reference. Track resolution and notify affected learners when a correction warrants it.
+- [x] Document current static-site support intake, source and rights escalation, technical outage triage, publication recovery and proposed maintenance cadence in the [operations runbook](docs/OPERATIONS.md).
+- [ ] Write and rehearse future support procedures for lost access, duplicate purchases, billing failures, refunds and paid-service outages. Provide approved staff escalation paths and limits on access to learner data.
+
+### Verification and launch
+
+- [ ] Extend automated coverage for accounts, session expiry, authorization, learner-data isolation, progress, grading, checkout, webhook replay and subscription transitions. Verify denied access through direct page, API and media requests, not only hidden UI controls.
+- [x] Audit the current static welcome, library, reading and quiz paths for responsive reflow, reduced motion, JavaScript fallbacks and local resource weight. Record findings and remaining manual checks in the [site quality review](docs/reviews/site-quality-2026-09-22.md).
+- [ ] Exercise the future complete public-to-paid journey on desktop and mobile, including keyboard-only use, a screen reader, enlarged text, reduced motion, disabled or blocked JavaScript, slow networks and service failures.
+- [ ] Measure page weight, video startup, layout stability and service response times on representative phones/connections. Establish performance and cost budgets, then load-test expected concurrent playback and service traffic.
+- [ ] Review authentication, payment and private-data handling before launch. Test privilege escalation, cross-account access, abusive requests, unsafe redirects and secret exposure, and resolve findings.
+- [ ] Extend CI and staging checks for the new services and migrations while retaining `npm test`, `npm run check:media` and dependency checks. Keep credentials and private learner data out of repository fixtures and logs.
+- [ ] Configure error monitoring, uptime checks and alerts for playback, login, payment-webhook and email failures. Redact personal data and credentials; identify who responds to each alert.
+- [ ] Add only the analytics needed to measure course discovery, checkout completion and learning use, subject to the approved privacy/consent decisions. Define events and retention before adding tracking services.
+- [ ] Run a small instructor/learner pilot, collect issues and complete the paid-release acceptance checklist. Confirm all launch content, support routes, policy pages and operational owners are ready.
+- [ ] Enable enrollment and publish the agreed public course pages only after acceptance. Update `PRODUCT.md`, `CONTEXT.md`, architecture and maintenance instructions to describe shipped behavior, then check live links, redirects, metadata, crawler responses and sharing previews.
+- [ ] Verify backup restoration and rollback in staging, and document how to stop new purchases safely during an outage while preserving existing learner access where possible.
+
+### Ongoing work and optional expansion
+
+- [ ] Schedule teaching-content, official-link and policy reviews; renew asset permissions where needed and keep captions/transcripts aligned with revised media.
+- [ ] Review failed payments, refunds, support volume, delivery errors, service costs and accessibility regressions. Reconcile billing and access regularly, maintain dependencies and rehearse recovery.
+- [ ] Prioritize additional instructor-approved lessons and practice from learner feedback. Consider search within lessons and a glossary when the content supports them.
+- [ ] Evaluate optional study reminders, offline public reading, additional languages, gift/group access and referral offers after the core paid service is stable. Each needs its own scope, accessibility/privacy review and cost justification.
+- [ ] Add testimonials or outcome evidence only when real material and permission are supplied. Consider separate instructor/about or editorial pages only when there is enough distinct content to justify them.
 
 ## Security and unavailable actions
 
@@ -331,4 +468,4 @@ The following findings cannot be fully resolved by editing this repository while
 - **Browser capability policy:** `Permissions-Policy` for the top-level page requires a response header. The current site does not request camera, microphone, or geolocation access.
 - **HSTS expansion:** Pages already sends `Strict-Transport-Security: max-age=31556952`. Adding `includeSubDomains` or changing preload status is a hosting/domain decision, not an HTML change. Existing HTTPS and HSTS protection are active; this is optional hardening, not missing TLS.
 
-The referrer policy and supported CSP directives are implemented in HTML. Header-only audits may still report them as absent because the host does not emit equivalent headers. The four external stylesheets remain separate: the audit's estimated 40ms render-blocking saving does not justify inline CSS, a required build step, or a flash of unstyled content. About information, instructor expertise, and sharing metadata already exist. Captions, sharing buttons, policy pages, editorial statements, publication dates, and a physical address were not established as requirements for this welcome page; add them when useful and supported by real facts, not to satisfy generic audit heuristics.
+The referrer policy and supported CSP directives are implemented in HTML. Header-only audits may still report them as absent because the host does not emit equivalent headers. The five external stylesheets remain separate: the audit's estimated 40ms render-blocking saving does not justify inline CSS, a required build step, or a flash of unstyled content. About information, instructor expertise, and sharing metadata already exist. Captions, sharing buttons, policy pages, editorial statements, publication dates, and a physical address were not established as requirements for this welcome page; add them when useful and supported by real facts, not to satisfy generic audit heuristics.

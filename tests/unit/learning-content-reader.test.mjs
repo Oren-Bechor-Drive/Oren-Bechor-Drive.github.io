@@ -26,19 +26,25 @@ async function fixture(t, changes = {}) {
 	return root;
 }
 
-for (const index of ["", "index.html"]) {
-	test(`nested learning pages resolve directory and explicit index links: ${index || "directory"}`, async (t) => {
+for (const [filename, suffix, returnPath] of [
+	["index.html", "/", "../../"],
+	["index.html", "/index.html", "../../index.html"],
+	["index.htm", "/", "../../"],
+	["index.htm", "/index.htm", "../../index.htm"],
+	["index.htm", "", "/course/topic"],
+]) {
+	test(`nested learning pages resolve ${filename} with links ending in '${suffix}'`, async (t) => {
 		const root = await fixture(t, {
 			"lesson.html": null,
 			"practice.html": null,
-			"course/index.html": `<a class="subject-learn" href="topic/${index}">ללמידה</a>`,
-			"course/topic/index.html": lesson.replace(
+			"course/index.html": `<a class="subject-learn" href="topic${suffix}">ללמידה</a>`,
+			[`course/topic/${filename}`]: lesson.replace(
 				'href="practice.html"',
-				`href="quizzes/turn/${index}"`,
+				`href="quizzes/turn${suffix}"`,
 			),
-			"course/topic/quizzes/turn/index.html": quiz.replace(
+			[`course/topic/quizzes/turn/${filename}`]: quiz.replace(
 				'href="lesson.html#turn"',
-				`href="../../${index}#turn"`,
+				`href="${returnPath}#turn"`,
 			),
 			"docs/example.html": quiz,
 			".hidden/example.html": quiz,
@@ -47,10 +53,10 @@ for (const index of ["", "index.html"]) {
 		assert.deepEqual(content.issues, []);
 		assert.equal(content.lessons.length, 1);
 		assert.equal(content.quizzes.length, 1);
-		assert.equal(content.lessons[0].file, "course/topic/index.html");
+		assert.equal(content.lessons[0].file, `course/topic/${filename}`);
 		assert.equal(
 			content.quizzes[0].file,
-			"course/topic/quizzes/turn/index.html",
+			`course/topic/quizzes/turn/${filename}`,
 		);
 	});
 }
@@ -232,6 +238,19 @@ test("only approved government resources bypass the source-link count", async (t
 		}),
 	);
 	assert.equal(content.lessons[0].sourceLinks, 1);
+});
+
+test("official government-data resources bypass the source-link count", async (t) => {
+	const reading =
+		'<section class="lesson-section" data-lesson-format="reading" id="reading" aria-labelledby="reading-title"><h2 id="reading-title">קריאה</h2><a class="official-resource" href="https://data.gov.il/he/datasets/example">מאגר ממשלתי</a></section>';
+	const content = await readLearningContent(
+		await fixture(t, {
+			"lesson.html": lesson
+				.replace("</nav>", '<a href="#reading">קריאה</a></nav>')
+				.replace("</main>", `${reading}</main>`),
+		}),
+	);
+	assert.equal(content.lessons[0].sourceLinks, 0);
 });
 
 for (const [name, section, expected] of [

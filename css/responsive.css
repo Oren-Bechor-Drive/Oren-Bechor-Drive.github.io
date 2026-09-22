@@ -152,6 +152,14 @@
 		transition-duration: 480ms;
 	}
 
+	.faq[data-scroll-state="pending"] .scroll-reveal-target {
+		transform: translateY(8px);
+	}
+
+	.faq[data-scroll-motion="ready"] .scroll-reveal-target {
+		transition-duration: 280ms;
+	}
+
 	[data-scroll-reveal][data-scroll-state="visible"] .scroll-reveal-target {
 		opacity: 1;
 		transform: none;
@@ -427,15 +435,6 @@
 			transform: translateY(16px);
 		}
 	}
-
-	.footer-layout {
-		flex-direction: column;
-		text-align: center;
-	}
-
-	.footer-social {
-		justify-content: center;
-	}
 }
 
 .topic-picker {
@@ -624,6 +623,10 @@
 		animation-duration: 0.01ms !important;
 		animation-iteration-count: 1 !important;
 		transition-duration: 0.01ms !important;
+	}
+
+	.skip-link {
+		transition: none !important;
 	}
 
 	/* Only these user-triggered disclosures retain a gentle fade. */

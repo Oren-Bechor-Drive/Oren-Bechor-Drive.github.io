@@ -8,9 +8,9 @@ const root = new URL("../../", import.meta.url);
 const read = (path) => readFile(new URL(path, root), "utf8");
 const canonicalUrl = "https://oren-bechor-drive.github.io/";
 
-test("llms overview points to real public page sections", async () => {
+test("llms overview points to real public pages and sections", async () => {
 	const overview = await read("llms.txt");
-	const page = new JSDOM(await read("index.html"));
+	const pages = new Map([["/", new JSDOM(await read("index.html"))]]);
 	try {
 		assert.match(overview, /^# .+/);
 		const links = [
@@ -20,9 +20,16 @@ test("llms overview points to real public page sections", async () => {
 			links.length > 0,
 			"The overview must lead readers to the source page",
 		);
+		assert.match(
+			overview,
+			/\[[^\]]+\]\(https:\/\/oren-bechor-drive\.github\.io\/#faq\)/,
+		);
+		assert.doesNotMatch(overview, /\/help\//);
 		for (const [, href] of links) {
 			const url = new URL(href);
-			assert.equal(`${url.origin}${url.pathname}`, canonicalUrl);
+			assert.equal(url.origin, new URL(canonicalUrl).origin);
+			const page = pages.get(url.pathname);
+			assert.ok(page, `Unpublished overview page: ${url.pathname}`);
 			if (url.hash)
 				assert.ok(
 					page.window.document.getElementById(url.hash.slice(1)),
@@ -30,7 +37,7 @@ test("llms overview points to real public page sections", async () => {
 				);
 		}
 	} finally {
-		page.window.close();
+		for (const page of pages.values()) page.window.close();
 	}
 });
 
@@ -69,7 +76,7 @@ test("crawler discovery allows public content and advertises the sitemap", async
 	);
 });
 
-test("sitemap publishes the welcome page at its HTML canonical URL", async () => {
+test("sitemap publishes the homepage at its HTML canonical URL", async () => {
 	assert.ok(existsSync(new URL("sitemap.xml", root)), "Missing sitemap.xml");
 	const sitemap = new JSDOM(await read("sitemap.xml"), {
 		contentType: "application/xml",

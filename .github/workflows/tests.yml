@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   tests:
-    name: Tests and media audit
+    name: Tests and site audits
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -35,11 +35,14 @@ jobs:
       - name: Audit dependencies
         run: npm audit
 
-      - name: Install Chromium and system dependencies
-        run: npx playwright install --with-deps chromium
+      - name: Install browser engines and system dependencies
+        run: npx playwright install --with-deps chromium firefox webkit
 
       - name: Audit checked-in media
         run: npm run check:media
 
-      - name: Run all tests, including Chromium
+      - name: Audit local links
+        run: npm run check:links
+
+      - name: Run all tests, including browser checks
         run: npm test

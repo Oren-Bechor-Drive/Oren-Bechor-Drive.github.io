@@ -605,20 +605,26 @@
 
 .footer-layout {
 	display: flex;
+	flex-direction: column;
 	align-items: center;
 	flex-wrap: wrap;
-	justify-content: space-between;
+	justify-content: center;
 	gap: 24px;
+	text-align: center;
 }
 
 .footer-layout p {
+	max-width: 48ch;
 	margin: 0;
+	text-wrap: balance;
 }
 
 .footer-social {
 	display: flex;
 	flex-wrap: wrap;
+	justify-content: center;
 	gap: 8px;
+	max-width: 100%;
 }
 
 .footer-social > span {

@@ -9,6 +9,7 @@
   },
   "scripts": {
     "test": "node --test tests/*/*.test.mjs",
+    "check:links": "node scripts/site-links.mjs",
     "check:media": "node scripts/road-media-integrity.mjs",
     "optimize:media": "node scripts/optimize-road-media.mjs",
     "minify:html": "node scripts/minify-html.mjs",

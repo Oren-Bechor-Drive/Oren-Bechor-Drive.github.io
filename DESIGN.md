@@ -253,7 +253,7 @@ Course-only utility icons use the same local Font Awesome Classic Solid source. 
 
 ## Current Welcome Page
 
-The approved composition is the hero, the instructor introduction with its student gallery, one combined learning section containing the three learning steps and topic preview, and a closing first-lesson action before the footer. This section records page-specific choices within the broader system above; unused palette colors remain available for future designs.
+The approved composition is the hero, the instructor introduction with its student gallery, one combined learning section containing the three learning steps and topic preview, the homepage FAQ, and a closing first-lesson action before the footer. This section records page-specific choices within the broader system above; unused palette colors remain available for future designs.
 
 ### Hero, Learning Steps, and Instructor Gallery
 
@@ -262,8 +262,8 @@ The approved composition is the hero, the instructor introduction with its stude
 - The hero contains the concrete course promise, supporting copy, a primary "מנחה הקורס" button linking to `#instructor`, a secondary "צפו בנושאי הקורס" button linking to `#about`, and the supplied stop sign. It fills the initial viewport below the header. The secondary hero button has a white background with blue text and border, and a pale blue hover. Header and closing course-start controls use disabled native buttons labeled "הלמידה עדיין אינה זמינה" until a real course destination is supplied. Use the pale `--surface-high` fill and readable `--text-soft` text, without hover or press movement.
 - Place the supplied road background below the compact instructor introduction. The introduction and road together fit below the sticky header on typical laptop and phone screens. Preserve gallery geometry and cadence; `hero-road` remains the gallery's existing technical identifier.
 - Present the course as one white `#about` section headed "קורס נהיגה נכונה: מבינים את הכביש". Its three introductory paragraphs explain the audience, topics and examples, and review alongside practical lessons. Each paragraph has a maximum width of `72ch`, a 20px top margin, and 18px text, reduced to 16px at 768px and below. Follow with a pale blue strip containing the three learning steps, a short topic-selection prompt, the topic explorer, and the note that the course supports driving lessons. Keep all seven topics and their descriptions. Use three step columns on desktop and a vertical list on phones. The entire course shares one content width, spacing rhythm, and scroll-reveal root; omit a divider or second section title between the steps and explorer.
-- The topbar has one instructor link and one "על הקורס" link. Both course navigation actions target `#about`. Use only the sticky header height as the global scroll offset, with no extra section scroll margins, so section backgrounds align immediately below the header. The mobile fallback header is in normal document flow and uses a zero scroll offset.
-- End with a centered pale blue section headed "מוכנים להבין את הכביש טוב יותר?", the supplied supporting sentence, and one disabled "הלמידה עדיין אינה זמינה" button until a real lesson destination is supplied.
+- The topbar links to the instructor, `#about`, and `#faq`. Use only the sticky header height as the global scroll offset, with no extra section scroll margins, so section backgrounds align immediately below the header. The mobile fallback header is in normal document flow and uses a zero scroll offset.
+- Place the homepage FAQ immediately before `#start`. End with a centered pale blue section headed "מוכנים להבין את הכביש טוב יותר?", the supplied supporting sentence, and one disabled "הלמידה עדיין אינה זמינה" button until a real lesson destination is supplied.
 - The road spans the viewport, repeats horizontally, fills its height, and has square corners. Its height responds to the small viewport height, with a 180-264px desktop range and a 140-188px phone range.
 - Center the visible car silhouettes despite differing transparent margins in their source files. Size cars relative to the road height and retain a separate car-scale setting; phone layouts show neighboring cars partially clipped.
 - Place student photos on the car roofs with 8px rounded corners and a subtle 3px transparent edge fade. Keep the middle of each photo opaque, crop with `object-fit: cover`, and preserve the original image files.
@@ -291,7 +291,7 @@ The instructor introduction and unified course section reveal once as they enter
 
 Topic preview changes animate only the title and description container; the unchanged explanatory note stays still. A new pointer or touch selection fades and moves the outgoing content by 6px, replaces it after 110ms, and returns it over 180ms with `--ease-out`. Selecting the active topic does not restart feedback. Keyboard and assistive activation update immediately. Enabling reduced motion settles any pending update and removes movement and delay from later selections.
 
-The footer includes a right-to-left row of Instagram, TikTok, YouTube, and WhatsApp items. Use locally served 24px Font Awesome SVG brand icons in the primary blue with visible Hebrew labels. Until destinations are supplied, render noninteractive items with a shared unavailable notice. Items wrap as needed on small screens. Future real links must have at least 44px touch targets and visible keyboard focus.
+The footer centers a right-to-left row of Instagram, TikTok, YouTube, and WhatsApp items and its contact-status note at every viewport width. Use locally served 24px Font Awesome SVG brand icons in the primary blue with visible Hebrew labels. Until destinations are supplied, render noninteractive items with a shared unavailable notice. Items wrap into centered rows as needed on small screens. The footer has no FAQ link. Future real links must have at least 44px touch targets and visible keyboard focus.
 
 On this welcome page, use a solid 3px primary blue (`#264796`) outline for keyboard focus instead of the general translucent focus glow described above, so it remains visible on white, blue, and amber surfaces.
 
@@ -301,11 +301,31 @@ Without JavaScript or when the entry module is unavailable, the mobile header st
 
 The current page uses a maximum 1280px content width, with 48px side margins above 1024px, 32px at 1024px and below, 20px at 768px and below, and 16px at 440px and below. The main layout and menu switch at 768px; the topic dropdown switches below 640px. These are the implemented page breakpoints rather than a mandatory column grid.
 
-The page uses `#f2f5fc` for its base surface and `#131D1F` for primary text. `css/base.css` holds runtime tokens, `css/components.css` holds navigation styles, `css/welcome.css` holds section layouts, and `css/responsive.css` holds motion, interaction states, responsive overrides, and accessibility preferences. Keep this stylesheet load order.
+The page uses `#f2f5fc` for its base surface and `#131D1F` for primary text. `css/base.css` holds runtime tokens, `css/components.css` holds navigation styles, `css/welcome.css` holds the main section layouts, `css/faq.css` holds the FAQ layout and disclosure styles, and `css/responsive.css` holds motion, interaction states, responsive overrides, and accessibility preferences. Keep this stylesheet load order.
 
 ### Accessibility and unavailable destinations
 
 The header subtitle uses `--text-soft` to maintain at least 4.5:1 contrast over the translucent header. The home link accessible name includes the complete visible brand text. Footer social channels use local 24px SVG icons with visible Hebrew labels, noninteractive unavailable items, and a shared Hebrew explanation that destinations will be added later. No hover treatment implies those items are active links.
+
+## Homepage FAQ
+
+The public questions and answers live in `index.html` at `#faq`, immediately before `#start`. The section uses five native `details` and `summary` rows based on the former help page's first five questions. Keep the native controls and baseline answers usable without JavaScript. Desktop and mobile navigation link directly to the section.
+
+At widths above 768px, place the heading in a narrow column in normal flow and the disclosures in a wider column. At 768px and below, use one column. Each answer uses a 16px card radius, the pale base surface when closed, a white surface and subtle shadow when open, and the local chevron rotated to show its state. Keep the amber kicker and the established Varela Round hierarchy.
+
+Pointer and touch activation animates the complete FAQ card height and chevron rotation in both directions over 220ms with `--ease-out`. A rapid second activation reverses from the currently rendered height. Keyboard activation and reduced-motion interaction settle immediately, including when they interrupt active motion.
+
+The FAQ heading and question list enter together once when the section first scrolls into view, fading in and moving upward by 8px over 280ms with `--ease-out`. Reuse the existing scroll-reveal behavior. Keyboard focus reveals the content immediately; reduced motion keeps only an 80ms opacity fade. Without JavaScript or IntersectionObserver, and in print, the content stays visible.
+
+The FAQ's video and practice-quiz answers use the requested completed-course marketing copy. They do not document current runtime availability. The `noindex` course preview still has placeholder media and questions, disabled account and enrollment controls, no grading, and no saved progress.
+
+## Not-found page
+
+`404.html` is the static recovery page for missing URLs. It contains only the skip link and one centered error-message section with recovery actions. The page has no header, footer, brand chrome, or topic preview. A large circular yellow border contains the centered blue 404 text. The actions stack below 601px. At short viewport heights, the message aligns to the top with safe padding and scrolls naturally.
+
+The page links to the welcome page and course library. It has no account, checkout, enrollment, progress, contact, or service-status controls. Keep it `noindex` and omit canonical metadata because one response body serves many missing URLs. All page, asset, and recovery references must remain root-absolute while the site is published at the domain root, so nested missing paths recover correctly. A host or path-prefix migration must update these references as part of the move. Reduced motion removes inherited smooth scrolling and the skip-link transition.
+
+The complete error message enters together once on page load: the yellow circle and 404 number, kicker, heading, explanation, and recovery links fade in and scale from 0.96 to 1 over 280ms with `--ease-out`. Focusing a recovery link settles the entrance immediately. Reduced motion uses an 80ms opacity-only entrance. Pointer and touch presses on recovery links move them down 1px and scale them to 0.99 over 140ms with `--ease-out`; keyboard and reduced-motion activation have no spatial feedback. These effects use CSS and work without JavaScript. The skip link stays outside the entrance animation.
 
 ## Course library preview
 

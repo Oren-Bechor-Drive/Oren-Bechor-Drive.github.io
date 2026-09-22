@@ -16,9 +16,152 @@ import { fileURLToPath } from "node:url";
 import { JSDOM } from "jsdom";
 import sharp from "sharp";
 import { inspectImage } from "../../scripts/road-media-integrity.mjs";
+import { optimizeRoadMedia } from "../../scripts/optimize-road-media.mjs";
 
 const run = promisify(execFile);
 const root = new URL("../../", import.meta.url);
+
+async function publicationFixture(t) {
+	const cwd = await mkdtemp(path.join(os.tmpdir(), "media-publication-"));
+	t.after(() => rm(cwd, { recursive: true, force: true }));
+	const png = await sharp({
+		create: { width: 4, height: 4, channels: 3, background: "white" },
+	}).png().toBuffer();
+	const files = {
+		"assets/images/students-pass/1.png": png,
+		"assets/images/students-pass/2.png": png,
+		"assets/images/cars/car-red.png": png,
+		"assets/images/wheel.png": png,
+		"assets/images/stop-sign.png": png,
+		"assets/images/oren.jpg": await sharp(png).jpeg().toBuffer(),
+		"assets/icons/course-icon.png": png,
+		"css/welcome.css": ".road-car-red { --car-art-width: 100%; }",
+		"index.html": '<img src="assets/images/students-pass/1.png" alt="תמונה">',
+		"js/road-photo-sources.js": "previous photo list",
+		"assets/images/optimized/students-pass/oren-bachor-students-1.webp": "previous delivery",
+		"assets/images/optimized/students-pass/obsolete.webp": "obsolete delivery",
+		"assets/images/optimized/students-pass/z-obsolete.webp": "another obsolete delivery",
+		"assets/images/optimized/favicon.png": "previous favicon",
+	};
+	for (const [file, bytes] of Object.entries(files)) {
+		await mkdir(path.dirname(path.join(cwd, file)), { recursive: true });
+		await writeFile(path.join(cwd, file), bytes);
+	}
+	const optimize = (preload) => run(process.execPath, [
+		...(preload ? ["--import", `data:text/javascript,${encodeURIComponent(preload)}`] : []),
+		fileURLToPath(new URL("scripts/optimize-road-media.mjs", root)),
+	], { cwd });
+	return { cwd, optimize };
+}
+
+// Only filesystem faults are injected; the command still encodes and publishes real files.
+function filesystemFailure(setup) {
+	return `
+		import fs from 'node:fs/promises';
+		import path from 'node:path';
+		import { syncBuiltinESMExports } from 'node:module';
+		${setup}
+		syncBuiltinESMExports();
+	`;
+}
+
+async function snapshotFiles(directory) {
+	const files = (await readdir(directory, { recursive: true, withFileTypes: true }))
+		.filter((entry) => entry.isFile());
+	return Object.fromEntries(await Promise.all(files.map(async (entry) => {
+		const file = path.join(entry.parentPath, entry.name);
+		return [path.relative(directory, file), await readFile(file)];
+	})));
+}
+
+test("independent media trees keep their own photo lists without changing the working directory", async (t) => {
+	const first = await publicationFixture(t);
+	const second = await publicationFixture(t);
+	await rm(path.join(second.cwd, "assets/images/students-pass/2.png"));
+	const originalCwd = process.cwd();
+	await Promise.all([optimizeRoadMedia(first.cwd), optimizeRoadMedia(second.cwd)]);
+	assert.equal(process.cwd(), originalCwd);
+	for (const [directory, expected] of [[first.cwd, ["1", "2"]], [second.cwd, ["1"]]]) {
+		const generated = await readFile(path.join(directory, "js/road-photo-sources.js"), "utf8");
+		const { roadPhotoSources } = await import(`data:text/javascript,${encodeURIComponent(generated)}`);
+		assert.deepEqual(Object.keys(roadPhotoSources), expected);
+	}
+});
+
+test("obsolete delivery cleanup ignores directories with image-like names", async (t) => {
+	const { cwd, optimize } = await publicationFixture(t);
+	const kept = path.join(cwd, "assets/images/optimized/archive.webp/notes.txt");
+	await mkdir(path.dirname(kept));
+	await writeFile(kept, "keep this directory");
+	await optimize();
+	assert.equal(await readFile(kept, "utf8"), "keep this directory");
+	await assert.rejects(
+		readFile(path.join(cwd, "assets/images/optimized/students-pass/obsolete.webp")),
+		{ code: "ENOENT" },
+	);
+});
+
+for (const failure of ["corrupt later photo", "missing later asset"]) {
+	test(`optimizer preserves published files after ${failure}`, async (t) => {
+		const { cwd, optimize } = await publicationFixture(t);
+		if (failure === "corrupt later photo") {
+			await writeFile(path.join(cwd, "assets/images/students-pass/2.png"), "invalid image");
+		} else {
+			await rm(path.join(cwd, "assets/images/oren.jpg"));
+		}
+		const before = await snapshotFiles(cwd);
+		await assert.rejects(optimize(), /unsupported image format|no such file|missing/i);
+		assert.deepEqual(await snapshotFiles(cwd), before);
+		assert.equal((await readdir(cwd)).some((name) => name.startsWith(".road-media-")), false);
+	});
+}
+
+for (const failure of ["installation", "obsolete-file removal"]) {
+	test(`optimizer rolls back ${failure} and can retry`, async (t) => {
+		const { cwd, optimize } = await publicationFixture(t);
+		const before = await snapshotFiles(cwd);
+		const preload = filesystemFailure(`
+			const rename = fs.rename;
+			let failed = false;
+			fs.rename = async (source, destination) => {
+				const matches = ${failure === "installation"
+				? "path.resolve(destination) === path.resolve('js/road-photo-sources.js')"
+				: "path.resolve(source) === path.resolve('assets/images/optimized/students-pass/z-obsolete.webp')"};
+				if (!failed && matches) {
+					failed = true;
+					throw new Error('injected publication failure');
+				}
+				return rename(source, destination);
+			};
+		`);
+		await assert.rejects(optimize(preload), /injected publication failure/);
+		assert.deepEqual(await snapshotFiles(cwd), before);
+		assert.equal((await readdir(cwd)).some((name) => name.startsWith(".road-media-")), false);
+		await optimize();
+		assert.match(await readFile(path.join(cwd, "js/road-photo-sources.js"), "utf8"), /export const roadPhotoSources/);
+		await assert.rejects(readFile(path.join(cwd, "assets/images/optimized/students-pass/obsolete.webp")), { code: "ENOENT" });
+	});
+}
+
+test("optimizer retains recovery files when rollback itself fails", async (t) => {
+	const { cwd, optimize } = await publicationFixture(t);
+	const originalList = await readFile(path.join(cwd, "js/road-photo-sources.js"));
+	await assert.rejects(optimize(filesystemFailure(`
+		const rename = fs.rename;
+		fs.rename = async (source, destination) => {
+			if (path.resolve(destination) === path.resolve('js/road-photo-sources.js')) {
+				throw new Error('persistent write failure');
+			}
+			return rename(source, destination);
+		};
+	`)), /Recovery files retained at/);
+	const recovery = (await readdir(cwd)).filter((name) => name.startsWith(".road-media-"));
+	assert.equal(recovery.length, 1);
+	assert.deepEqual(
+		await readFile(path.join(cwd, recovery[0], "backup/js/road-photo-sources.js")),
+		originalList,
+	);
+});
 
 for (const [names, expected] of [
 	[["1.png", "01.png"], /01\.png: filename must be a positive number/],

@@ -26,7 +26,7 @@ test("page introduces the instructor before the combined learning section", asyn
 		),
 	].map((link) => link.getAttribute("href"));
 
-	assert.deepEqual(sectionIds, ["top", "instructor", "about", "start"]);
+	assert.deepEqual(sectionIds, ["top", "instructor", "about", "faq", "start"]);
 	assert.equal(document.querySelectorAll("#about h2").length, 1);
 	assert.ok(document.querySelector("#about [data-topic-explorer]"));
 	const main = document.querySelector("main");
@@ -35,7 +35,7 @@ test("page introduces the instructor before the combined learning section", asyn
 		main.nextElementSibling,
 		document.querySelector("body > footer"),
 	);
-	assert.deepEqual(navigationTargets, ["#instructor", "#about"]);
+	assert.deepEqual(navigationTargets, ["#instructor", "#about", "#faq"]);
 });
 
 test("unavailable course and social actions do not pretend to be working links", async () => {
