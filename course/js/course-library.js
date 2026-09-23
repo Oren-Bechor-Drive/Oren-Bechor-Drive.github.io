@@ -1,3 +1,5 @@
+import { createDetailsMotion } from "../../js/details-motion.js";
+
 const subjects = [...document.querySelectorAll(".subject")];
 const subjectsById = new Map(subjects.map((subject) => [subject.id, subject]));
 const form = document.querySelector(".library-search");
@@ -10,7 +12,6 @@ const topicList = document.querySelector(".topic-list");
 const reader = document.querySelector(".topic-reader");
 const subjectList = document.querySelector(".subject-list");
 const desktop = matchMedia("(min-width: 900px)");
-const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 let selectedSubject = subjects[0];
 
 // Both presentations use the authored outlines as their only content source.
@@ -108,7 +109,7 @@ function openLinkedSubject(focus = false) {
 }
 
 function initTopicDisclosures() {
-	const transitions = new Map();
+	const motion = createDetailsMotion(document, { duration: 200 });
 	let positionFrame;
 
 	function cancelPositionTracking() {
@@ -116,36 +117,8 @@ function initTopicDisclosures() {
 		positionFrame = undefined;
 	}
 
-	// Measure the whole card so the description inside summary moves with the outline.
-	// Keep closing content rendered until its height reaches the compact summary.
 	function setOpen(subject, open, animate = false) {
-		const height = subject.getBoundingClientRect().height;
-		transitions.get(subject)?.animation.cancel();
-		transitions.delete(subject);
-		subject.style.height = "";
-		subject.style.overflow = "";
-		subject.open = open;
-		if (!animate || reducedMotion.matches || desktop.matches) return;
-		const target = subject.getBoundingClientRect().height;
-		subject.open = true;
-		subject.style.height = `${height}px`;
-		subject.style.overflow = "clip";
-		const animation = subject.animate(
-			{ height: [`${height}px`, `${target}px`] },
-			{
-				duration: 200,
-				easing: getComputedStyle(subject)
-					.getPropertyValue("--ease-out")
-					.trim(),
-				fill: "forwards",
-			},
-		);
-		transitions.set(subject, { animation, open });
-		animation.onfinish = () => setOpen(subject, open);
-	}
-
-	function settle() {
-		for (const [subject, { open }] of transitions) setOpen(subject, open);
+		motion.setOpen(subject, open, animate && !desktop.matches);
 	}
 
 	function preserveSummaryPosition(subject, top) {
@@ -158,7 +131,7 @@ function initTopicDisclosures() {
 			positionFrame = undefined;
 			if (desktop.matches) return;
 			window.scrollBy(0, summary.getBoundingClientRect().top - targetTop);
-			if (transitions.size) positionFrame = requestAnimationFrame(adjust);
+			if (motion.hasPending()) positionFrame = requestAnimationFrame(adjust);
 		};
 		positionFrame = requestAnimationFrame(adjust);
 	}
@@ -176,7 +149,7 @@ function initTopicDisclosures() {
 		subject.querySelector("summary").addEventListener("click", (event) => {
 			event.preventDefault();
 			cancelPositionTracking();
-			const open = !(transitions.get(subject)?.open ?? subject.open);
+			const open = !motion.isOpen(subject);
 			if (open) {
 				const summaryTop = event.currentTarget.getBoundingClientRect().top;
 				const precedingSubjectIsOpen = subjects.some(
@@ -199,19 +172,17 @@ function initTopicDisclosures() {
 		"keydown",
 		() => {
 			cancelPositionTracking();
-			settle();
+			motion.settle();
 		},
 		true,
 	);
 	desktop.addEventListener("change", () => {
 		cancelPositionTracking();
-		settle();
+		motion.settle();
 		if (!desktop.matches && !selectedSubject.hidden)
 			openExclusively(selectedSubject);
 	});
 
-	// Reduced motion finishes at the final height before position tracking stops.
-	reducedMotion.addEventListener("change", settle);
 	document.addEventListener("pointerdown", cancelPositionTracking, true);
 	document.addEventListener("wheel", cancelPositionTracking, { passive: true });
 

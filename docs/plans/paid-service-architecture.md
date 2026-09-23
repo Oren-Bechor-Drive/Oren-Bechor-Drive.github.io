@@ -1,10 +1,12 @@
 # Paid learning service architecture draft
 
-Status: Future architecture recommendation. Nothing in this document is a shipped account, payment, progress, subscription, entitlement, or private-content feature.
+Status: Architecture recommendation for the paid service. The [Supabase database foundation](supabase-database-design.md) is implemented and verified in development. The local account gateway/UI is implemented; live provider setup, production hosting, payments, subscriptions, and private media remain future work.
 
 This draft prepares the current public course preview for a future paid learning service without choosing providers, prices, commercial policies, or legal retention rules. It refines the future work recorded in the [README roadmap](../../README.md#todo). [PRODUCT.md](../../PRODUCT.md) remains the source for shipped product scope, [CONTEXT.md](../../CONTEXT.md) remains the source for current course terms, and [docs/ARCHITECTURE.md](../ARCHITECTURE.md) remains the source for today's static learning-content and media seams.
 
 ## Decision summary
+
+The [2026-09-23 product decisions and setup brief](paid-service-start.md) resolve part of the owner decisions below: both free and paid learning content require an account; paid access renews monthly in ILS; cancellation preserves access through the paid period; sign-in supports email/password and Google; and expiration does not delete progress. The price and payment provider remain undecided. Supabase Free is the selected development environment, with its first database migration applied. The [local session gateway design](session-gateway-design.md) specifies browser authentication. It does not make the static preview account-protected.
 
 Keep the checked-in site as a directly served public frontend in plain HTML, CSS, and JavaScript. Add one separately deployed trusted service for account, progress, billing, entitlement, and protected-content operations. Back that service with one transactional relational database and private object storage. Isolate external identity, payment, email, and media-delivery systems behind adapters.
 
@@ -340,7 +342,7 @@ Audit records cover staff account access, role changes, identity relinking, sess
 
 ## Acceptance tests for the architecture
 
-These tests define security and consistency outcomes for a future implementation. They do not exist today.
+These tests define security and consistency outcomes for the complete paid service. The database and local account suites cover the implemented subset; billing and protected delivery checks remain future work.
 
 ### Account and authorization isolation
 
@@ -435,4 +437,4 @@ This is sequencing guidance, not an implementation plan or authorization to buil
 8. Add export, deletion, support operations, audit, monitoring, and recovery exercises.
 9. Run the full public-to-paid acceptance suite and a controlled live billing lifecycle before enabling enrollment.
 
-When any part ships, update `PRODUCT.md`, `CONTEXT.md`, `docs/ARCHITECTURE.md`, the README maintenance instructions, search/crawler metadata, and the public Hebrew copy to describe the real behavior. Until then, the current disabled profile and course-start controls must not imply that accounts or enrollment are available.
+When any part ships, update `PRODUCT.md`, `CONTEXT.md`, `docs/ARCHITECTURE.md`, the README maintenance instructions, search/crawler metadata, and the public Hebrew copy to describe the real behavior. Course-start controls remain disabled, and profile controls keep their disabled fallback on static hosting. The configured local gateway enables account links without implying that enrollment is available.

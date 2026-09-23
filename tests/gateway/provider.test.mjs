@@ -1,0 +1,62 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import { createSupabaseProvider } from "../../server/supabase.mjs";
+
+test("Supabase REST adapter keeps secrets scoped and uses PKCE and learner-context queries", async () => {
+	const calls = [];
+	const provider = createSupabaseProvider({ url: "https://project.supabase.co", publishableKey: "sb_publishable_test", secretKey: "sb_secret_test",
+		async fetcher(url, options) {
+			calls.push({ url: new URL(url), ...options, body: options.body ? JSON.parse(options.body) : undefined });
+			return new Response(JSON.stringify(url.includes("/learners?") ? [{ id: "learner" }] : {}));
+		} });
+	const flow = { verifier: "server-only-verifier", challenge: "pkce-challenge-fixture", redirect: "https://site.test/api/account/callback?state=abc" };
+	await provider.password("learner@example.test", "correct-password");
+	await provider.signup("learner@example.test", "correct-password", flow);
+	await provider.recover("learner@example.test", flow);
+	await provider.exchange("one-time-code", flow.verifier);
+	await provider.refresh("refresh-secret");
+	await provider.identity("learner-jwt");
+	await provider.provision("auth-user-id");
+	await provider.learner("learner-jwt");
+	await provider.updatePassword("learner-jwt", "new-password-value");
+	await provider.logout("learner-jwt", "local");
+	assert.deepEqual(calls.map(call => [call.method, call.url.pathname]), [
+		["POST", "/auth/v1/token"], ["POST", "/auth/v1/signup"], ["POST", "/auth/v1/recover"], ["POST", "/auth/v1/token"],
+		["POST", "/auth/v1/token"], ["GET", "/auth/v1/user"], ["POST", "/rest/v1/rpc/provision_learner"],
+		["GET", "/rest/v1/learners"], ["PUT", "/auth/v1/user"], ["POST", "/auth/v1/logout"],
+	]);
+	assert.deepEqual(calls[3].body, { auth_code: "one-time-code", code_verifier: flow.verifier });
+	for (const index of [1, 2]) {
+		assert.equal(calls[index].url.searchParams.get("redirect_to"), flow.redirect);
+		assert.equal(calls[index].body.code_challenge_method, "s256");
+		assert.equal(calls[index].body.code_challenge, flow.challenge);
+		assert.equal(calls[index].body.code_verifier, undefined);
+	}
+	for (const [index, call] of calls.entries()) {
+		assert.equal(call.headers.apikey, index === 6 ? "sb_secret_test" : "sb_publishable_test");
+		assert.notEqual(call.headers.authorization, "Bearer sb_secret_test");
+		assert.equal(call.redirect, "error");
+	}
+	assert.equal(calls[7].headers.authorization, "Bearer learner-jwt");
+	assert.equal(calls[7].url.searchParams.get("select"), "id,display_name");
+	assert.equal(calls[9].url.searchParams.get("scope"), "local");
+	const google = new URL(provider.google(flow));
+	assert.equal(google.origin, "https://project.supabase.co");
+	assert.equal(google.searchParams.get("code_challenge"), flow.challenge);
+	assert.equal(google.searchParams.get("provider"), "google");
+	assert.equal(google.searchParams.get("redirect_to"), flow.redirect);
+});
+
+test("provider errors exclude payload secrets and distinguish outages from failed credentials", async () => {
+	for (const status of [400, 401, 429, 503]) {
+		const provider = createSupabaseProvider({ url: "https://project.supabase.co", publishableKey: "public", secretKey: "secret",
+			fetcher: async () => new Response(JSON.stringify({ error_code: "invalid_credentials", message: "private information" }), { status }) });
+		await assert.rejects(provider.identity("token"), error => error.status === status && !error.message.includes("private information"));
+	}
+});
+
+test("provider sign-out accepts the Auth endpoint's empty 204 response", async () => {
+	const provider = createSupabaseProvider({ url: "https://project.supabase.co", publishableKey: "public", secretKey: "secret",
+		fetcher: async () => new Response(null, { status: 204 }) });
+	assert.equal(await provider.logout("learner-jwt", "global"), null);
+});

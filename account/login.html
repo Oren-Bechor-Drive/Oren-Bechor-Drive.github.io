@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'" />
+		<meta name="referrer" content="no-referrer" />
+		<meta name="robots" content="noindex" />
+		<title>טוב שחזרתם - נהיגה נכונה עם אורן בכור</title>
+		<meta name="description" content="היכנסו לחשבון כדי להמשיך בדרך שלכם." />
+		<link rel="icon" href="../assets/images/optimized/favicon.png?v=2" type="image/png" />
+		<link rel="preload" href="../assets/fonts/varela-round-v21-hebrew.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="../assets/fonts/varela-round-v21-latin.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="stylesheet" href="../css/base.css" />
+		<link rel="stylesheet" href="account.css" />
+		<script type="module" src="account.js"></script>
+	</head>
+	<body data-account="login">
+		<a class="skip-link" href="#main">דילוג לתוכן</a>
+		<main id="main" class="account-shell" tabindex="-1">
+			<a class="account-back" href="../index.html">חזרה לדף הבית</a>
+			<section class="account-card" aria-labelledby="account-heading">
+				<h1 id="account-heading">טוב שחזרתם</h1>
+				<p class="account-intro">היכנסו לחשבון כדי להמשיך בדרך שלכם.</p>
+				<noscript><p class="account-feedback">כדי להתחבר לחשבון יש להפעיל JavaScript בדפדפן.</p></noscript>
+				<p class="account-feedback" role="alert" tabindex="-1" hidden></p>
+				<p class="account-feedback" role="status" aria-live="polite" hidden></p>
+				<button class="account-action account-action-secondary account-retry" type="button" data-retry hidden>ניסיון נוסף</button>
+				<form data-account-form>
+					<fieldset class="account-fields">
+						<div class="account-field">
+						<label for="email">כתובת אימייל</label>
+						<input id="email" name="email" type="email" dir="ltr" autocomplete="email" inputmode="email" maxlength="254" required spellcheck="false" autocapitalize="none" />
+					</div><div class="account-field">
+						<label for="password">סיסמה</label>
+						<div class="account-password">
+							<input id="password" name="password" type="password" dir="ltr" autocomplete="current-password" minlength="1" maxlength="128" required />
+							<button class="password-toggle" type="button" data-password-toggle aria-label="הצגת הסיסמה" aria-controls="password" aria-pressed="false"></button>
+						</div>
+						<a class="account-help" href="recovery.html">שכחתם את הסיסמה?</a>
+					</div>
+						<button class="account-action" type="submit" disabled>כניסה לחשבון</button>
+					</fieldset>
+				</form><div class="account-divider" aria-hidden="true">או</div>
+				<button class="account-action account-action-secondary" type="button" data-google disabled>
+					<span class="account-google-mark" aria-hidden="true"></span>
+					המשך עם Google
+				</button>
+				<p class="account-hint" data-google-note hidden>הכניסה עם Google עדיין אינה זמינה. אפשר להשתמש באימייל וסיסמה.</p><p class="account-links">עדיין אין לכם חשבון? <a href="register.html">יצירת חשבון חינמי</a></p>
+			</section>
+			<p class="account-footer">נהיגה נכונה עם אורן בכור</p>
+		</main>
+	</body>
+</html>

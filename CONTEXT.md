@@ -12,6 +12,14 @@ _Avoid_: Customer, student account
 The welcome-page explanation of who the driving course is for, what it covers, and how learners can use it alongside practical driving lessons.
 _Avoid_: Enrollment flow, lesson player, instructor introduction
 
+**Learner account**:
+A verified identity used to enter the learning service. Creating an account is free and does not purchase a paid subscription.
+_Avoid_: Paid membership, enrollment
+
+**Account recovery**:
+The process of regaining access by confirming control of the account's email and choosing a new password.
+_Avoid_: New account, progress reset
+
 **Learning topic**:
 A named area of driving knowledge, such as right-of-way, lane choice, intersections, or trip planning.
 _Avoid_: Feature, category

@@ -8,7 +8,7 @@ The hero fills the available viewport below the navigation with the course promi
 
 The page moves through the hero, instructor introduction with its student-photo road carousel, one combined section with the three learning steps and learning-topic preview, the FAQ at `#faq`, and a closing first-lesson action before the footer. Under `#about`, the course has one heading, three introductory paragraphs, a compact learning-step strip, and the complete topic explorer. The paragraphs explain the audience, topics and examples, and how to review material alongside practical driving lessons. Desktop and mobile navigation link to the instructor, course, and FAQ. Section links align their destination immediately below the sticky header, or at the viewport top when the mobile fallback header scrolls with the page.
 
-The hero's main action, "מנחה הקורס", leads to the instructor; its secondary action leads to the unified course section at `#about`. The course-start controls in the topbar and closing section are disabled buttons labeled "הלמידה עדיין אינה זמינה" until a real course URL is supplied. No course playback, account, or enrollment flow exists yet.
+The hero's main action, "מנחה הקורס", leads to the instructor; its secondary action leads to the unified course section at `#about`. The course-start controls in the topbar and closing section are disabled buttons labeled "הלמידה עדיין אינה זמינה" until a real course URL is supplied. The published static preview has no course playback or enrollment flow. Local account screens and their gateway are described below.
 
 Without JavaScript, or if the entry module fails to load, mobile navigation links remain visible in a header in normal document flow. Successful initialization enables the sticky header and collapsible menu. All seven topic descriptions are readable in the baseline HTML; initialization uses those descriptions for the interactive preview and hides the static summaries.
 
@@ -27,6 +27,8 @@ The page folders follow the learning flow. Each page has its own `index.html`, s
 ```text
 index.html
 404.html                       Domain-root recovery page for missing URLs
+account/                       Hebrew account screens, CSS and browser behavior
+server/                        Local Node session gateway, never public runtime assets
 course/
   index.html
   css/                         Shared course, lesson and quiz styles
@@ -52,7 +54,7 @@ tests/
 docs/                          Architecture, supplied references and plans
 ```
 
-Open the homepage FAQ at `/#faq`, the library at `/course/`, a reading page at `/course/<topic>/`, and quizzes at `/course/<topic>/quizzes/<section-id>/`. Ordinary pages keep links and assets relative so the same files can also be served under a directory prefix. `404.html` is the exception: GitHub Pages can return it at any missing nested URL, so it uses domain-root paths for its assets and recovery links. The current organization site is published at the domain root. Any host or path-prefix migration must update and retest those 404 references.
+Open the homepage FAQ at `/#faq`, the library at `/course/`, a reading page at `/course/<topic>/`, and quizzes at `/course/<topic>/quizzes/<section-id>/`. Ordinary learning pages keep links and assets relative so the same files can also be served under a directory prefix. Account API calls and gateway redirects assume domain-root deployment. `404.html` is the exception: GitHub Pages can return it at any missing nested URL, so it uses domain-root paths for its assets and recovery links. The current organization site is published at the domain root. Any host or path-prefix migration must update and retest those 404 references.
 
 The repository is [Oren-Bechor-Drive/Oren-Bechor-Drive.github.io](https://github.com/Oren-Bechor-Drive/Oren-Bechor-Drive.github.io), owned by the `Oren-Bechor-Drive` organization. The public site is [https://oren-bechor-drive.github.io/](https://oren-bechor-drive.github.io/).
 
@@ -93,7 +95,7 @@ This is a course preview, marked `noindex` and omitted from the public sitemap. 
 
 Each sub-subject has its own white section. Reserve video for movement, timing and developing hazards, images or diagrams for recognition and road layouts, and no media for sufficient text explanations or repeated summaries. The current lessons contain 16 video and 12 image/diagram placeholders. These use descriptive Hebrew text with accessible labels, without missing media requests. Right-turn and U-turn videos cover complete maneuvers instead of reserving separate clips for every step. The four existing quiz sections link to `/course/priority-hierarchy/quizzes/priority/` or `/course/right-of-way/quizzes/<turn-section>/`. Each quiz page owns its title, lesson return links, and 20 placeholder questions, with four placeholder choices per question and no predetermined media slots. The other sections are explicitly marked reading-only in their HTML; no quiz questions were invented for them. The shared `course/js/quiz.js` reads question fieldsets and supplies direct question selection, previous/next navigation, and a selection-count summary with review. There is no answer key, grading, locking, or persistence across reloads. Without JavaScript, all questions remain visible and usable.
 
-The library, learning pages and practice-quiz pages use a clickable home brand and a disabled profile control that clearly indicates the profile is unavailable. No profile menu or login state is implemented. At 900px and above, the enhanced library has a stable topic list on the right and a reading panel on the left. The list is a vertical tablist with Up/Down, Home/End and Tab support. Selection highlights a row and reads the title, description and outline from baseline HTML. Filtering chooses a matching outline when needed and hides the panel for empty results.
+The library, learning pages and practice-quiz pages use a clickable home brand and a disabled profile fallback on static hosting. The configured local gateway enables a link to login or the signed-in account page. At 900px and above, the enhanced library has a stable topic list on the right and a reading panel on the left. The list is a vertical tablist with Up/Down, Home/End and Tab support. Selection highlights a row and reads the title, description and outline from baseline HTML. Filtering chooses a matching outline when needed and hides the panel for empty results.
 
 Below 900px, or without JavaScript, topics appear as compact expandable rows. Baseline HTML shares the native `details` name `course-topics`, allowing one open topic at a time in supporting browsers. After enhancement, JavaScript manages exclusivity and animates each complete card's height when opening or closing. Keyboard and reduced-motion interactions settle immediately. Viewport changes carry the selected topic and keyboard focus into the other presentation. The browsing order runs from foundations through road decisions to test preparation and licensing, without prerequisites. Search is an optional enhancement. `course/css/course.css` extends the existing tokens, and `course/js/course-library.js` builds the desktop view from the baseline HTML. No generated images or new dependencies are needed.
 
@@ -254,6 +256,7 @@ Alignment compensates for transparent margins in each source image. Student phot
 - `js/script.js` adds the mobile menu and initializes page enhancements.
 - `js/topic-explorer.js` owns the topic preview interaction.
 - `js/disclosure-motion.js` shares mobile menu and topic-list visibility, input handling, and press feedback.
+- `js/details-motion.js` owns native-details height transitions, logical open state, reversal and cleanup for the homepage FAQ and course-library disclosures. Their callers retain independent-toggle and exclusive-selection/scroll policies respectively.
 - `js/hero-road-car.js` animates the small red car along the hero's SVG road.
 - `js/scroll-reveal.js` reveals the instructor and unified course section once as each enters the viewport.
 - `js/road-carousel.js` builds the looping student gallery from the supplied photo list. `js/script.js` supplies the lazily imported generated list in production.
@@ -267,12 +270,13 @@ Alignment compensates for transparent margins in each source image. Student phot
 - `assets/images/` contains the stop-sign illustration, road background, car artwork, instructor photo, and numbered student photos. `assets/icons/` contains the course icon. Typography uses Varela Round globally, with local WOFF2 files under `assets/fonts/`.
 - `docs/reference/the-idea.pdf` is the supplied course brief.
 - `tests/unit/` contains Node checks for static pages, behavior, learning content, media integrity and maintenance scripts. Run them with `npm run test:unit`.
-- `tests/browser/` contains exhaustive Chromium journeys plus focused Firefox and WebKit smoke journeys for desktop, mobile, navigation, lessons, quizzes, and progressive-enhancement fallbacks. Run them with `npm run test:browser`; `npm test` runs both groups.
+- `tests/browser/` contains exhaustive Chromium journeys plus focused Firefox and WebKit smoke journeys for desktop, mobile, navigation, lessons, quizzes, and progressive-enhancement fallbacks. Run them with `npm run test:browser`; `npm test` runs these groups and the database tests.
+- `tests/database/` verifies account isolation, content access, subscription expiry, and concurrent progress saves against a disposable PostgreSQL 17 instance. Run it with `npm run test:database`; no hosted credentials or Docker are required.
 - `tests/helpers/road-media.mjs` serves repository files and directory index pages in browser tests with consistent MIME types and original byte counts for HEAD requests. Individual tests own delays, failures, and download observations.
 
 ### Automated checks
 
-[The Tests workflow](.github/workflows/tests.yml) runs on every push and pull request, and can also be started manually from GitHub Actions. It uses Node.js 24 on GitHub's hosted Ubuntu 24.04 runner, `ubuntu-24.04`, installs the locked dependencies with `npm ci`, checks them with `npm audit`, and installs Chromium, Firefox, and WebKit with their system dependencies. It then runs `npm run check:media`, `npm run check:links`, and the full `npm test` suite. This includes static and behavior tests, optimizer tests, exhaustive Chromium coverage, and focused Firefox and WebKit smoke coverage. New tests matching `tests/*/*.test.mjs` are included automatically.
+[The Tests workflow](.github/workflows/tests.yml) runs on every push and pull request, and can also be started manually from GitHub Actions. It uses Node.js 24 on GitHub's hosted Ubuntu 24.04 runner, `ubuntu-24.04`, installs the locked dependencies with `npm ci`, checks them with `npm audit`, and installs Chromium, Firefox, and WebKit with their system dependencies. It then runs `npm run check:media`, `npm run check:links`, and the full `npm test` suite. This includes static and behavior tests, optimizer tests, database authorization/concurrency tests, exhaustive Chromium coverage, and focused Firefox and WebKit smoke coverage. New tests matching `tests/*/*.test.mjs` are included automatically.
 
 The workflow uses `actions/setup-node` with `cache: npm` to reuse downloaded dependencies between runs.
 
@@ -306,6 +310,37 @@ The media audit discovers authored root and nested HTML pages and reports each f
 
 Browser tests derive the gallery count and last photo from the generated list. Progressive-append scenarios require enough photos to fill the initial viewport and leave a later photo pending; smaller galleries skip those scenarios. Tests also check loading from the generated photo list without missing-file probes, failure preservation, and loop timing across row sizes and viewport changes. `npm test` includes Chromium checks that load the actual page, stylesheets, scripts, and images at desktop and phone sizes, including resizing and reduced motion. Focused Firefox and WebKit smoke journeys cover desktop and mobile navigation, topic selection, lessons, quizzes, and JavaScript-disabled or blocked fallbacks. The tests intercept local requests to serve repository files and block external requests, so no dev server or network connection is needed after setup. Verify layout and interaction changes in the collaborative browser at desktop and phone sizes, including reduced motion. If collaborative preview is unavailable, use local Playwright Chromium and report the limitation.
 
+## Supabase development foundation
+
+The account/access migration is applied to development project `zurpazevlvtylnzvagoo`. It provides learner identities, separate free and paid text versions, development entitlements, and saved reading positions. Database policies enforce verified live sessions, account isolation, current publication, and entitlement expiry. Progress survives expiry and renewal.
+
+The local account gateway now uses verified Auth and learner provisioning. Its Hebrew registration, login, recovery, and account pages reuse the current site styles. The static course files are still public; payments, browser progress integration, and private media are not implemented. Google and real email delivery still need provider configuration. Do not put actual restricted lesson text or assets into this public repository.
+
+### Local account screens and gateway
+
+```bash
+npm run dev
+```
+
+Open `http://localhost:3000/account/login.html`. This previews the screens immediately. To enable real authentication, copy `.env.example` to `.env.local`, fill the publishable and server-only Supabase keys, and restart. See [local account setup](docs/local-accounts.md) for the callback allowlist, Google, SMTP, and verification steps. MCP authentication does not configure runtime keys.
+
+`npm run test:gateway` exercises cookie sessions, CSRF, PKCE, isolation, expiry, revocation, concurrent refresh/reset, and the Supabase adapter. `npm test` also includes the Hebrew account browser journeys. The fixtures send no real email and do not verify live Google/SMTP setup.
+
+Sessions currently live in bounded Node memory; restarting signs users out. The process binds to loopback and refuses production mode. Hosting and persistent session storage are still to be chosen. On GitHub Pages, account forms explain that the service is unavailable and course profile controls stay disabled.
+
+Run the isolated database suite:
+
+```bash
+npm ci
+npm run test:database
+```
+
+The suite uses pinned native PostgreSQL 17.6 binaries, a temporary directory and a loopback port, then removes its fixtures. Run it as a regular user. Linux x64 is verified locally and is used in CI. The package's symlink setup script is approved in `package.json` for npm 12; if an existing installation predates that approval, run `npm rebuild @embedded-postgres/linux-x64`. Other platforms need their corresponding native package's setup script reviewed and approved when npm blocks it.
+
+`supabase/config.toml` configures an optional local Supabase stack with only `public` exposed and explicit API grants. Running that full stack requires Docker; the database suite does not. Local Auth configuration does not change hosted settings. Use the pinned CLI through `npx --no-install supabase`, consult its `--help`, and create future migrations with `supabase migration new <name>`. Do not edit an already-applied migration.
+
+See [database ownership](docs/ARCHITECTURE.md#accounts-and-access-development-database), the [approved design](docs/plans/supabase-database-design.md), and [database/API verification](supabase/tests/README.md) for function contracts and test limits. Migration `20260923154100_account_access_foundation.sql` matches hosted migration history.
+
 ## Documentation
 
 - [PRODUCT.md](PRODUCT.md): current audience, scope, and supplied evidence.
@@ -313,6 +348,8 @@ Browser tests derive the gallery count and last photo from the generated list. P
 - [CONTEXT.md](CONTEXT.md): course and gallery terminology.
 - [Architecture](docs/ARCHITECTURE.md): content verification, site-wide media coverage and student-gallery ownership.
 - [Paid-service architecture draft](docs/plans/paid-service-architecture.md): provider-neutral future service boundaries, data model and failure handling. It does not describe shipped capabilities.
+- [Paid-service decisions and first setup](docs/plans/paid-service-start.md): agreed free/paid access rules, monthly billing behavior, sign-in methods, progress retention, and the first Supabase development milestone.
+- [Supabase database and access design](docs/plans/supabase-database-design.md): implemented development tables, permissions, progress rules, and database acceptance tests. The local account gateway uses this foundation; billing and protected browser lessons remain future work.
 - [Operations](docs/OPERATIONS.md): current content review, publication, live checks, support intake and rollback procedures.
 - [Official source review](docs/reference/official-source-review-2026-09-22.md): dated official-resource audit, evidence and limits.
 - [Site quality review](docs/reviews/site-quality-2026-09-22.md): current responsive, accessibility and local resource audit with remaining manual checks.
@@ -329,14 +366,21 @@ See [LICENSE](LICENSE) for the complete scope.
 
 ## Todo
 
-Roadmap reviewed against the repository on 2026-09-22. This backlog covers the path from the current public welcome page and course preview to a paid learning service. It records future work, not available capabilities or authorization to implement every item. `PRODUCT.md` still describes the current release. Update it and the relevant architecture and domain documentation when each future capability is approved for implementation.
+Roadmap reviewed against the repository, agreed product decisions, account setup guide, and recorded review limits on 2026-09-23. This backlog covers the path from the current public welcome page and course preview to a paid learning service. It records future work, not available capabilities or authorization to implement every item. `PRODUCT.md` still describes the current release. Update it and the relevant architecture and domain documentation when each future capability is approved for implementation.
 
-Already present: the public welcome page with its five-row FAQ, a noindex 404 page, a searchable ten-topic library, ten reading pages covering the developed PDF topics, four placeholder practice quizzes, responsive Hebrew RTL layouts, baseline navigation and reading without JavaScript, media and local-link audits, search/sharing metadata for the public page, and CI with unit and Chromium coverage plus Firefox and WebKit smoke checks. Extend these rather than rebuilding them. The preview still has 16 video and 12 image/diagram placeholders, no real quiz questions or grading, and no accounts, payments or persistent progress.
+Already present: the public welcome page with its five-row FAQ, a noindex 404 page, a searchable ten-topic library, ten reading pages covering the developed PDF topics, four placeholder practice quizzes, responsive Hebrew RTL layouts, baseline navigation and reading without JavaScript, media and local-link audits, search/sharing metadata for the public page, and CI with unit and Chromium coverage plus Firefox and WebKit smoke checks. Extend these rather than rebuilding them. The preview still has 16 video and 12 image/diagram placeholders, no real quiz questions or grading, and no payments or persistent browser progress. Accounts work through the local development gateway once provider credentials are configured.
 
 Work through the sections below in dependency order. Content production and public-page work can proceed alongside service planning. A paid launch depends on approved teaching material, working account and billing journeys, server-enforced access, and the launch checks below. Optional additions at the end are not launch requirements.
 
+### Next development milestone
+
+- [ ] Connect the local gateway to one account-only free test lesson and one paid test lesson using the existing learner-scoped database functions. Use synthetic content and privileged development entitlements, with no real checkout or paid material in the public repository.
+- [ ] Connect saved reading positions to those test lessons. Exercise save/reload, stale-revision conflicts, and resuming on another signed-in browser.
+- [ ] Prove the full browser/API journey: signed-out requests receive no lesson body; a free learner cannot read paid text; simulated cancellation preserves access until the paid period ends; expiry blocks paid reads and saves while retaining progress and free access; renewal restores access and position; a second learner cannot read or overwrite the first learner's data. Database-only checks already cover these access rules. See the [first development milestone](docs/plans/paid-service-start.md#first-development-milestone).
+
 ### Existing items reviewed
 
+- [x] Concentrate private learner-account lifecycle state behind one module, and share complete native-details transitions between the FAQ and course library. Preserve account concurrency rules, disclosure policies, motion timing and baseline navigation. See [architecture refactor verification](docs/superpowers/plans/2026-09-23-architecture-deepening.md).
 - [ ] Keep shared runtime course-content extraction deferred until a second runtime consumer needs the same content. `scripts/learning-content.mjs` already shares development-time interpretation across verification tools; it does not justify a new browser content registry. Keep baseline HTML as the source for interactive descriptions.
 - [ ] Revisit shared course-header markup when account/profile behavior is implemented. Course, reading and quiz pages already share styles; any reuse must preserve independently served HTML and the no-build-step frontend.
 - [x] Add Firefox and WebKit smoke checks for page loading, navigation, library selection, reading anchors and quiz interaction. CI retains the exhaustive Chromium coverage and installs all three engines.
@@ -345,10 +389,13 @@ Work through the sections below in dependency order. Content production and publ
 ### Product and owner decisions
 
 - [ ] Agree on the first paid release's learning topics, media and practice coverage. Separate material required at launch from later additions, and identify an owner for content approval, support and billing operations.
-- [ ] Define what stays public, what is a free sample, and what requires a subscription. Keep learning topics accessible in any order within a learner's access; payment must not introduce mandatory learning sequences.
+- [x] Agree on the access model: the welcome page and topic descriptions stay public; all learning content requires a free account. Free content covers general information and definitions. Paid access includes the free content plus Oren's explanations, videos and quizzes. Topics remain accessible in any order within a learner's access.
+- [ ] Classify each actual lesson, explanation, quiz and asset under the agreed public/free/paid model before protected publication.
 - [ ] Supply the business identity, support contact, social-profile destinations and enrollment destination. Do not invent contact details, testimonials, outcome claims or a physical address.
-- [ ] Set subscription plans, currency, displayed prices, billing intervals, access periods and renewal behavior. Decide whether trials, discounts, one-time purchases, plan changes or pauses belong in the first release; do not imply they exist before implementation.
-- [ ] Agree on cancellation, refund, failed-payment grace, expired-access and account-deletion policies, including what happens to progress when a learner returns.
+- [x] Agree on two plans, free and paid, with an automatically renewing monthly paid subscription in NIS (`ILS`). Cancellation stops renewal and preserves access until the paid period ends. Expiry returns the learner to free access; retain saved progress, including after a month without renewal.
+- [ ] Supply the monthly price and approve its displayed terms. Select a payment provider eligible for the seller's business and recurring ILS billing. Decide whether any trials, discounts, one-time purchases, plan changes or pauses belong in the first release.
+- [ ] Agree on refunds, disputes, failed-payment grace and account-deletion policies. Define detailed quiz-attempt retention, billing/audit retention and backup expiry separately from the agreed preservation of learning progress after subscription expiry.
+- [ ] Define which policy versions require acceptance, when to request it, and what acceptance evidence to retain.
 - [ ] Establish the intended learner age range and have qualified reviewers determine applicable consumer, privacy, accessibility, tax and minor-consent requirements before sales begin. Record approved requirements and policy owners rather than assuming legal rules.
 - [ ] Define launch acceptance criteria, expected usage, service costs and an operating budget for video delivery, authentication, transactional email, payments and storage.
 
@@ -370,7 +417,7 @@ Work through the sections below in dependency order. Content production and publ
 
 Proposed page names below describe responsibilities. Choose final paths during implementation and preserve existing course URLs and section anchors.
 
-- [ ] Add a course-details and pricing page with actual inclusions, free samples, access duration, renewal terms and a working enrollment action once those facts are approved.
+- [ ] Add a course-details and pricing page with actual inclusions, account-required free content, access duration, renewal terms and a working enrollment action once those facts are approved.
 - [x] Add the homepage FAQ at `#faq` with the approved five completed-course questions and answers, native disclosures, and desktop and mobile navigation links. Retire the separate help page and its footer link.
 - [ ] Expand the homepage FAQ with approved subscription, cancellation, refund, account-recovery and support information when those services and policies exist.
 - [ ] Add a contact/support page with supplied destinations, response expectations and accessible success/error states. If using a form, provide server validation, abuse controls and a delivery/failure path.
@@ -385,21 +432,26 @@ Proposed page names below describe responsibilities. Choose final paths during i
 ### Backend, hosting and data
 
 - [x] Write a [provider-neutral paid-service architecture draft](docs/plans/paid-service-architecture.md) for identity, learner data, subscriptions, payment events, email and protected media. It is a future recommendation and does not implement or approve a service.
-- [ ] Approve the service architecture, select providers, and implement and deploy the trusted service, database, private storage and adapters. Keep the public frontend in plain HTML, CSS and JavaScript without a required build step.
+- [x] Implement and verify the approved Supabase development database foundation: learner identities, current free/paid text access, expiring development entitlements, retained reading positions, and atomic saves. This does not deliver account screens, billing, private media, or protection of the static preview.
+- [ ] Approve the remaining service architecture, select providers, and implement and deploy the trusted service, database, private storage and adapters. Keep the public frontend in plain HTML, CSS and JavaScript without a required build step.
 - [ ] Select hosting and service providers after confirming regional availability, business eligibility, Hebrew/RTL support, recurring billing needs, data handling, export options and operating costs. Record decisions before integrating provider-specific behavior.
 - [ ] Decide the public and service domains, HTTPS setup, staging/production separation and migration plan. Resolve the documented GitHub Pages header/caching limitations where needed, with redirects and coordinated URL/metadata updates if the public host changes.
-- [ ] Turn the draft logical data model into approved storage schemas and migrations for learners, roles, progress, quiz attempts, subscriptions, access entitlements, payment-event records and policy acceptance. Use stable identifiers and approved retention/deletion rules; the architecture draft is not an implemented migration.
+- [ ] Extend the implemented learner, entitlement and reading-position schema with the approved remaining models for staff roles, video/completion progress, quiz attempts, subscriptions, payment-event records and policy acceptance. Use stable identifiers and approved retention/deletion rules; preserve applied migrations and add new ones for changes.
 - [ ] Implement server-side validation and authorization for each protected operation. Keep service credentials in managed server secrets, separate environments, and define rotation and recovery procedures.
 - [ ] Define API error responses, retries, rate limits and concurrency behavior. Configure origin restrictions, CSRF protection where applicable and response security headers; update the current CSP only for the services actually integrated.
-- [ ] Keep paid lesson bodies, answer data that must remain private, and protected media out of publicly deployed files. The current static preview is publicly retrievable; a client-side lock or hidden link cannot enforce a subscription.
+- [ ] Move all account-only lesson bodies, private answer data and protected media out of public delivery before launching the real course, including free lessons that require an account. Publish through trusted operations with stable section/version identifiers, and check deployment artifacts for restricted material. The current static preview is publicly retrievable; a client-side lock or hidden link cannot enforce access.
 - [ ] Serve restricted content only after server-side entitlement checks, including direct URL requests. Use private media storage and scoped, expiring delivery access where needed; prevent shared caches from exposing private responses.
+- [ ] Deliver paid media for website viewing without a course-content download feature. Bound media grants by the paid-access end and a short delivery lifetime, and verify expiry and private-origin access with the selected provider. Document that screen capture and copying content already delivered cannot be prevented completely.
 - [ ] Set up backups, tested restores, deployment rollback and monitored database migrations before storing live learner or billing data.
 
 ### Accounts and learner area
 
-- [ ] Choose supported sign-in methods and implement registration, identity verification, sign-in and sign-out. Add password reset or expiring-link recovery as appropriate, with accessible invalid, expired, reused and rate-limited states.
-- [ ] Implement secure sessions, expiry, revocation and safe return-to destinations after login. Check behavior across reloads, tabs and devices, and prevent account enumeration or open redirects.
-- [ ] Replace the disabled profile control with account navigation for signed-out and signed-in states. Add a profile/settings page for supported identity changes, notification preferences and session management.
+- [x] Build and test the local Node session gateway and Hebrew registration/login, confirmation guidance, recovery/reset, and account screens. Use HttpOnly cookies and server-held tokens; preserve site colors and fonts. Local tests include expiry, revocation, replay, isolation, and concurrent reset. External provider delivery is not covered by these fixtures.
+- [x] Choose email/password and Google sign-in. Complete the local account UI and code review, including the registration-only password requirements bar, keyboard focus, responsive layouts and reduced motion.
+- [ ] Verify hosted Auth settings match [local account setup](docs/local-accounts.md#supabase-auth-settings): email confirmation enabled, minimum password length 9, and the correct Site URL/callback allowlist. Test valid 9-character registration and actual confirmation/recovery links. Editing local Supabase configuration does not change hosted settings.
+- [ ] Complete Google OAuth consent/client configuration and a real browser sign-in. Configure custom SMTP and Hebrew confirmation/recovery templates, then test delivery to non-team addresses, expired/reused links, and same-browser callback requirements. Local fixtures do not verify these external services.
+- [ ] Select hosting and add durable session storage, production expiry/revocation operations, trusted-proxy limits, and deployed cross-device checks before launch. If the service uses multiple processes, coordinate session changes, refresh locks and rate limits across them. Verify HTTPS/Secure cookies, restarts and failover before replacing the local-only startup restriction.
+- [ ] Expand the implemented conditional profile link and basic account page with supported identity changes, notification preferences, and session management. Static hosting retains the unavailable profile fallback.
 - [ ] Add a learner home or continue-learning page with saved position and optional bookmarks. Keep the course library and all entitled topics independently reachable.
 - [ ] Define what counts as viewed or completed, then persist reading/video position, completion and quiz attempts across devices. Handle failed saves, concurrent updates and deleted/updated learning sections without silently losing progress.
 - [ ] Add account-data export and deletion workflows, reauthentication for sensitive changes, and approved handling of billing records and active subscriptions during deletion.
@@ -413,6 +465,7 @@ Proposed page names below describe responsibilities. Choose final paths during i
 - [ ] Create checkout sessions on the server from trusted plan identifiers and prices. Bind purchases to the correct learner and define how existing subscribers or duplicate checkout attempts are handled.
 - [ ] Verify payment webhook signatures, deduplicate events, handle retries and out-of-order delivery, and reconcile missed events with the provider. A checkout return URL must never grant access by itself.
 - [ ] Model subscription and entitlement changes for initial payment, renewal, failed payment, grace periods, scheduled cancellation, expiry, refunds and disputes. Define access timing for every supported state and enforce it on the server.
+- [ ] Use the payment provider's actual monthly billing-period boundaries rather than a fixed 30-day timer. Replace development-only entitlement sources with verified billing operations while preserving progress and the agreed cancellation/expiry behavior.
 - [ ] Add a billing/subscription page showing plan, status, next renewal or access-end date, payment-method management and billing history. Implement accessible cancellation and confirmation according to the approved policy.
 - [ ] Deliver renewal, failed-payment, cancellation and refund messages with the correct dates and recovery links. Connect receipts/invoices and tax handling to the approved accounting process; verify actual issued documents.
 - [ ] Implement refunds and payment-dispute handling for authorized staff, including access changes and an audit record. Provide reconciliation tools for cases where provider billing and local access disagree.
@@ -434,10 +487,12 @@ Proposed page names below describe responsibilities. Choose final paths during i
 - [ ] Extend automated coverage for accounts, session expiry, authorization, learner-data isolation, progress, grading, checkout, webhook replay and subscription transitions. Verify denied access through direct page, API and media requests, not only hidden UI controls.
 - [x] Audit the current static welcome, library, reading and quiz paths for responsive reflow, reduced motion, JavaScript fallbacks and local resource weight. Record findings and remaining manual checks in the [site quality review](docs/reviews/site-quality-2026-09-22.md).
 - [ ] Exercise the future complete public-to-paid journey on desktop and mobile, including keyboard-only use, a screen reader, enlarged text, reduced motion, disabled or blocked JavaScript, slow networks and service failures.
+- [ ] Complete the [remaining manual accessibility checks](docs/reviews/site-quality-2026-09-22.md#remaining-manual-checks-and-limits): VoiceOver or NVDA announcements/navigation, Windows forced colors, browser text-only enlargement, and physical iOS/Android behavior with browser chrome, virtual keyboards and safe areas. Include the account forms and password requirements feedback.
 - [ ] Measure page weight, video startup, layout stability and service response times on representative phones/connections. Establish performance and cost budgets, then load-test expected concurrent playback and service traffic.
 - [ ] Review authentication, payment and private-data handling before launch. Test privilege escalation, cross-account access, abusive requests, unsafe redirects and secret exposure, and resolve findings.
 - [ ] Extend CI and staging checks for the new services and migrations while retaining `npm test`, `npm run check:media` and dependency checks. Keep credentials and private learner data out of repository fixtures and logs.
 - [ ] Configure error monitoring, uptime checks and alerts for playback, login, payment-webhook and email failures. Redact personal data and credentials; identify who responds to each alert.
+- [ ] Set operational targets for recovery time/data loss, service availability, rate limits, event deduplication retention, media-grant lifetime and alert thresholds. Rehearse them in staging and record support escalation owners.
 - [ ] Add only the analytics needed to measure course discovery, checkout completion and learning use, subject to the approved privacy/consent decisions. Define events and retention before adding tracking services.
 - [ ] Run a small instructor/learner pilot, collect issues and complete the paid-release acceptance checklist. Confirm all launch content, support routes, policy pages and operational owners are ready.
 - [ ] Enable enrollment and publish the agreed public course pages only after acceptance. Update `PRODUCT.md`, `CONTEXT.md`, architecture and maintenance instructions to describe shipped behavior, then check live links, redirects, metadata, crawler responses and sharing previews.

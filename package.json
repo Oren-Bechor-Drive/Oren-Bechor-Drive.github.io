@@ -8,19 +8,27 @@
     "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
   },
   "scripts": {
+    "dev": "node --env-file-if-exists=.env.local server/start.mjs",
+    "test:gateway": "node --test tests/gateway/*.test.mjs",
     "test": "node --test tests/*/*.test.mjs",
     "check:links": "node scripts/site-links.mjs",
     "check:media": "node scripts/road-media-integrity.mjs",
     "optimize:media": "node scripts/optimize-road-media.mjs",
     "minify:html": "node scripts/minify-html.mjs",
     "test:unit": "node --test tests/unit/*.test.mjs",
-    "test:browser": "node --test tests/browser/*.test.mjs"
+    "test:browser": "node --test tests/browser/*.test.mjs",
+    "test:database": "node --test tests/database/*.test.mjs"
   },
   "devDependencies": {
+    "embedded-postgres": "17.6.0-beta.15",
     "html-minifier-terser": "^7.2.0",
     "image-size": "^2.0.4",
     "jsdom": "30.0.1",
     "playwright": "^1.63.0",
-    "sharp": "^0.35.4"
+    "sharp": "^0.35.4",
+    "supabase": "2.117.0"
+  },
+  "allowScripts": {
+    "@embedded-postgres/linux-x64@17.6.0-beta.15": true
   }
 }

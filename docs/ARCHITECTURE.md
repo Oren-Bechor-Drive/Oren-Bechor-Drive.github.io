@@ -14,7 +14,7 @@ Tests at this interface use real temporary HTML files, including invalid reading
 
 Keep interpretation in this module when new content needs more checks. Do not add a parallel subject registry or repeat the same heading/link interpretation in test callers. Content editing instructions live in [README](../README.md#add-learning-sections-and-quizzes).
 
-`course/js/course-library.js` owns the enhanced learning-topic disclosures. Its internal disclosure lifecycle keeps exclusive opening, animation reversal, height cleanup and mobile tap-position preservation together. Filtering and fragment navigation use its small intent-level interface; keyboard, viewport, pointer and reduced-motion interruptions remain inside the lifecycle so callers do not coordinate animation and scroll state. Browser tests exercise this module through the course library DOM, including JavaScript-disabled and blocked-module fallbacks.
+`course/js/course-library.js` owns the enhanced learning-topic disclosure policy: exclusive opening, selection, mobile tap-position preservation, filtering, and fragment navigation. `js/details-motion.js` owns native-details transitions for both the library and `js/faq-disclosures.js`: logical open state, height measurement, reversal, cancellation, finishing and cleanup. Neither caller holds animation handles or a transition map. The library coordinates its own scroll tracking through the motion module's semantic state; the FAQ keeps independent toggles. Keyboard, viewport and reduced-motion changes settle motion through the shared interface. Browser tests exercise rendered disclosure behavior, including JavaScript-disabled and blocked-module fallbacks. The separate `js/disclosure-motion.js` continues to own CSS-driven mobile navigation and topic-preview visibility.
 
 ## Media verification
 
@@ -59,4 +59,44 @@ The list is read-only for the initialization's lifetime. It retains the existing
 - Local link and fragment checks need the same authored-page boundary, but they do not need media metadata or course-domain interpretation.
 - Generated and fixture photo lists are two real adapters at the gallery seam; a forwarding module or a new loading framework would add no useful depth.
 
-These changes preserve separate static quiz content and the small runtime interaction modules. The shared profile control remains disabled until profile behavior exists. For product scope, see [PRODUCT](../PRODUCT.md); for terms, see [CONTEXT](../CONTEXT.md); for visual requirements, see [DESIGN](../DESIGN.md); for current publication and recovery procedures, see [Operations](OPERATIONS.md).
+These changes preserve separate static quiz content and the small runtime interaction modules. The shared profile control remains disabled on static hosting; the local gateway enables account navigation. For product scope, see [PRODUCT](../PRODUCT.md); for terms, see [CONTEXT](../CONTEXT.md); for visual requirements, see [DESIGN](../DESIGN.md); for current publication and recovery procedures, see [Operations](OPERATIONS.md).
+
+## Local account gateway
+
+`server/start.mjs` serves the public site and `/api/account/*` on loopback. It reads provider credentials only from the server environment. It refuses production startup because sessions are intentionally process-local. The [account setup guide](local-accounts.md) owns runtime configuration and the [design](plans/session-gateway-design.md) defines this development slice.
+
+| Module | Ownership |
+| --- | --- |
+| `server/gateway.mjs` | HTTP origin/JSON/input validation, CSRF request checks, local rate limits, cookie formatting, and safe response/error mapping. |
+| `server/learner-accounts.mjs` | Private learner-account records, HMAC token lookup, bounded storage, expiry, serialized lifecycle operations, PKCE flows, verified admission, refresh and revocation. |
+| `server/supabase.mjs` | Stateless Auth REST calls and learner-scoped database reads. Secret credentials are used only for provisioning. |
+| `server/http.mjs` | Explicit public directory/file allowlist, MIME types, no source/config/test serving or symlink escapes. |
+| `account/` | Checked-in Hebrew pages, existing style tokens, feedback, accessible forms, server-only authentication transport. |
+| `course/js/account-link.js` | Conditional replacement of the disabled profile control after a successful gateway response. |
+
+The browser receives no access/refresh tokens or PKCE verifier. A request's current Auth user and RLS-visible learner determine access. Recovery sessions cannot become ordinary learner sessions. A successful password reset invalidates existing local sessions and authentication already in flight; provider global sign-out failure produces a truthful partial-sign-out result. Public content remains readable without accounts.
+
+The gateway passes opaque browser tokens and validated inputs to the learner-account module. That module returns safe response data, fixed redirect destinations and optional cookie instructions. Records, provider tokens, locks and the generation used to invalidate in-flight authentication remain private. The gateway does not coordinate record mutation or await ordering. The existing Supabase adapter and deterministic test adapter justify the provider seam; no persistence adapter is introduced while only local memory storage exists.
+
+`tests/gateway/` exercises real local HTTP and adapter contracts using the deterministic provider in `tests/helpers/account-gateway.mjs`. The fixture does not authenticate real Supabase tokens, send email, or prove Google configuration. `tests/browser/account-browser.test.mjs` covers complete screen journeys and baseline/failure behavior. `tests/browser/account-polish-browser.test.mjs` covers icon controls, pointer/keyboard focus, standalone layouts, viewport bounds, and control reachability. `tests/browser/account-password-browser.test.mjs` covers registration requirements, the bar's transitions, and reduced motion. The existing database tests separately prove current Auth-session and learner isolation through RLS.
+
+## Accounts and access development database
+
+`supabase/migrations/20260923154100_account_access_foundation.sql` owns the six-table development schema. It is applied to project `zurpazevlvtylnzvagoo`. The local gateway uses learner provisioning and RLS; existing course files remain public. The [approved database design](plans/supabase-database-design.md) defines this slice and the [service architecture](plans/paid-service-architecture.md) records the remaining hosting, billing, and media work.
+
+`private.learner_identities` binds a Supabase Auth subject to a stable learner ID. Private helpers read current Auth verification, deletion/ban state, a live matching session, learner state, and time-bounded entitlement rows. They accept no claimed plan or arbitrary learner ID. RLS protects direct reads as well as public RPC reads. Only active learners can read their own progress, including saved paid positions after an entitlement expires.
+
+| Function | Caller | Contract |
+| --- | --- | --- |
+| `provision_learner(auth_user_id)` | Trusted service | Verify the Auth account and atomically create/reuse its learner mapping. Never match by email. |
+| `publish_section(section_id, source_key, expected_revision, free_text, paid_text)` | Trusted publisher | Publish one new revision atomically. At least one body is required; null omits that access level. Expected revision 0 creates a section; later publications require its current revision. |
+| `read_section(section_id, access_level)` | Authenticated learner | Return only the requested current, published, accessible version, or no rows. |
+| `save_my_position(section_id, access_level, content_version_id, position, expected_revision)` | Authenticated learner | Bind ownership to the caller and save reading position from 0 to 10000. First save expects revision 0. An unchanged retry returns the existing row. Changed stale saves return SQLSTATE `40001` with safe current position/version/revision in JSON error detail. |
+
+All application functions in `public` are SECURITY INVOKER. The private provisioning and progress implementations deliberately use restricted SECURITY DEFINER privileges; they enforce their own authority/ownership rules. Private identity/access helpers avoid recursive RLS lookups. Function search paths are empty and table/function grants are explicit. The existing dashboard automatic-RLS event trigger retains its behavior while losing unnecessary API execution privileges.
+
+Published version rows cannot be updated. Progress references the exact version originally read, so publishing a later revision preserves that reference. A publication and a position save lock the section consistently. A transaction-level advisory lock also serializes first saves before a progress row exists. Entitlement starts are inclusive and ends exclusive, evaluated using server statement time. No expiry job deletes progress or flips a second plan flag.
+
+`tests/support/database.mjs` starts and destroys an isolated native PostgreSQL process, loads the test-only Auth contract, and applies every migration. `tests/database/foundation.test.mjs` exercises actual roles, RLS, constraints, function privileges, and concurrent connections. Rollback transactions isolate ordinary tests; concurrency fixtures exist only in that owned temporary database. `supabase/tests/database/auth-bootstrap.sql` must never run on hosted Supabase.
+
+Hosted database smoke tests use real Supabase password tokens, direct REST queries, joins, RPCs, and private-schema rejection. They complement the minimal local Auth fixture, which does not validate token signatures or implement Supabase login. See [verification evidence and rerun guidance](../supabase/tests/README.md). Those prior database smoke tests do not validate the new gateway. Live Google sign-in, SMTP, hosted browser sessions, billing webhooks, quiz grading, and media delivery still need setup and verification.
