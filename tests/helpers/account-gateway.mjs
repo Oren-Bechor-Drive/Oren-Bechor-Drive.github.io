@@ -1,9 +1,7 @@
-import { createServer } from "node:http";
-import { createGateway } from "../../server/gateway.mjs";
-import { servePublicFile } from "../../server/http.mjs";
+import { startLocalApplication } from "../../server/application.mjs";
 
 // Deterministic identity provider for transport/browser tests. No real email.
-export function accountProvider() {
+export function accountProvider({ createSessionUser = email => ({ id: email, email, email_confirmed_at: "2026-01-01", is_anonymous: false }) } = {}) {
 	let sequence = 0;
 	const tokens = new Map();
 	const calls = [];
@@ -41,9 +39,11 @@ export function accountProvider() {
 		async updatePassword(token, password) { calls.push(["update", token, password]); },
 		async logout(token, scope) { calls.push(["logout", scope]); tokens.delete(token); },
 	};
-	function issue(email) {
-		const data = { access_token: `access-${++sequence}`, refresh_token: `refresh-${sequence}`, expires_in: 3600,
-			user: { id: email, email, email_confirmed_at: "2026-01-01", is_anonymous: false } };
+	async function issue(email) {
+		const number = ++sequence;
+		const accessToken = `access-${number}`;
+		const user = await createSessionUser(email, accessToken);
+		const data = { access_token: accessToken, refresh_token: `refresh-${number}`, expires_in: 3600, user };
 		tokens.set(data.access_token, data);
 		return data;
 	}
@@ -51,16 +51,9 @@ export function accountProvider() {
 }
 
 export async function startAccountGateway(options = {}) {
-	const provider = options.provider ?? accountProvider();
-	let handler;
-	const server = createServer((req, res) => {
-		if (req.url.startsWith("/api/")) return handler(req, res);
-		return servePublicFile(req, res);
-	});
-	await new Promise(resolve => server.listen(0, "127.0.0.1", resolve));
-	const origin = `http://127.0.0.1:${server.address().port}`;
-	handler = createGateway({ origin, provider, googleEnabled: true, ...options });
-	return { origin, provider, close: () => new Promise(resolve => server.close(resolve)) };
+	const { provider = accountProvider(), ...settings } = options;
+	const app = await startLocalApplication({ provider, googleEnabled: true, ...settings });
+	return { ...app, provider };
 }
 
 export function browserClient(origin) {

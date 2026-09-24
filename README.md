@@ -349,7 +349,7 @@ See [database ownership](docs/ARCHITECTURE.md#accounts-and-access-development-da
 - [Architecture](docs/ARCHITECTURE.md): content verification, site-wide media coverage and student-gallery ownership.
 - [Paid-service architecture draft](docs/plans/paid-service-architecture.md): provider-neutral future service boundaries, data model and failure handling. It does not describe shipped capabilities.
 - [Paid-service decisions and first setup](docs/plans/paid-service-start.md): agreed free/paid access rules, monthly billing behavior, sign-in methods, progress retention, and the first Supabase development milestone.
-- [Supabase database and access design](docs/plans/supabase-database-design.md): implemented development tables, permissions, progress rules, and database acceptance tests. The local account gateway uses this foundation; billing and protected browser lessons remain future work.
+- [Supabase database and access design](docs/plans/supabase-database-design.md): implemented development tables, permissions, progress rules, and database acceptance tests. The local account gateway and [synthetic test lessons](docs/test-lessons.md) use this foundation; billing and protected publication of actual course material remain future work.
 - [Operations](docs/OPERATIONS.md): current content review, publication, live checks, support intake and rollback procedures.
 - [Official source review](docs/reference/official-source-review-2026-09-22.md): dated official-resource audit, evidence and limits.
 - [Site quality review](docs/reviews/site-quality-2026-09-22.md): current responsive, accessibility and local resource audit with remaining manual checks.
@@ -374,7 +374,7 @@ Work through the sections below in dependency order. Content production and publ
 
 ### Next development milestone
 
-- [ ] Connect the local gateway to one account-only free test lesson and one paid test lesson using the existing learner-scoped database functions. Use synthetic content and privileged development entitlements, with no real checkout or paid material in the public repository.
+- [x] Connect the local gateway to one account-only free test lesson and one paid test lesson using the existing learner-scoped database functions. The [local test lessons](docs/test-lessons.md) use synthetic content and privileged development entitlements, with no real checkout or paid material in the public repository. Local gateway/browser tests use real PostgreSQL access checks; hosted setup has seed readback only.
 - [ ] Connect saved reading positions to those test lessons. Exercise save/reload, stale-revision conflicts, and resuming on another signed-in browser.
 - [ ] Prove the full browser/API journey: signed-out requests receive no lesson body; a free learner cannot read paid text; simulated cancellation preserves access until the paid period ends; expiry blocks paid reads and saves while retaining progress and free access; renewal restores access and position; a second learner cannot read or overwrite the first learner's data. Database-only checks already cover these access rules. See the [first development milestone](docs/plans/paid-service-start.md#first-development-milestone).
 

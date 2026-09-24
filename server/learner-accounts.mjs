@@ -1,4 +1,5 @@
 import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
+import { testLessons } from "./test-lessons.mjs";
 
 const randomToken = () => randomBytes(32).toString("base64url");
 const challengeFor = verifier => createHash("sha256").update(verifier).digest("base64url");
@@ -211,6 +212,20 @@ export function createLearnerAccounts({ origin, provider = null, googleEnabled =
 	}
 	return {
 		session,
+		async readLesson(token, key) {
+			if (!Object.hasOwn(testLessons, key)) fail(404, "not_found");
+			const record = sessions.get(token);
+			if (!record || record.mode !== "authenticated") fail(401, "session_expired");
+			return sessions.run(record, async () => {
+				await current(record);
+				const { sectionId, accessLevel } = testLessons[key];
+				const row = await provider.readSection(record.tokens.access_token, sectionId, accessLevel);
+				if (!sessions.live(record)) fail(401, "session_expired");
+				if (!row) fail(404, "lesson_unavailable");
+				return { data: { lesson: { id: row.id, sectionId: row.section_id, accessLevel: row.access_level,
+					revision: row.revision, body: row.body_text } } };
+			});
+		},
 		acceptsRequest(token, csrf) { return matches(sessions.get(token)?.csrf, csrf); },
 		completeCallback,
 		perform,

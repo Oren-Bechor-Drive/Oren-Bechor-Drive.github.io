@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'" />
+		<meta name="referrer" content="no-referrer" />
+		<meta name="robots" content="noindex" />
+		<title>שיעורי בדיקה - נהיגה נכונה עם אורן בכור</title>
+		<meta name="description" content="שני שיעורי דוגמה לבדיקת הגישה לחשבון. ללא חומר לימוד או חיוב." />
+		<link rel="icon" href="../assets/images/optimized/favicon.png?v=2" type="image/png" />
+		<link rel="preload" href="../assets/fonts/varela-round-v21-hebrew.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="../assets/fonts/varela-round-v21-latin.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="stylesheet" href="../css/base.css" />
+		<link rel="stylesheet" href="account.css" />
+		<link rel="stylesheet" href="test-lessons.css" />
+		<script type="module" src="test-lessons.js"></script>
+	</head>
+	<body>
+		<a class="skip-link" href="#main">דילוג לתוכן</a>
+		<main id="main" class="account-shell" tabindex="-1">
+			<a class="account-back" href="../index.html">חזרה לדף הבית</a>
+			<section class="account-card" aria-labelledby="lessons-heading">
+				<h1 id="lessons-heading">שיעורי בדיקה</h1>
+				<p class="account-intro">שני שיעורי דוגמה לבדיקת הגישה לחשבון. הטקסטים אינם חומר לימוד, ואין כאן רכישה או חיוב.</p>
+				<nav class="test-lesson-links" aria-label="בחירת שיעור בדיקה">
+					<a class="account-action account-action-secondary" href="test-lessons.html?lesson=free" data-lesson="free">שיעור בדיקה חינמי</a>
+					<a class="account-action account-action-secondary" href="test-lessons.html?lesson=paid" data-lesson="paid">שיעור בדיקה בתשלום</a>
+				</nav>
+				<p class="account-feedback" role="status" aria-live="polite">לקריאת השיעורים נדרשים חשבון מחובר ושירות הבדיקה המקומי. אם הטקסט אינו נטען, בדקו שהשירות פועל ונסו לרענן את הדף.</p>
+				<noscript><p>כדי לטעון את טקסט השיעור יש להפעיל JavaScript בדפדפן.</p></noscript>
+				<article aria-labelledby="lesson-heading" data-lesson-content hidden>
+					<h2 id="lesson-heading"></h2>
+					<p class="test-lesson-body" data-lesson-body></p>
+				</article>
+				<button class="account-action account-action-secondary account-retry" type="button" data-retry hidden>ניסיון נוסף</button>
+				<p class="account-links"><a href="login.html">כניסה לחשבון</a> / <a href="index.html">לחשבון שלכם</a></p>
+				<p class="account-links"><a href="../course/">לנושאי הקורס</a></p>
+			</section>
+			<p class="account-footer">נהיגה נכונה עם אורן בכור</p>
+		</main>
+	</body>
+</html>

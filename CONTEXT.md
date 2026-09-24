@@ -24,6 +24,10 @@ _Avoid_: New account, progress reset
 A named area of driving knowledge, such as right-of-way, lane choice, intersections, or trip planning.
 _Avoid_: Feature, category
 
+**Test lesson**:
+A synthetic development text used to verify account-only free access or privileged paid test access. It is not driving instruction, an actual paid lesson, or evidence of a purchase.
+_Avoid_: Purchased lesson, approved teaching material
+
 **Course library**:
 The collection of named learning topics that a learner may browse and open in any order.
 _Avoid_: Dashboard, mandatory learning path

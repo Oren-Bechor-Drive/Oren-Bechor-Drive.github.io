@@ -58,7 +58,7 @@ Enable the Google provider in Supabase and enter the Google client ID and secret
 - Password reset requests global Supabase sign-out. If that provider call fails after the password changed, the response reports the completed change and the UI explains that other devices could not all be signed out. Local sessions are already gone. Ordinary sign-out always ends this local session and attempts Supabase local sign-out.
 - API responses never use shared caching. POST requests require the exact origin, JSON, a CSRF header, and a body of at most 16 KiB. Limits are 20 mutations per 15 minutes and 150 API requests per minute per socket address. Forwarded IP headers are not trusted.
 - The local HTTP process binds to IPv4 loopback. HTTPS, external hosts, and IPv6 origins are rejected by this launcher because it serves plain HTTP on `127.0.0.1`. `NODE_ENV=production` is refused. Hosting needs durable session storage, distributed locking/rate limits if replicated, HTTPS/proxy configuration, and a reviewed deployment. Do not place this process behind a public proxy as a production launch.
-- Google and real email delivery require external setup. Payments, protected lesson publication, private media, and browser progress integration remain separate work.
+- The account page links to [two synthetic test lessons](test-lessons.md). Their bodies load through learner-scoped database reads; temporary paid access requires a privileged development SQL operation. Google and real email delivery require external setup. Payments, protected publication of actual course material, private media, and browser progress integration remain separate work.
 
 ## Verification
 

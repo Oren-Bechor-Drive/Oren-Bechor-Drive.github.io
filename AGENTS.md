@@ -39,3 +39,17 @@
 - Run `git diff --check` before completion.
 - For visual or interaction changes, verify the affected path at desktop and mobile sizes in the collaborative browser. If it is unavailable, use local Playwright Chromium and report that limitation.
 - When changing navigation or topic selection, verify both the enhanced interaction and the baseline experience with JavaScript disabled or the entry module blocked.
+
+## Agent skills
+
+### Issue tracker
+
+Before reading, creating or updating issues, follow [GitHub issue workflow](docs/agents/issue-tracker.md).
+
+### Triage labels
+
+When triaging issues, use the [triage role mapping](docs/agents/triage-labels.md).
+
+### Domain docs
+
+Before domain exploration or recording an architectural decision, follow the [single-context domain rules](docs/agents/domain.md).

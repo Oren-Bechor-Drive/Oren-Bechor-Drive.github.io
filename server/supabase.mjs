@@ -40,6 +40,11 @@ export function createSupabaseProvider({ url, publishableKey, secretKey, fetcher
 			const rows = await request("/rest/v1/learners?select=id,display_name&limit=1", { token });
 			return rows[0] ?? null;
 		},
+		async readSection(token, sectionId, accessLevel) {
+			const rows = await request("/rest/v1/rpc/read_section", { method: "POST", token,
+				body: { p_section_id: sectionId, p_access_level: accessLevel } });
+			return rows[0] ?? null;
+		},
 		updatePassword: (token, password) => request("/auth/v1/user", { method: "PUT", token, body: { password } }),
 		logout: (token, scope = "local") => request(`/auth/v1/logout?scope=${scope}`, { method: "POST", token }),
 	};

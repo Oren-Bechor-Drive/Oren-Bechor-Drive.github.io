@@ -60,3 +60,19 @@ test("provider sign-out accepts the Auth endpoint's empty 204 response", async (
 		fetcher: async () => new Response(null, { status: 204 }) });
 	assert.equal(await provider.logout("learner-jwt", "global"), null);
 });
+
+test("lesson RPC uses the learner token and publishable key, including denied empty results", async () => {
+	let rows = [{ id: "version", body_text: "synthetic" }];
+	const provider = createSupabaseProvider({ url: "https://project.supabase.co", publishableKey: "sb_publishable_test", secretKey: "sb_secret_test",
+		async fetcher(url, options) {
+			assert.equal(url, "https://project.supabase.co/rest/v1/rpc/read_section");
+			assert.equal(options.method, "POST");
+			assert.equal(options.headers.apikey, "sb_publishable_test");
+			assert.equal(options.headers.authorization, "Bearer learner-jwt");
+			assert.deepEqual(JSON.parse(options.body), { p_section_id: "section-id", p_access_level: "paid" });
+			return Response.json(rows);
+		} });
+	assert.deepEqual(await provider.readSection("learner-jwt", "section-id", "paid"), rows[0]);
+	rows = [];
+	assert.equal(await provider.readSection("learner-jwt", "section-id", "paid"), null);
+});

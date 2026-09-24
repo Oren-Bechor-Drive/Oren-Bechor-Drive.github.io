@@ -343,6 +343,8 @@ Registration alone shows a compact password requirements bar below the password 
 
 Account screens are a local development capability. They do not imply a paid subscription, available checkout, protected static lessons, or persistent progress in the browser. The homepage's course-start controls retain their existing release boundary.
 
+The synthetic test-lesson page at `account/test-lessons.html` extends this account card with two wrapping lesson links, the same blue selected state, a status message, and a text-only reading area. It retains baseline links to login, the account, the course library, and the homepage. The lesson body loads only through the local gateway; static HTML contains no test body. Existing account typography, spacing, short-viewport overflow, focus and reduced-motion behavior apply. This page has no new motion or paid enrollment action.
+
 Omit the supplementary account-note paragraphs. Password bar updates use a right-anchored horizontal scale transition over 220ms with the shared `--ease-out` curve and a 180ms color transition. Retarget transitions from the current rendered state when typing reverses progress. Reduced motion changes the fill length immediately and retains only a 100ms color fade. Requirement labels, counts, and validation update immediately.
 
 ## Course library preview

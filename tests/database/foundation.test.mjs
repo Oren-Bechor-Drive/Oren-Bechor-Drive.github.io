@@ -181,6 +181,7 @@ test("learners can update only their own display name and cannot grant or publis
 	await denied(db, "update public.learners set state='active'");
 	await denied(db, "update public.learners set id=$1", [uuid(888)]);
 	await denied(db, "update public.entitlements set ends_at=now()+interval '100 years'");
+	await denied(db, "insert into public.entitlements(learner_id,starts_at,ends_at,source_reference) select id,now(),now()+interval '1 hour','self-grant' from public.learners");
 	await denied(db, "truncate public.section_progress");
 	await denied(db, "delete from public.section_progress");
 	await denied(db, "insert into public.section_progress default values");

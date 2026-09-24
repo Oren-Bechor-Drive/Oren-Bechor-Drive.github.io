@@ -58,10 +58,16 @@ export function createGateway({ origin, provider = null, googleEnabled = false, 
 		try {
 			if (!requestLimit(req.socket.remoteAddress)) fail(429, "rate_limited");
 			const url = new URL(req.url, origin);
-			if (!url.pathname.startsWith("/api/account/")) fail(404, "not_found");
-			route = url.pathname.slice("/api/account/".length);
 			const cookies = (req.headers.cookie ?? "").split(";").map(part => part.trim()).filter(part => part.startsWith(`${cookieName}=`));
 			const token = cookies.length === 1 ? cookies[0].slice(cookieName.length + 1) : null;
+			if (url.pathname.startsWith("/api/lessons/")) {
+				if (req.method !== "GET") fail(405, "method_not_allowed");
+				if (url.search) fail(400, "invalid_input");
+				if (!provider) fail(503, "unavailable");
+				return respond(res, await accounts.readLesson(token, url.pathname.slice("/api/lessons/".length)));
+			}
+			if (!url.pathname.startsWith("/api/account/")) fail(404, "not_found");
+			route = url.pathname.slice("/api/account/".length);
 			if (route === "session" && req.method === "GET") return respond(res, await accounts.session(token));
 			if (!provider) fail(503, "unavailable");
 			if (route === "callback" && req.method === "GET") return respond(res, await accounts.completeCallback(token, {
@@ -80,7 +86,7 @@ export function createGateway({ origin, provider = null, googleEnabled = false, 
 			if (route === "login" && [400, 401, 403, 422].includes(status) && !["invalid_input", "invalid_email", "invalid_password", "request_rejected"].includes(code)) { status = 401; code = "sign_in_failed"; }
 			else if (status >= 500) { status = 503; code = "unavailable"; }
 			else if (status === 429) { code = "rate_limited"; }
-			else if (!["invalid_input", "invalid_email", "invalid_password", "request_rejected", "recovery_required", "session_expired", "too_large", "not_found", "method_not_allowed", "google_unavailable"].includes(code)) code = "request_failed";
+			else if (!["invalid_input", "invalid_email", "invalid_password", "request_rejected", "recovery_required", "session_expired", "too_large", "not_found", "lesson_unavailable", "method_not_allowed", "google_unavailable"].includes(code)) code = "request_failed";
 			if (status === 429) res.setHeader("Retry-After", "60");
 			json(res, { error: code }, status);
 		}

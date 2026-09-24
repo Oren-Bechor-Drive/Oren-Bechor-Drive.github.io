@@ -1,0 +1,32 @@
+import assert from "node:assert/strict";
+import { randomUUID } from "node:crypto";
+import { readFile } from "node:fs/promises";
+import test from "node:test";
+import { startDatabase } from "../support/database.mjs";
+
+test("development scripts preserve published versions and reuse temporary entitlements", async t => {
+	const database = await startDatabase();
+	t.after(database.close);
+	const db = database.admin;
+	const seed = await readFile(new URL("../../supabase/development/test-lessons.sql", import.meta.url), "utf8");
+	const grant = await readFile(new URL("../../supabase/development/grant-test-access.sql", import.meta.url), "utf8");
+	await db.query(seed);
+	const versions = (await db.query("select * from public.section_versions order by id")).rows;
+	assert.equal(versions.length, 2);
+	await db.query(seed);
+	assert.deepEqual((await db.query("select * from public.section_versions order by id")).rows, versions);
+	const id = randomUUID();
+	await db.query("insert into auth.users(id,email_confirmed_at,is_anonymous) values ($1,now(),false)", [id]);
+	await db.query("select set_config('oren.test_auth_user_id',$1,false),set_config('oren.test_access_until',$2,false)", [id, new Date(Date.now() + 3_600_000).toISOString()]);
+	await db.query(grant);
+	const first = (await db.query("select * from public.entitlements")).rows[0];
+	await db.query("update public.entitlements set revoked_at=now()");
+	const until = new Date(Date.now() + 7_200_000);
+	await db.query("select set_config('oren.test_access_until',$1,false)", [until.toISOString()]);
+	await db.query(grant);
+	const grants = (await db.query("select * from public.entitlements")).rows;
+	assert.equal(grants.length, 1);
+	assert.equal(grants[0].id, first.id);
+	assert.equal(grants[0].revoked_at, null);
+	assert.equal(grants[0].ends_at.toISOString(), until.toISOString());
+});
