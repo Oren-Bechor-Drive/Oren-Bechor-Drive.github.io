@@ -105,7 +105,8 @@ for (const width of [1440, 390]) {
 			true,
 		);
 		await trigger.click();
-		await page.locator("h1").click();
+		// The header stays outside the list when it opens above the selector.
+		await page.locator(".course-header").click();
 		assert.equal(await trigger.getAttribute("aria-expanded"), "false");
 		assert.equal(await list.evaluate((element) => element.inert), true);
 		await trigger.click();
