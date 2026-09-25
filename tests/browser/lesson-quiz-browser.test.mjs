@@ -196,13 +196,13 @@ for (const quiz of quizzes) {
 	}
 }
 
-for (const legacyPath of [
-	"priority-hierarchy/quizzes/priority",
-	"right-of-way/quizzes/left-turn",
-	"right-of-way/quizzes/right-turn",
-	"right-of-way/quizzes/u-turn",
+for (const [legacyPath, sectionId] of [
+	["priority-hierarchy/quizzes/priority", "priority"],
+	["right-of-way/quizzes/left-turn", "left-turn"],
+	["right-of-way/quizzes/right-turn", "right-turn"],
+	["right-of-way/quizzes/u-turn", "u-turn"],
 ]) {
-	test(`${legacyPath} links to its topic quiz with JavaScript disabled`, async (t) => {
+	test(`${legacyPath} links to its topic quiz and original reading section with JavaScript disabled`, async (t) => {
 		const browser = await chromium.launch();
 		t.after(() => browser.close());
 		const page = await browser.newPage({ javaScriptEnabled: false });
@@ -212,6 +212,10 @@ for (const legacyPath of [
 		await page.locator('.lesson-intro a[href="../../quiz/"]').click();
 		assert.equal(new URL(page.url()).pathname, `/course/${legacyPath.split("/")[0]}/quiz/`);
 		assert.equal(await page.locator(".quiz-question").count(), 20);
+		await page.goto(`http://gallery.test/course/${legacyPath}/`);
+		await page.locator(".lesson-back").click();
+		assert.equal(new URL(page.url()).hash, `#${sectionId}`);
+		assert.equal(await page.locator(`[id="${sectionId}"]`).count(), 1);
 	});
 }
 
