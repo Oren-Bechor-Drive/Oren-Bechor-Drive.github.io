@@ -63,10 +63,10 @@ async function exerciseDesktopJourney(browser) {
 	await page.locator('.lesson-contents a[href="#priority"]').click();
 	assert.equal(new URL(page.url()).hash, "#priority");
 	assert.equal(await page.locator("#priority").isVisible(), true);
-	await page.locator("#priority .lesson-quiz-link").click();
+	await page.locator(".lesson-content > .lesson-quiz .lesson-quiz-link").click();
 	assert.equal(
 		new URL(page.url()).pathname,
-		"/course/priority-hierarchy/quizzes/priority/",
+		"/course/priority-hierarchy/quiz/",
 	);
 
 	await page.locator("[data-quiz-controls]").waitFor({ state: "visible" });
@@ -114,7 +114,7 @@ async function exerciseMobileJourney(browser) {
 	await page.locator("#priority-hierarchy .subject-learn").click();
 	await page.locator('.lesson-contents a[href="#priority"]').click();
 	assert.equal(new URL(page.url()).hash, "#priority");
-	await page.locator("#priority .lesson-quiz-link").click();
+	await page.locator(".lesson-content > .lesson-quiz .lesson-quiz-link").click();
 	await page.locator("[data-quiz-controls]").waitFor({ state: "visible" });
 	const firstAnswer = page.locator(".quiz-question").first().locator("input").first();
 	await firstAnswer.check();
@@ -173,9 +173,9 @@ async function exerciseFallback(browser, mode) {
 	await page.locator("#priority-hierarchy .subject-learn").click();
 	await page.locator('.lesson-contents a[href="#priority"]').click();
 	assert.equal(new URL(page.url()).hash, "#priority");
-	await page.locator("#priority .lesson-quiz-link").click();
+	await page.locator(".lesson-content > .lesson-quiz .lesson-quiz-link").click();
 	// Firefox can finish the click before render-blocking stylesheets load.
-	await page.waitForURL("**/course/priority-hierarchy/quizzes/priority/", {
+	await page.waitForURL("**/course/priority-hierarchy/quiz/", {
 		waitUntil: "load",
 	});
 	assert.equal(await page.locator(".quiz-question:visible").count(), 20);

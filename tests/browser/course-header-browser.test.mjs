@@ -30,7 +30,7 @@ test("course headers match home and remain visible above scrolled content", asyn
 		for (const path of [
 			"course/",
 			"course/right-of-way/",
-			"course/priority-hierarchy/quizzes/priority/",
+			"course/priority-hierarchy/quiz/",
 		]) {
 			await page.goto(`http://gallery.test/${path}`);
 			assert.equal(

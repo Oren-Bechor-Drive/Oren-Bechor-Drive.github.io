@@ -79,7 +79,7 @@
 				>לכל נושאי הלימוד</a
 			>
 			<div class="lesson-intro">
-				<h1>טעויות נפוצות בטסט</h1>
+				<h1 id="topic-title">טעויות נפוצות בטסט</h1>
 				<p>
 					הטעויות הנפוצות מצביעות על הרגלים שחשוב לבנות בשיעורים, ולא על
 					רשימת טריקים למבחן.
@@ -98,11 +98,12 @@
 				</nav>
 				<article
 					class="lesson-content"
+					id="topic"
+					aria-labelledby="topic-title"
 					aria-label="הסברים על טעויות נפוצות במבחן המעשי"
 				>
 					<section
 						class="lesson-section"
-						data-lesson-format="reading"
 						id="observation"
 						aria-labelledby="observation-title"
 					>
@@ -133,7 +134,6 @@
 					</section>
 					<section
 						class="lesson-section"
-						data-lesson-format="reading"
 						id="position"
 						aria-labelledby="position-title"
 					>
@@ -172,7 +172,6 @@
 					</section>
 					<section
 						class="lesson-section"
-						data-lesson-format="reading"
 						id="control"
 						aria-labelledby="control-title"
 					>
@@ -203,6 +202,11 @@
 							</p>
 						</aside>
 					</section>
+					<div class="lesson-quiz">
+						<p>תרגול בנושא טעויות נפוצות בטסט</p>
+						<a class="course-button lesson-quiz-link" href="quiz/">לשאלון התרגול</a>
+						<small>20 שאלות לדוגמה. התוכן יתווסף בהמשך.</small>
+					</div>
 					<footer class="lesson-end">
 						<p>
 							המורה המעשי מתאים את התרגול לרכב, לדרך ולתלמיד.

@@ -51,9 +51,9 @@ export async function readLearningContent(rootDir) {
 		}
 	}
 
-	async function readQuiz(file, lessonFile, section) {
+	async function readQuiz(file, lessonFile, title, topicAnchor) {
 		const document = pages.get(file);
-		const location = `${lessonFile}#${section.id}`;
+		const location = `${lessonFile}#${topicAnchor}`;
 		if (!document) {
 			report(
 				location,
@@ -70,7 +70,7 @@ export async function readLearningContent(rootDir) {
 		}
 		quizOwners.set(file, location);
 		checkIds(document, file);
-		const expectedTitle = `שאלון: ${section.title}`;
+		const expectedTitle = `שאלון: ${title}`;
 		if (
 			document.querySelector("h1")?.textContent.trim() !==
 				expectedTitle ||
@@ -178,7 +178,7 @@ export async function readLearningContent(rootDir) {
 			file,
 			title: expectedTitle,
 			lessonFile,
-			sectionId: section.id,
+			topicAnchor,
 			placeholder: form?.hasAttribute("data-quiz-placeholder") ?? false,
 			questions,
 		});
@@ -191,9 +191,29 @@ export async function readLearningContent(rootDir) {
 			)
 		)
 			continue;
-		if (!document.querySelector(".lesson-content"))
+		const lesson = document.querySelector(".lesson-content");
+		if (!lesson)
 			report(file, "missing lesson-content container");
 		checkIds(document, file);
+		const topicAnchor = lesson?.id ?? "";
+		const location = `${file}#${topicAnchor || "(unnamed topic)"}`;
+		if (topicAnchor !== "topic") report(file, "topic needs the stable ID 'topic'");
+		const titleElement = document.getElementById(
+			lesson?.getAttribute("aria-labelledby") ?? "",
+		);
+		const title = titleElement?.textContent.trim() ?? "";
+		if (!title || titleElement?.tagName !== "H1" || !document.querySelector("h1")?.isSameNode(titleElement))
+			report(location, "topic needs its declared h1 heading");
+		const links = [...document.querySelectorAll(".lesson-quiz-link")];
+		if (links.length !== 1 || !lesson?.contains(links[0]))
+			report(location, "topic needs exactly one quiz link");
+		for (const link of links) {
+			if (link.closest(".lesson-section"))
+				report(location, "quiz link must be outside a section");
+		}
+		const quizFile = await localPage(links[0]?.getAttribute("href"), file);
+		if (links.length && !quizFile)
+			report(location, "expected a local static quiz page without query or fragment");
 		const sections = [];
 		for (const element of document.querySelectorAll(".lesson-section")) {
 			const location = `${file}#${element.id || "(unnamed section)"}`;
@@ -204,34 +224,17 @@ export async function readLearningContent(rootDir) {
 			const title = heading?.textContent.trim() ?? "";
 			if (!title || !element.contains(heading))
 				report(location, "section needs its declared heading");
-			const declaredFormat = element.getAttribute("data-lesson-format");
-			const format = declaredFormat === null ? "quiz" : declaredFormat;
-			if (!["quiz", "reading"].includes(format))
-				report(location, `unknown lesson format '${format}'`);
-			const links = [...element.querySelectorAll(".lesson-quiz-link")];
-			if (format === "reading" && links.length)
-				report(location, "reading-only section must not have a quiz link");
-			if (format === "quiz" && links.length !== 1)
-				report(location, "quiz section needs exactly one quiz link");
-			const quizFile = await localPage(links[0]?.getAttribute("href"), file);
-			if (links.length && !quizFile)
-				report(
-					location,
-					"expected a local static quiz page without query or fragment",
-				);
 			const section = {
 				id: element.id,
 				title,
-				format,
-				quizFile: format === "quiz" ? quizFile : null,
 				videoCount: element.querySelectorAll(
 					'.video-placeholder[role="img"][aria-label]',
 				).length,
 			};
 			sections.push(section);
-			if (format === "quiz" && quizFile && title)
-				await readQuiz(quizFile, file, section);
 		}
+		if (quizFile && title && topicAnchor === "topic")
+			await readQuiz(quizFile, file, title, topicAnchor);
 		if (!sections.length)
 			report(file, "learning page needs at least one section");
 		const contents = [...document.querySelectorAll(".lesson-contents a")]
@@ -244,6 +247,9 @@ export async function readLearningContent(rootDir) {
 			report(file, "contents must link to each section exactly once");
 		lessons.push({
 			file,
+			title,
+			topicAnchor,
+			quizFile,
 			sections,
 			sourceLabels: document.querySelectorAll(".lesson-source").length,
 			sourceLinks: document.querySelectorAll(
@@ -264,7 +270,7 @@ export async function readLearningContent(rootDir) {
 	}
 	for (const [file, document] of pages) {
 		if (document.querySelector(".quiz-form") && !quizOwners.has(file))
-			report(file, "quiz is not linked from a learning section");
+			report(file, "quiz is not linked from a learning topic");
 		document.defaultView.close();
 	}
 	return { lessons, quizzes, issues };

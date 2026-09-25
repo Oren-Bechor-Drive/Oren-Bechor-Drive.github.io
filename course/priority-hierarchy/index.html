@@ -80,7 +80,7 @@
 				>לכל נושאי הלימוד</a
 			>
 			<div class="lesson-intro">
-				<h1>מדרג הציות</h1>
+				<h1 id="topic-title">מדרג הציות</h1>
 				<p>
 					מזהים איזו הוראה מסדירה את התנועה לפני שמחליטים להתקדם. הסדר עוזר
 					לקרוא מצבים שבהם שוטר, רמזור, תמרור וכללי הדרך מופיעים יחד.
@@ -97,7 +97,9 @@
 						<li><a href="#priority">מדרג הציות</a></li>
 					</ul>
 				</nav>
-				<article class="lesson-content" aria-label="הסבר על מדרג הציות">
+				<article class="lesson-content"
+					id="topic"
+					aria-labelledby="topic-title" aria-label="הסבר על מדרג הציות">
 					<section
 						class="lesson-section"
 						id="priority"
@@ -171,14 +173,12 @@
 								רגל או משתמש דרך אחר נמצא במסלול.
 							</p>
 						</aside>
-						<div class="lesson-quiz">
-							<p>תרגול בנושא מדרג הציות</p>
-							<a class="course-button lesson-quiz-link" href="quizzes/priority/"
-								>לשאלון התרגול</a
-							>
-							<small>20 שאלות לדוגמה. התוכן יתווסף בהמשך.</small>
-						</div>
 					</section>
+					<div class="lesson-quiz">
+						<p>תרגול בנושא מדרג הציות</p>
+						<a class="course-button lesson-quiz-link" href="quiz/">לשאלון התרגול</a>
+						<small>20 שאלות לדוגמה. התוכן יתווסף בהמשך.</small>
+					</div>
 					<footer class="lesson-end">
 						<p>אפשר לחזור לספרייה ולבחור כל נושא אחר.</p>
 						<a class="course-button" href="../#priority-hierarchy"

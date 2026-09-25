@@ -5,8 +5,8 @@ import os from "node:os";
 import path from "node:path";
 import { readLearningContent } from "../../scripts/learning-content.mjs";
 
-const lesson = `<main class="lesson-content"><nav class="lesson-contents"><a href="#turn">פנייה</a></nav><section class="lesson-section" id="turn" aria-labelledby="turn-title"><h3 id="turn-title">פנייה</h3><a class="lesson-quiz-link" href="practice.html">תרגול</a></section></main>`;
-const quiz = `<html lang="he" dir="rtl"><head><title>שאלון: פנייה - תרגול</title><meta name="robots" content="noindex"></head><body><h1>שאלון: פנייה</h1><a class="lesson-back" data-lesson-link href="lesson.html#turn">חזרה</a><form class="quiz-form"><fieldset class="quiz-question" id="scenario" aria-describedby="prompt"><legend>מצב בדרך</legend><p id="prompt">מה עושים?</p><label><input type="radio" name="turn-choice" value="stop">עוצרים</label><label><input type="radio" name="turn-choice" value="wait">ממתינים</label></fieldset></form></body></html>`;
+const lesson = `<h1 id="topic-title">פנייה</h1><main class="lesson-content" id="topic" aria-labelledby="topic-title"><nav class="lesson-contents"><a href="#turn">פנייה</a></nav><section class="lesson-section" id="turn" aria-labelledby="turn-title"><h3 id="turn-title">פנייה</h3></section><a class="lesson-quiz-link" href="practice.html">תרגול</a></main>`;
+const quiz = `<html lang="he" dir="rtl"><head><title>שאלון: פנייה - תרגול</title><meta name="robots" content="noindex"></head><body><h1>שאלון: פנייה</h1><a class="lesson-back" data-lesson-link href="lesson.html#topic">חזרה</a><form class="quiz-form"><fieldset class="quiz-question" id="scenario" aria-describedby="prompt"><legend>מצב בדרך</legend><p id="prompt">מה עושים?</p><label><input type="radio" name="turn-choice" value="stop">עוצרים</label><label><input type="radio" name="turn-choice" value="wait">ממתינים</label></fieldset></form></body></html>`;
 
 async function fixture(t, changes = {}) {
 	const root = await mkdtemp(path.join(os.tmpdir(), "learning-content-"));
@@ -27,10 +27,10 @@ async function fixture(t, changes = {}) {
 }
 
 for (const [filename, suffix, returnPath] of [
-	["index.html", "/", "../../"],
-	["index.html", "/index.html", "../../index.html"],
-	["index.htm", "/", "../../"],
-	["index.htm", "/index.htm", "../../index.htm"],
+	["index.html", "/", "../"],
+	["index.html", "/index.html", "../index.html"],
+	["index.htm", "/", "../"],
+	["index.htm", "/index.htm", "../index.htm"],
 	["index.htm", "", "/course/topic"],
 ]) {
 	test(`nested learning pages resolve ${filename} with links ending in '${suffix}'`, async (t) => {
@@ -40,11 +40,11 @@ for (const [filename, suffix, returnPath] of [
 			"course/index.html": `<a class="subject-learn" href="topic${suffix}">ללמידה</a>`,
 			[`course/topic/${filename}`]: lesson.replace(
 				'href="practice.html"',
-				`href="quizzes/turn${suffix}"`,
+				`href="quiz${suffix}"`,
 			),
-			[`course/topic/quizzes/turn/${filename}`]: quiz.replace(
-				'href="lesson.html#turn"',
-				`href="${returnPath}#turn"`,
+			[`course/topic/quiz/${filename}`]: quiz.replace(
+				'href="lesson.html#topic"',
+				`href="${returnPath}#topic"`,
 			),
 			"docs/example.html": quiz,
 			".hidden/example.html": quiz,
@@ -56,7 +56,7 @@ for (const [filename, suffix, returnPath] of [
 		assert.equal(content.lessons[0].file, `course/topic/${filename}`);
 		assert.equal(
 			content.quizzes[0].file,
-			`course/topic/quizzes/turn/${filename}`,
+			`course/topic/quiz/${filename}`,
 		);
 	});
 }
@@ -69,16 +69,16 @@ test("malformed nested returns report the quiz file and intended lesson anchor",
 			'<a class="subject-learn" href="topic/">ללמידה</a>',
 		"course/topic/index.html": lesson.replace(
 			'href="practice.html"',
-			'href="quizzes/turn/"',
+			'href="quiz/"',
 		),
-		"course/topic/quizzes/turn/index.html": quiz.replace(
-			'href="lesson.html#turn"',
-			'href="../../#missing"',
+		"course/topic/quiz/index.html": quiz.replace(
+			'href="lesson.html#topic"',
+			'href="../#missing"',
 		),
 	});
 	const { issues } = await readLearningContent(root);
 	assert.deepEqual(issues, [
-		"course/topic/quizzes/turn/index.html: return link must target course/topic/index.html#turn",
+		"course/topic/quiz/index.html: return link must target course/topic/index.html#topic",
 	]);
 });
 
@@ -90,9 +90,9 @@ test("learning content interprets declared headings and arbitrary quiz questions
 		"פנייה",
 		"aria-labelledby, not an h2 assumption, names the section",
 	);
-	assert.equal(content.lessons[0].sections[0].quizFile, "practice.html");
+	assert.equal(content.lessons[0].quizFile, "practice.html");
 	assert.equal(content.quizzes[0].lessonFile, "lesson.html");
-	assert.equal(content.quizzes[0].sectionId, "turn");
+	assert.equal(content.quizzes[0].topicAnchor, "topic");
 	assert.equal(content.quizzes[0].questions[0].id, "scenario");
 	assert.equal(content.quizzes[0].questions[0].optionCount, 2);
 	assert.equal(content.quizzes[0].placeholder, false);
@@ -112,12 +112,12 @@ for (const [name, changes, expected] of [
 				'class="removed"',
 			),
 		},
-		/lesson\.html#turn:.*quiz link/,
+		/lesson\.html#topic:.*quiz link/,
 	],
 	[
 		"missing quiz file",
 		{ "practice.html": null },
-		/lesson\.html#turn:.*practice\.html/,
+		/lesson\.html#topic:.*practice\.html/,
 	],
 	[
 		"duplicate section ID",
@@ -133,11 +133,11 @@ for (const [name, changes, expected] of [
 		"incorrect return",
 		{
 			"practice.html": quiz.replace(
-				'href="lesson.html#turn"',
+				'href="lesson.html#topic"',
 				'href="lesson.html#missing"',
 			),
 		},
-		/practice\.html:.*return.*lesson\.html#turn/,
+		/practice\.html:.*return.*lesson\.html#topic/,
 	],
 	[
 		"missing contents link",
@@ -152,7 +152,7 @@ for (const [name, changes, expected] of [
 				'href="https:\/\/example.com\/practice.html"',
 			),
 		},
-		/lesson\.html#turn:.*local.*quiz/,
+		/lesson\.html#topic:.*local.*quiz/,
 	],
 	[
 		"wrong quiz title",
@@ -194,9 +194,9 @@ for (const [name, changes, expected] of [
 	});
 }
 
-test("newly added sections are discovered and cannot share a quiz destination", async (t) => {
+test("multiple sections belong to one topic quiz", async (t) => {
 	const second =
-		'<section class="lesson-section" id="another" aria-labelledby="another-title"><h2 id="another-title">עוד נושא</h2><a class="lesson-quiz-link" href="practice.html">תרגול</a></section>';
+		'<section class="lesson-section" id="another" aria-labelledby="another-title"><h2 id="another-title">עוד נושא</h2></section>';
 	const content = await readLearningContent(
 		await fixture(t, {
 			"lesson.html": lesson
@@ -205,15 +205,13 @@ test("newly added sections are discovered and cannot share a quiz destination", 
 		}),
 	);
 	assert.equal(content.lessons[0].sections.length, 2);
-	assert.ok(
-		content.issues.some((issue) => /another.*already.*quiz/.test(issue)),
-		content.issues.join("\n"),
-	);
+	assert.deepEqual(content.issues, []);
+	assert.equal(content.lessons[0].quizFile, "practice.html");
 });
 
 test("explicit reading-only sections need no fabricated quiz", async (t) => {
 	const reading =
-		'<section class="lesson-section" data-lesson-format="reading" id="reading" aria-labelledby="reading-title"><h2 id="reading-title">קריאה מודרכת</h2><p>תוכן לימוד מלא ללא שאלון.</p><a class="official-resource" href="https://www.gov.il/he/pages/example">מידע רשמי</a></section>';
+		'<section class="lesson-section" id="reading" aria-labelledby="reading-title"><h2 id="reading-title">קריאה מודרכת</h2><p>תוכן לימוד מלא ללא שאלון.</p><a class="official-resource" href="https://www.gov.il/he/pages/example">מידע רשמי</a></section>';
 	const content = await readLearningContent(
 		await fixture(t, {
 			"lesson.html": lesson
@@ -222,14 +220,14 @@ test("explicit reading-only sections need no fabricated quiz", async (t) => {
 		}),
 	);
 	assert.deepEqual(content.issues, []);
-	assert.equal(content.lessons[0].sections[1].format, "reading");
-	assert.equal(content.lessons[0].sections[1].quizFile, null);
+	assert.equal("format" in content.lessons[0].sections[1], false);
+	assert.equal("quizFile" in content.lessons[0].sections[1], false);
 	assert.equal(content.lessons[0].sourceLinks, 0);
 });
 
 test("only approved government resources bypass the source-link count", async (t) => {
 	const reading =
-		'<section class="lesson-section" data-lesson-format="reading" id="reading" aria-labelledby="reading-title"><h2 id="reading-title">קריאה</h2><a class="official-resource" href="https://example.com/resource">משאב חיצוני</a></section>';
+		'<section class="lesson-section" id="reading" aria-labelledby="reading-title"><h2 id="reading-title">קריאה</h2><a class="official-resource" href="https://example.com/resource">משאב חיצוני</a></section>';
 	const content = await readLearningContent(
 		await fixture(t, {
 			"lesson.html": lesson
@@ -242,7 +240,7 @@ test("only approved government resources bypass the source-link count", async (t
 
 test("official government-data resources bypass the source-link count", async (t) => {
 	const reading =
-		'<section class="lesson-section" data-lesson-format="reading" id="reading" aria-labelledby="reading-title"><h2 id="reading-title">קריאה</h2><a class="official-resource" href="https://data.gov.il/he/datasets/example">מאגר ממשלתי</a></section>';
+		'<section class="lesson-section" id="reading" aria-labelledby="reading-title"><h2 id="reading-title">קריאה</h2><a class="official-resource" href="https://data.gov.il/he/datasets/example">מאגר ממשלתי</a></section>';
 	const content = await readLearningContent(
 		await fixture(t, {
 			"lesson.html": lesson
@@ -253,37 +251,26 @@ test("official government-data resources bypass the source-link count", async (t
 	assert.equal(content.lessons[0].sourceLinks, 0);
 });
 
-for (const [name, section, expected] of [
-	[
-		"reading-only section with a quiz",
-		'<section class="lesson-section" data-lesson-format="reading" id="reading" aria-labelledby="reading-title"><h2 id="reading-title">קריאה</h2><a class="lesson-quiz-link" href="practice.html">תרגול</a></section>',
-		/reading:.*must not have a quiz link/,
-	],
-	[
-		"unknown lesson format",
-		'<section class="lesson-section" data-lesson-format="later" id="reading" aria-labelledby="reading-title"><h2 id="reading-title">קריאה</h2></section>',
-		/reading:.*unknown lesson format/,
-	],
-	[
-		"empty lesson format",
-		'<section class="lesson-section" data-lesson-format id="reading" aria-labelledby="reading-title"><h2 id="reading-title">קריאה</h2></section>',
-		/reading:.*unknown lesson format/,
-	],
+for (const [name, change, expected] of [
+	["quiz link inside a section", lesson.replace('</section><a class="lesson-quiz-link"', '<a class="lesson-quiz-link"').replace('>תרגול</a></main>', '>תרגול</a></section></main>'), /lesson\.html#topic:.*outside.*section/],
+	["duplicate topic quiz link", lesson.replace('</main>', '<a class="lesson-quiz-link" href="practice.html">תרגול</a></main>'), /lesson\.html#topic:.*exactly one quiz link/],
+	["missing topic anchor", lesson.replace('id="topic" ', ''), /lesson\.html:.*stable ID/],
+	["missing topic heading", lesson.replace('<h1 id="topic-title">פנייה</h1>', ''), /lesson\.html#topic:.*heading/],
+	["wrong topic heading reference", lesson.replace('aria-labelledby="topic-title"', 'aria-labelledby="turn-title"'), /lesson\.html#topic:.*heading/],
 ]) {
 	test(`learning content reports ${name}`, async (t) => {
-		const content = await readLearningContent(
-			await fixture(t, {
-				"lesson.html": lesson
-					.replace("</nav>", '<a href="#reading">קריאה</a></nav>')
-					.replace("</main>", `${section}</main>`),
-			}),
-		);
-		assert.ok(
-			content.issues.some((issue) => expected.test(issue)),
-			content.issues.join("\n"),
-		);
+		const content = await readLearningContent(await fixture(t, { "lesson.html": change }));
+		assert.ok(content.issues.some((issue) => expected.test(issue)), content.issues.join("\n"));
 	});
 }
+
+test("two topics cannot assign the same quiz page", async (t) => {
+	const content = await readLearningContent(await fixture(t, {
+		"course/index.html": '<a class="subject-learn" href="../lesson.html">ללמידה</a><a class="subject-learn" href="../second.html">ללמידה</a>',
+		"second.html": lesson.replace('<h1 id="topic-title">פנייה</h1>', '<h1 id="topic-title">פנייה שנייה</h1>').replace('href="practice.html"', 'href="practice.html"'),
+	}));
+	assert.ok(content.issues.some((issue) => /second\.html#topic:.*already assigned quiz/.test(issue)), content.issues.join("\n"));
+});
 
 test("unreadable library destinations and partial lesson markup produce diagnostics", async (t) => {
 	const content = await readLearningContent(

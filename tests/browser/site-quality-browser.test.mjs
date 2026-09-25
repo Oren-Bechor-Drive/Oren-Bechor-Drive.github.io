@@ -7,7 +7,7 @@ const representativePages = [
 	"/",
 	"/course/",
 	"/course/right-of-way/",
-	"/course/right-of-way/quizzes/left-turn/",
+	"/course/right-of-way/quiz/",
 ];
 
 test("representative pages reflow without horizontal document scrolling", async (t) => {

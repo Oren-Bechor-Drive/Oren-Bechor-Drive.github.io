@@ -79,7 +79,7 @@
 				>לכל נושאי הלימוד</a
 			>
 			<div class="lesson-intro">
-				<h1>זיהוי כבישים ונתיבים</h1>
+				<h1 id="topic-title">זיהוי כבישים ונתיבים</h1>
 				<p>
 					קוראים את מבנה הדרך ואת הסימונים מוקדם, כדי לבחור כיוון ונתיב לפני
 					שמגיעים לנקודת ההחלטה.
@@ -97,11 +97,12 @@
 				</nav>
 				<article
 					class="lesson-content"
+					id="topic"
+					aria-labelledby="topic-title"
 					aria-label="הסברים על זיהוי דרכים ונתיבים"
 				>
 					<section
 						class="lesson-section"
-						data-lesson-format="reading"
 						id="road-direction"
 						aria-labelledby="road-direction-title"
 					>
@@ -132,7 +133,6 @@
 					</section>
 					<section
 						class="lesson-section"
-						data-lesson-format="reading"
 						id="lane-markings"
 						aria-labelledby="lane-markings-title"
 					>
@@ -174,6 +174,11 @@
 							</p>
 						</aside>
 					</section>
+					<div class="lesson-quiz">
+						<p>תרגול בנושא זיהוי כבישים ונתיבים</p>
+						<a class="course-button lesson-quiz-link" href="quiz/">לשאלון התרגול</a>
+						<small>20 שאלות לדוגמה. התוכן יתווסף בהמשך.</small>
+					</div>
 					<footer class="lesson-end">
 						<p>אפשר לחזור לספרייה ולבחור כל נושא אחר.</p>
 						<a class="course-button" href="../#roads-and-lanes"

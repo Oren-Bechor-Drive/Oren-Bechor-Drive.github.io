@@ -80,7 +80,7 @@
 				לכל נושאי הלימוד</a
 			>
 			<div class="lesson-intro">
-				<h1>זכויות קדימה ופניות</h1>
+				<h1 id="topic-title">זכויות קדימה ופניות</h1>
 				<p>
 					מבינים למי נותנים זכות קדימה, מזהים את הסכנות ומתכננים את הפנייה לפני
 					שמתחילים אותה.
@@ -101,6 +101,8 @@
 				</nav>
 				<article
 					class="lesson-content"
+					id="topic"
+					aria-labelledby="topic-title"
 					aria-label="הסברים על זכויות קדימה ופניות"
 				>
 					<section
@@ -192,14 +194,6 @@
 								הנסיעה, את התנועה שסביב הרכב ואת הולכי הרגל.
 							</p>
 						</aside>
-						<div class="lesson-quiz">
-							<p>תרגול בנושא פנייה שמאלה</p>
-							<a
-								class="course-button lesson-quiz-link"
-								href="quizzes/left-turn/"
-								>לשאלון התרגול</a
-							><small>20 שאלות לדוגמה. התוכן יתווסף בהמשך.</small>
-						</div>
 					</section>
 					<section
 						class="lesson-section"
@@ -286,14 +280,6 @@
 								להימצא בסמוך למסלול הפנייה.
 							</p>
 						</aside>
-						<div class="lesson-quiz">
-							<p>תרגול בנושא פנייה ימינה</p>
-							<a
-								class="course-button lesson-quiz-link"
-								href="quizzes/right-turn/"
-								>לשאלון התרגול</a
-							><small>20 שאלות לדוגמה. התוכן יתווסף בהמשך.</small>
-						</div>
 					</section>
 					<section
 						class="lesson-section"
@@ -384,13 +370,12 @@
 								באותו מקום.
 							</p>
 						</aside>
-						<div class="lesson-quiz">
-							<p>תרגול בנושא פניית פרסה</p>
-							<a class="course-button lesson-quiz-link" href="quizzes/u-turn/"
-								>לשאלון התרגול</a
-							><small>20 שאלות לדוגמה. התוכן יתווסף בהמשך.</small>
-						</div>
 					</section>
+					<div class="lesson-quiz">
+						<p>תרגול בנושא זכויות קדימה ופניות</p>
+						<a class="course-button lesson-quiz-link" href="quiz/">לשאלון התרגול</a>
+						<small>20 שאלות לדוגמה. התוכן יתווסף בהמשך.</small>
+					</div>
 					<footer class="lesson-end">
 						<p>אפשר לחזור לכל חלק או לבחור נושא אחר. אין סדר למידה מחייב.</p>
 						<a class="course-button" href="../#right-of-way"

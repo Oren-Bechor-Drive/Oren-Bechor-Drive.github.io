@@ -33,16 +33,20 @@ The collection of named learning topics that a learner may browse and open in an
 _Avoid_: Dashboard, mandatory learning path
 
 **Learning section**:
-A sub-subject within a learning topic, with its own explanations. It may be reading-only or have an approved practice quiz. Learners may start with any section.
+A sub-subject within a learning topic, with its own explanations. Learners may start with any section; the topic has one practice quiz covering its sections.
 _Avoid_: Locked step, required stage
 
-**Reading-only section**:
-A learning section whose supplied material supports an explanation but not an authored practice quiz.
-_Avoid_: Missing quiz, incomplete requirement
-
 **Practice quiz**:
-A set of multiple-choice questions about one learning section. The current preview uses placeholder questions and gives no score.
+A set of 20 multiple-choice questions covering one learning topic. All questions must be answered before submission. A passing attempt has at least 17 correct answers and lets the learner choose to mark the topic complete.
 _Avoid_: Driving test, certification exam
+
+**Quiz attempt**:
+One learner's saved answers to a practice quiz, either unfinished or submitted. A submitted attempt includes its score and answer explanations.
+_Avoid_: Certification, subscription record
+
+**Topic completion**:
+A learner's explicit choice to mark a learning topic complete after passing its practice quiz. It survives deletion of the learner's other learning progress after a subscription lapse.
+_Avoid_: Automatic completion, certificate, access entitlement
 
 **Video placeholder**:
 A reserved space describing an explanation video or a video question that has not been supplied yet.

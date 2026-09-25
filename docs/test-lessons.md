@@ -2,6 +2,8 @@
 
 This development slice connects the account gateway to two synthetic lessons. It supports saved reading positions in the learner account, with no checkout or real course material. The existing static course preview is still public.
 
+The 2026-09-25 [paid-release scope](plans/paid-release-scope.md) supersedes indefinite progress retention as a future product requirement: after ten days without renewal following expiry, clear learning progress except completed topics. These local test lessons still exercise the existing indefinite-retention database. Their 31-day lapse checks do not implement or verify the new cleanup policy.
+
 ## Open the lessons
 
 1. Configure the gateway using [local account setup](local-accounts.md), then run `npm run dev`.

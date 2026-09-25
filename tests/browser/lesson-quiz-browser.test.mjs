@@ -93,10 +93,10 @@ for (const quiz of quizzes) {
 				});
 				await page.route("**/*", serveRoadMedia);
 				await page.goto(
-					`http://gallery.test/${quiz.lessonFile.replace(/index\.html$/, "")}#${quiz.sectionId}`,
+					`http://gallery.test/${quiz.lessonFile.replace(/index\.html$/, "")}#${quiz.topicAnchor}`,
 				);
 				await page
-					.locator(`[id="${quiz.sectionId}"] .lesson-quiz-link`)
+					.locator(`.lesson-content[id="${quiz.topicAnchor}"] > .lesson-quiz .lesson-quiz-link`)
 					.click();
 				assert.equal(await page.locator("h1").innerText(), quiz.title);
 				await exerciseQuiz(page, quiz.questions.length);
@@ -117,7 +117,7 @@ for (const quiz of quizzes) {
 				await page.locator(".lesson-back").click();
 				assert.equal(
 					page.url(),
-					`http://gallery.test/${quiz.lessonFile.replace(/index\.html$/, "")}#${quiz.sectionId}`,
+					`http://gallery.test/${quiz.lessonFile.replace(/index\.html$/, "")}#${quiz.topicAnchor}`,
 				);
 				await page.goto(
 					`http://gallery.test/${quiz.file}?subject=unrelated`,
@@ -130,7 +130,7 @@ for (const quiz of quizzes) {
 					await page
 						.locator(".lesson-back")
 						.evaluate((link) => link.href),
-					`http://gallery.test/${quiz.lessonFile.replace(/index\.html$/, "")}#${quiz.sectionId}`,
+					`http://gallery.test/${quiz.lessonFile.replace(/index\.html$/, "")}#${quiz.topicAnchor}`,
 				);
 				await page.close();
 			}
@@ -187,13 +187,32 @@ for (const quiz of quizzes) {
 					await page.locator(".lesson-back").click();
 					assert.equal(
 						page.url(),
-						`http://gallery.test/${quiz.lessonFile.replace(/index\.html$/, "")}#${quiz.sectionId}`,
+						`http://gallery.test/${quiz.lessonFile.replace(/index\.html$/, "")}#${quiz.topicAnchor}`,
 					);
 					await page.close();
 				}
 			},
 		);
 	}
+}
+
+for (const legacyPath of [
+	"priority-hierarchy/quizzes/priority",
+	"right-of-way/quizzes/left-turn",
+	"right-of-way/quizzes/right-turn",
+	"right-of-way/quizzes/u-turn",
+]) {
+	test(`${legacyPath} links to its topic quiz with JavaScript disabled`, async (t) => {
+		const browser = await chromium.launch();
+		t.after(() => browser.close());
+		const page = await browser.newPage({ javaScriptEnabled: false });
+		await page.route("**/*", serveRoadMedia);
+		await page.goto(`http://gallery.test/course/${legacyPath}/`);
+		assert.match(await page.locator('meta[name="robots"]').getAttribute("content"), /noindex/);
+		await page.locator('.lesson-intro a[href="../../quiz/"]').click();
+		assert.equal(new URL(page.url()).pathname, `/course/${legacyPath.split("/")[0]}/quiz/`);
+		assert.equal(await page.locator(".quiz-question").count(), 20);
+	});
 }
 
 for (const count of [1, 5]) {
@@ -203,7 +222,7 @@ for (const count of [1, 5]) {
 		// Adapt an actual page's shell. Only fixture questions vary; the real entry module runs.
 		const dom = new JSDOM(
 			await readFile(
-				"course/priority-hierarchy/quizzes/priority/index.html",
+				"course/priority-hierarchy/quiz/index.html",
 				"utf8",
 			),
 		);
@@ -237,7 +256,7 @@ for (const count of [1, 5]) {
 		});
 		await page.route("**/*", (route) =>
 			new URL(route.request().url()).pathname ===
-			"/course/priority-hierarchy/quizzes/priority/fixture.html"
+			"/course/priority-hierarchy/quiz/fixture.html"
 				? route.fulfill({
 						contentType: "text/html",
 						body: dom.serialize(),
@@ -245,7 +264,7 @@ for (const count of [1, 5]) {
 				: serveRoadMedia(route),
 		);
 		await page.goto(
-			"http://gallery.test/course/priority-hierarchy/quizzes/priority/fixture.html",
+			"http://gallery.test/course/priority-hierarchy/quiz/fixture.html",
 		);
 		await exerciseQuiz(page, count);
 		assert.equal(

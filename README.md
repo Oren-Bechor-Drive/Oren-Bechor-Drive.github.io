@@ -33,16 +33,11 @@ course/
   index.html
   css/                         Shared course, lesson and quiz styles
   js/                          Library search and quiz interaction
-  priority-hierarchy/
-    index.html
-    quizzes/priority/index.html
-  right-of-way/
-    index.html
-    quizzes/
-      left-turn/index.html
-      right-turn/index.html
-      u-turn/index.html
-  <topic>/index.html            Reading pages for the other developed topics
+  <topic>/
+    index.html                 Reading sections and one topic quiz link
+    quiz/index.html            Topic-wide 20-question quiz preview
+  priority-hierarchy/quizzes/priority/index.html
+  right-of-way/quizzes/        Former quiz URLs with links to their replacement
 css/                           Site-wide base and homepage styles
 js/                            Homepage enhancements and generated photo list
 assets/                        Shared images, fonts and icons
@@ -54,7 +49,7 @@ tests/
 docs/                          Architecture, supplied references and plans
 ```
 
-Open the homepage FAQ at `/#faq`, the library at `/course/`, a reading page at `/course/<topic>/`, and quizzes at `/course/<topic>/quizzes/<section-id>/`. Ordinary learning pages keep links and assets relative so the same files can also be served under a directory prefix. Account API calls and gateway redirects assume domain-root deployment. `404.html` is the exception: GitHub Pages can return it at any missing nested URL, so it uses domain-root paths for its assets and recovery links. The current organization site is published at the domain root. Any host or path-prefix migration must update and retest those 404 references.
+Open the homepage FAQ at `/#faq`, the library at `/course/`, a reading page at `/course/<topic>/`, and quizzes at `/course/<topic>/quiz/`. Ordinary learning pages keep links and assets relative so the same files can also be served under a directory prefix. Account API calls and gateway redirects assume domain-root deployment. `404.html` is the exception: GitHub Pages can return it at any missing nested URL, so it uses domain-root paths for its assets and recovery links. The current organization site is published at the domain root. Any host or path-prefix migration must update and retest those 404 references.
 
 The repository is [Oren-Bechor-Drive/Oren-Bechor-Drive.github.io](https://github.com/Oren-Bechor-Drive/Oren-Bechor-Drive.github.io), owned by the `Oren-Bechor-Drive` organization. The public site is [https://oren-bechor-drive.github.io/](https://oren-bechor-drive.github.io/).
 
@@ -93,7 +88,7 @@ Open `/course/` to review the approved open subject-library layout. Its ten lear
 
 This is a course preview, marked `noindex` and omitted from the public sitemap. Every developed teaching topic in the supplied PDF now has a reading page. Right-of-way and turns uses three sections for left, right and U-turns; priority hierarchy is a separate topic. `course/css/lesson.css` supplies the shared reading layout, and native contents links work without JavaScript. PDF provenance labels remain in maintenance documentation, while the licensing page preserves the official government resources supplied as PDF annotations. Oren's review of the edited teaching copy remains a release prerequisite. The adaptations preserve the source scenarios while avoiding blanket claims about pedestrian priority, fixed steering amounts and priority that depend on the actual road arrangement. Videos and new practice questions are still outstanding, so the welcome page's course-start controls remain unavailable.
 
-Each sub-subject has its own white section. Reserve video for movement, timing and developing hazards, images or diagrams for recognition and road layouts, and no media for sufficient text explanations or repeated summaries. The current lessons contain 16 video and 12 image/diagram placeholders. These use descriptive Hebrew text with accessible labels, without missing media requests. Right-turn and U-turn videos cover complete maneuvers instead of reserving separate clips for every step. The four existing quiz sections link to `/course/priority-hierarchy/quizzes/priority/` or `/course/right-of-way/quizzes/<turn-section>/`. Each quiz page owns its title, lesson return links, and 20 placeholder questions, with four placeholder choices per question and no predetermined media slots. The other sections are explicitly marked reading-only in their HTML; no quiz questions were invented for them. The shared `course/js/quiz.js` reads question fieldsets and supplies direct question selection, previous/next navigation, and a selection-count summary with review. There is no answer key, grading, locking, or persistence across reloads. Without JavaScript, all questions remain visible and usable.
+Each sub-subject has its own white section. Reserve video for movement, timing and developing hazards, images or diagrams for recognition and road layouts, and no media for sufficient text explanations or repeated summaries. The current lessons contain 16 video and 12 image/diagram placeholders. These use descriptive Hebrew text with accessible labels, without missing media requests. Right-turn and U-turn videos cover complete maneuvers instead of reserving separate clips for every step. Each of the ten topics links to its own `/course/<topic>/quiz/`. Each quiz page owns its topic title, lesson return links and 20 placeholder questions, with four placeholder choices per question and no predetermined media slots. The right-of-way topic has one combined quiz covering its three turn sections. Placeholder questions do not claim approved teaching content. The shared `course/js/quiz.js` reads question fieldsets and supplies direct question selection, previous/next navigation, and a selection-count summary with review. Finishing requires every question to be answered; missing answers announce feedback and focus the first unanswered question. There is no answer key, grading, access restriction or persistence across reloads. Without JavaScript, all questions remain visible and usable.
 
 The library, learning pages and practice-quiz pages use a clickable home brand and a disabled profile fallback on static hosting. The configured local gateway enables a link to login or the signed-in account page. At 900px and above, the enhanced library has a stable topic list on the right and a reading panel on the left. The list is a vertical tablist with Up/Down, Home/End and Tab support. Selection highlights a row and reads the title, description and outline from baseline HTML. Filtering chooses a matching outline when needed and hides the panel for empty results.
 
@@ -110,11 +105,13 @@ For a preview over an already configured Tailscale connection, keep this server 
 Keep teaching content in static HTML so it remains usable without JavaScript. Create each learning page at `course/<topic>/index.html` with `.lesson-content` and link to its directory from `course/index.html` with `.subject-learn`. Keep learner pages in their topic directories. The required root-level `404.html` is reserved for GitHub Pages recovery behavior.
 
 1. Give each `.lesson-section` a unique, stable `id` and an `aria-labelledby` pointing to its heading. Add a matching `.lesson-contents` anchor. Keep the ID when changing a heading so bookmarks still work.
-2. For a section with an approved quiz, copy a quiz page to `course/<topic>/quizzes/<section-id>/index.html`. Set its `<title>`, `<h1>`, and both `[data-lesson-link]` destinations to the correct lesson section, such as `../../#priority`. Link the section's `.lesson-quiz-link` to `quizzes/<section-id>/`, without a subject query parameter. For a reading-only section, set `data-lesson-format="reading"` and omit the quiz link. The verifier rejects unknown formats and reading-only sections that also claim a quiz.
+2. Give `.lesson-content` a stable `id="topic"` and `aria-labelledby="topic-title"`; give the page's `<h1>` that title ID. Create one quiz at `course/<topic>/quiz/index.html`. Set its `<title>` and `<h1>` to `שאלון: <topic title>` and both `[data-lesson-link]` destinations to `../#topic`. Add exactly one `.lesson-quiz-link` to the topic, outside the individual `.lesson-section` elements, pointing to `quiz/`. Sections keep their reading anchors but have no separate quiz ownership or `data-lesson-format` attribute. The verifier rejects missing, duplicate and section-level quiz links.
 3. Edit that quiz's `.quiz-question` fieldsets, legends, referenced prompts, any scenario-specific media, and radio labels. Choose text, an image or a video from the actual question scenario; do not assign videos by question number. Keep unique question IDs, a distinct radio-group name per question, and unique choice values within the group. Keep loading `course/js/quiz.js`; no new subject registration or JavaScript change is needed. Current forms use `data-quiz-placeholder` to identify the approved placeholder layout. Remove that marker and update visible notices only when real content is approved.
 4. Run `npm test`, `npm run check:media` when adding pages, image declarations or preloads, and `git diff --check`. `scripts/learning-content.mjs` discovers nested learning pages through `scripts/site-pages.mjs` and interprets their relationships once for structural and browser checks. Directory links and explicit `index.html` links resolve to the same authored page; malformed relationships retain file-specific diagnostics. Tests exercise every valid quiz with JavaScript enabled, disabled and blocked. Interaction checks use discovered question counts and video positions; the separate 20-question/four-choice assertions apply to forms marked `data-quiz-placeholder`.
 
-The former shared `quiz.html?subject=...` preview has been replaced by these static quiz pages. Use the current links on the learning page.
+The four former section quiz URLs remain noindex transition pages with native links to their topic quiz and original reading section. Keep them usable for bookmarks; do not duplicate quiz forms there. The older shared `quiz.html?subject=...` preview is no longer used.
+
+The enhanced quiz allows navigation before every question is answered, but finishing requires a selection in every fieldset. Missing answers produce Hebrew feedback and focus the first unanswered question. The static fallback presents all questions and return links. Placeholder completion reports answer count only; it does not grade or persist answers. Real paid questions and answer keys require protected server publication, not insertion into these public previews.
 
 ## Page source maintenance
 
@@ -245,7 +242,7 @@ Alignment compensates for transparent margins in each source image. Student phot
 
 ## Project files
 
-- `index.html` contains the Hebrew, right-to-left welcome page and its five-row FAQ. `404.html` handles missing paths at the domain root. `course/index.html` contains the ten-topic library; each topic directory contains its own reading page, and the four quiz directories own their practice questions.
+- `index.html` contains the Hebrew, right-to-left welcome page and its five-row FAQ. `404.html` handles missing paths at the domain root. `course/index.html` contains the ten-topic library; each topic directory contains its own reading page and one `quiz/` directory owning its practice questions. The four former quiz URLs contain transition links.
 - `course/css/course.css`, `course/css/lesson.css`, and `course/css/quiz.css` style the course preview. `course/js/course-library.js` enhances library search and topic browsing; `course/js/quiz.js` enhances independently authored question fieldsets.
 - `robots.txt` and `sitemap.xml` expose the canonical welcome page to crawlers; `llms.txt` summarizes the course and links to its homepage sections.
 - `css/base.css` defines design tokens, global defaults, and shared layout widths.
@@ -262,7 +259,7 @@ Alignment compensates for transparent margins in each source image. Student phot
 - `js/road-carousel.js` builds the looping student gallery from the supplied photo list. `js/script.js` supplies the lazily imported generated list in production.
 - `scripts/site-pages.mjs` discovers authored HTML for both learning and media checks, sharing the directory exclusions listed in [Architecture](docs/ARCHITECTURE.md#media-verification).
 - `scripts/road-media-integrity.mjs` audits local image sources, responsive candidates and preloads across those pages, including ordinary SVGs and scaled brand images. Marked road media, car templates and numbered student photos retain their stricter checks.
-- `scripts/learning-content.mjs` interprets and validates learning sections and their practice-quiz relationships for structural and browser tests. It returns plain records and file-specific issues without a runtime content registry.
+- `scripts/learning-content.mjs` interprets and validates learning sections and topic-owned practice-quiz relationships for structural and browser tests. It returns plain records and file-specific issues without a runtime content registry.
 - `scripts/site-links.mjs` audits local `href`, `src`, and HTML fragment targets across authored pages. It resolves directory URLs and an optional deployment prefix without fetching external destinations.
 - `js/road-photo-sources.js` is the generated complete photo list and responsive delivery metadata.
 - `scripts/optimize-road-media.mjs` regenerates that list and WebP delivery copies without changing originals.
@@ -370,13 +367,19 @@ See [LICENSE](LICENSE) for the complete scope.
 
 ## Todo
 
-Roadmap reviewed against the repository, agreed product decisions, account setup guide, and recorded review limits on 2026-09-23. This backlog covers the path from the current public welcome page and course preview to a paid learning service. It records future work, not available capabilities or authorization to implement every item. `PRODUCT.md` still describes the current release. Update it and the relevant architecture and domain documentation when each future capability is approved for implementation.
+Roadmap updated with the owner's 2026-09-25 [paid-release decisions](docs/plans/paid-release-scope.md) and the topic-quiz preview milestone. This backlog covers the path from the current public welcome page and course preview to a paid learning service. It records future work, not available capabilities or authorization to implement every item. `PRODUCT.md` still describes the current release. Update it and the relevant architecture and domain documentation when each future capability is approved for implementation.
 
-Already present: the public welcome page with its five-row FAQ, a noindex 404 page, a searchable ten-topic library, ten reading pages covering the developed PDF topics, four placeholder practice quizzes, responsive Hebrew RTL layouts, baseline navigation and reading without JavaScript, media and local-link audits, search/sharing metadata for the public page, and CI with unit and Chromium coverage plus Firefox and WebKit smoke checks. Extend these rather than rebuilding them. The preview still has 16 video and 12 image/diagram placeholders, no real quiz questions or grading, and no payments or persistent browser progress. Accounts work through the local development gateway once provider credentials are configured. Separate synthetic test lessons support saved reading percentages and the verified local access lifecycle described below.
+Already present: the public welcome page with its five-row FAQ, a noindex 404 page, a searchable ten-topic library, ten reading pages covering the developed PDF topics, ten topic-level placeholder practice quizzes, responsive Hebrew RTL layouts, baseline navigation and reading without JavaScript, media and local-link audits, search/sharing metadata for the public page, and CI with unit and Chromium coverage plus Firefox and WebKit smoke checks. Extend these rather than rebuilding them. The preview still has 16 video and 12 image/diagram placeholders, no real quiz questions or grading, and no payments or persistent browser progress. Accounts work through the local development gateway once provider credentials are configured. Separate synthetic test lessons support saved reading percentages and the verified local access lifecycle described below.
 
 Work through the sections below in dependency order. Content production and public-page work can proceed alongside service planning. A paid launch depends on approved teaching material, working account and billing journeys, server-enforced access, and the launch checks below. Optional additions at the end are not launch requirements.
 
 ### Next development milestone
+
+- [x] Replace the four section quizzes with ten topic-level 20-question previews, preserve former URLs as transition pages, and require every question to be answered before finishing. Placeholder previews still give no grade or saved progress.
+- [ ] Implement protected quiz publication, server grading at 17/20, saved unfinished/submitted attempts and optional topic completion. Use synthetic fixtures until Oren supplies and approves the real questions. See the [release scope and sequence](docs/plans/paid-release-scope.md).
+- [ ] Implement ten-day post-expiry cleanup for reading positions and quiz data while retaining completed topics. Test renewal before and after the deadline, job retries and concurrent renewal. The older local tests below still prove indefinite retention, not this new policy.
+
+### Completed account development milestones
 
 - [x] Connect the local gateway to one account-only free test lesson and one paid test lesson using the existing learner-scoped database functions. The [local test lessons](docs/test-lessons.md) use synthetic content and privileged development entitlements, with no real checkout or paid material in the public repository. Local gateway/browser tests use real PostgreSQL access checks; hosted setup has seed readback only.
 - [x] Connect saved reading positions to those test lessons. The explicit percentage control supports save/reload, stale-revision conflict recovery, and resuming on another signed-in browser. Gateway and desktop/mobile Chromium tests use real PostgreSQL; live hosted integration remains unverified. See [local test lessons](docs/test-lessons.md#save-and-resume-reading-positions).
@@ -392,16 +395,17 @@ Work through the sections below in dependency order. Content production and publ
 
 ### Product and owner decisions
 
-- [ ] Agree on the first paid release's learning topics, media and practice coverage. Separate material required at launch from later additions, and identify an owner for content approval, support and billing operations.
-- [x] Agree on the access model: the welcome page and topic descriptions stay public; all learning content requires a free account. Free content covers general information and definitions. Paid access includes the free content plus Oren's explanations, videos and quizzes. Topics remain accessible in any order within a learner's access.
+- [x] Agree on the first paid release: all ten topics, 16 videos, 12 images/diagrams and ten 20-question quizzes. Oren approves instructional content; the owner records approvals/corrections and handles support, billing/refunds and publication with their agents. See [paid release scope](docs/plans/paid-release-scope.md).
+- [x] Agree on the access model: the welcome page and topic descriptions stay public; all learning content requires a free account. Free content covers only basic information such as definitions of laws. Lessons, explanations, images, diagrams, videos and quizzes require paid or trial access. Topics remain accessible in any order within a learner's access.
 - [ ] Classify each actual lesson, explanation, quiz and asset under the agreed public/free/paid model before protected publication.
 - [ ] Supply the business identity, support contact, social-profile destinations and enrollment destination. Do not invent contact details, testimonials, outcome claims or a physical address.
-- [x] Agree on two plans, free and paid, with an automatically renewing monthly paid subscription in NIS (`ILS`). Cancellation stops renewal and preserves access until the paid period ends. Expiry returns the learner to free access; retain saved progress, including after a month without renewal.
-- [ ] Supply the monthly price and approve its displayed terms. Select a payment provider eligible for the seller's business and recurring ILS billing. Decide whether any trials, discounts, one-time purchases, plan changes or pauses belong in the first release.
-- [ ] Agree on refunds, disputes, failed-payment grace and account-deletion policies. Define detailed quiz-attempt retention, billing/audit retention and backup expiry separately from the agreed preservation of learning progress after subscription expiry.
+- [x] Agree on two plans, free and paid, with an automatically renewing monthly paid subscription in NIS (`ILS`). Cancellation stops renewal and preserves access until the paid period ends. Expiry returns the learner to free access. After ten days without renewal, delete reading positions, unfinished quizzes and submitted attempt history; keep completed topics. The development database has not yet implemented this cleanup.
+- [ ] Supply the monthly price and approve its displayed terms. Select a payment provider eligible for the seller's business and recurring ILS billing. The release uses a standard monthly subscription and a once-per-learner three-day trial with all paid content. Payment details are required; automatic billing begins at trial end unless canceled. Trial cancellation preserves access to its end without a subsequent charge. Other purchase options are deferred.
+- [ ] Agree on refunds, disputes, failed-payment grace and account-deletion policies. Define billing/audit retention and backup expiry separately from the agreed ten-day learning-data cleanup; submitted attempts have no rolling expiration while subscribed.
 - [ ] Define which policy versions require acceptance, when to request it, and what acceptance evidence to retain.
-- [ ] Establish the intended learner age range and have qualified reviewers determine applicable consumer, privacy, accessibility, tax and minor-consent requirements before sales begin. Record approved requirements and policy owners rather than assuming legal rules.
-- [ ] Define launch acceptance criteria, expected usage, service costs and an operating budget for video delivery, authentication, transactional email, payments and storage.
+- [x] Set the audience to anyone learning or improving their driving. Require a purchase declaration that the buyer is 18 or older or has guardian approval.
+- [ ] Obtain qualified review of applicable consumer, privacy, accessibility, tax and minor-consent requirements, including the purchase declaration and acceptance evidence. Business details, support contact, policies and a reviewer have not been supplied.
+- [ ] Turn the owner's launch requirement, a complete website/course with protected content, into measurable release checks. No launch date, usage forecast or operating budget is set. Establish service costs for video delivery, authentication, transactional email, payments and storage.
 
 ### Teaching content, media and practice
 
@@ -409,13 +413,15 @@ Work through the sections below in dependency order. Content production and publ
 - [ ] Obtain source material for definitions, summary/conclusions and uphill/downhill priority, which are currently listed without developed explanations. Decide whether each needs a new page or a section in an existing topic; resolve the unexplained resource label only when its meaning and destination are supplied.
 - [x] Complete the bounded 2026-09-22 review of official resource links and higher-risk driving, licensing, penalty-points and right-of-way claims. Record the evidence and limits in the [official source review](docs/reference/official-source-review-2026-09-22.md).
 - [ ] Assign and run recurring official-source reviews, resolve the documented publication-timing limit, and obtain Oren's approval of the teaching material. Do not copy stale numerical claims from the PDF.
-- [ ] Produce or obtain the 16 planned videos and 12 images/diagrams. Confirm each asset's teaching purpose, rights and permission to show identifiable people or vehicles; preserve supplied originals and record source/approval information.
+- [ ] Receive the 16 planned videos, 12 images/diagrams and revised lesson texts from Oren. The owner reports they are finished, but they have not been supplied to this repository. Confirm each asset's teaching purpose, rights and permission to show identifiable people or vehicles; preserve supplied originals and record source/approval information.
 - [ ] Add Hebrew captions, transcripts, useful alternative text and descriptions of essential visual information. Review text embedded in road diagrams for readability on phones.
 - [ ] Add accessible video playback with keyboard controls, playback speed, captions, loading/error states and retry. Verify mobile playback, slow connections and delivery costs; choose hosting and encoding based on the approved public/paid split.
-- [ ] Replace all 80 placeholder questions across the four existing quizzes with instructor-approved scenarios, choices, answer keys and explanations. Select question media from the scenario and remove placeholder notices/markers only when the content is ready.
-- [ ] Define scoring, answer feedback, skipped-question handling, retries and attempt review before adding grading to the shared quiz interaction. Keep the experience a practice quiz, without certification or driving-test claims.
-- [ ] Add practice quizzes to other learning sections only where approved questions support them. Reading-only sections remain valid; do not create quizzes solely to make every topic look identical.
-- [ ] Extend learning-content verification for approved answer keys and new media/content relationships. Preserve file-specific diagnostics, per-quiz ownership and the distinction between placeholder-layout tests and shared interaction tests.
+- [ ] Replace all 200 placeholder questions across the ten topic quizzes with instructor-approved scenarios, choices, answer keys and explanations. Select question media from the scenario and remove placeholder notices/markers only when the content is ready.
+- [x] Define quiz behavior: answer all 20 questions before submission, show score out of 20 and explanations after submission, allow unlimited retries, and unlock optional topic completion at 17/20. Retain history while subscribed, subject to the ten-day post-expiry cleanup.
+- [ ] Implement those scoring, feedback, history and completion rules in the protected service. The static preview enforces complete answers only and makes no certification or driving-test claims.
+- [x] Add one placeholder quiz to each existing topic and combine the turning quizzes into the right-of-way topic quiz.
+- [ ] Have Oren supply and approve all ten quizzes before launch; placeholder coverage does not count as approved teaching content.
+- [ ] Extend learning-content verification for approved answer keys and new media/content relationships. Preserve file-specific diagnostics, topic-level quiz ownership and the distinction between placeholder-layout tests and shared interaction tests.
 
 ### Public pages and navigation
 
@@ -457,7 +463,7 @@ Proposed page names below describe responsibilities. Choose final paths during i
 - [ ] Select hosting and add durable session storage, production expiry/revocation operations, trusted-proxy limits, and deployed cross-device checks before launch. If the service uses multiple processes, coordinate session changes, refresh locks and rate limits across them. Verify HTTPS/Secure cookies, restarts and failover before replacing the local-only startup restriction.
 - [ ] Expand the implemented conditional profile link and basic account page with supported identity changes, notification preferences, and session management. Static hosting retains the unavailable profile fallback.
 - [ ] Add a learner home or continue-learning page with saved position and optional bookmarks. Keep the course library and all entitled topics independently reachable.
-- [ ] Define what counts as viewed or completed, then persist reading/video position, completion and quiz attempts across devices. Handle failed saves, concurrent updates and deleted/updated learning sections without silently losing progress.
+- [ ] Persist reading positions, unfinished/submitted quiz attempts and completed topics across devices. A submitted score of at least 17/20 permits the learner to mark the topic complete. Handle failed saves, concurrent updates and revised content without silently losing progress. Video-position resume is outside the agreed initial requirement.
 - [ ] Add account-data export and deletion workflows, reauthentication for sensitive changes, and approved handling of billing records and active subscriptions during deletion.
 - [ ] Provide clear states for unverified, signed-out, expired-session, suspended and deleted accounts, with support and recovery routes. Public navigation and topic descriptions must remain usable if JavaScript or the account service fails.
 - [ ] Configure transactional email delivery and sender authentication for verification, recovery, account changes and security notices. Use Hebrew templates, monitor delivery failures and separate optional marketing consent from service messages.

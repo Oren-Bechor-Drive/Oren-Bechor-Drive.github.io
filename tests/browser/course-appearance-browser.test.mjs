@@ -62,7 +62,7 @@ test("course pages use the same canvas as the home page and keep reading surface
 	for (const [path, surface] of [
 		["course/", ".topic-reader"],
 		["course/right-of-way/", ".lesson-section"],
-		["course/priority-hierarchy/quizzes/priority/", ".quiz-question"],
+		["course/priority-hierarchy/quiz/", ".quiz-question"],
 	]) {
 		const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
 		await page.route("**/*", serveRoadMedia);

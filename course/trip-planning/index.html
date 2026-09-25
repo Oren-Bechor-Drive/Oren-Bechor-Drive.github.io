@@ -79,7 +79,7 @@
 				>לכל נושאי הלימוד</a
 			>
 			<div class="lesson-intro">
-				<h1>תכנון נסיעה</h1>
+				<h1 id="topic-title">תכנון נסיעה</h1>
 				<p>
 					מביטים רחוק מספיק כדי לבחור נתיב, מהירות ופתרון לפני שהמכשול או הצומת
 					מחייבים תגובה חדה.
@@ -96,10 +96,11 @@
 						<li><a href="#merge">השתלבות ונתיב פנייה</a></li>
 					</ul>
 				</nav>
-				<article class="lesson-content" aria-label="הסברים על תכנון נסיעה">
+				<article class="lesson-content"
+					id="topic"
+					aria-labelledby="topic-title" aria-label="הסברים על תכנון נסיעה">
 					<section
 						class="lesson-section"
-						data-lesson-format="reading"
 						id="junction"
 						aria-labelledby="junction-title"
 					>
@@ -121,7 +122,6 @@
 					</section>
 					<section
 						class="lesson-section"
-						data-lesson-format="reading"
 						id="obstacle"
 						aria-labelledby="obstacle-title"
 					>
@@ -154,7 +154,6 @@
 					</section>
 					<section
 						class="lesson-section"
-						data-lesson-format="reading"
 						id="merge"
 						aria-labelledby="merge-title"
 					>
@@ -179,6 +178,11 @@
 							<span>סרטון הסבר: תכנון בנתיב השתלבות ונתיב פנייה</span>
 						</div>
 					</section>
+					<div class="lesson-quiz">
+						<p>תרגול בנושא תכנון נסיעה</p>
+						<a class="course-button lesson-quiz-link" href="quiz/">לשאלון התרגול</a>
+						<small>20 שאלות לדוגמה. התוכן יתווסף בהמשך.</small>
+					</div>
 					<footer class="lesson-end">
 						<p>אפשר לחזור לספרייה ולבחור כל נושא אחר.</p>
 						<a class="course-button" href="../#trip-planning"
