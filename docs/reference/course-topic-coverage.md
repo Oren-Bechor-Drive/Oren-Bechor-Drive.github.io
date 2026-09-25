@@ -4,13 +4,13 @@ Reviewed all 26 pages of [the supplied PDF](the-idea.pdf) against the [course li
 
 Page numbers below refer to actual PDF pages. The contents page uses slide numbers that do not match the final document order. "Reading page" means the source contains developed explanatory material and the course now adapts it. "Listed only" means the PDF names a subject without supplying enough teaching material to write a lesson faithfully.
 
-The library has ten searchable outlines, and all ten link to newly created or expanded reading pages. Priority hierarchy is separate from right-of-way and turns. The owner approved one quiz per topic on 2026-09-25. Each of the ten topics now has a 20-question placeholder preview; right-of-way combines the three turn sections. This expands planned quiz coverage, not the supplied teaching evidence. Real questions and explanations still require Oren's delivery and approval.
+The library has ten searchable outlines and reading pages. Priority hierarchy is separate from right-of-way and turns. The owner approved one quiz per topic and later replaced the fixed 20-question placeholder requirement with genuine topic coverage. Public quizzes now contain 140 distinct official-bank questions or explicitly marked adaptations, including all 118 initial candidates and 22 additions. The [publication review](theory-quiz-review-2026-09-25.md) records mappings, corrections and evidence. These questions supplement the PDF; they are not instructor-supplied questions.
 
 | PDF page | Subjects reviewed | Library destination | Coverage status |
 | --- | --- | --- | --- |
 | 1 | Course purpose, practical learning of road rules | Introduction, `learning-foundations`, footer | Product context |
 | 2 | Instructor introduction, theory and practical learning, real driving videos, supplement to driving lessons | Existing instructor credit, `learning-foundations`, footer | Product context. Personal biography and purchase prompt are not learning subjects. |
-| 3 | Contents: definitions, turns and priority, turn hazards, U-turn restrictions, priority hierarchy, signs on traffic lights, road types, roundabouts, planning, lane recognition, official resources, signs, speed, overtaking, intersections, test failures, summary and conclusions | All ten outlines | Definitions and summary/conclusions are listed only; developed destinations are covered below. |
+| 3 | Contents: definitions, turns and priority, turn hazards, U-turn restrictions, priority hierarchy, signs on traffic lights, road types, roundabouts, planning, lane recognition, official resources, signs, speed, overtaking, intersections, test failures, summary and conclusions | All ten outlines | Definitions and summary/conclusions are listed only in the PDF; reading sections were added from official sources and course recap guidance on 2026-09-25. |
 | 4 | Theory versus practice, driving culture, reasoning, learning from real cases, review between lessons and instructor questions | `course/learning-foundations/` | Reading page |
 | 5 | Give way, stop, roundabout, two-way road, no U-turn, speed bumps, no entry, one-way road signs | `course/signs-and-speed/` | Reading page |
 | 6 | Urban, traffic-calming, nonurban and motorway speeds; vehicle classes; sign overrides; reasonable speed; changing conditions; slow driving | `course/signs-and-speed/` | Reading page, with verified private/light-commercial values and corrected vehicle-class handling |
@@ -32,7 +32,7 @@ The library has ten searchable outlines, and all ten link to newly created or ex
 | 22 | Crossing between one-way roads, blocked roads, obstacles, traffic ahead/behind, return right, merging, leaving turn-only lanes | `course/trip-planning/` | Reading page |
 | 23 | Penalty-points examples: sidewalk, seat belts, towing, lights, obstruction, stop signs, roundabout priority, phone use | `course/licensing-and-points/#points` | Reading section. Categories retained; stale allocations omitted. |
 | 24 | Points system, traffic-law resources, new drivers and accompaniment, sign chart, defendants, license services, new-driver offenses | `course/licensing-and-points/` | Reading page |
-| 25 | Optional outline: turn priority and hazards, signalized turns, two turn lanes, uphill/downhill priority, priority hierarchy | `right-of-way`, `priority-hierarchy` outlines | Repeated developed subjects are covered. Uphill/downhill priority remains listed only because no explanation is supplied. |
+| 25 | Optional outline: turn priority and hazards, signalized turns, two turn lanes, uphill/downhill priority, priority hierarchy | `right-of-way`, `priority-hierarchy` outlines | Repeated developed subjects are covered. Uphill/downhill priority is listed only in the PDF; a sourced reading section was added on 2026-09-25. |
 | 26 | Test failures: turn position, stop line, pedestrians, emergency braking and mirror, clearance, parking, reversing, mirrors, junction clearance, wide turns, gear/stalling, lane changes, return right, blocked junction, red lights | `course/driving-test/` | Reading page |
 
 ## Source-faithful safety review
@@ -53,9 +53,9 @@ The [Ministry of Transport points-system guide](https://www.gov.il/he/pages/scor
 
 ## Remaining source limits
 
-- Definitions and summary/conclusions appear only in the contents and remain visibly unavailable rather than being invented.
+- Definitions, summary/conclusions and uphill/downhill priority were supplemented on 2026-09-25 at the owner's request. They are new teaching additions, not material supplied in the PDF. See the [dated source review](israeli-lesson-sources-2026-09-25.md). The licensing section now explains the ordinary private-car new-driver and accompaniment requirements.
 - Page 24 includes an unexplained resource label, `חוק 2`; no title or destination is invented for it.
 - Blank video slots and repeated labels add no identifiable teaching content.
 - Page 24 embeds nine official government resource URLs. The licensing lesson replaces the legacy offense-data application with the Ministry's current offense-code and points dataset, updated on 2026-09-01, and replaces the old renewal guide with the current license-renewal service. On 2026-09-22, automated direct requests to the gov.il and data.gov.il HTML endpoints returned `403`, while the sign-chart PDF returned `200`. Official search results still exposed current content for the replacements and several retained pages. The `403` responses are a verification limitation, not proof that the pages are unavailable to visitors.
-- Videos and real quiz questions have not been supplied to the repository. The owner's latest update on 2026-09-25 is that final course files are not ready and will be supplied later. Every quiz remains explicitly marked as a placeholder; no answer keys or grades are invented.
+- Videos and final instructor-approved paid questions have not been supplied. The owner authorized sourced public theory practice instead of the placeholder quizzes; its scores and explanations are now available. This does not supply the missing lesson videos or assert instructor approval of paid material.
 - Instructor review remains required before these teaching adaptations are treated as final course material.

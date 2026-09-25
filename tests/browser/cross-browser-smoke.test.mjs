@@ -41,10 +41,8 @@ async function finishQuizAfterMissingAnswers(page) {
 	assert.equal(await page.locator("[data-quiz-validation]").innerText(), "");
 	await page.locator("[data-quiz-next]").click();
 	assert.equal(await page.locator("[data-quiz-result]").isVisible(), true);
-	assert.equal(
-		await page.locator("[data-quiz-count]").innerText(),
-		`סימנתם תשובה ב-${count} מתוך ${count} שאלות.`,
-	);
+	assert.match(await page.locator("[data-quiz-count]").innerText(),
+		new RegExp(`עניתם נכון על \\d+ מתוך ${count} שאלות\\. הציון: \\d+%`));
 }
 
 function trackPageErrors(page) {
@@ -191,7 +189,8 @@ async function exerciseFallback(browser, mode) {
 	await page.waitForURL("**/course/priority-hierarchy/quiz/", {
 		waitUntil: "load",
 	});
-	assert.equal(await page.locator(".quiz-question:visible").count(), 20);
+	assert.equal(await page.locator(".quiz-question:visible").count(), await page.locator(".quiz-question").count());
+	assert.ok(await page.locator(".quiz-question").count() > 0);
 	assert.equal(await page.locator("[data-quiz-controls]").isVisible(), false);
 	assert.equal(await page.locator("[data-quiz-fallback]").isVisible(), true);
 	await assertNoHorizontalOverflow(page);

@@ -46,7 +46,7 @@ test("finishing an incomplete quiz returns to the first unanswered question", as
 	await page.locator("[data-quiz-controls]").waitFor({ state: "visible" });
 	const questions = page.locator(".quiz-question");
 	await questions.first().locator("input").first().check();
-	await selectQuestion(page, 19);
+	await selectQuestion(page, (await questions.count()) - 1);
 	await questions.last().locator("input").last().check();
 	await page.locator("[data-quiz-next]").focus();
 	await page.keyboard.press("Enter");
@@ -111,10 +111,15 @@ async function exerciseQuiz(page, count) {
 		else await page.locator("[data-quiz-next]").click();
 	}
 	assert.equal(await page.locator("[data-quiz-result]").isVisible(), true);
-	assert.equal(
-		await page.locator("[data-quiz-count]").innerText(),
-		`סימנתם תשובה ב-${count} מתוך ${count} שאלות.`,
-	);
+	if (await page.locator(".quiz-form[data-quiz-graded]").count()) {
+		const correct = await questions.evaluateAll(items => items.filter(question =>
+			question.querySelector("input:checked").value === question.dataset.correctAnswer).length);
+		assert.equal(await page.locator("[data-quiz-count]").innerText(),
+			`עניתם נכון על ${correct} מתוך ${count} שאלות. הציון: ${Math.round(correct / count * 100)}%.`);
+	} else {
+		assert.equal(await page.locator("[data-quiz-count]").innerText(),
+			`סימנתם תשובה ב-${count} מתוך ${count} שאלות.`);
+	}
 	await page
 		.getByRole("button", { name: "חזרה לשאלות", exact: true })
 		.click();
@@ -265,7 +270,8 @@ for (const [legacyPath, sectionId] of [
 		assert.match(await page.locator('meta[name="robots"]').getAttribute("content"), /noindex/);
 		await page.locator('.lesson-intro a[href="../../quiz/"]').click();
 		assert.equal(new URL(page.url()).pathname, `/course/${legacyPath.split("/")[0]}/quiz/`);
-		assert.equal(await page.locator(".quiz-question").count(), 20);
+		const target = quizzes.find(quiz => quiz.file === `course/${legacyPath.split("/")[0]}/quiz/index.html`);
+		assert.equal(await page.locator(".quiz-question").count(), target.questions.length);
 		await page.goto(`http://gallery.test/course/${legacyPath}/`);
 		await page.locator(".lesson-back").click();
 		assert.equal(new URL(page.url()).hash, `#${sectionId}`);
@@ -296,9 +302,12 @@ for (const count of [1, 5]) {
 		video.textContent = "כאן יופיע סרטון לשאלת התרגול";
 		const form = document.querySelector(".quiz-form");
 		form.removeAttribute("data-quiz-placeholder");
+		form.removeAttribute("data-quiz-graded");
 		form.replaceChildren();
 		for (let index = 0; index < count; index++) {
 			const question = template.cloneNode(true);
+			question.removeAttribute("data-correct-answer");
+			question.querySelector("[data-quiz-feedback]")?.remove();
 			question.id = `scenario-${String.fromCharCode(97 + index)}`;
 			question.querySelector("legend").textContent =
 				`מצב בדרך ${index + 1}`;

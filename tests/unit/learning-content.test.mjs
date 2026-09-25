@@ -24,6 +24,6 @@ test("authored learning content has valid section, quiz and return relationships
 		const quiz = quizzes.find(({ file }) => file === lesson.quizFile);
 		assert.equal(quiz.lessonFile, lesson.file);
 		assert.equal(quiz.topicAnchor, "topic");
-		assert.equal(quiz.questions.length, 20);
+		assert.ok(quiz.questions.length > 0);
 	}
 });

@@ -9,6 +9,8 @@ const jump = document.querySelector("#question-jump");
 const previous = document.querySelector("[data-quiz-previous]");
 const next = document.querySelector("[data-quiz-next]");
 const validation = document.querySelector("[data-quiz-validation]");
+const graded = form.hasAttribute("data-quiz-graded");
+let submitted = false;
 let current = 0;
 
 for (const [index, question] of questions.entries()) {
@@ -132,8 +134,9 @@ function showQuestion(index, focus = true) {
 	jump.value = String(current);
 	selector(current);
 	previous.disabled = current === 0;
-	next.textContent =
-		current === questions.length - 1 ? "סיום השאלון" : "השאלה הבאה";
+	next.textContent = current === questions.length - 1
+		? (submitted ? "לתוצאות השאלון" : "סיום השאלון")
+		: "השאלה הבאה";
 	if (focus) questions[current].querySelector("legend").focus();
 }
 
@@ -147,14 +150,51 @@ function finish() {
 		return;
 	}
 	validation.textContent = "";
-	document.querySelector("[data-quiz-count]").textContent =
-		`סימנתם תשובה ב-${questions.length} מתוך ${questions.length} שאלות.`;
+	if (graded) {
+		let correct = 0;
+		for (const question of questions) {
+			const matches = question.querySelector("input:checked").value ===
+				question.dataset.correctAnswer;
+			if (matches) correct++;
+			question.dataset.result = matches ? "correct" : "incorrect";
+			const feedback = question.querySelector("[data-quiz-feedback]");
+			feedback.hidden = false;
+			feedback.open = true;
+			feedback.querySelector("summary").textContent =
+				matches ? "תשובה נכונה" : "תשובה שגויה";
+			for (const input of question.querySelectorAll("input"))
+				input.disabled = true;
+		}
+		submitted = true;
+		document.querySelector("[data-quiz-count]").textContent =
+			`עניתם נכון על ${correct} מתוך ${questions.length} שאלות. הציון: ${Math.round(correct / questions.length * 100)}%.`;
+	} else {
+		document.querySelector("[data-quiz-count]").textContent =
+			`סימנתם תשובה ב-${questions.length} מתוך ${questions.length} שאלות.`;
+	}
 	session.hidden = true;
 	result.hidden = false;
 	document.querySelector("#quiz-result-title").focus();
 }
 
-// Radio inputs keep selections while questions are hidden. No placeholder has a score.
+function resetAttempt() {
+	form.reset();
+	submitted = false;
+	validation.textContent = "";
+	document.querySelector("[data-quiz-count]").textContent = "";
+	for (const question of questions) {
+		delete question.dataset.result;
+		const feedback = question.querySelector("[data-quiz-feedback]");
+		feedback.hidden = true;
+		feedback.open = false;
+		feedback.querySelector("summary").textContent = "בדיקת התשובה";
+		for (const input of question.querySelectorAll("input"))
+			input.disabled = false;
+	}
+	showQuestion(0);
+}
+
+// Public theory answers are authored in HTML; protected-course grading is separate.
 form.addEventListener("submit", (event) => {
 	event.preventDefault();
 	finish();
@@ -170,6 +210,11 @@ next.addEventListener("click", () =>
 document
 	.querySelector("[data-quiz-review]")
 	.addEventListener("click", () => showQuestion(current));
+if (graded) {
+	document.querySelector("[data-quiz-retry]").addEventListener("click", resetAttempt);
+	for (const question of questions)
+		question.querySelector("[data-quiz-feedback]").hidden = true;
+}
 document.querySelector("[data-quiz-fallback]").hidden = true;
 document.querySelector("[data-quiz-toolbar]").hidden = false;
 document.querySelector("[data-quiz-controls]").hidden = false;

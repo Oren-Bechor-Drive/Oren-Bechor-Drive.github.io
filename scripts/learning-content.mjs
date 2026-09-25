@@ -107,6 +107,7 @@ export async function readLearningContent(rootDir) {
 		}
 		const form = document.querySelector(".quiz-form");
 		if (!form) report(file, "missing quiz form");
+		const graded = form?.hasAttribute("data-quiz-graded") ?? false;
 		const questions = [];
 		const groups = new Set();
 		for (const question of document.querySelectorAll(".quiz-question")) {
@@ -164,9 +165,28 @@ export async function readLearningContent(rootDir) {
 				)
 			)
 				report(questionLocation, "every choice needs a text label");
+			const correctAnswer = question.getAttribute("data-correct-answer");
+			const feedback = question.querySelector("details[data-quiz-feedback]");
+			const explanation = feedback?.querySelector("[data-quiz-explanation]")?.textContent.trim() ?? "";
+			if (graded) {
+				if (!options.some(option => option.value === correctAnswer))
+					report(questionLocation, "correct answer must identify an authored choice");
+				if (!feedback?.querySelector("summary")?.textContent.trim())
+					report(questionLocation, "graded question needs native self-check feedback");
+				if (!explanation)
+					report(questionLocation, "graded question needs an answer explanation");
+			}
 			questions.push({
 				id: question.id,
 				title: legend?.textContent.trim() ?? "",
+				prompt: promptIds.map(id => document.getElementById(id)?.textContent ?? "").join(" ").replace(/\s+/g, " ").trim(),
+				officialId: question.getAttribute("data-source-question"),
+				correctAnswer,
+				explanation,
+				choices: options.map(option => ({
+					value: option.value,
+					text: [...option.labels].map(label => label.textContent).join(" ").replace(/\s+/g, " ").trim(),
+				})),
 				optionCount: options.length,
 				videoCount: question.querySelectorAll(
 					'.video-placeholder[role="img"][aria-label]',
@@ -180,6 +200,7 @@ export async function readLearningContent(rootDir) {
 			lessonFile,
 			topicAnchor,
 			placeholder: form?.hasAttribute("data-quiz-placeholder") ?? false,
+			graded,
 			questions,
 		});
 	}
