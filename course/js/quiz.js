@@ -147,11 +147,8 @@ function finish() {
 		return;
 	}
 	validation.textContent = "";
-	const answered = questions.filter((question) =>
-		question.querySelector("input:checked"),
-	).length;
 	document.querySelector("[data-quiz-count]").textContent =
-		`סימנתם תשובה ב-${answered} מתוך ${questions.length} שאלות.`;
+		`סימנתם תשובה ב-${questions.length} מתוך ${questions.length} שאלות.`;
 	session.hidden = true;
 	result.hidden = false;
 	document.querySelector("#quiz-result-title").focus();

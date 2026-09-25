@@ -49,9 +49,18 @@ for (const width of [1440, 390]) {
 		assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
 		assert.equal(await page.evaluate(() => localStorage.length + sessionStorage.length), 0);
 		await app.expire(email);
-		await page.reload();
-		await page.locator("[data-learning-status]").filter({ hasText: "מנוי פעיל" }).waitFor();
+		await page.evaluate(() => {
+			Object.defineProperty(document, "hidden", { configurable: true, value: true });
+			document.dispatchEvent(new Event("visibilitychange"));
+		});
 		assert.equal(await page.locator("[data-questions]").textContent(), "");
+		assert.equal(await page.locator("#quiz-heading").textContent(), "");
+		assert.equal(await page.locator("[data-score]").textContent(), "");
+		await page.evaluate(() => {
+			Object.defineProperty(document, "hidden", { configurable: true, value: false });
+			document.dispatchEvent(new Event("visibilitychange"));
+		});
+		await page.locator("[data-learning-status]").filter({ hasText: "מנוי פעיל" }).waitFor();
 		assert.match(await page.locator("[data-topics]").textContent(), /הושלם/);
 	});
 }

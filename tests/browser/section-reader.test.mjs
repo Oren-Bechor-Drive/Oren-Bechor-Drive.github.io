@@ -42,6 +42,18 @@ for (const width of [1440, 390]) {
 		assert.notEqual(await page.locator(":focus").evaluate(node => getComputedStyle(node).outlineStyle), "none");
 		assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
 		await page.screenshot({ path: `/tmp/oren-reader-${width}.png` });
+		await page.evaluate(() => {
+			Object.defineProperty(document, "hidden", { configurable: true, value: true });
+			document.dispatchEvent(new Event("visibilitychange"));
+		});
+		assert.equal(await page.locator("#reader-heading").textContent(), "קריאת שיעור");
+		assert.equal(await page.locator("[data-reading-body]").textContent(), "");
+		await page.evaluate(() => {
+			Object.defineProperty(document, "hidden", { configurable: true, value: false });
+			document.dispatchEvent(new Event("visibilitychange"));
+		});
+		await page.locator("[data-reading]").waitFor();
+		assert.equal(await page.locator("#reader-heading").textContent(), "הגדרה לבדיקה");
 	});
 }
 

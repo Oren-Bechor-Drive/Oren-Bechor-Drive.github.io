@@ -3,6 +3,8 @@ import { createProtectedPage } from "./protected-page.js";
 
 const element = selector => document.querySelector(selector);
 const status = element("[data-reader-status]");
+const heading = element("#reader-heading");
+const defaultHeading = heading.textContent;
 const body = element("[data-reading-body]");
 const media = element("[data-reading-media]");
 const positionStatus = element("[data-position-status]");
@@ -17,6 +19,7 @@ function clear() {
 	clearTimeout(timer);
 	reading = pending = undefined;
 	conflict = restoring = false;
+	heading.textContent = defaultHeading;
 	body.textContent = "";
 	media.querySelectorAll("video").forEach(video => { video.pause(); video.removeAttribute("src"); video.load(); });
 	media.replaceChildren();
@@ -46,7 +49,7 @@ async function load() {
 		if (!descriptor) throw Object.assign(new Error(), { status: 404 });
 		const data = await request(endpoint);
 		reading = data;
-		element("#reader-heading").textContent = descriptor.title;
+		heading.textContent = descriptor.title;
 		body.textContent = data.lesson.body;
 		for (const item of data.media) {
 			const figure = document.createElement("figure");

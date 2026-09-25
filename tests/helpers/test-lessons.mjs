@@ -48,14 +48,14 @@ export async function startLessonGateway({ quiz = false, longLesson = false, ...
 			return { id, email, email_confirmed_at: "2026-01-01", is_anonymous: false };
 		},
 	});
-	async function asLearner(token, query, values = [], save = true) {
+	async function asLearner(token, query, values = []) {
 		const user = await provider.identity(token);
 		return connected(async client => {
 			await client.query("begin");
 			try {
 				await actAs(client, user.id, sessions.get(token));
 				const rows = (await client.query(query, values)).rows;
-				await client.query(save ? "commit" : "rollback");
+				await client.query("commit");
 				return rows;
 			} catch (error) { await client.query("rollback"); throw error; }
 		});
@@ -66,7 +66,7 @@ export async function startLessonGateway({ quiz = false, longLesson = false, ...
 	provider.readPosition = async (token, id, level) => (await asLearner(token,
 		"select content_version_id,position,revision from public.read_my_position($1,$2)", [id, level]))[0] ?? null;
 	provider.savePosition = async (token, id, level, input) => (await asLearner(token,
-		"select * from public.save_my_position($1,$2,$3,$4,$5)", [id, level, input.contentVersionId, input.position, input.expectedRevision], true))[0];
+		"select * from public.save_my_position($1,$2,$3,$4,$5)", [id, level, input.contentVersionId, input.position, input.expectedRevision]))[0];
 	const rpc = async (token, name, values = []) => (await asLearner(token, `select public.${name}(${values.map((_, index) => `$${index + 1}`).join(",")}) as result`, values))[0].result;
 	provider.myLearning = token => rpc(token, "my_learning");
 	provider.readSections = token => rpc(token, "read_my_sections");

@@ -221,7 +221,7 @@ export function createLearnerAccounts({ origin, provider = null, googleEnabled =
 		});
 	}
 	const positionData = row => row ? { contentVersionId: row.content_version_id, position: row.position, revision: Number(row.revision) } : null;
-	function readContent(token, { sectionId, accessLevel }) {
+	function readSection(token, sectionId, accessLevel) {
 		return withLearnerSession(token, async (accessToken, csrf) => {
 			const position = positionData(await provider.readPosition(accessToken, sectionId, accessLevel));
 			const row = await provider.readSection(accessToken, sectionId, accessLevel);
@@ -230,7 +230,7 @@ export function createLearnerAccounts({ origin, provider = null, googleEnabled =
 				revision: row.revision, body: row.body_text }, position, csrf } };
 		});
 	}
-	function saveContentPosition(token, { sectionId, accessLevel }, input) {
+	function saveSectionPosition(token, sectionId, accessLevel, input) {
 		return withLearnerSession(token, async accessToken => {
 			try {
 				return { data: { position: positionData(await provider.savePosition(accessToken, sectionId, accessLevel, input)) } };
@@ -263,8 +263,8 @@ export function createLearnerAccounts({ origin, provider = null, googleEnabled =
 				}
 			});
 		},
-		readSection: (token, sectionId, accessLevel) => readContent(token, { sectionId, accessLevel }),
-		saveSectionPosition: (token, sectionId, accessLevel, input) => saveContentPosition(token, { sectionId, accessLevel }, input),
+		readSection,
+		saveSectionPosition,
 		acceptsRequest(token, csrf) { return matches(sessions.get(token)?.csrf, csrf); },
 		completeCallback,
 		perform,

@@ -58,6 +58,8 @@ function clearPrivate({ preserveDraft = false } = {}) {
 	questions.replaceChildren();
 	historyList.replaceChildren();
 	element("[data-explanations]").replaceChildren();
+	element("#quiz-heading").textContent = "";
+	element("[data-score]").textContent = "";
 	for (const selector of ["[data-attempt]", "[data-results]", "[data-history]"]) element(selector).hidden = true;
 	saveStatus.textContent = "";
 	controls(false);

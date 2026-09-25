@@ -34,7 +34,7 @@ async function input(req, route) {
 			: body.password.length >= (route === "login" ? 1 : 12) && body.password.length <= 128;
 		if (!valid) fail(400, "invalid_password");
 	}
-	if (route === "position" && (typeof body.contentVersionId !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(body.contentVersionId)
+	if (route === "position" && (typeof body.contentVersionId !== "string" || !uuid.test(body.contentVersionId)
 		|| !Number.isInteger(body.position) || body.position < 0 || body.position > 10000
 		|| !Number.isSafeInteger(body.expectedRevision) || body.expectedRevision < 0)) fail(400, "invalid_input");
 	if (["quizSave", "quizSubmit"].includes(route) && (!Number.isSafeInteger(body.expectedRevision) || body.expectedRevision < 0)) fail(400, "invalid_input");
