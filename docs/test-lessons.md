@@ -74,9 +74,9 @@ To exercise a conflict, open the same lesson in two signed-in browsers before sa
 
 For hands-on checks with disposable local accounts, follow [Manually test lesson access](manual-test-lessons.md). It includes browser steps, direct requests and Node console controls for expiry and renewal.
 
-The local API and browser journeys cover a finite paid test period, its expiry, and renewal with saved progress intact. Simulated cancellation means leaving the current entitlement's end unchanged and issuing no renewal. There is no subscription record, cancellation endpoint or payment scheduler in this slice.
+The local API and browser journeys cover a finite paid test period, its expiry, and renewal with progress retained only within the ten-day window. Simulated cancellation means leaving the current entitlement's end unchanged and issuing no renewal. There is no subscription record, cancellation endpoint or payment scheduler in this slice.
 
-`tests/helpers/test-lessons.mjs` provides a trusted `expire(email, elapsedDays = 0)` operation only inside its disposable database. It moves that learner's development entitlement end to database statement time, or backdates it by the supplied whole days. It also moves the start earlier when necessary to preserve a valid period. It does not revoke access, change the application clock, delete progress or update hosted data. This avoids timed sleeps and keeps PostgreSQL's real time-based access checks in the journey.
+`tests/helpers/test-lessons.mjs` provides a trusted `expire(email, elapsedDays = 0)` operation only inside its disposable database. It moves that learner's development entitlement end to database statement time, or backdates it by the supplied whole days. It also moves the start earlier when necessary to preserve a valid period. For a backdated lapse it also moves that learner's pre-expiry progress/attempt timestamps, allowing the real retention trigger to delete due rows. It does not revoke access, change the application clock or update hosted data. This avoids timed sleeps and keeps PostgreSQL's real time-based access checks in the journey.
 
 The tests verify:
 
@@ -85,7 +85,7 @@ The tests verify:
 - Expiry denies paid reads and saves, including an identical save retry, while free reading and saving remain available.
 - Expiry during an open browser lesson rejects the next save and clears the rendered text and controls. Reloading also denies the lesson.
 - A 31-day lapse clears pre-expiry positions before renewal. The fixture backdates both the entitlement and its saved data to model elapsed time; it does not simulate a month of background operations.
-- Renewal restores the paid text and saved percentage. Two independently signed-in learners save separate positions for the same content, and neither learner's updates overwrite the other's. API requests with a claimed learner selector are rejected.
+- Renewal restores paid text. Within ten days it preserves the saved percentage; after the deadline it starts at zero. Two independently signed-in learners save separate positions for the same content, and neither learner's updates overwrite the other's. API requests with a claimed learner selector are rejected.
 
 ## Verification and limits
 

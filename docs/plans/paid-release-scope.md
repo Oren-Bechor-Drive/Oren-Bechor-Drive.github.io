@@ -45,10 +45,10 @@ The shared quiz interaction refuses to finish while questions are unanswered, an
 
 Keep static HTML usable with JavaScript disabled or the entry module blocked. All new copy is Hebrew with ASCII punctuation, with the existing RTL layout and DESIGN.md styling. Verify desktop/mobile layout, pointer and keyboard behavior, media and local links, and the complete test suite.
 
-## Subsequent implementation milestones
+## Implementation status and remaining milestones
 
-1. Add protected, versioned quiz publication and server-side grading, resumable attempts and durable topic completion, using synthetic private fixtures until Oren's questions arrive. Enforce learner isolation, all-answer validation and the 17/20 threshold on the server.
-2. Add the ten-day expiration cleanup with renewal concurrency and completion preservation, alongside real-course reading progress. Verify pre-deadline renewal, late renewal and repeated cleanup.
+1. Complete locally: protected versioned quiz publication, server grading, resumable attempts and durable manual completion. Native database and browser tests use synthetic questions and enforce the 17/20 threshold.
+2. Complete locally: ten-day retention with renewal concurrency, completion preservation, titled reader and authenticated private-media delivery. Hosted migration and scheduled cleanup installation remain outstanding.
 3. Deploy durable account sessions, protected lessons and private media delivery on approved infrastructure. Import only approved material, including captions and accessible descriptions.
-4. Integrate the selected payment provider, once-only trials, checkout, cancellation, billing events and approved purchase declarations/policies. Confirm price and policy inputs before live billing.
+4. Integrate the selected payment provider, once-only trials, checkout, cancellation, billing events and approved purchase declarations/policies. The approved price is ILS150/month; policy inputs and provider selection remain outstanding. Billing is paused by the owner.
 5. Complete the full learner journey, accessibility/security/operational checks and controlled real-payment verification before enabling enrollment.
