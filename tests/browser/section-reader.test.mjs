@@ -45,6 +45,38 @@ for (const width of [1440, 390]) {
 	});
 }
 
+test("reader saves a scroll made before its restore frame runs", async t => {
+	const app = await startLessonGateway({ longLesson: true });
+	t.after(app.close);
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	const page = await browser.newPage({ viewport: { width: 1440, height: 844 } });
+	await page.addInitScript(() => {
+		if (location.pathname !== "/account/reader.html") return;
+		const frame = window.requestAnimationFrame;
+		window.requestAnimationFrame = callback => setTimeout(() => frame(callback), 5000);
+	});
+	await page.goto(app.origin + "/account/login.html");
+	await page.getByLabel("כתובת אימייל").fill("reader-early-scroll@example.test");
+	await page.getByLabel("סיסמה", { exact: true }).fill("correct-password");
+	await page.getByRole("button", { name: "כניסה לחשבון", exact: true }).click();
+	await page.waitForURL(app.origin + "/account/");
+	await page.goto(app.origin + "/account/learning.html");
+	await page.getByRole("link", { name: "הגדרה לבדיקה - הגדרה", exact: true }).click();
+	await page.locator("[data-reading]").waitFor();
+	const pending = page.waitForResponse(response => response.url().endsWith("/position") && response.request().method() === "POST", { timeout: 3500 });
+	const moved = await page.evaluate(() => {
+		const body = document.querySelector("[data-reading-body]");
+		const before = scrollY;
+		scrollTo({ top: scrollY + body.getBoundingClientRect().top + 0.45 * (body.offsetHeight - innerHeight) - 20, behavior: "instant" });
+		return scrollY - before;
+	});
+	assert.ok(moved > 1000);
+	const response = await pending;
+	assert.equal(response.status(), 200);
+	assert.ok(Math.abs((await response.json()).position.position - 4500) < 100);
+});
+
 test("reader shows load failures outside the hidden article and retries both catalog and body", async t => {
 	const app = await startLessonGateway();
 	t.after(app.close);

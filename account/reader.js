@@ -11,7 +11,7 @@ const params = new URL(location.href).searchParams;
 const section = params.get("section"), access = params.get("access");
 const valid = /^[0-9a-f-]{36}$/i.test(section ?? "") && ["free", "paid"].includes(access);
 const endpoint = `/api/sections/${encodeURIComponent(section)}/${access}`;
-let reading, pending, timer, restoring = false, conflict = false;
+let reading, pending, timer, restoring = false, restoredScrollY = 0, conflict = false;
 const lifetime = createProtectedPage({ clear, restore: load });
 function clear() {
 	clearTimeout(timer);
@@ -67,6 +67,7 @@ async function load() {
 		restoring = true;
 		const fraction = sameVersion ? (data.position?.position ?? 0) / 10000 : 0;
 		window.scrollTo({ top: window.scrollY + body.getBoundingClientRect().top + fraction * Math.max(0, body.offsetHeight - innerHeight) - 20, behavior: "instant" });
+		restoredScrollY = window.scrollY;
 		requestAnimationFrame(() => commit(() => { restoring = false; }));
 	}, { error: error => failure(error, true) });
 }
@@ -93,7 +94,11 @@ async function save() {
 }
 
 window.addEventListener("scroll", () => {
-	if (!reading || restoring || conflict) return;
+	if (!reading || conflict) return;
+	if (restoring) {
+		restoring = false;
+		if (Math.abs(window.scrollY - restoredScrollY) < 1) return;
+	}
 	clearTimeout(timer);
 	timer = setTimeout(save, 600);
 }, { passive: true });
