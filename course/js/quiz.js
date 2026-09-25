@@ -8,6 +8,7 @@ const position = document.querySelector("[data-quiz-position]");
 const jump = document.querySelector("#question-jump");
 const previous = document.querySelector("[data-quiz-previous]");
 const next = document.querySelector("[data-quiz-next]");
+const validation = document.querySelector("[data-quiz-validation]");
 let current = 0;
 
 for (const [index, question] of questions.entries()) {
@@ -137,6 +138,15 @@ function showQuestion(index, focus = true) {
 }
 
 function finish() {
+	const firstUnanswered = questions.findIndex(
+		(question) => !question.querySelector("input:checked"),
+	);
+	if (firstUnanswered !== -1) {
+		showQuestion(firstUnanswered);
+		validation.textContent = "יש לענות על כל השאלות לפני סיום השאלון.";
+		return;
+	}
+	validation.textContent = "";
 	const answered = questions.filter((question) =>
 		question.querySelector("input:checked"),
 	).length;
@@ -148,7 +158,14 @@ function finish() {
 }
 
 // Radio inputs keep selections while questions are hidden. No placeholder has a score.
-form.addEventListener("submit", (event) => event.preventDefault());
+form.addEventListener("submit", (event) => {
+	event.preventDefault();
+	finish();
+});
+form.addEventListener("change", () => {
+	if (questions.every((question) => question.querySelector("input:checked")))
+		validation.textContent = "";
+});
 previous.addEventListener("click", () => showQuestion(current - 1));
 next.addEventListener("click", () =>
 	current < questions.length - 1 ? showQuestion(current + 1) : finish(),

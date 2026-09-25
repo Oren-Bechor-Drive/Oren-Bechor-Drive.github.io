@@ -236,6 +236,10 @@
 .quiz-answers input:focus-visible {
 	outline: none;
 }
+.quiz-validation:not(:empty) {
+	margin: 0 0 16px;
+	color: #b84646;
+}
 .quiz-controls {
 	display: flex;
 	justify-content: space-between;

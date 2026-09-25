@@ -37,6 +37,41 @@ async function selectQuestion(page, index) {
 	await page.getByRole("option").nth(index).click();
 }
 
+test("finishing an incomplete quiz returns to the first unanswered question", async (t) => {
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	const page = await browser.newPage();
+	await page.route("**/*", serveRoadMedia);
+	await page.goto("http://gallery.test/course/priority-hierarchy/quiz/");
+	await page.locator("[data-quiz-controls]").waitFor({ state: "visible" });
+	const questions = page.locator(".quiz-question");
+	await questions.first().locator("input").first().check();
+	await selectQuestion(page, 19);
+	await questions.last().locator("input").last().check();
+	await page.locator("[data-quiz-next]").focus();
+	await page.keyboard.press("Enter");
+	assert.equal(await page.locator("[data-quiz-result]").isVisible(), false);
+	assert.equal(await questions.nth(1).isVisible(), true);
+	assert.equal(
+		await questions.nth(1).locator("legend").evaluate((legend) => legend === document.activeElement),
+		true,
+	);
+	assert.equal(
+		await page.locator("[data-quiz-validation]").innerText(),
+		"יש לענות על כל השאלות לפני סיום השאלון.",
+	);
+	await page.keyboard.press("Tab");
+	assert.equal(
+		await questions.nth(1).locator("input").first().evaluate((input) => input.matches(":focus-visible")),
+		true,
+	);
+	await questions.nth(1).locator("label").first().click();
+	assert.equal(
+		await questions.nth(1).locator("label").first().evaluate((label) => getComputedStyle(label).outlineStyle),
+		"none",
+	);
+});
+
 async function exerciseQuiz(page, count) {
 	const questions = page.locator(".quiz-question");
 	await page.locator("[data-quiz-controls]").waitFor({ state: "visible" });
@@ -56,10 +91,29 @@ async function exerciseQuiz(page, count) {
 		await questions.last().locator("input").last().check();
 	}
 	await page.locator("[data-quiz-next]").click();
+	if (count > 2) {
+		assert.equal(await page.locator("[data-quiz-result]").isVisible(), false);
+		assert.equal(await questions.nth(1).isVisible(), true);
+		await page.locator(".quiz-form").evaluate((form) => form.requestSubmit());
+		assert.equal(await page.locator("[data-quiz-result]").isVisible(), false);
+		assert.equal(
+			await questions.nth(1).locator("legend").evaluate((legend) => legend === document.activeElement),
+			true,
+		);
+		for (let index = 1; index < last; index++) {
+			await questions.nth(index).locator("input").first().check();
+			if (index < last - 1) await page.locator("[data-quiz-next]").click();
+		}
+		assert.equal(await page.locator("[data-quiz-validation]").innerText(), "");
+		await selectQuestion(page, last);
+		if (count === 5)
+			await page.locator(".quiz-form").evaluate((form) => form.requestSubmit());
+		else await page.locator("[data-quiz-next]").click();
+	}
 	assert.equal(await page.locator("[data-quiz-result]").isVisible(), true);
 	assert.equal(
 		await page.locator("[data-quiz-count]").innerText(),
-		`סימנתם תשובה ב-${Math.min(count, 2)} מתוך ${count} שאלות.`,
+		`סימנתם תשובה ב-${count} מתוך ${count} שאלות.`,
 	);
 	await page
 		.getByRole("button", { name: "חזרה לשאלות", exact: true })

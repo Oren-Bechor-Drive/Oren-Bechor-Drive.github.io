@@ -24,6 +24,29 @@ async function assertNoHorizontalOverflow(page) {
 	);
 }
 
+async function finishQuizAfterMissingAnswers(page) {
+	const questions = page.locator(".quiz-question");
+	const count = await questions.count();
+	await page.locator("[data-quiz-next]").click();
+	assert.equal(await page.locator("[data-quiz-result]").isVisible(), false);
+	assert.equal(await questions.nth(1).isVisible(), true);
+	assert.equal(
+		await page.locator("[data-quiz-validation]").innerText(),
+		"יש לענות על כל השאלות לפני סיום השאלון.",
+	);
+	for (let index = 1; index < count - 1; index++) {
+		await questions.nth(index).locator("input").first().check();
+		await page.locator("[data-quiz-next]").click();
+	}
+	assert.equal(await page.locator("[data-quiz-validation]").innerText(), "");
+	await page.locator("[data-quiz-next]").click();
+	assert.equal(await page.locator("[data-quiz-result]").isVisible(), true);
+	assert.equal(
+		await page.locator("[data-quiz-count]").innerText(),
+		`סימנתם תשובה ב-${count} מתוך ${count} שאלות.`,
+	);
+}
+
 function trackPageErrors(page) {
 	const errors = [];
 	page.on("pageerror", (error) => errors.push(error.message));
@@ -75,12 +98,7 @@ async function exerciseDesktopJourney(browser) {
 	await page.keyboard.press("End");
 	await page.keyboard.press("Enter");
 	await page.locator(".quiz-question:visible input").last().check();
-	await page.locator("[data-quiz-next]").click();
-	assert.equal(await page.locator("[data-quiz-result]").isVisible(), true);
-	assert.equal(
-		await page.locator("[data-quiz-count]").innerText(),
-		"סימנתם תשובה ב-2 מתוך 20 שאלות.",
-	);
+	await finishQuizAfterMissingAnswers(page);
 	await assertNoHorizontalOverflow(page);
 	assertNoPageErrors();
 	await page.close();
@@ -125,12 +143,7 @@ async function exerciseMobileJourney(browser) {
 	await page.keyboard.press("End");
 	await page.keyboard.press("Enter");
 	await page.locator(".quiz-question:visible input").last().check();
-	await page.locator("[data-quiz-next]").click();
-	assert.equal(await page.locator("[data-quiz-result]").isVisible(), true);
-	assert.equal(
-		await page.locator("[data-quiz-count]").innerText(),
-		"סימנתם תשובה ב-2 מתוך 20 שאלות.",
-	);
+	await finishQuizAfterMissingAnswers(page);
 	await assertNoHorizontalOverflow(page);
 	assertNoPageErrors();
 	await page.close();
