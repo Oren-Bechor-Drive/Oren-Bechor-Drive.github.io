@@ -35,14 +35,17 @@ async function request(path, payload) {
 	if (!response.ok) throw Object.assign(new Error(data.error), { status: response.status });
 	return data;
 }
-function failure(error) {
+function failure(error, loading = false) {
+	const feedback = loading ? status : positionStatus;
 	if ([401, 404].includes(error.status)) {
 		clear();
 		status.textContent = error.status === 401 ? "היכנסו לחשבון כדי לקרוא את השיעור." : "השיעור אינו זמין לחשבון. לשיעורים המלאים נדרש מנוי פעיל.";
 	} else if (error.status === 409) {
 		conflict = true;
-		positionStatus.textContent = "המיקום עודכן בחלון אחר. טענו את השיעור מחדש כדי להמשיך מהמיקום השמור.";
-	} else positionStatus.textContent = "לא הצלחנו לשמור או לטעון. בדקו את החיבור ונסו שוב.";
+		feedback.textContent = "המיקום עודכן בחלון אחר. טענו את השיעור מחדש כדי להמשיך מהמיקום השמור.";
+	} else feedback.textContent = error.status === 429
+		? "בוצעו בקשות רבות. המתינו דקה ונסו שוב."
+		: "לא הצלחנו לשמור או לטעון. בדקו את החיבור ונסו שוב.";
 }
 async function load() {
 	clear();
@@ -77,7 +80,7 @@ async function load() {
 		const fraction = sameVersion ? (data.position?.position ?? 0) / 10000 : 0;
 		window.scrollTo({ top: window.scrollY + body.getBoundingClientRect().top + fraction * Math.max(0, body.offsetHeight - innerHeight) - 20, behavior: "instant" });
 		requestAnimationFrame(() => { restoring = false; });
-	} catch (error) { if (owner === lifetime) failure(error); }
+	} catch (error) { if (owner === lifetime) failure(error, true); }
 }
 function currentPosition() {
 	const distance = 20 - body.getBoundingClientRect().top;

@@ -44,3 +44,27 @@ for (const width of [1440, 390]) {
 		await page.screenshot({ path: `/tmp/oren-reader-${width}.png` });
 	});
 }
+
+test("reader shows load failures outside the hidden article and retries both catalog and body", async t => {
+	const app = await startLessonGateway();
+	t.after(app.close);
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	const page = await browser.newPage();
+	page.setDefaultTimeout(5000);
+	await page.goto(app.origin + "/account/login.html");
+	await page.getByLabel("כתובת אימייל").fill("reader-errors@example.test");
+	await page.getByLabel("סיסמה", { exact: true }).fill("correct-password");
+	await page.getByRole("button", { name: "כניסה לחשבון", exact: true }).click();
+	await page.waitForURL(app.origin + "/account/");
+	const id = "a524e32d-2640-4d94-a51c-000000000001";
+	for (const path of ["/api/sections", `/api/sections/${id}/free`]) {
+		await page.route(app.origin + path, route => route.fulfill({ status: 503, contentType: "application/json", body: '{"error":"unavailable"}' }));
+		await page.goto(`${app.origin}/account/reader.html?section=${id}&access=free`);
+		await page.locator("[data-reader-status]").filter({ hasText: "לא הצלחנו" }).waitFor();
+		assert.equal(await page.locator("[data-reading]").isVisible(), false);
+		await page.unroute(app.origin + path);
+		await page.getByRole("button", { name: "טעינת השיעור מחדש", exact: true }).click();
+		await page.locator("[data-reading]").waitFor();
+	}
+});
