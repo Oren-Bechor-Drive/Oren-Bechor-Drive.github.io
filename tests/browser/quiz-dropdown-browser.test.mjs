@@ -18,7 +18,7 @@ test("question dropdown supports keyboard exploration, cancellation and selectio
 	await page.keyboard.press("End");
 	assert.equal(
 		await trigger.getAttribute("aria-activedescendant"),
-		"question-option-19",
+		`question-option-${(await page.locator(".quiz-question").count()) - 1}`,
 	);
 	assert.equal(
 		await page.locator(".quiz-question").first().isVisible(),
@@ -41,13 +41,13 @@ test("question dropdown supports keyboard exploration, cancellation and selectio
 	await page.keyboard.press("ArrowUp");
 	await page.keyboard.press("Enter");
 	assert.equal(
-		await page.locator(".quiz-question").nth(18).isVisible(),
+		await page.locator(".quiz-question").nth((await page.locator(".quiz-question").count()) - 2).isVisible(),
 		true,
 	);
 	assert.equal(
 		await page
 			.locator(".quiz-question")
-			.nth(18)
+			.nth((await page.locator(".quiz-question").count()) - 2)
 			.locator("legend")
 			.evaluate((element) => element === document.activeElement),
 		true,

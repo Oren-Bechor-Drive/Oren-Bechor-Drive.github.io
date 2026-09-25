@@ -1,5 +1,6 @@
 import "./focus.js";
 import { createProtectedPage } from "./protected-page.js";
+import { createQuizAttemptEditor } from "./quiz-attempt-editor.js";
 
 const element = selector => document.querySelector(selector);
 const status = element("[data-learning-status]");
@@ -8,8 +9,9 @@ const topics = element("[data-topics]");
 const form = element("[data-quiz-form]");
 const questions = element("[data-questions]");
 const historyList = element("[data-history-list]");
-let csrf, attempt, selectedTopic, nextCursor, heldDraft, draftBaseRevision;
-let dirty = false, conflict = false, busy = false;
+const editor = createQuizAttemptEditor();
+let csrf, selectedTopic, nextCursor;
+let busy = false;
 const lifetime = createProtectedPage({
 	clear: ({ preserveState }) => clearPrivate({ preserveDraft: preserveState }),
 	restore: () => void run(loadTopics),
@@ -35,24 +37,17 @@ function message(error) {
 	return "לא הצלחנו להשלים את הפעולה. בדקו את החיבור ונסו שוב.";
 }
 function controls(disabled, editing = false) {
+	const { editable } = editor.view;
 	document.querySelectorAll(".learning-shell button, [data-questions] input").forEach(control => {
 		control.disabled = control.matches("[data-questions] input")
-			? (disabled && !editing) || attempt?.status === "submitted" || conflict
+			? (disabled && !editing) || !editable
 			: disabled;
 	});
 }
-function sameAnswers(left, right) {
-	return Object.keys(left).length === Object.keys(right).length && Object.entries(left).every(([key, value]) => right[key] === value);
-}
-function chosenAnswers() {
-	return Object.fromEntries([...questions.querySelectorAll("input:checked")].map(input => [input.name, input.value]));
-}
 function clearPrivate({ preserveDraft = false } = {}) {
-	if (preserveDraft) {
-		if (dirty && attempt?.status === "draft") heldDraft = { id: attempt.id, revision: draftBaseRevision, answers: chosenAnswers() };
-	} else heldDraft = undefined;
-	csrf = attempt = selectedTopic = nextCursor = undefined;
-	dirty = conflict = busy = false;
+	editor.clear({ preserveDraft });
+	csrf = selectedTopic = nextCursor = undefined;
+	busy = false;
 	topics.replaceChildren();
 	element("[data-sections]").replaceChildren();
 	questions.replaceChildren();
@@ -79,10 +74,8 @@ async function run(action, editing = false) {
 	}, {
 		error(error) {
 			if ([401, 404].includes(error.status)) lifetime.reset();
-			if (error.status === 409) {
-				conflict = true;
-				element("[data-reload-attempt]").hidden = false;
-			}
+			const { attempt, dirty, conflict } = editor.view;
+			element("[data-reload-attempt]").hidden = !conflict;
 			status.textContent = message(error);
 			if (attempt) saveStatus.textContent = message(error) + (dirty && !conflict ? " התשובות שבחרתם עדיין מופיעות כאן. לחצו על שמירת תשובות כדי לנסות שוב." : "");
 		},
@@ -93,7 +86,7 @@ async function run(action, editing = false) {
 	});
 }
 function canLeave() {
-	if (!dirty) return true;
+	if (!editor.view.dirty) return true;
 	saveStatus.textContent = "יש תשובות שטרם נשמרו. שמרו אותן לפני מעבר למסך אחר.";
 	return false;
 }
@@ -122,34 +115,25 @@ async function loadTopics(request) {
 		}
 		topics.append(card);
 	}
-	if (heldDraft) {
-		const draft = heldDraft;
-		const saved = await request(`attempts/${draft.id}`);
-		renderAttempt(saved);
-		heldDraft = undefined;
-		if (saved.status === "submitted") {
+	const restored = await editor.restore(request);
+	if (restored !== "none") {
+		renderAttempt();
+		if (restored === "submitted") {
 			saveStatus.textContent = "הניסיון כבר הוגש בחלון אחר. תשובות שלא נשמרו לא נכללו בהגשה.";
-		} else if (!sameAnswers(saved.answers, draft.answers)) {
-			questions.querySelectorAll("input").forEach(input => { input.checked = draft.answers[input.name] === input.value; });
-			dirty = true;
-			draftBaseRevision = draft.revision;
-			conflict = saved.revision !== draftBaseRevision;
-			element("[data-reload-attempt]").hidden = !conflict;
-			saveStatus.textContent = conflict
+		} else if (restored === "conflict" || restored === "draft") {
+			saveStatus.textContent = restored === "conflict"
 				? "התשובות שטרם נשמרו הוחזרו, אך הניסיון עודכן בחלון אחר. טעינת הניסיון השמור תחליף אותן."
 				: "התשובות שטרם נשמרו הוחזרו. לחצו על שמירת תשובות כדי לנסות שוב.";
 		}
 	}
 }
-function renderAttempt(data) {
-	attempt = data;
-	draftBaseRevision = data.revision;
-	dirty = conflict = false;
+function renderAttempt() {
+	const { attempt: data, answers, conflict, editable } = editor.view;
 	selectedTopic = data.topicKey;
 	element("[data-attempt]").hidden = false;
 	element("[data-history]").hidden = true;
 	element("#quiz-heading").textContent = data.title;
-	element("[data-reload-attempt]").hidden = true;
+	element("[data-reload-attempt]").hidden = !conflict;
 	questions.replaceChildren();
 	for (const [index, question] of data.questions.entries()) {
 		const field = node("fieldset");
@@ -160,8 +144,8 @@ function renderAttempt(data) {
 			input.type = "radio";
 			input.name = question.id;
 			input.value = option.id;
-			input.checked = data.answers[question.id] === option.id;
-			input.disabled = data.status === "submitted";
+			input.checked = answers[question.id] === option.id;
+			input.disabled = !editable;
 			label.append(input, node("span", option.text));
 			field.append(label);
 		}
@@ -187,33 +171,26 @@ function renderAttempt(data) {
 }
 async function openQuiz(request, key) {
 	if (!canLeave()) return;
-	renderAttempt(await request(`quizzes/${encodeURIComponent(key)}/start`, {}));
+	editor.load(await request(`quizzes/${encodeURIComponent(key)}/start`, {}));
+	renderAttempt();
 	element("#quiz-heading").focus();
 }
 async function save(request) {
-	if (!attempt || attempt.status !== "draft" || conflict) return false;
-	while (dirty) {
-		saveStatus.textContent = "שומרים את התשובות...";
-		const answers = chosenAnswers();
-		const saved = await request(`attempts/${attempt.id}/save`, { answers, expectedRevision: attempt.revision });
-		attempt = saved;
-		draftBaseRevision = saved.revision;
-		dirty = !sameAnswers(answers, chosenAnswers());
-	}
-	saveStatus.textContent = "התשובות נשמרו.";
-	return true;
+	if (!editor.view.editable) return;
+	saveStatus.textContent = "שומרים את התשובות...";
+	if (await editor.save(request)) saveStatus.textContent = "התשובות נשמרו.";
 }
 async function submit(request) {
-	if (!attempt || conflict) return;
-	const missing = [...questions.querySelectorAll("fieldset")].find(field => !field.querySelector("input:checked"));
-	if (missing) {
+	const result = await editor.submit(request);
+	if (result.status === "incomplete") {
 		saveStatus.textContent = "יש לענות על כל 20 השאלות לפני ההגשה.";
 		// run() temporarily disables controls; focus after they are enabled again.
-		queueMicrotask(() => { controls(false); missing.querySelector("input").focus(); });
+		const missing = [...questions.querySelectorAll("input")].find(input => input.name === result.questionId);
+		queueMicrotask(() => { controls(false); missing.focus(); });
 		return;
 	}
-	if (!await save(request)) return;
-	renderAttempt(await request(`attempts/${attempt.id}/submit`, { expectedRevision: attempt.revision }));
+	if (result.status !== "submitted") return;
+	renderAttempt();
 	element("[data-score]").focus();
 }
 async function openHistory(request, key, before = null) {
@@ -227,7 +204,8 @@ async function openHistory(request, key, before = null) {
 		const item = node("li");
 		const date = new Date(entry.submittedAt).toLocaleString("he-IL");
 		item.append(button(`${date} - ${entry.score}/20`, async request => {
-			renderAttempt(await request(`attempts/${entry.id}`));
+			editor.load(await request(`attempts/${entry.id}`));
+			renderAttempt();
 			element("[data-score]").focus();
 		}));
 		historyList.append(item);
@@ -237,21 +215,24 @@ async function openHistory(request, key, before = null) {
 	element("[data-more]").hidden = !data.hasMore;
 	if (!before) element("#history-heading").focus();
 }
-form.addEventListener("change", () => {
-	dirty = true;
+form.addEventListener("change", event => {
+	editor.choose(event.target.name, event.target.value);
 	void run(save, true);
 });
 form.addEventListener("submit", event => { event.preventDefault(); void run(submit); });
 element("[data-save]").addEventListener("click", () => run(save, true));
-element("[data-retry]").addEventListener("click", () => run(request => openQuiz(request, attempt.topicKey)));
+element("[data-retry]").addEventListener("click", () => run(request => openQuiz(request, editor.view.attempt.topicKey)));
 element("[data-more]").addEventListener("click", () => run(request => openHistory(request, selectedTopic, nextCursor)));
-element("[data-reload-attempt]").addEventListener("click", () => run(async request => renderAttempt(await request(`attempts/${attempt.id}`))));
+element("[data-reload-attempt]").addEventListener("click", () => run(async request => {
+	editor.load(await request(`attempts/${editor.view.attempt.id}`));
+	renderAttempt();
+}));
 element("[data-complete]").addEventListener("click", () => run(async request => {
-	await request(`topics/${encodeURIComponent(attempt.topicKey)}/complete`, {});
+	await request(`topics/${encodeURIComponent(editor.view.attempt.topicKey)}/complete`, {});
 	await loadTopics(request);
 	element("[data-complete]").hidden = true;
 	saveStatus.textContent = "הנושא סומן כהושלם.";
 }));
 element("[data-reload]").addEventListener("click", () => { if (canLeave()) { lifetime.reset({ preserveState: true }); void run(loadTopics); } });
-window.addEventListener("beforeunload", event => { if (dirty || heldDraft) { event.preventDefault(); event.returnValue = ""; } });
+window.addEventListener("beforeunload", event => { if (editor.view.unsaved) { event.preventDefault(); event.returnValue = ""; } });
 void run(loadTopics);

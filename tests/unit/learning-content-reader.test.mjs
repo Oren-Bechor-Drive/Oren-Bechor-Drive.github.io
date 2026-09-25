@@ -294,3 +294,30 @@ test("unreadable library destinations and partial lesson markup produce diagnost
 		),
 	);
 });
+
+const gradedQuiz = quiz.replace('class="quiz-form"', 'class="quiz-form" data-quiz-graded')
+	.replace('id="scenario"', 'id="scenario" data-correct-answer="wait" data-source-question="1234"')
+	.replace('</fieldset>', '<details data-quiz-feedback><summary>בדיקת התשובה</summary><p>ממתינים</p><p data-quiz-explanation>נותנים לתנועה לעבור.</p></details></fieldset>');
+
+test("graded content exposes the authored answer and source identity for publication checks", async t => {
+	const content = await readLearningContent(await fixture(t, { "practice.html": gradedQuiz }));
+	assert.deepEqual(content.issues, []);
+	assert.equal(content.quizzes[0].graded, true);
+	assert.equal(content.quizzes[0].questions[0].correctAnswer, "wait");
+	assert.equal(content.quizzes[0].questions[0].officialId, "1234");
+	assert.deepEqual(content.quizzes[0].questions[0].choices, [
+		{ value: "stop", text: "עוצרים" }, { value: "wait", text: "ממתינים" },
+	]);
+});
+
+for (const [name, authored, expected] of [
+	["missing answer", gradedQuiz.replace(' data-correct-answer="wait"', ''), /correct answer/],
+	["answer outside the choices", gradedQuiz.replace('data-correct-answer="wait"', 'data-correct-answer="missing"'), /correct answer/],
+	["missing self-check disclosure", gradedQuiz.replace(/<details[\s\S]*?<\/details>/, ''), /feedback/],
+	["empty explanation", gradedQuiz.replace('נותנים לתנועה לעבור.', ''), /explanation/],
+]) {
+	test(`graded content reports ${name} with its question location`, async t => {
+		const { issues } = await readLearningContent(await fixture(t, { "practice.html": authored }));
+		assert.ok(issues.some(issue => issue.startsWith("practice.html#scenario:") && expected.test(issue)), issues.join("\n"));
+	});
+}

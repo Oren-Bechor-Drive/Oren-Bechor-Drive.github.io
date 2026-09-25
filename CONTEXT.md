@@ -37,11 +37,11 @@ A sub-subject within a learning topic, with its own explanations. Learners may s
 _Avoid_: Locked step, required stage
 
 **Practice quiz**:
-A set of 20 multiple-choice questions covering one learning topic. All questions must be answered before submission. A passing attempt has at least 17 correct answers and lets the learner choose to mark the topic complete.
+A set of multiple-choice questions covering one learning topic. Public theory practice uses the question count appropriate to the topic, requires all answers before scoring, and offers self-check answers and retries. It does not grant topic completion. Protected paid-course quizzes currently use a separate 20-question assessment with a passing threshold of 17 correct answers.
 _Avoid_: Driving test, certification exam
 
 **Quiz attempt**:
-One learner's saved answers to a practice quiz, either unfinished or submitted. A submitted attempt includes its score and answer explanations.
+One learner's answers to a practice quiz, either unfinished or submitted. A submitted attempt includes its score and answer explanations. Protected learning saves attempts; public theory practice does not retain account progress.
 _Avoid_: Certification, subscription record
 
 **Topic completion**:

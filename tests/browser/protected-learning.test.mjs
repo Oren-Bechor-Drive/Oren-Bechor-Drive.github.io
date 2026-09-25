@@ -231,3 +231,43 @@ test("manual reload preserves unsaved quiz answers after a failed tab restore", 
 	await page.getByRole("button", { name: "פתיחת התרגול", exact: true }).click();
 	assert.equal(await answer.isChecked(), true);
 });
+
+test("choices made during autosave are persisted without moving native focus", async t => {
+	const app = await startLessonGateway({ quiz: true });
+	t.after(app.close);
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+	page.setDefaultTimeout(10000);
+	await page.goto(app.origin + "/account/login.html");
+	await page.getByLabel("כתובת אימייל").fill("coalesced-edits@example.test");
+	await page.getByLabel("סיסמה", { exact: true }).fill("correct-password");
+	await page.getByRole("button", { name: "כניסה לחשבון", exact: true }).click();
+	await page.waitForURL(app.origin + "/account/");
+	await app.grant("coalesced-edits@example.test");
+	await page.goto(app.origin + "/account/learning.html");
+	await page.getByRole("button", { name: "פתיחת התרגול", exact: true }).click();
+	let release, entered;
+	const held = new Promise(resolve => { release = resolve; });
+	const started = new Promise(resolve => { entered = resolve; });
+	t.after(() => release());
+	await page.route("**/api/attempts/*/save", async route => {
+		entered();
+		await held;
+		await route.continue();
+	}, { times: 1 });
+	const fields = page.locator("[data-questions] fieldset");
+	await fields.nth(0).getByRole("radio").first().check();
+	await started;
+	await fields.nth(0).getByRole("radio").nth(1).check();
+	const second = fields.nth(1).getByRole("radio").first();
+	await second.focus();
+	await page.keyboard.press("Space");
+	release();
+	await page.locator("[data-save-status]").filter({ hasText: "התשובות נשמרו" }).waitFor();
+	assert.equal(await second.evaluate(input => input === document.activeElement), true);
+	await page.reload();
+	await page.getByRole("button", { name: "פתיחת התרגול", exact: true }).click();
+	assert.equal(await fields.nth(0).getByRole("radio").nth(1).isChecked(), true);
+	assert.equal(await fields.nth(1).getByRole("radio").first().isChecked(), true);
+});
