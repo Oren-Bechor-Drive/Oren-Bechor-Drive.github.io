@@ -3,16 +3,16 @@ import test from "node:test";
 import { readFile } from "node:fs/promises";
 import { JSDOM } from "jsdom";
 import { chromium } from "playwright";
-import { serveRoadMedia } from "../helpers/road-media.mjs";
+import { startLocalApplication } from "../../server/application.mjs";
 
-async function gradedPage(t, { javaScriptEnabled = true, blocked = false } = {}) {
+async function gradedPage(t, { javaScriptEnabled = true, blocked = false, count = 3, width = 390 } = {}) {
 	const dom = new JSDOM(await readFile("course/priority-hierarchy/quiz/index.html", "utf8"));
 	t.after(() => dom.window.close());
 	const document = dom.window.document;
 	const form = document.querySelector(".quiz-form");
 	form.removeAttribute("data-quiz-placeholder");
 	form.setAttribute("data-quiz-graded", "");
-	form.innerHTML = ["stop", "wait", "go"].map((answer, index) => `
+	form.innerHTML = Array.from({ length: count }, (_, i) => ["stop", "wait", "go"][i % 3]).map((answer, index) => `
 		<fieldset class="quiz-question" id="case-${index}" data-correct-answer="${answer}" aria-describedby="prompt-${index}">
 			<legend tabindex="-1">שאלה ${index + 1}</legend>
 			<p id="prompt-${index}">שאלת בדיקה ${index + 1}</p>
@@ -26,16 +26,18 @@ async function gradedPage(t, { javaScriptEnabled = true, blocked = false } = {})
 		retry.textContent = "ניסיון חדש";
 		document.querySelector(".quiz-result-actions").append(retry);
 	}
+	const app = await startLocalApplication({ provider: null });
+	t.after(app.close);
 	const browser = await chromium.launch();
 	t.after(() => browser.close());
-	const page = await browser.newPage({ javaScriptEnabled, viewport: { width: 390, height: 844 }, reducedMotion: "reduce" });
+	const page = await browser.newPage({ javaScriptEnabled, viewport: { width, height: 844 }, reducedMotion: "reduce" });
 	await page.route("**/*", route => {
 		const pathname = new URL(route.request().url()).pathname;
 		if (blocked && pathname.endsWith("/course/js/quiz.js")) return route.abort();
 		if (pathname.endsWith("/scored-fixture.html")) return route.fulfill({ contentType: "text/html", body: dom.serialize() });
-		return serveRoadMedia(route);
+		return route.continue();
 	});
-	await page.goto("http://gallery.test/course/priority-hierarchy/quiz/scored-fixture.html");
+	await page.goto(app.origin + "/course/priority-hierarchy/quiz/scored-fixture.html");
 	return page;
 }
 
@@ -81,5 +83,30 @@ for (const mode of ["disabled", "blocked"]) {
 		await page.locator('#case-0 summary').click();
 		assert.equal(await page.locator('#case-0 details').getAttribute("open"), "");
 		assert.match(await page.locator('#case-0 details').innerText(), /stop/);
+	});
+}
+
+// These cases catch fixed cutoffs, rounding down, and passing a rounded display percentage.
+for (const width of [1440, 390]) {
+	test(`public quizzes require a rounded-up 85 percent at ${width}px`, async t => {
+		for (const [count, minimum] of [[17,15], [20,17], [26,23]]) {
+			const page = await gradedPage(t, { count, width });
+			for (const score of [minimum - 1, minimum]) {
+				await page.locator("[data-quiz-controls]").waitFor({ state: "visible" });
+				for (let index = 0; index < count; index++) {
+					const answer = ["stop", "wait", "go"][(index + (index < score ? 0 : 1)) % 3];
+					await page.locator(`#case-${index} input[value="${answer}"]`).check();
+					await page.locator("[data-quiz-next]").click();
+				}
+				const text = await page.locator("[data-quiz-count]").innerText();
+				assert.match(text, score >= minimum ? /(?:^|\.\s)עברתם את התרגול/ : /לא עברתם את התרגול/);
+				assert.ok(text.includes(`${minimum} מתוך ${count}`));
+				assert.match(text, /85%/);
+				assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+				await page.locator("[data-quiz-retry]").click();
+				assert.equal(await page.locator("[data-quiz-count]").textContent(), "");
+			}
+			await page.close();
+		}
 	});
 }

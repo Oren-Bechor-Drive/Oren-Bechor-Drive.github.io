@@ -39,7 +39,7 @@ async function input(req, route) {
 		|| !Number.isSafeInteger(body.expectedRevision) || body.expectedRevision < 0)) fail(400, "invalid_input");
 	if (["quizSave", "quizSubmit"].includes(route) && (!Number.isSafeInteger(body.expectedRevision) || body.expectedRevision < 0)) fail(400, "invalid_input");
 	if (route === "quizSave" && (!body.answers || Array.isArray(body.answers) || typeof body.answers !== "object"
-		|| Object.keys(body.answers).length > 20 || Object.entries(body.answers).some(([key, value]) => !answerId.test(key) || typeof value !== "string" || !answerId.test(value)))) fail(400, "invalid_input");
+		|| Object.entries(body.answers).some(([key, value]) => !answerId.test(key) || typeof value !== "string" || !answerId.test(value)))) fail(400, "invalid_input");
 	return body;
 }
 

@@ -4,7 +4,7 @@ The local gateway supports titled free definitions and paid lesson text, saved r
 
 Billing is disabled by the owner's instruction. The configured offer is ILS 150.00 per month with a three-day trial; `server/subscription-offer.mjs` records it and `/api/learning` returns it as read-only metadata. No endpoint creates checkout, collects a card, starts a trial or charges a learner. Development grants remain the way to test paid access.
 
-This is not a deployed paid service. The local launcher still refuses production mode because sessions and rate limits are process-local. No new migration, Cron job, instructional content or private media has been deployed to hosted Supabase by this change. The public `course/` preview remains publicly retrievable and contains placeholders. Never put approved restricted texts, questions, answer keys or media into its HTML/JavaScript/assets.
+This is not a deployed paid service. The local launcher still refuses production mode because sessions and rate limits are process-local. No new migration, Cron job, instructional content or private media has been deployed to hosted Supabase by this change. The public `course/` preview remains publicly retrievable and contains public theory practice. Never put approved restricted texts, questions, answer keys or media into its HTML/JavaScript/assets.
 
 ## Local use
 
@@ -12,7 +12,7 @@ Follow [account setup](local-accounts.md), apply both checked-in migrations to t
 
 - `/account/learning.html` lists accessible published learning sections and available quizzes. Opening a quiz resumes the one unfinished attempt for that topic or starts a fresh attempt.
 - Answers save after each choice. Failed saves keep the visible choices and offer retry. A conflicting revision requires explicitly loading the saved attempt.
-- All 20 questions must be answered. Submission grades in PostgreSQL, returns `x/20` and explanations, and preserves that attempt's immutable quiz version. A score of 17 or more enables manual topic completion. Retrying creates another attempt; it never overwrites history.
+- All authored questions must be answered. Submission grades in PostgreSQL, returns the correct-answer count and explanations, and preserves that attempt's immutable quiz version. At least 85% correct enables manual topic completion, with the required answer count rounded up: 15/17, 17/20, or 23/26. History includes `questionCount` from that attempt's version; later publications do not change its denominator or passing result. Retrying creates another attempt; it never overwrites history.
 - `/account/reader.html?section=<uuid>&access=free|paid` fetches one entitled section, resumes its saved position, and saves scroll progress. Updated content starts from the top with a notice. The explicit save button also saves the current reading position.
 - `account/protected-page.js` aborts requests and clears private content on pagehide/background, then fetches fresh authorization when restored. It stops stale request completions, errors, and finalizers from changing a newer view. The quiz page owns its draft/save behavior; the reader owns scroll and media behavior. Private responses are not cached. Public topic descriptions and navigation continue to work without JavaScript.
 
@@ -22,7 +22,7 @@ Only a trusted publisher can call these public SECURITY INVOKER RPCs; their priv
 
 `publish_learning_section(p_section_id uuid, p_source_key text, p_expected_revision integer, p_title text, p_free_text text, p_paid_text text)` publishes an explicit Hebrew title and immutable text revision atomically. Expected revision 0 creates a section. Use null to omit an access level. Free text must contain only approved basic definitions; full explanations belong in paid text. Legacy `publish_section` stays compatible but new untitled legacy publications do not appear in the reader catalog. Republishing with the titled operation brings them into the catalog.
 
-`publish_quiz(p_topic_key text, p_title text, p_questions jsonb, p_approval_reference text)` creates an immutable quiz version. The owner supplies the reference to Oren's recorded approval. Each of exactly 20 questions has these properties:
+`publish_quiz(p_topic_key text, p_title text, p_questions jsonb, p_approval_reference text)` creates an immutable quiz version. The owner supplies the reference to Oren's recorded approval. A quiz must contain at least one question. Each question has these properties:
 
 ```json
 {

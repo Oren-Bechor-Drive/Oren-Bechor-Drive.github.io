@@ -5,7 +5,7 @@ import { startDatabase, actAs } from "../support/database.mjs";
 import { quizQuestions } from "../fixtures/protected-quiz.mjs";
 
 // Owns deterministic Auth and its disposable PostgreSQL roles, RLS and learner RPCs.
-export async function startLessonGateway({ quiz = false, longLesson = false, ...gatewayOptions } = {}) {
+export async function startLessonGateway({ quiz = false, quizCount = 20, longLesson = false, ...gatewayOptions } = {}) {
 	const database = await startDatabase();
 	const identities = new Map();
 	const sessions = new Map();
@@ -78,7 +78,7 @@ export async function startLessonGateway({ quiz = false, longLesson = false, ...
 	provider.completeTopic = (token, key) => rpc(token, "complete_my_topic", [key]);
 	try {
 		if (quiz) {
-			const questions = quizQuestions();
+			const questions = quizQuestions(quizCount);
 			await connected(client => client.query("select public.publish_quiz($1,$2,$3,$4)", ["synthetic-topic", "תרגול בדיקה", JSON.stringify(questions), "synthetic-test-only"]));
 		}
 		const seed = await readFile(new URL("../../supabase/development/test-lessons.sql", import.meta.url), "utf8");

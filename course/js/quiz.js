@@ -166,8 +166,10 @@ function finish() {
 				input.disabled = true;
 		}
 		submitted = true;
+		const minimum = Math.ceil(questions.length * 85 / 100);
+		const outcome = correct >= minimum ? "עברתם את התרגול." : "לא עברתם את התרגול. אפשר לנסות שוב.";
 		document.querySelector("[data-quiz-count]").textContent =
-			`עניתם נכון על ${correct} מתוך ${questions.length} שאלות. הציון: ${Math.round(correct / questions.length * 100)}%.`;
+			`עניתם נכון על ${correct} מתוך ${questions.length} שאלות. הציון: ${Math.round(correct / questions.length * 100)}%. ${outcome} כדי לעבור נדרשות לפחות ${minimum} מתוך ${questions.length} תשובות נכונות (85% בעיגול כלפי מעלה).`;
 	} else {
 		document.querySelector("[data-quiz-count]").textContent =
 			`סימנתם תשובה ב-${questions.length} מתוך ${questions.length} שאלות.`;

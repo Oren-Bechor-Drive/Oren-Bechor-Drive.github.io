@@ -9,13 +9,13 @@ let database;
 before(async () => { database = await startDatabase(); });
 after(async () => database?.close());
 
-async function fixture({ paid = true } = {}) {
+async function fixture({ paid = true, count = 20 } = {}) {
 	const user = randomUUID(), session = randomUUID();
 	await database.admin.query("insert into auth.users(id,email_confirmed_at) values ($1,now())", [user]);
 	await database.admin.query("insert into auth.sessions(id,user_id) values ($1,$2)", [session,user]);
 	const learner = (await database.admin.query("select public.provision_learner($1) as id",[user])).rows[0].id;
 	const topic = `fixture-${randomUUID()}`;
-	const version = (await database.admin.query("select public.publish_quiz($1,'תרגול לבדיקה',$2,'synthetic-only') as id",[topic,JSON.stringify(quizQuestions())])).rows[0].id;
+	const version = (await database.admin.query("select public.publish_quiz($1,'תרגול לבדיקה',$2,'synthetic-only') as id",[topic,JSON.stringify(quizQuestions(count))])).rows[0].id;
 	const entitlement = randomUUID();
 	if (paid) await database.admin.query("insert into public.entitlements(id,learner_id,starts_at,ends_at,source_reference) values ($1,$2,now()-interval '1 month',now()+interval '1 day',$3)",[entitlement,learner,entitlement]);
 	return {user,session,learner,topic,version,entitlement};
@@ -33,9 +33,9 @@ async function actor(f, run, role = "authenticated") {
 }
 const rpc = async (db,name,args=[]) => (await db.query(`select public.${name}(${args.map((_,i)=>`$${i+1}`).join(",")}) as value`,args)).rows[0].value;
 const start = (f) => actor(f,db=>rpc(db,"start_my_quiz",[f.topic]));
-async function submit(f, score=20) {
+async function submit(f, score=20, count=20) {
 	const draft = await start(f);
-	const saved = await actor(f,db=>rpc(db,"save_my_quiz",[draft.id,JSON.stringify(quizAnswers(score)),draft.revision]));
+	const saved = await actor(f,db=>rpc(db,"save_my_quiz",[draft.id,JSON.stringify(quizAnswers(score, count)),draft.revision]));
 	return actor(f,db=>rpc(db,"submit_my_quiz",[draft.id,saved.revision]));
 }
 async function rejected(f,name,args,code="42501",role="authenticated") {
@@ -60,7 +60,7 @@ async function position(f) {
 test("publication validates all question shapes and approval, and only service may publish", async () => {
 	const f = await fixture();
 	await rejected(f,"publish_quiz",[f.topic,"בדיקה",JSON.stringify(quizQuestions()),"approval"]);
-	const invalid = [null,{},[],quizQuestions().slice(1)];
+	const invalid = [null,{},[]];
 	for (const mutate of [
 		qs=>qs[1].id=qs[0].id,
 		qs=>qs[0].options=[qs[0].options[0]],
@@ -116,6 +116,30 @@ test("server grades 16,17,20 correctly and completion is explicit and idempotent
 		}
 		assert.deepEqual(await actor(f,db=>rpc(db,"submit_my_quiz",[result.id,result.revision-1])),result);
 		await rejected(f,"save_my_quiz",[result.id,JSON.stringify(quizAnswers()),result.revision],"40001");
+	}
+});
+
+
+test("85 percent is rounded up for grading, history and explicit completion at every quiz length", async () => {
+	for (const [count, minimum] of [[1,1], [17,15], [20,17], [21,18], [26,23]]) {
+		for (const score of [minimum - 1, minimum, count]) {
+			const f = await fixture({ count });
+			const draft = await start(f);
+			assert.equal(draft.questions.length, count);
+			await rejected(f, "submit_my_quiz", [draft.id, draft.revision], "22023");
+			const result = await submit(f, score, count);
+			assert.equal(result.score, score);
+			assert.equal(result.passed, score >= minimum);
+			const history = await actor(f, db => rpc(db, "my_quiz_history", [f.topic]));
+			assert.equal(history.attempts[0].questionCount, count);
+			assert.equal(history.attempts[0].passed, result.passed);
+			// A new publication must not change an old attempt's denominator.
+			await database.admin.query("select public.publish_quiz($1,'מהדורה חדשה',$2,'synthetic-only')", [f.topic, JSON.stringify(quizQuestions(30))]);
+			assert.deepEqual(await actor(f, db => rpc(db, "read_my_attempt", [result.id])), result);
+			assert.deepEqual(await actor(f, db => rpc(db, "my_quiz_history", [f.topic])), history);
+			if (score < minimum) await rejected(f, "complete_my_topic", [f.topic]);
+			else assert.ok((await actor(f, db => rpc(db, "complete_my_topic", [f.topic]))).completedAt);
+		}
 	}
 });
 

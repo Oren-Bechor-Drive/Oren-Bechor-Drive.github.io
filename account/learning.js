@@ -158,7 +158,7 @@ function renderAttempt() {
 	const explanations = element("[data-explanations]");
 	explanations.replaceChildren();
 	if (submitted) {
-		element("[data-score]").textContent = `הציון שלכם: ${data.score}/20. ${data.passed ? "עברתם את התרגול." : "אפשר לנסות שוב ללא הגבלה."}`;
+		element("[data-score]").textContent = `הציון שלכם: ${data.score}/${data.questions.length}. ${data.passed ? "עברתם את התרגול." : "אפשר לנסות שוב ללא הגבלה."}`;
 		for (const result of data.results) {
 			const question = data.questions.find(question => question.id === result.questionId);
 			const correct = question.options.find(option => option.id === result.correctOptionId);
@@ -183,7 +183,7 @@ async function save(request) {
 async function submit(request) {
 	const result = await editor.submit(request);
 	if (result.status === "incomplete") {
-		saveStatus.textContent = "יש לענות על כל 20 השאלות לפני ההגשה.";
+		saveStatus.textContent = `יש לענות על כל ${editor.view.attempt.questions.length} השאלות לפני ההגשה.`;
 		// run() temporarily disables controls; focus after they are enabled again.
 		const missing = [...questions.querySelectorAll("input")].find(input => input.name === result.questionId);
 		queueMicrotask(() => { controls(false); missing.focus(); });
@@ -203,7 +203,7 @@ async function openHistory(request, key, before = null) {
 	for (const entry of data.attempts) {
 		const item = node("li");
 		const date = new Date(entry.submittedAt).toLocaleString("he-IL");
-		item.append(button(`${date} - ${entry.score}/20`, async request => {
+		item.append(button(`${date} - ${entry.score}/${entry.questionCount}`, async request => {
 			editor.load(await request(`attempts/${entry.id}`));
 			renderAttempt();
 			element("[data-score]").focus();

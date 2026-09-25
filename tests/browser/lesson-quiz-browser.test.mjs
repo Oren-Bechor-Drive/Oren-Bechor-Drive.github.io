@@ -114,8 +114,8 @@ async function exerciseQuiz(page, count) {
 	if (await page.locator(".quiz-form[data-quiz-graded]").count()) {
 		const correct = await questions.evaluateAll(items => items.filter(question =>
 			question.querySelector("input:checked").value === question.dataset.correctAnswer).length);
-		assert.equal(await page.locator("[data-quiz-count]").innerText(),
-			`עניתם נכון על ${correct} מתוך ${count} שאלות. הציון: ${Math.round(correct / count * 100)}%.`);
+		assert.ok((await page.locator("[data-quiz-count]").innerText()).startsWith(
+			`עניתם נכון על ${correct} מתוך ${count} שאלות. הציון: ${Math.round(correct / count * 100)}%.`));
 	} else {
 		assert.equal(await page.locator("[data-quiz-count]").innerText(),
 			`סימנתם תשובה ב-${count} מתוך ${count} שאלות.`);
