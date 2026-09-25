@@ -79,3 +79,11 @@ _Avoid_: Fixed photo limit, car list
 **Welcome direction**:
 A distinct way to introduce the course to a new learner, such as the Learning Journey, Instructor-led, or Course-dashboard direction.
 _Avoid_: Theme, variant
+
+**Protected learning**:
+The account-based reader and practice quizzes delivered only after current learner and access checks. Its content is published into the database and private media storage; the public course preview is a separate presentation.
+_Avoid_: Hidden static page, client-side paywall
+
+**Learning retention deadline**:
+Ten days after paid access ends without renewal. Earlier reading positions and attempts expire; explicitly completed topics remain. Renewal after the deadline starts fresh learning progress.
+_Avoid_: Monthly history expiry, account deletion

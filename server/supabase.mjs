@@ -23,7 +23,16 @@ export function createSupabaseProvider({ url, publishableKey, secretKey, fetcher
 		return data;
 	}
 	const pkce = flow => ({ code_challenge: flow.challenge, code_challenge_method: "s256" });
+	const rpc = (token, name, body = {}) => request(`/rest/v1/rpc/${name}`, { method: "POST", token, body });
 	return {
+		myLearning: token => rpc(token, "my_learning"),
+		readSections: token => rpc(token, "read_my_sections"),
+		startQuiz: (token, topicKey) => rpc(token, "start_my_quiz", { p_topic_key: topicKey }),
+		readAttempt: (token, attemptId) => rpc(token, "read_my_attempt", { p_attempt_id: attemptId }),
+		saveQuiz: (token, attemptId, { answers, expectedRevision }) => rpc(token, "save_my_quiz", { p_attempt_id: attemptId, p_answers: answers, p_expected_revision: expectedRevision }),
+		submitQuiz: (token, attemptId, { expectedRevision }) => rpc(token, "submit_my_quiz", { p_attempt_id: attemptId, p_expected_revision: expectedRevision }),
+		quizHistory: (token, topicKey, before = null) => rpc(token, "my_quiz_history", { p_topic_key: topicKey, p_before: before }),
+		completeTopic: (token, topicKey) => rpc(token, "complete_my_topic", { p_topic_key: topicKey }),
 		password: (email, password) => request("/auth/v1/token?grant_type=password", { method: "POST", body: { email, password } }),
 		signup: (email, password, flow) => request(`/auth/v1/signup?redirect_to=${encodeURIComponent(flow.redirect)}`, { method: "POST", body: { email, password, ...pkce(flow) } }),
 		recover: (email, flow) => request(`/auth/v1/recover?redirect_to=${encodeURIComponent(flow.redirect)}`, { method: "POST", body: { email, ...pkce(flow) } }),
@@ -46,8 +55,7 @@ export function createSupabaseProvider({ url, publishableKey, secretKey, fetcher
 			return rows[0] ?? null;
 		},
 		async readPosition(token, sectionId, accessLevel) {
-			const query = new URLSearchParams({ select: "content_version_id,position,revision", section_id: `eq.${sectionId}`, access_level: `eq.${accessLevel}`, limit: "1" });
-			const rows = await request(`/rest/v1/section_progress?${query}`, { token });
+			const rows = await rpc(token, "read_my_position", { p_section_id: sectionId, p_access_level: accessLevel });
 			return rows[0] ?? null;
 		},
 		async savePosition(token, sectionId, accessLevel, { contentVersionId, position, expectedRevision }) {

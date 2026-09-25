@@ -134,13 +134,13 @@ await app.expire('learner-a@example.test', 31);
 
 This backdates the entitlement end by 31 days. It exercises the expired-access state; it does not advance the system clock or simulate a month of background jobs.
 
-In A's browser, confirm paid reading still returns `404` and `paid/position` still returns `3750`. Then renew in the Node console:
+In A's browser, confirm paid reading still returns `404` and `paid/position` returns `{ position: null }`. Then renew in the Node console:
 
 ```js
 await app.grant('learner-a@example.test');
 ```
 
-Open the paid lesson or select `ניסיון נוסף`. Expect the lesson text and restored `37.5` percent. Save `80`, reload, and confirm `80` returns.
+Open the paid lesson or select `ניסיון נוסף`. Expect the lesson text and `0` percent with no saved position. The ten-day retention deadline cleared the old position. Save `80`, reload, and confirm `80` returns.
 
 ## 5. Learner isolation
 

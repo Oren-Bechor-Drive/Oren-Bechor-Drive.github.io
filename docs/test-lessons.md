@@ -2,7 +2,7 @@
 
 This development slice connects the account gateway to two synthetic lessons. It supports saved reading positions in the learner account, with no checkout or real course material. The existing static course preview is still public.
 
-The 2026-09-25 [paid-release scope](plans/paid-release-scope.md) supersedes indefinite progress retention as a future product requirement: after ten days without renewal following expiry, clear learning progress except completed topics. These local test lessons still exercise the existing indefinite-retention database. Their 31-day lapse checks do not implement or verify the new cleanup policy.
+The 2026-09-25 [protected-learning migration](protected-learning.md) supersedes indefinite progress retention: after ten days without renewal following expiry, clear earlier learning progress except completed topics. The local 31-day lapse checks now verify deletion before late renewal. The new migration has not been applied to the hosted development project.
 
 ## Open the lessons
 
@@ -84,7 +84,7 @@ The tests verify:
 - A finite, unrevoked paid period allows reads and saves before its end.
 - Expiry denies paid reads and saves, including an identical save retry, while free reading and saving remain available.
 - Expiry during an open browser lesson rejects the next save and clears the rendered text and controls. Reloading also denies the lesson.
-- Saved progress remains unchanged with an entitlement that ended 31 days ago. This backdated fixture checks the access state after a lapse; it does not simulate a month of background operations.
+- A 31-day lapse clears pre-expiry positions before renewal. The fixture backdates both the entitlement and its saved data to model elapsed time; it does not simulate a month of background operations.
 - Renewal restores the paid text and saved percentage. Two independently signed-in learners save separate positions for the same content, and neither learner's updates overwrite the other's. API requests with a claimed learner selector are rejected.
 
 ## Verification and limits

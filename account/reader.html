@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; media-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'" />
+		<meta name="referrer" content="no-referrer" />
+		<meta name="robots" content="noindex" />
+		<title>קריאת שיעור - נהיגה נכונה עם אורן בכור</title>
+		<meta name="description" content="קריאת חומרי הלימוד ושמירת מיקום הקריאה בחשבון שלכם." />
+		<link rel="icon" href="../assets/images/optimized/favicon.png?v=2" type="image/png" />
+		<link rel="preload" href="../assets/fonts/varela-round-v21-hebrew.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="../assets/fonts/varela-round-v21-latin.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="stylesheet" href="../css/base.css" />
+		<link rel="stylesheet" href="account.css" />
+		<link rel="stylesheet" href="learning.css" />
+		<script type="module" src="reader.js"></script>
+	</head>
+	<body>
+		<a class="skip-link" href="#main">דילוג לתוכן</a>
+		<main id="main" class="account-shell learning-shell" tabindex="-1">
+			<a class="account-back" href="learning.html">חזרה ללמידה שלכם</a>
+			<section class="account-card" aria-labelledby="reader-heading">
+				<h1 id="reader-heading">קריאת שיעור</h1>
+				<p class="account-feedback" role="status" aria-live="polite" data-reader-status>כדי לטעון את השיעור נדרשים חשבון מחובר וחיבור לשירות.</p>
+				<noscript><p>כדי לטעון את השיעור יש להפעיל JavaScript בדפדפן.</p></noscript>
+				<button class="account-action account-action-secondary" type="button" data-reload>טעינת השיעור מחדש</button>
+				<article data-reading hidden>
+					<div class="reading-body" data-reading-body></div>
+					<div class="reading-media" data-reading-media></div>
+					<button class="account-action" type="button" data-save-position>שמירת מיקום הקריאה</button>
+					<p class="account-feedback" role="status" aria-live="polite" data-position-status></p>
+				</article>
+				<p class="account-links"><a href="login.html">כניסה לחשבון</a></p>
+			</section>
+		</main>
+	</body>
+</html>

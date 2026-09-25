@@ -1,3 +1,4 @@
+import { subscriptionOffer } from "./subscription-offer.mjs";
 import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { testLessons } from "./test-lessons.mjs";
 
@@ -210,49 +211,73 @@ export function createLearnerAccounts({ origin, provider = null, googleEnabled =
 			}
 		});
 	}
-	async function withLessonSession(token, key, work) {
+	function testTarget(key) {
 		if (!Object.hasOwn(testLessons, key)) fail(404, "not_found");
+		return testLessons[key];
+	}
+	async function withLearnerSession(token, work) {
 		const record = sessions.get(token);
 		if (!record || record.mode !== "authenticated") fail(401, "session_expired");
 		return sessions.run(record, async () => {
 			await current(record);
-			const result = await work(record.tokens.access_token, testLessons[key], record.csrf);
+			const result = await work(record.tokens.access_token, record.csrf);
 			if (!sessions.live(record)) fail(401, "session_expired");
 			return result;
 		});
 	}
 	const positionData = row => row ? { contentVersionId: row.content_version_id, position: row.position, revision: Number(row.revision) } : null;
+	function readContent(token, { sectionId, accessLevel }) {
+		return withLearnerSession(token, async (accessToken, csrf) => {
+			const position = positionData(await provider.readPosition(accessToken, sectionId, accessLevel));
+			const row = await provider.readSection(accessToken, sectionId, accessLevel);
+			if (!row) fail(404, "lesson_unavailable");
+			return { data: { lesson: { id: row.id, sectionId: row.section_id, accessLevel: row.access_level,
+				revision: row.revision, body: row.body_text }, position, csrf } };
+		});
+	}
+	function saveContentPosition(token, { sectionId, accessLevel }, input) {
+		return withLearnerSession(token, async accessToken => {
+			try {
+				return { data: { position: positionData(await provider.savePosition(accessToken, sectionId, accessLevel, input)) } };
+			} catch (error) {
+				if (error.code === "42501") fail(404, "lesson_unavailable");
+				if (error.code !== "40001") throw error;
+				return { status: 409, data: { error: "position_conflict",
+					position: positionData(await provider.readPosition(accessToken, sectionId, accessLevel)) } };
+			}
+		});
+	}
 	return {
 		session,
-		readLesson(token, key) {
-			return withLessonSession(token, key, async (accessToken, { sectionId, accessLevel }, csrf) => {
-				// Prepare progress first; the body read then checks current publication and access.
-				// These are separate database statements, not a transactional snapshot.
-				const position = positionData(await provider.readPosition(accessToken, sectionId, accessLevel));
-				const row = await provider.readSection(accessToken, sectionId, accessLevel);
-				if (!row) fail(404, "lesson_unavailable");
-				return { data: { lesson: { id: row.id, sectionId: row.section_id, accessLevel: row.access_level,
-					revision: row.revision, body: row.body_text }, position, csrf } };
+		authorizeMedia(token, { sectionId, contentVersionId }) {
+			return withLearnerSession(token, async accessToken => {
+				const section = await provider.readSection(accessToken, sectionId, "paid");
+				if (!section || section.id !== contentVersionId) fail(404, "learning_unavailable");
 			});
 		},
-		readPosition(token, key) {
-			return withLessonSession(token, key, async (accessToken, { sectionId, accessLevel }) => ({
-				data: { position: positionData(await provider.readPosition(accessToken, sectionId, accessLevel)) },
-			}));
-		},
-		savePosition(token, key, input) {
-			return withLessonSession(token, key, async (accessToken, { sectionId, accessLevel }) => {
-				try {
-					return { data: { position: positionData(await provider.savePosition(accessToken, sectionId, accessLevel, input)) } };
-				} catch (error) {
-					if (error.code === "42501") fail(404, "lesson_unavailable");
-					if (error.code !== "40001") throw error;
-					// Read only this learner's current row; never forward provider error details.
-					return { status: 409, data: { error: "position_conflict",
-						position: positionData(await provider.readPosition(accessToken, sectionId, accessLevel)) } };
+		learning(token, operation, ...args) {
+			const operations = ["myLearning", "startQuiz", "readAttempt", "saveQuiz", "submitQuiz", "quizHistory", "completeTopic", "readSections"];
+			if (!operations.includes(operation)) fail(404, "not_found");
+			return withLearnerSession(token, async (accessToken, csrf) => {
+				try { return { data: { ...await provider[operation](accessToken, ...args), csrf, ...(operation === "myLearning" ? { subscriptionOffer } : {}) } }; }
+				catch (error) {
+					if (error.code === "42501") fail(404, "learning_unavailable");
+					if (error.code === "22023") fail(400, "invalid_input");
+					if (error.code === "40001") fail(409, "quiz_conflict");
+					throw error;
 				}
 			});
 		},
+		readLesson: (token, key) => readContent(token, testTarget(key)),
+		readPosition(token, key) {
+			const { sectionId, accessLevel } = testTarget(key);
+			return withLearnerSession(token, async accessToken => ({
+				data: { position: positionData(await provider.readPosition(accessToken, sectionId, accessLevel)) },
+			}));
+		},
+		savePosition: (token, key, input) => saveContentPosition(token, testTarget(key), input),
+		readSection: (token, sectionId, accessLevel) => readContent(token, { sectionId, accessLevel }),
+		saveSectionPosition: (token, sectionId, accessLevel, input) => saveContentPosition(token, { sectionId, accessLevel }, input),
 		acceptsRequest(token, csrf) { return matches(sessions.get(token)?.csrf, csrf); },
 		completeCallback,
 		perform,

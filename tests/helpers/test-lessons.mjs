@@ -2,9 +2,10 @@ import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { accountProvider, startAccountGateway } from "./account-gateway.mjs";
 import { startDatabase, actAs } from "../support/database.mjs";
+import { quizQuestions } from "../fixtures/protected-quiz.mjs";
 
 // Owns deterministic Auth and its disposable PostgreSQL roles, RLS and learner RPCs.
-export async function startLessonGateway() {
+export async function startLessonGateway({ quiz = false, longLesson = false, ...gatewayOptions } = {}) {
 	const database = await startDatabase();
 	const identities = new Map();
 	const sessions = new Map();
@@ -47,7 +48,7 @@ export async function startLessonGateway() {
 			return { id, email, email_confirmed_at: "2026-01-01", is_anonymous: false };
 		},
 	});
-	async function asLearner(token, query, values = [], save = false) {
+	async function asLearner(token, query, values = [], save = true) {
 		const user = await provider.identity(token);
 		return connected(async client => {
 			await client.query("begin");
@@ -63,14 +64,31 @@ export async function startLessonGateway() {
 	provider.learner = async token => (await asLearner(token, "select id,display_name from public.learners"))[0] ?? null;
 	provider.readSection = async (token, id, level) => (await asLearner(token, "select * from public.read_section($1,$2)", [id, level]))[0] ?? null;
 	provider.readPosition = async (token, id, level) => (await asLearner(token,
-		"select content_version_id,position,revision from public.section_progress where section_id=$1 and access_level=$2", [id, level]))[0] ?? null;
+		"select content_version_id,position,revision from public.read_my_position($1,$2)", [id, level]))[0] ?? null;
 	provider.savePosition = async (token, id, level, input) => (await asLearner(token,
 		"select * from public.save_my_position($1,$2,$3,$4,$5)", [id, level, input.contentVersionId, input.position, input.expectedRevision], true))[0];
+	const rpc = async (token, name, values = []) => (await asLearner(token, `select public.${name}(${values.map((_, index) => `$${index + 1}`).join(",")}) as result`, values))[0].result;
+	provider.myLearning = token => rpc(token, "my_learning");
+	provider.readSections = token => rpc(token, "read_my_sections");
+	provider.startQuiz = (token, key) => rpc(token, "start_my_quiz", [key]);
+	provider.readAttempt = (token, id) => rpc(token, "read_my_attempt", [id]);
+	provider.saveQuiz = (token, id, input) => rpc(token, "save_my_quiz", [id, JSON.stringify(input.answers), input.expectedRevision]);
+	provider.submitQuiz = (token, id, input) => rpc(token, "submit_my_quiz", [id, input.expectedRevision]);
+	provider.quizHistory = (token, key, before = null) => rpc(token, "my_quiz_history", [key, before]);
+	provider.completeTopic = (token, key) => rpc(token, "complete_my_topic", [key]);
 	try {
+		if (quiz) {
+			const questions = quizQuestions();
+			await connected(client => client.query("select public.publish_quiz($1,$2,$3,$4)", ["synthetic-topic", "תרגול בדיקה", JSON.stringify(questions), "synthetic-test-only"]));
+		}
 		const seed = await readFile(new URL("../../supabase/development/test-lessons.sql", import.meta.url), "utf8");
 		const grant = await readFile(new URL("../../supabase/development/grant-test-access.sql", import.meta.url), "utf8");
 		await connected(client => client.query(seed));
-		app = await startAccountGateway({ provider });
+		await connected(client => client.query("update public.learning_sections set title=case source_key when 'development-test-free' then 'הגדרה לבדיקה' else 'שיעור לבדיקה' end"));
+		if (longLesson) await connected(client => client.query(
+			"select public.publish_learning_section($1,$2,1,$3,$4,null)",
+			["a524e32d-2640-4d94-a51c-000000000001", "development-test-free", "הגדרה לבדיקה", Array.from({ length: 80 }, (_, i) => `פסקת בדיקה ${i + 1}. טקסט סינתטי לבדיקת מיקום הקריאה ושמירתו בחשבון.`).join("\n\n")]));
+		app = await startAccountGateway({ provider, ...gatewayOptions });
 		return {
 			origin: app.origin,
 			async grant(email, until = new Date(Date.now() + 3_600_000).toISOString()) {
@@ -89,7 +107,13 @@ export async function startLessonGateway() {
 			async expire(email, elapsedDays = 0) {
 				if (!Number.isSafeInteger(elapsedDays) || elapsedDays < 0) throw new Error("Supply nonnegative elapsed days");
 				const id = await existingIdentity(email);
-				// Move only this fixture's period. Database statement time still enforces access.
+				// Simulate elapsed time for this learner's pre-expiry data as well as the grant.
+				// Merely backdating the grant would make recently saved rows look newly created
+				// after the cleanup deadline, which the policy deliberately retains.
+				if (elapsedDays) await connected(async client => {
+					await client.query("update public.section_progress set updated_at=statement_timestamp()-($2*interval '1 day')-interval '1 second' where learner_id=(select learner_id from private.learner_identities where auth_user_id=$1)", [id, elapsedDays]);
+					await client.query("update public.quiz_attempts set created_at=statement_timestamp()-($2*interval '1 day')-interval '1 second' where learner_id=(select learner_id from private.learner_identities where auth_user_id=$1)", [id, elapsedDays]);
+				});
 				const result = await connected(client => client.query(`
 					update public.entitlements
 					set starts_at = least(starts_at, statement_timestamp() - ($2 * interval '1 day') - interval '1 second'),

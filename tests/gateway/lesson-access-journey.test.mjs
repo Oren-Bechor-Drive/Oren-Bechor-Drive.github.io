@@ -3,7 +3,7 @@ import test from "node:test";
 import { startLessonGateway } from "../helpers/test-lessons.mjs";
 import { browserClient } from "../helpers/account-gateway.mjs";
 
-test("test lesson API preserves access until period end, retains progress through expiry and isolates renewal", async t => {
+test("test lesson API preserves access until period end, retains progress for ten days then clears before late renewal", async t => {
 	const app = await startLessonGateway();
 	t.after(app.close);
 	const first = browserClient(app.origin);
@@ -76,19 +76,19 @@ test("test lesson API preserves access until period end, retains progress throug
 	// Backdate only the test entitlement to exercise a month without renewal.
 	await app.expire("period-first@example.test", 31);
 	await denied(first, "paid", 404, "lesson_unavailable");
-	assert.deepEqual(await read(first, "paid/position"), saved);
+	assert.deepEqual(await read(first, "paid/position"), { position: null });
 	await app.grant("period-first@example.test");
 	assert.deepEqual((await read(first, "paid")).lesson, paid);
-	assert.deepEqual(await read(first, "paid/position"), saved);
+	assert.deepEqual(await read(first, "paid/position"), { position: null });
 	await denied(second, "paid", 404, "lesson_unavailable");
 
 	// Both learners can save the same content without reading or overwriting each other.
 	await app.grant("period-second@example.test");
 	assert.deepEqual(await read(second, "paid/position"), { position: null });
 	const otherSaved = await save(second, "paid", { ...paidInput, position: 1000 });
-	assert.deepEqual(await read(first, "paid/position"), saved);
-	const resumed = await save(first, "paid", { ...paidInput, position: 8000, expectedRevision: 1 });
-	assert.equal(resumed.position.revision, 2);
+	assert.deepEqual(await read(first, "paid/position"), { position: null });
+	const resumed = await save(first, "paid", { ...paidInput, position: 8000, expectedRevision: 0 });
+	assert.equal(resumed.position.revision, 1);
 	assert.deepEqual(await read(second, "paid/position"), otherSaved);
 	await denied(first, "paid/position", 400, "invalid_input", { ...paidInput, learnerId: claimedLearner });
 	assert.deepEqual(await read(second, "paid/position"), otherSaved);

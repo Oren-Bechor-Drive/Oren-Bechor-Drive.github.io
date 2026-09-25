@@ -78,7 +78,7 @@ No installation or build step is required.
 
 The homepage FAQ at `#faq` sits immediately before `#start`. It uses five native `details` and `summary` rows for the former help page's first five questions: the audience, the relationship to practical lessons, free topic order, videos, and practice quizzes. The navigation links to the section at desktop and mobile sizes. The rows remain usable without JavaScript.
 
-The FAQ uses the requested completed-course marketing copy for its video and practice-quiz answers. This copy does not describe the current preview's runtime state. The course pages remain `noindex`; their 16 video and 12 image/diagram slots and all 80 quiz questions remain placeholders. Account and enrollment controls also remain disabled. The preview has no grading or saved progress.
+The FAQ uses the requested completed-course marketing copy for its video and practice-quiz answers. This copy does not describe the current preview's runtime state. The course pages remain `noindex`; their 16 video and 12 image/diagram slots and all 200 quiz questions remain placeholders. Account and enrollment controls also remain disabled. The preview has no grading or saved progress.
 
 `404.html` is a noindex recovery page for arbitrary missing paths. It contains one centered error message and two recovery actions for the welcome page and course library. A large yellow ring contains the centered 404 text. The page has no header, footer, topic preview, canonical URL, or JavaScript, and it stays out of the sitemap.
 
@@ -311,7 +311,7 @@ Browser tests derive the gallery count and last photo from the generated list. P
 
 The account/access migration is applied to development project `zurpazevlvtylnzvagoo`. It provides learner identities, separate free and paid text versions, development entitlements, and saved reading positions. Database policies enforce verified live sessions, account isolation, current publication, and entitlement expiry. Progress survives expiry and renewal.
 
-The local account gateway now uses verified Auth and learner provisioning. Its Hebrew registration, login, recovery, and account pages reuse the current site styles. The static course files are still public. Synthetic test lessons support saved reading percentages, conflict recovery and resume; payments, progress for actual course material, and private media are not implemented. Google and real email delivery still need provider configuration. Do not put actual restricted lesson text or assets into this public repository.
+The local account gateway now uses verified Auth and learner provisioning. Its Hebrew registration, login, recovery, and account pages reuse the current site styles. The static course files are still public. The local protected-learning area supports saved reading positions, graded quizzes, completion, ten-day retention and authenticated private media. Actual approved content and production deployment remain outstanding; billing is disabled. Google and real email delivery still need provider configuration. Do not put actual restricted lesson text or assets into this public repository.
 
 ### Local account screens and gateway
 
@@ -364,6 +364,12 @@ Website code is available under the [MIT License](LICENSES/MIT.txt).
 The social, direction and interface icons are Font Awesome Free 7.3.1 assets under CC BY 4.0; see their attribution and license notes in [`assets/icons/social/`](assets/icons/social/README.md), [`assets/icons/directions/`](assets/icons/directions/README.md), and [`assets/icons/interface/`](assets/icons/interface/README.md).
 Course content, photos, artwork, and branding are excluded.
 See [LICENSE](LICENSE) for the complete scope.
+
+## Protected learning development
+
+The local gateway now includes [saved learning and protected delivery](docs/protected-learning.md): graded topic quizzes, resumable drafts, paginated attempt history, manual completion after 17/20, a titled lesson reader with saved scroll position, and authenticated private media streaming. Learning progress expires ten days after an unrenewed subscription ends; completed topics remain. The new migration is locally tested and has not been applied to hosted Supabase. Install its documented Cron job when deploying.
+
+Open `/account/learning.html` through `npm run dev` after publishing approved content into the development database. Synthetic fixtures test the complete flow without real driving questions. Billing stays disabled by the owner's request; the future offer is ILS 150.00/month and a three-day trial. Real content, production hosting/durable sessions and provider setup remain release requirements. The static `course/` preview remains public and ungraded.
 
 ## Todo
 
@@ -462,8 +468,8 @@ Proposed page names below describe responsibilities. Choose final paths during i
 - [ ] Complete Google OAuth consent/client configuration and a real browser sign-in. Configure custom SMTP and Hebrew confirmation/recovery templates, then test delivery to non-team addresses, expired/reused links, and same-browser callback requirements. Local fixtures do not verify these external services.
 - [ ] Select hosting and add durable session storage, production expiry/revocation operations, trusted-proxy limits, and deployed cross-device checks before launch. If the service uses multiple processes, coordinate session changes, refresh locks and rate limits across them. Verify HTTPS/Secure cookies, restarts and failover before replacing the local-only startup restriction.
 - [ ] Expand the implemented conditional profile link and basic account page with supported identity changes, notification preferences, and session management. Static hosting retains the unavailable profile fallback.
-- [ ] Add a learner home or continue-learning page with saved position and optional bookmarks. Keep the course library and all entitled topics independently reachable.
-- [ ] Persist reading positions, unfinished/submitted quiz attempts and completed topics across devices. A submitted score of at least 17/20 permits the learner to mark the topic complete. Handle failed saves, concurrent updates and revised content without silently losing progress. Video-position resume is outside the agreed initial requirement.
+- [x] Add a learner page and protected reader with saved positions and independently reachable entitled sections. Optional bookmarks are not implemented.
+- [x] Implement and locally test database-persisted reading positions, unfinished/submitted attempts and durable topic completion after 17/20, with conflict handling and versioned content. Hosted cross-device verification remains part of deployment. Video-position resume is outside the agreed initial requirement.
 - [ ] Add account-data export and deletion workflows, reauthentication for sensitive changes, and approved handling of billing records and active subscriptions during deletion.
 - [ ] Provide clear states for unverified, signed-out, expired-session, suspended and deleted accounts, with support and recovery routes. Public navigation and topic descriptions must remain usable if JavaScript or the account service fails.
 - [ ] Configure transactional email delivery and sender authentication for verification, recovery, account changes and security notices. Use Hebrew templates, monitor delivery failures and separate optional marketing consent from service messages.

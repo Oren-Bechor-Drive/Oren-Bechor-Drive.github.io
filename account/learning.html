@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'" />
+		<meta name="referrer" content="no-referrer" />
+		<meta name="robots" content="noindex" />
+		<title>הלמידה שלכם - נהיגה נכונה עם אורן בכור</title>
+		<meta name="description" content="תרגול, היסטוריית ניסיונות ונושאים שהושלמו בחשבון שלכם." />
+		<link rel="icon" href="../assets/images/optimized/favicon.png?v=2" type="image/png" />
+		<link rel="preload" href="../assets/fonts/varela-round-v21-hebrew.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="../assets/fonts/varela-round-v21-latin.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="stylesheet" href="../css/base.css" />
+		<link rel="stylesheet" href="account.css" />
+		<link rel="stylesheet" href="learning.css" />
+		<script type="module" src="learning.js"></script>
+	</head>
+	<body>
+		<a class="skip-link" href="#main">דילוג לתוכן</a>
+		<main id="main" class="account-shell learning-shell" tabindex="-1">
+			<a class="account-back" href="index.html">חזרה לחשבון</a>
+			<section class="account-card" aria-labelledby="learning-heading">
+				<h1 id="learning-heading">הלמידה שלכם</h1>
+				<p class="account-intro">בכל תרגול 20 שאלות. לאחר ציון של 17/20 ומעלה אפשר לסמן את הנושא כהושלם.</p>
+				<p class="account-feedback" role="status" aria-live="polite" data-learning-status>כדי לטעון את הלמידה נדרשים חשבון מחובר וחיבור לשירות.</p>
+				<noscript><p>כדי לטעון את הלמידה יש להפעיל JavaScript בדפדפן.</p></noscript>
+				<button class="account-action account-action-secondary" type="button" data-reload>טעינה מחדש</button>
+				<section aria-labelledby="sections-heading"><h2 id="sections-heading">חומרי הלימוד</h2><div class="learning-topics" data-sections></div></section>
+				<div class="learning-topics" data-topics></div>
+				<section aria-labelledby="quiz-heading" data-attempt hidden>
+					<h2 id="quiz-heading" tabindex="-1"></h2>
+					<p class="account-feedback" role="status" aria-live="polite" data-save-status></p>
+					<form data-quiz-form novalidate>
+						<div data-questions></div>
+						<div class="learning-actions" data-draft-actions>
+							<button class="account-action account-action-secondary" type="button" data-save>שמירת תשובות</button>
+							<button class="account-action" type="submit">הגשת התרגול</button>
+						</div>
+					</form>
+					<button class="account-action account-action-secondary" type="button" data-reload-attempt hidden>טעינת הניסיון השמור</button>
+					<section data-results hidden aria-labelledby="score-heading">
+						<h3 id="score-heading" data-score tabindex="-1"></h3>
+						<ol data-explanations></ol>
+						<button class="account-action" type="button" data-complete hidden>סימון הנושא כהושלם</button>
+						<button class="account-action account-action-secondary" type="button" data-retry>תרגול נוסף</button>
+					</section>
+				</section>
+				<section data-history hidden aria-labelledby="history-heading">
+					<h2 id="history-heading" tabindex="-1">היסטוריית ניסיונות</h2>
+					<ul data-history-list></ul>
+					<button class="account-action account-action-secondary" type="button" data-more hidden>ניסיונות קודמים</button>
+				</section>
+				<p class="account-hint">התקדמות הקריאה והניסיונות נשמרים בזמן המנוי ונמחקים אם המנוי לא חודש בתוך 10 ימים מסיומו. נושאים שסומנו כהושלמו נשמרים.</p>
+				<p class="account-links"><a href="login.html">כניסה לחשבון</a> / <a href="../course/">לנושאי הקורס</a></p>
+			</section>
+		</main>
+	</body>
+</html>

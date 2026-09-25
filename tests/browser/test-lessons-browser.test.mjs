@@ -173,7 +173,7 @@ test("a successful single-row RPC save shows success immediately and restores th
 				stored = { content_version_id: input.p_content_version_id, position: input.p_position, revision: (stored?.revision ?? 0) + 1 };
 				return Response.json(stored);
 			}
-			assert.equal(new URL(url).pathname, "/rest/v1/section_progress");
+			assert.equal(new URL(url).pathname, "/rest/v1/rpc/read_my_position");
 			return Response.json(stored ? [stored] : []);
 		} });
 	const provider = accountProvider();

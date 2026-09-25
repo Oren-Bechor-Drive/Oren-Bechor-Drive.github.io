@@ -87,11 +87,11 @@ for (const width of [1440, 390]) {
 		await app.expire(email, 31);
 		await open(first, "paid");
 		await unavailable(first, "אינו זמין לחשבון");
-		assert.deepEqual(await direct(first, "paid/position", 200), saved);
+		assert.deepEqual(await direct(first, "paid/position", 200), { position: null });
 		await app.grant(email);
 		await first.getByRole("button", { name: "ניסיון נוסף" }).click();
-		await positionStatus(first).filter({ hasText: "המיקום השמור נטען: 37.5" }).waitFor();
-		assert.equal(await input(first).inputValue(), "37.5");
+		await positionStatus(first).filter({ hasText: "עדיין לא נשמר מיקום" }).waitFor();
+		assert.equal(await input(first).inputValue(), "0");
 		await save(first, 80);
 
 		await login(second, otherEmail);

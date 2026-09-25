@@ -12,7 +12,7 @@ Oren approves all instructional text, media, questions, answer keys and explanat
 
 - The welcome page and topic descriptions remain public. A free account permits only basic information such as definitions of laws.
 - Lessons, explanations, images, diagrams, videos and quizzes require paid access or an active trial. Topics can be studied in any order.
-- Offer a standard automatically renewing monthly subscription in ILS. The monthly price has not been supplied.
+- Offer a standard automatically renewing monthly subscription in ILS. The owner set the monthly price to ILS 150.00 on 2026-09-25. Billing remains disabled by their subsequent instruction.
 - Each learner gets one three-day trial with all paid content. Payment details are required before the trial starts. Billing starts automatically after the trial unless canceled.
 - Trial cancellation preserves access through the trial end and incurs no subscription charge afterward. Paid cancellation stops renewal and preserves access through the paid period.
 - The purchase flow requires a declaration that the buyer is at least 18 or has guardian approval. Final Hebrew wording and the adequacy of this mechanism require policy review before sales.
@@ -29,13 +29,13 @@ Oren approves all instructional text, media, questions, answer keys and explanat
 
 There is no rolling one-month expiration for quiz history. While subscribed, retain learning data unless another explicit policy requires otherwise. Paid access ends immediately at subscription expiry. If the subscription is not renewed within ten days after expiry, delete reading positions, unfinished quizzes and submitted attempt history, including saved answers and scores. Keep completed topics. Renewing before that deadline preserves the saved data; renewing afterward starts fresh except for completed topics.
 
-This cleanup rule does not delete learner accounts or billing/audit records. Their retention and backup expiry require separate policies. Production retention must be enforced by trusted server/database operations, including the renewal path, so a delayed cleanup job cannot restore expired progress. The existing development database still retains progress indefinitely; this policy is not implemented by the preview milestone.
+This cleanup rule does not delete learner accounts or billing/audit records. Their retention and backup expiry require separate policies. Production retention must be enforced by trusted server/database operations, including the renewal path, so a delayed cleanup job cannot restore expired progress. The protected-learning migration implements this policy locally; it and the unattended cleanup job still require deployment. See [protected learning](../protected-learning.md).
 
 ## Security and release dependencies
 
 Prevent unauthorized access and casual sharing using server-enforced entitlement checks and private content/media delivery. Never expose paid lesson bodies, answer keys or private asset URLs in public static files. DRM and learner-specific watermarks are deferred. A learner can still photograph or record visible content.
 
-Before accepting payments, supply the monthly price, business identity and support destination; select eligible billing, hosting and media providers; define refund, failed-payment, account-deletion and acceptance-evidence policies; complete qualified policy review and production verification. These inputs are missing. Existing public preview text is not protected merely because pages are noindex. Real protected material must not be added to the public repository as part of this milestone.
+Before accepting payments, supply the business identity and support destination; select eligible billing, hosting and media providers; define refund, failed-payment, account-deletion and acceptance-evidence policies; complete qualified policy review and production verification. The owner confirmed Israel for both business registration and banking. Stripe direct merchant eligibility does not cover Israel; no replacement provider was selected. Other listed inputs are missing. Existing public preview text is not protected merely because pages are noindex. Real protected material must not be added to the public repository as part of this milestone.
 
 ## First implementation milestone: topic-quiz preview
 

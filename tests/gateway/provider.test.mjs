@@ -83,10 +83,8 @@ test("position adapter scopes reads and saves to the learner token and preserves
 	const provider = createSupabaseProvider({ url: "https://project.supabase.co", publishableKey: "public", secretKey: "secret",
 		async fetcher(url, options) { calls.push({ url: new URL(url), ...options }); return response; } });
 	assert.deepEqual(await provider.readPosition("learner-token", "section", "free"), { content_version_id: "version", position: 2500, revision: 2 });
-	assert.equal(calls[0].url.pathname, "/rest/v1/section_progress");
-	assert.equal(calls[0].url.searchParams.get("section_id"), "eq.section");
-	assert.equal(calls[0].url.searchParams.get("access_level"), "eq.free");
-	assert.equal(calls[0].url.searchParams.get("select"), "content_version_id,position,revision");
+	assert.equal(calls[0].url.pathname, "/rest/v1/rpc/read_my_position");
+	assert.deepEqual(JSON.parse(calls[0].body), { p_section_id: "section", p_access_level: "free" });
 	// save_my_position returns one composite row, unlike the collection read endpoint.
 	response = Response.json({ content_version_id: "version", position: 5000, revision: 3 });
 	assert.equal((await provider.savePosition("learner-token", "section", "free", { contentVersionId: "version", position: 5000, expectedRevision: 2 })).position, 5000);

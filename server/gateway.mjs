@@ -6,7 +6,11 @@ const fields = {
 	login: ["email", "password"], register: ["email", "password"], recover: ["email"],
 	reset: ["password"], google: [], logout: [],
 	position: ["contentVersionId", "position", "expectedRevision"],
+	quizSave: ["answers", "expectedRevision"], quizSubmit: ["expectedRevision"], empty: [],
 };
+const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const topicKey = /^[a-z0-9][a-z0-9-]{0,99}$/;
+const answerId = /^[A-Za-z0-9_-]{1,100}$/;
 
 async function input(req, route) {
 	const chunks = [];
@@ -33,10 +37,13 @@ async function input(req, route) {
 	if (route === "position" && (typeof body.contentVersionId !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(body.contentVersionId)
 		|| !Number.isInteger(body.position) || body.position < 0 || body.position > 10000
 		|| !Number.isSafeInteger(body.expectedRevision) || body.expectedRevision < 0)) fail(400, "invalid_input");
+	if (["quizSave", "quizSubmit"].includes(route) && (!Number.isSafeInteger(body.expectedRevision) || body.expectedRevision < 0)) fail(400, "invalid_input");
+	if (route === "quizSave" && (!body.answers || Array.isArray(body.answers) || typeof body.answers !== "object"
+		|| Object.keys(body.answers).length > 20 || Object.entries(body.answers).some(([key, value]) => !answerId.test(key) || typeof value !== "string" || !answerId.test(value)))) fail(400, "invalid_input");
 	return body;
 }
 
-export function createGateway({ origin, provider = null, googleEnabled = false, now = Date.now, authLimit = 20, sessionLimit = 1000 }) {
+export function createGateway({ origin, provider = null, media = null, googleEnabled = false, now = Date.now, authLimit = 20, sessionLimit = 1000 }) {
 	const address = new URL(origin);
 	if (address.origin !== origin || (address.protocol !== "https:" && !(address.protocol === "http:" && ["127.0.0.1", "localhost", "[::1]"].includes(address.hostname)))) throw new Error("An exact HTTPS origin or loopback HTTP origin is required");
 	const secure = address.protocol === "https:";
@@ -64,6 +71,67 @@ export function createGateway({ origin, provider = null, googleEnabled = false, 
 			const url = new URL(req.url, origin);
 			const cookies = (req.headers.cookie ?? "").split(";").map(part => part.trim()).filter(part => part.startsWith(`${cookieName}=`));
 			const token = cookies.length === 1 ? cookies[0].slice(cookieName.length + 1) : null;
+			if (url.pathname === "/api/sections" || url.pathname.startsWith("/api/sections/")) {
+				if (url.search) fail(400, "invalid_input");
+				if (!provider) fail(503, "unavailable");
+				if (url.pathname === "/api/sections") {
+					if (req.method !== "GET") fail(405, "method_not_allowed");
+					return respond(res, await accounts.learning(token, "readSections"));
+				}
+				const match = /^\/api\/sections\/([^/]+)\/(free|paid)(\/position)?$/.exec(url.pathname);
+				if (!match || !uuid.test(match[1])) fail(404, "not_found");
+				const [, sectionId, accessLevel, position] = match;
+				if (position) {
+					if (req.method !== "POST") fail(405, "method_not_allowed");
+					if (req.headers.origin !== origin || req.headers["content-type"]?.split(";")[0].trim() !== "application/json" || !accounts.acceptsRequest(token, req.headers["x-csrf-token"])) fail(403, "request_rejected");
+					return respond(res, await accounts.saveSectionPosition(token, sectionId, accessLevel, await input(req, "position")));
+				}
+				if (req.method !== "GET") fail(405, "method_not_allowed");
+				const result = await accounts.readSection(token, sectionId, accessLevel);
+				result.data.media = accessLevel === "paid" ? (media?.forSection(sectionId, result.data.lesson.id) ?? []) : [];
+				return respond(res, result);
+			}
+			if (url.pathname.startsWith("/api/media/")) {
+				if (!["GET", "HEAD"].includes(req.method)) fail(405, "method_not_allowed");
+				if (url.search) fail(400, "invalid_input");
+				const entry = media?.lookup(url.pathname.slice("/api/media/".length));
+				if (!entry || !provider) fail(404, "learning_unavailable");
+				await accounts.authorizeMedia(token, entry);
+				return await media.send(req, res, entry);
+			}
+			if (/^\/api\/(learning|quizzes|attempts|topics)(\/|$)/.test(url.pathname)) {
+				if (!provider) fail(503, "unavailable");
+				const [, , resource, key, action] = url.pathname.split("/");
+				if (url.pathname.split("/").length > 5) fail(404, "not_found");
+				let operation, args = [], bodyType;
+				if (resource === "learning" && !key) operation = "myLearning";
+				else if (resource === "quizzes" && topicKey.test(key ?? "")) {
+					args = [key];
+					if (action === "start") { operation = "startQuiz"; bodyType = "empty"; }
+					if (action === "history") {
+						operation = "quizHistory";
+						const before = url.searchParams.get("before");
+						if (before !== null && !uuid.test(before)) fail(400, "invalid_input");
+						args.push(before);
+					}
+				} else if (resource === "attempts" && uuid.test(key ?? "")) {
+					args = [key];
+					if (!action) operation = "readAttempt";
+					if (action === "save") { operation = "saveQuiz"; bodyType = "quizSave"; }
+					if (action === "submit") { operation = "submitQuiz"; bodyType = "quizSubmit"; }
+				} else if (resource === "topics" && topicKey.test(key ?? "") && action === "complete") {
+					operation = "completeTopic"; args = [key]; bodyType = "empty";
+				}
+				if (!operation) fail(404, "not_found");
+				if (url.search && (operation !== "quizHistory" || [...url.searchParams.keys()].some(key => key !== "before") || url.searchParams.getAll("before").length !== 1)) fail(400, "invalid_input");
+				if (req.method !== (bodyType ? "POST" : "GET")) fail(405, "method_not_allowed");
+				if (bodyType) {
+					if (req.headers.origin !== origin || req.headers["content-type"]?.split(";")[0].trim() !== "application/json" || !accounts.acceptsRequest(token, req.headers["x-csrf-token"])) fail(403, "request_rejected");
+					const body = await input(req, bodyType);
+					if (bodyType !== "empty") args.push(body);
+				}
+				return respond(res, await accounts.learning(token, operation, ...args));
+			}
 			if (url.pathname.startsWith("/api/lessons/")) {
 				if (url.search) fail(400, "invalid_input");
 				if (!provider) fail(503, "unavailable");
@@ -85,20 +153,21 @@ export function createGateway({ origin, provider = null, googleEnabled = false, 
 			if (route === "callback" && req.method === "GET") return respond(res, await accounts.completeCallback(token, {
 				state: url.searchParams.get("state"), code: url.searchParams.get("code"), error: url.searchParams.has("error"),
 			}));
-			if (route === "position" || !Object.hasOwn(fields, route)) fail(404, "not_found");
+			if (!["login", "register", "recover", "reset", "google", "logout"].includes(route)) fail(404, "not_found");
 			if (req.method !== "POST") fail(405, "method_not_allowed");
 			if (req.headers.origin !== origin || req.headers["content-type"]?.split(";")[0].trim() !== "application/json" || !accounts.acceptsRequest(token, req.headers["x-csrf-token"])) fail(403, "request_rejected");
 			if (!mutationLimit(req.socket.remoteAddress)) fail(429, "rate_limited");
 			const body = await input(req, route);
 			return respond(res, await accounts.perform(token, route, body));
 		} catch (error) {
-			if (res.writableEnded) return;
+			if (res.writableEnded || res.destroyed) return;
+			if (res.headersSent) { res.destroy(); return; }
 			let status = error.status ?? 503;
 			let code = error.code ?? "unavailable";
 			if (route === "login" && [400, 401, 403, 422].includes(status) && !["invalid_input", "invalid_email", "invalid_password", "request_rejected"].includes(code)) { status = 401; code = "sign_in_failed"; }
 			else if (status >= 500) { status = 503; code = "unavailable"; }
 			else if (status === 429) { code = "rate_limited"; }
-			else if (!["invalid_input", "invalid_email", "invalid_password", "request_rejected", "recovery_required", "session_expired", "too_large", "not_found", "lesson_unavailable", "method_not_allowed", "google_unavailable"].includes(code)) code = "request_failed";
+			else if (!["invalid_input", "invalid_email", "invalid_password", "request_rejected", "recovery_required", "session_expired", "too_large", "not_found", "lesson_unavailable", "learning_unavailable", "quiz_conflict", "method_not_allowed", "google_unavailable"].includes(code)) code = "request_failed";
 			if (status === 429) res.setHeader("Retry-After", "60");
 			json(res, { error: code }, status);
 		}
