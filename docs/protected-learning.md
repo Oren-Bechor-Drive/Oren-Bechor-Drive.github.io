@@ -8,13 +8,13 @@ This is not a deployed paid service. The local launcher still refuses production
 
 ## Local use
 
-Follow [account setup](local-accounts.md), apply both checked-in migrations to the intended development database, then run `npm run dev`. The original foundation migration is unchanged. Open `/account/learning.html` after signing in. Newly created databases contain no course content.
+Follow [account setup](local-accounts.md), apply both checked-in migrations to the intended development database, then run `npm run dev`. The original foundation migration is unchanged, and the protected-learning migration has not yet been applied to the hosted development project. Open `/account/learning.html` after signing in. Newly created databases contain no course content. The hosted synthetic seed uses legacy `publish_section` and has no titles under the new migration; [republish it with `publish_learning_section`](test-lessons.md#publish-hosted-development-fixtures) before expecting it in the catalog.
 
 - `/account/learning.html` lists accessible published learning sections and available quizzes. Opening a quiz resumes the one unfinished attempt for that topic or starts a fresh attempt.
 - Answers save after each choice. Failed saves keep the visible choices and offer retry. A conflicting revision requires explicitly loading the saved attempt.
 - All 20 questions must be answered. Submission grades in PostgreSQL, returns `x/20` and explanations, and preserves that attempt's immutable quiz version. A score of 17 or more enables manual topic completion. Retrying creates another attempt; it never overwrites history.
-- `/account/reader.html` fetches one entitled section, resumes its saved position, and saves scroll progress. Updated content starts from the top with a notice. The explicit save button also saves the current reading position.
-- Pages clear private content on pagehide/background and fetch fresh authorization when restored. Private responses are not cached. Public topic descriptions and navigation continue to work without JavaScript.
+- `/account/reader.html?section=<uuid>&access=free|paid` fetches one entitled section, resumes its saved position, and saves scroll progress. Updated content starts from the top with a notice. The explicit save button also saves the current reading position.
+- `account/protected-page.js` aborts requests and clears private content on pagehide/background, then fetches fresh authorization when restored. It stops stale request completions, errors, and finalizers from changing a newer view. The quiz page owns its draft/save behavior; the reader owns scroll and media behavior. Private responses are not cached. Public topic descriptions and navigation continue to work without JavaScript.
 
 ## Publication
 
@@ -85,6 +85,8 @@ All learner routes use the signed-in learner; none accept learner IDs. POST rout
 | `GET /api/quizzes/<topic>/history?before=<uuid>` | Latest 50 submitted attempts; nextCursor reaches older attempts |
 | `POST /api/topics/<topic>/complete` | Mark complete only after a passing attempt |
 | `GET/HEAD /api/media/<id>` | Authorized private media bytes |
+
+Each authorized section GET includes its saved position and CSRF token. There is no standalone GET position route. A paid position becomes readable again only through a paid section GET after renewal; an expired entitlement denies that GET. Free section reads remain available after paid expiry.
 
 `tests/database/protected-learning.test.mjs` owns real-role/ACL/RLS, grading, revision, pagination and lock-race evidence. `tests/helpers/test-lessons.mjs` owns deterministic Auth plus a disposable PostgreSQL database and optional synthetic quiz/long-text fixtures. The HTTP and Chromium journeys use those real database operations. The fixture's backdated expiry moves its pre-expiry progress/attempt timestamps too; application clocks stay real. These tests do not prove hosted Auth, REST, Cron, SMTP or payment-provider setup.
 

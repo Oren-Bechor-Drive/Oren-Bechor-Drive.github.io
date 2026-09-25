@@ -6,6 +6,7 @@ import path from "node:path";
 import { createPrivateMedia } from "../../server/private-media.mjs";
 import { startLessonGateway } from "../helpers/test-lessons.mjs";
 import { browserClient } from "../helpers/account-gateway.mjs";
+import { testSectionPath, testSections } from "../fixtures/test-sections.mjs";
 
 // Synthetic bytes test authenticated delivery, not video decoding.
 test("private media requires a live paid version, supports byte ranges and rejects path escapes", async t => {
@@ -13,7 +14,7 @@ test("private media requires a live paid version, supports byte ranges and rejec
 	t.after(() => rm(root, { recursive: true, force: true }));
 	await writeFile(path.join(root, "video.mp4"), "0123456789");
 	await symlink(path.join(root, "video.mp4"), path.join(root, "link.mp4"));
-	const sectionId = "a524e32d-2640-4d94-a51c-000000000002";
+	const sectionId = testSections.paid;
 	// Version is discovered from the owned fixture, never accepted from a request.
 	const entries = [];
 	const media = await createPrivateMedia({ root, entries });
@@ -23,7 +24,7 @@ test("private media requires a live paid version, supports byte ranges and rejec
 	await client.request();
 	await client.request("login", { email: "media@example.test", password: "correct-password" });
 	await app.grant("media@example.test");
-	const lesson = await (await fetch(app.origin + "/api/lessons/paid", { headers: { cookie: client.cookie } })).json();
+	const lesson = await (await fetch(app.origin + testSectionPath("paid"), { headers: { cookie: client.cookie } })).json();
 	// Use a new validated media registry, with server-owned immutable descriptors.
 	const configured = await createPrivateMedia({ root, entries: [{ id: "video", sectionId, contentVersionId: lesson.lesson.id, file: "video.mp4", type: "video/mp4", title: "סרטון בדיקה" }] });
 	media.lookup = configured.lookup;

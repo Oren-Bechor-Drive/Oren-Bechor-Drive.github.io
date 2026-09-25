@@ -1,39 +1,33 @@
-# Manually test lesson access
+# Manually test protected learning
 
-Use the existing disposable test fixture to exercise the real local gateway, PostgreSQL permissions and browser screens. It uses synthetic login identities and does not connect to hosted Supabase or a payment provider. The database and saved positions last only until you close this fixture.
+This walkthrough runs the local gateway with deterministic Auth and a disposable PostgreSQL database. It uses synthetic learning sections and a synthetic practice quiz. No hosted Supabase, payment provider, or approved course content is involved. Closing the fixture deletes its accounts and progress.
 
 ## Start the fixture
 
-From the repository root, with the development dependencies installed, start the Node console:
-
-```bash
-node
-```
-
-Paste these lines at its `>` prompt:
+From the repository root, with development dependencies installed, start `node`. At its prompt:
 
 ```js
 var { startLessonGateway } = await import('./tests/helpers/test-lessons.mjs');
-var app = await startLessonGateway();
-console.log(app.origin + '/account/test-lessons.html');
+var app = await startLessonGateway({ quiz: true, longLesson: true });
+console.log(app.origin + '/account/login.html');
 ```
 
-Open the printed URL and keep the Node console running. The port changes each time. Use this printed origin throughout; `npm run dev` starts a different gateway with different accounts.
+Open the printed login URL and keep the Node console running. Its port changes each time. `npm run dev` runs a separate gateway and cannot see this fixture.
 
-Use a normal browser window for learner A and a private window or separate browser profile for learner B. Two ordinary tabs share login cookies. Multiple private windows may also share cookies.
+Sign in as `learner-a@example.test` with `correct-password`. Use a private browser profile for `learner-b@example.test` with the same password. These credentials work only with this fixture. Sign in before granting access to an email.
 
-| Learner | Email | Password |
+The fixed synthetic section IDs are:
+
+| Section | ID | Reader URL suffix |
 | --- | --- | --- |
-| A | `learner-a@example.test` | `correct-password` |
-| B | `learner-b@example.test` | `correct-password` |
+| Free definition | `a524e32d-2640-4d94-a51c-000000000001` | `/account/reader.html?section=a524e32d-2640-4d94-a51c-000000000001&access=free` |
+| Paid lesson | `a524e32d-2640-4d94-a51c-000000000002` | `/account/reader.html?section=a524e32d-2640-4d94-a51c-000000000002&access=paid` |
 
-These credentials work only with this deterministic fixture. Sign in directly through `כניסה לחשבון`; registration and real email verification are not part of this walkthrough. Each email gets its own synthetic learner on first sign-in. Sign in before running a grant for that email.
+Open `/account/learning.html` and follow its section links. It reads the accessible catalog, so the paid link appears only while access is active. You can enter either reader URL directly to test denial.
 
-## Prepare direct API checks
+## Inspect the API
 
-In the browser's developer tools, open Network and filter requests by `/api/lessons/`. You can inspect response status and JSON there while using the page.
-
-For direct requests, paste this helper into the browser Console while on a page at the printed origin. Define it separately in each learner's window, and again after a full page navigation or reload:
+On a page at the printed origin, paste this helper into the browser Console. Define it again after a full navigation.
 
 ```js
 var api = async (path, body) => {
@@ -43,60 +37,46 @@ var api = async (path, body) => {
     options = {
       ...options,
       method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-csrf-token': session.csrf
-      },
+      headers: { 'content-type': 'application/json', 'x-csrf-token': session.csrf },
       body: JSON.stringify(body)
     };
   }
-  var response = await fetch('/api/lessons/' + path, options);
+  var response = await fetch('/api/' + path, options);
   return { status: response.status, data: await response.json() };
 };
+var freePath = 'sections/a524e32d-2640-4d94-a51c-000000000001/free';
+var paidPath = 'sections/a524e32d-2640-4d94-a51c-000000000002/paid';
 ```
 
-The browser sends its own session cookie and Origin. No provider credentials are needed.
+The browser supplies its own cookie and Origin. Filter Network requests by `/api/sections` or `/api/quizzes` while using the pages. There is no separate GET position route; each authorized section read includes its saved position.
 
-## 1. Signed-out and free access
+## Check free and paid access
 
-Before signing in, run in the browser Console:
+Before sign-in, `await api(freePath)` and `await api(paidPath)` return `401` without body text. After learner A signs in, the free read returns `200`; the paid read returns `404`. Open the free reader, scroll down its long text, wait for the save message, reload, and check that it resumes near the same place. The button labeled `שמירת מיקום הקריאה` also saves the current scroll position. The response's `position.position` is an integer from 0 to 10000.
 
-```js
-await api('free');
-await api('paid');
-```
-
-Both must return `401` with `{ error: 'session_expired' }`, without lesson text. The page asks you to sign in.
-
-Sign in as learner A and return to the test lessons. The free lesson opens. The paid lesson shows an unavailable message; its direct read returns `404` with `{ error: 'lesson_unavailable' }`.
-
-## 2. Paid access and simulated cancellation
-
-In the Node console, grant A one hour of test access:
+In the Node console, grant A one hour of paid test access:
 
 ```js
 await app.grant('learner-a@example.test');
 ```
 
-In A's browser, open the paid lesson or select `ניסיון נוסף`. Enter `37.5` in `מיקום הקריאה באחוזים`, select `שמירת מיקום`, and wait for the saved message.
+Reload the learning page and open the paid section. It should load. A finite grant represents cancellation by ending without a renewal; it still permits reads until its end. `app.revoke` ends access immediately and is a different check.
 
-Cancellation simulation means leaving this grant unchanged and issuing no renewal. The existing period still allows reads and saves until its end. There is no cancellation endpoint or automatic renewal scheduler. Do not use `revoke` for cancellation; it ends access immediately.
-
-In A's browser Console, define `api` again if necessary, then capture a valid save request for the expiry check:
+To save a known position through the API, define the helper again on the paid reader and run:
 
 ```js
-var reading = await api('paid');
+var paidRead = await api(paidPath);
 var paidSave = {
-  contentVersionId: reading.data.lesson.id,
-  position: 8000,
-  expectedRevision: reading.data.position.revision
+  contentVersionId: paidRead.data.lesson.id,
+  position: 3750,
+  expectedRevision: paidRead.data.position?.revision ?? 0
 };
-await api('paid/position');
+await api(paidPath + '/position', paidSave);
 ```
 
-Expect `200`, with position `3750` and revision `1` on a fresh fixture. Stored positions use hundredths of a percent: `3750` means 37.5 percent.
+The save returns `200` and a position of `3750`. An identical retry returns the same revision.
 
-## 3. Expiry, denied saves and retained progress
+## Expire and renew
 
 In the Node console:
 
@@ -104,89 +84,33 @@ In the Node console:
 await app.expire('learner-a@example.test');
 ```
 
-Before reloading A's browser, run:
+From A's browser, `await api(paidPath)` and `await api(paidPath + '/position', { ...paidSave, position: 5000, expectedRevision: 1 })` return `404`. `await api(freePath)` still succeeds. The paid reader clears its private text after a denied reload or tab restoration. A position read is unavailable while paid reading is denied.
 
-```js
-await api('paid');
-await api('paid/position', paidSave);
-await api('paid/position');
-await api('free');
-```
-
-Expected results, in order:
-
-1. `404`, with no paid lesson text.
-2. `404`, with no position update.
-3. `200`, with the original position `3750` and unchanged revision.
-4. `200`, with free lesson text.
-
-Reload the paid lesson and confirm its unavailable state. Open the free lesson and save a percentage to confirm free saving still works.
-
-Switching away to the Node console may already clear and revalidate the browser reader. To test expiry while its save form stays visible, first renew A, open the paid lesson, and then run expiry from a terminal beside the browser without hiding its tab. The next attempted save must fail and clear the reader. Expiry does not erase text already delivered; the page rechecks on save, reload or tab restoration.
-
-## 4. A month without renewal, then renewal
-
-In the Node console:
-
-```js
-await app.expire('learner-a@example.test', 31);
-```
-
-This backdates the entitlement end by 31 days. It exercises the expired-access state; it does not advance the system clock or simulate a month of background jobs.
-
-In A's browser, confirm paid reading still returns `404` and `paid/position` returns `{ position: null }`. Then renew in the Node console:
+Renew A within ten days:
 
 ```js
 await app.grant('learner-a@example.test');
 ```
 
-Open the paid lesson or select `ניסיון נוסף`. Expect the lesson text and `0` percent with no saved position. The ten-day retention deadline cleared the old position. Save `80`, reload, and confirm `80` returns.
+Reload the paid reader. An authorized `await api(paidPath)` now includes the saved `3750` position. To test expiry during an open reader, keep its tab visible while running `app.expire` from a separate terminal or console. The next save is denied and clears the private reader.
 
-## 5. Learner isolation
-
-Sign in as learner B in the separate private window or browser profile.
-
-Before granting B access:
-
-- B can open the free lesson.
-- B cannot open the paid lesson; `await api('paid')` returns `404`.
-- `await api('paid/position')` returns `200` with `{ position: null }`. A's position must not appear.
-
-In the Node console:
+For a late renewal, expire the grant by 31 days:
 
 ```js
-await app.grant('learner-b@example.test');
+await app.expire('learner-a@example.test', 31);
+await app.grant('learner-a@example.test');
 ```
 
-Open B's paid lesson. It starts at `0`, with no saved position. Save `10` percent. Return to A and reload: A must still have `80`. Save `90` as A, then reload B: B must still have `10`.
+The fixture backdates pre-expiry progress and attempts as well as the entitlement; it does not change the application clock. Reload the paid reader. Its authorized read now has `position: null` and starts at the top. Explicitly completed topics survive the retention deadline.
 
-To check rejected ownership selectors, run in B's browser Console:
+## Quiz and learner isolation
 
-```js
-await api('paid/position?learner_id=learner-a@example.test');
-var ownReading = await api('paid');
-await api('paid/position', {
-  contentVersionId: ownReading.data.lesson.id,
-  position: 9900,
-  expectedRevision: ownReading.data.position.revision,
-  learnerId: 'learner-a@example.test'
-});
-```
+With paid access active, return to `/account/learning.html` and open the synthetic quiz. Answer its questions, navigate away and back, submit all answers, review the result, and mark the topic complete after a passing attempt. Before leaving with unsaved changes, use the page's save control. The fixture's quiz is test data, not course material.
 
-Both attempts must return `400` with `invalid_input`. Ownership comes from the session; these routes accept no learner selector. Recheck A's `90` and B's `10` after the attempts.
+Sign in as B in the separate profile. B can read the free section but cannot read the paid section or quiz until granted access. After `await app.grant('learner-b@example.test')` in Node, B's paid read starts with `position: null`. Save a position as B and reread the section as A; A's position remains separate. A request with an extra `learnerId` or `claimedPlan` field in a position POST returns `400 invalid_input`.
 
-## Stop and reset
+To test a stale save, open the same section in two signed-in windows for one learner. Read both, save one position in the first, then save a different position from the second using its old revision. The second receives `409 position_conflict`. Its reader requires an explicit reload before another save.
 
-In the Node console:
+## Stop
 
-```js
-await app.close();
-```
-
-Then exit Node:
-
-```text
-.exit
-```
-
-Closing the fixture removes its disposable database. Start a fresh fixture to repeat the walkthrough from empty accounts and positions.
+In the Node console, run `await app.close()`, then `.exit`. A fresh fixture starts with empty accounts and positions.

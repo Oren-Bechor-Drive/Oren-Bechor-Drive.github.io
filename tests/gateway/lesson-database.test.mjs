@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { startLessonGateway } from "../helpers/test-lessons.mjs";
 import { browserClient } from "../helpers/account-gateway.mjs";
+import { testSectionPath, testSections } from "../fixtures/test-sections.mjs";
 
 test("gateway lesson reads enforce actual RLS and privileged development grants", async t => {
 	const app = await startLessonGateway();
@@ -9,7 +10,7 @@ test("gateway lesson reads enforce actual RLS and privileged development grants"
 	const client = browserClient(app.origin);
 	await client.request();
 	await client.request("login", { email: "learner@example.test", password: "correct-password" });
-	const read = key => fetch(`${app.origin}/api/lessons/${key}`, { headers: { cookie: client.cookie } });
+	const read = key => fetch(`${app.origin}${testSectionPath(key)}`, { headers: { cookie: client.cookie } });
 	assert.equal((await read("free")).status, 200);
 	assert.equal((await read("paid")).status, 404);
 	await app.grant("learner@example.test");
@@ -29,7 +30,7 @@ test("a rejected development grant leaves the fixture usable for the next grant"
 	await client.request("login", { email: "learner@example.test", password: "correct-password" });
 	await assert.rejects(app.grant("learner@example.test", "2020-01-01T00:00:00Z"));
 	await app.grant("learner@example.test");
-	assert.equal((await fetch(`${app.origin}/api/lessons/paid`, { headers: { cookie: client.cookie } })).status, 200);
+	assert.equal((await fetch(`${app.origin}${testSectionPath("paid")}`, { headers: { cookie: client.cookie } })).status, 200);
 });
 
 test("concurrent learner sessions share identity while grants and revocation stay learner-scoped", async t => {
@@ -41,7 +42,7 @@ test("concurrent learner sessions share identity while grants and revocation sta
 		await client.request();
 		assert.equal((await client.request("login", { email: emails[i], password: "correct-password" })).response.status, 200);
 	}));
-	const paidStatus = async client => (await fetch(`${app.origin}/api/lessons/paid`, { headers: { cookie: client.cookie } })).status;
+	const paidStatus = async client => (await fetch(`${app.origin}${testSectionPath("paid")}`, { headers: { cookie: client.cookie } })).status;
 	const results = await Promise.allSettled([
 		app.grant(emails[0]), app.grant(emails[2], "2020-01-01T00:00:00Z"),
 	]);

@@ -1,6 +1,5 @@
 import { subscriptionOffer } from "./subscription-offer.mjs";
 import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
-import { testLessons } from "./test-lessons.mjs";
 
 const randomToken = () => randomBytes(32).toString("base64url");
 const challengeFor = verifier => createHash("sha256").update(verifier).digest("base64url");
@@ -211,10 +210,6 @@ export function createLearnerAccounts({ origin, provider = null, googleEnabled =
 			}
 		});
 	}
-	function testTarget(key) {
-		if (!Object.hasOwn(testLessons, key)) fail(404, "not_found");
-		return testLessons[key];
-	}
 	async function withLearnerSession(token, work) {
 		const record = sessions.get(token);
 		if (!record || record.mode !== "authenticated") fail(401, "session_expired");
@@ -268,14 +263,6 @@ export function createLearnerAccounts({ origin, provider = null, googleEnabled =
 				}
 			});
 		},
-		readLesson: (token, key) => readContent(token, testTarget(key)),
-		readPosition(token, key) {
-			const { sectionId, accessLevel } = testTarget(key);
-			return withLearnerSession(token, async accessToken => ({
-				data: { position: positionData(await provider.readPosition(accessToken, sectionId, accessLevel)) },
-			}));
-		},
-		savePosition: (token, key, input) => saveContentPosition(token, testTarget(key), input),
 		readSection: (token, sectionId, accessLevel) => readContent(token, { sectionId, accessLevel }),
 		saveSectionPosition: (token, sectionId, accessLevel, input) => saveContentPosition(token, { sectionId, accessLevel }, input),
 		acceptsRequest(token, csrf) { return matches(sessions.get(token)?.csrf, csrf); },

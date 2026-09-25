@@ -1,4 +1,5 @@
 import "./focus.js";
+import { createProtectedPage } from "./protected-page.js";
 
 const element = selector => document.querySelector(selector);
 const status = element("[data-learning-status]");
@@ -9,7 +10,10 @@ const questions = element("[data-questions]");
 const historyList = element("[data-history-list]");
 let csrf, attempt, selectedTopic, nextCursor, heldDraft, draftBaseRevision;
 let dirty = false, conflict = false, busy = false;
-let lifetime = new AbortController();
+const lifetime = createProtectedPage({
+	clear: ({ preserveState }) => clearPrivate({ preserveDraft: preserveState }),
+	restore: () => void run(loadTopics),
+});
 
 function node(tag, text, className) {
 	const result = document.createElement(tag);
@@ -47,8 +51,6 @@ function clearPrivate({ preserveDraft = false } = {}) {
 	if (preserveDraft) {
 		if (dirty && attempt?.status === "draft") heldDraft = { id: attempt.id, revision: draftBaseRevision, answers: chosenAnswers() };
 	} else heldDraft = undefined;
-	lifetime.abort();
-	lifetime = new AbortController();
 	csrf = attempt = selectedTopic = nextCursor = undefined;
 	dirty = conflict = busy = false;
 	topics.replaceChildren();
@@ -60,46 +62,40 @@ function clearPrivate({ preserveDraft = false } = {}) {
 	saveStatus.textContent = "";
 	controls(false);
 }
-async function request(path, body) {
-	const owner = lifetime;
-	const response = await fetch(`/api/${path}`, { credentials: "same-origin", cache: "no-store",
-		signal: AbortSignal.any([lifetime.signal, AbortSignal.timeout(10000)]),
-		...(body === undefined ? {} : { method: "POST", headers: { "content-type": "application/json", "x-csrf-token": csrf }, body: JSON.stringify(body) }) });
-	const data = await response.json();
-	if (owner !== lifetime) throw new DOMException("Obsolete request", "AbortError");
-	if (!response.ok) throw Object.assign(new Error(data.error), { status: response.status });
-	if (data.csrf) csrf = data.csrf;
-	return data;
-}
 async function run(action, editing = false) {
 	if (busy) return;
-	const owner = lifetime;
 	const focused = document.activeElement;
-	busy = true;
-	controls(true, editing);
-	try { await action(); }
-	catch (error) {
-		if (owner !== lifetime) return;
-		if ([401, 404].includes(error.status)) clearPrivate();
-		if (error.status === 409) {
-			conflict = true;
-			element("[data-reload-attempt]").hidden = false;
-		}
-		status.textContent = message(error);
-		if (attempt) saveStatus.textContent = message(error) + (dirty && !conflict ? " התשובות שבחרתם עדיין מופיעות כאן. לחצו על שמירת תשובות כדי לנסות שוב." : "");
-	} finally {
-		if (owner === lifetime) {
+	return lifetime.run(async ({ request: ownedRequest }) => {
+		busy = true;
+		controls(true, editing);
+		const request = async (path, body) => {
+			const data = await ownedRequest(`/api/${path}`, { body, csrf });
+			if (data.csrf) csrf = data.csrf;
+			return data;
+		};
+		await action(request);
+	}, {
+		error(error) {
+			if ([401, 404].includes(error.status)) lifetime.reset();
+			if (error.status === 409) {
+				conflict = true;
+				element("[data-reload-attempt]").hidden = false;
+			}
+			status.textContent = message(error);
+			if (attempt) saveStatus.textContent = message(error) + (dirty && !conflict ? " התשובות שבחרתם עדיין מופיעות כאן. לחצו על שמירת תשובות כדי לנסות שוב." : "");
+		},
+		finish() {
 			busy = false; controls(false);
 			if (document.activeElement === document.body && focused?.isConnected && !focused.disabled) focused.focus();
-		}
-	}
+		},
+	});
 }
 function canLeave() {
 	if (!dirty) return true;
 	saveStatus.textContent = "יש תשובות שטרם נשמרו. שמרו אותן לפני מעבר למסך אחר.";
 	return false;
 }
-async function loadTopics() {
+async function loadTopics(request) {
 	const data = await request("learning");
 	const catalog = await request("sections");
 	const sections = element("[data-sections]");
@@ -119,7 +115,7 @@ async function loadTopics() {
 		if (topic.completedAt) card.append(node("p", "הושלם"));
 		if (data.paidAccess) {
 			const actions = node("div", undefined, "learning-actions");
-			actions.append(button("פתיחת התרגול", () => openQuiz(topic.key)), button("היסטוריית ניסיונות", () => openHistory(topic.key)));
+			actions.append(button("פתיחת התרגול", request => openQuiz(request, topic.key)), button("היסטוריית ניסיונות", request => openHistory(request, topic.key)));
 			card.append(actions);
 		}
 		topics.append(card);
@@ -187,12 +183,12 @@ function renderAttempt(data) {
 		element("[data-complete]").hidden = !data.passed;
 	}
 }
-async function openQuiz(key) {
+async function openQuiz(request, key) {
 	if (!canLeave()) return;
 	renderAttempt(await request(`quizzes/${encodeURIComponent(key)}/start`, {}));
 	element("#quiz-heading").focus();
 }
-async function save() {
+async function save(request) {
 	if (!attempt || attempt.status !== "draft" || conflict) return false;
 	while (dirty) {
 		saveStatus.textContent = "שומרים את התשובות...";
@@ -205,7 +201,7 @@ async function save() {
 	saveStatus.textContent = "התשובות נשמרו.";
 	return true;
 }
-async function submit() {
+async function submit(request) {
 	if (!attempt || conflict) return;
 	const missing = [...questions.querySelectorAll("fieldset")].find(field => !field.querySelector("input:checked"));
 	if (missing) {
@@ -214,11 +210,11 @@ async function submit() {
 		queueMicrotask(() => { controls(false); missing.querySelector("input").focus(); });
 		return;
 	}
-	if (!await save()) return;
+	if (!await save(request)) return;
 	renderAttempt(await request(`attempts/${attempt.id}/submit`, { expectedRevision: attempt.revision }));
 	element("[data-score]").focus();
 }
-async function openHistory(key, before = null) {
+async function openHistory(request, key, before = null) {
 	if (!canLeave()) return;
 	const data = await request(`quizzes/${encodeURIComponent(key)}/history${before ? `?before=${encodeURIComponent(before)}` : ""}`);
 	selectedTopic = key;
@@ -228,7 +224,7 @@ async function openHistory(key, before = null) {
 	for (const entry of data.attempts) {
 		const item = node("li");
 		const date = new Date(entry.submittedAt).toLocaleString("he-IL");
-		item.append(button(`${date} - ${entry.score}/20`, async () => {
+		item.append(button(`${date} - ${entry.score}/20`, async request => {
 			renderAttempt(await request(`attempts/${entry.id}`));
 			element("[data-score]").focus();
 		}));
@@ -245,21 +241,15 @@ form.addEventListener("change", () => {
 });
 form.addEventListener("submit", event => { event.preventDefault(); void run(submit); });
 element("[data-save]").addEventListener("click", () => run(save, true));
-element("[data-retry]").addEventListener("click", () => run(() => openQuiz(attempt.topicKey)));
-element("[data-more]").addEventListener("click", () => run(() => openHistory(selectedTopic, nextCursor)));
-element("[data-reload-attempt]").addEventListener("click", () => run(async () => renderAttempt(await request(`attempts/${attempt.id}`))));
-element("[data-complete]").addEventListener("click", () => run(async () => {
+element("[data-retry]").addEventListener("click", () => run(request => openQuiz(request, attempt.topicKey)));
+element("[data-more]").addEventListener("click", () => run(request => openHistory(request, selectedTopic, nextCursor)));
+element("[data-reload-attempt]").addEventListener("click", () => run(async request => renderAttempt(await request(`attempts/${attempt.id}`))));
+element("[data-complete]").addEventListener("click", () => run(async request => {
 	await request(`topics/${encodeURIComponent(attempt.topicKey)}/complete`, {});
-	await loadTopics();
+	await loadTopics(request);
 	element("[data-complete]").hidden = true;
 	saveStatus.textContent = "הנושא סומן כהושלם.";
 }));
-element("[data-reload]").addEventListener("click", () => { if (canLeave()) { clearPrivate({ preserveDraft: true }); void run(loadTopics); } });
+element("[data-reload]").addEventListener("click", () => { if (canLeave()) { lifetime.reset({ preserveState: true }); void run(loadTopics); } });
 window.addEventListener("beforeunload", event => { if (dirty || heldDraft) { event.preventDefault(); event.returnValue = ""; } });
-window.addEventListener("pagehide", () => clearPrivate({ preserveDraft: true }));
-document.addEventListener("visibilitychange", () => {
-	if (document.hidden) clearPrivate({ preserveDraft: true });
-	else void run(loadTopics);
-});
-window.addEventListener("pageshow", event => { if (event.persisted) { clearPrivate({ preserveDraft: true }); void run(loadTopics); } });
 void run(loadTopics);

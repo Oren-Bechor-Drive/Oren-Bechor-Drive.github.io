@@ -2,14 +2,15 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { startLessonGateway } from "../helpers/test-lessons.mjs";
 import { browserClient } from "../helpers/account-gateway.mjs";
+import { testSectionPath } from "../fixtures/test-sections.mjs";
 
-test("test lesson API preserves access until period end, retains progress for ten days then clears before late renewal", async t => {
+test("section API preserves access until period end, retains progress for ten days then clears before late renewal", async t => {
 	const app = await startLessonGateway();
 	t.after(app.close);
 	const first = browserClient(app.origin);
 	const second = browserClient(app.origin);
 	async function request(client, path, body) {
-		const response = await fetch(`${app.origin}/api/lessons/${path}`, {
+		const response = await fetch(`${app.origin}${testSectionPath(path.split("/")[0])}${path.includes("/") ? path.slice(path.indexOf("/")) : ""}`, {
 			method: body === undefined ? "GET" : "POST",
 			headers: { cookie: client.cookie, origin: app.origin, "content-type": "application/json", "x-csrf-token": client.csrf },
 			...(body === undefined ? {} : { body: JSON.stringify(body) }),
@@ -32,7 +33,6 @@ test("test lesson API preserves access until period end, retains progress for te
 	};
 	for (const key of ["free", "paid"]) {
 		await denied(first, key, 401, "session_expired");
-		await denied(first, `${key}/position`, 401, "session_expired");
 	}
 	for (const [client, email] of [[first, "period-first@example.test"], [second, "period-second@example.test"]]) {
 		await client.request();
@@ -57,46 +57,45 @@ test("test lesson API preserves access until period end, retains progress for te
 	// A different learner never inherits the grant or saved position.
 	await denied(second, "paid", 404, "lesson_unavailable");
 	await denied(second, "paid/position", 404, "lesson_unavailable", paidInput);
-	assert.deepEqual(await read(second, "paid/position"), { position: null });
+	assert.equal((await read(second, "free")).position, null);
 	const claimedLearner = "11111111-1111-4111-8111-111111111111";
 	const forged = { ...paidInput, learnerId: claimedLearner };
 	await denied(second, `paid/position?learner_id=${claimedLearner}`, 400, "invalid_input");
 	await denied(second, "paid/position", 400, "invalid_input", forged);
-	assert.deepEqual(await read(first, "paid/position"), saved);
+	assert.deepEqual((await read(first, "paid")).position, saved.position);
 
 	await app.expire("period-first@example.test");
 	await denied(first, "paid", 404, "lesson_unavailable");
 	await denied(first, "paid/position", 404, "lesson_unavailable", { ...paidInput, position: 8000, expectedRevision: 1 });
 	// Even an identical retry must recheck entitlement before accepting a save.
 	await denied(first, "paid/position", 404, "lesson_unavailable", paidInput);
-	assert.deepEqual(await read(first, "paid/position"), saved);
+	assert.equal((await read(first, "free")).position.position, 2000);
 	assert.deepEqual((await read(first, "free")).lesson, free);
 	assert.equal((await save(first, "free", { ...freeInput, position: 5000, expectedRevision: 1 })).position.revision, 2);
 
 	// Backdate only the test entitlement to exercise a month without renewal.
 	await app.expire("period-first@example.test", 31);
 	await denied(first, "paid", 404, "lesson_unavailable");
-	assert.deepEqual(await read(first, "paid/position"), { position: null });
+	assert.equal((await read(first, "free")).position, null);
 	await app.grant("period-first@example.test");
 	assert.deepEqual((await read(first, "paid")).lesson, paid);
-	assert.deepEqual(await read(first, "paid/position"), { position: null });
+	assert.equal((await read(first, "paid")).position, null);
 	await denied(second, "paid", 404, "lesson_unavailable");
 
 	// Both learners can save the same content without reading or overwriting each other.
 	await app.grant("period-second@example.test");
-	assert.deepEqual(await read(second, "paid/position"), { position: null });
+	assert.equal((await read(second, "paid")).position, null);
 	const otherSaved = await save(second, "paid", { ...paidInput, position: 1000 });
-	assert.deepEqual(await read(first, "paid/position"), { position: null });
+	assert.equal((await read(first, "paid")).position, null);
 	const resumed = await save(first, "paid", { ...paidInput, position: 8000, expectedRevision: 0 });
 	assert.equal(resumed.position.revision, 1);
-	assert.deepEqual(await read(second, "paid/position"), otherSaved);
+	assert.deepEqual((await read(second, "paid")).position, otherSaved.position);
 	await denied(first, "paid/position", 400, "invalid_input", { ...paidInput, learnerId: claimedLearner });
-	assert.deepEqual(await read(second, "paid/position"), otherSaved);
+	assert.deepEqual((await read(second, "paid")).position, otherSaved.position);
 
 	await first.request("logout", {});
 	for (const key of ["free", "paid"]) {
 		await denied(first, key, 401, "session_expired");
-		await denied(first, `${key}/position`, 401, "session_expired");
 	}
-	assert.deepEqual(await read(second, "paid/position"), otherSaved);
+	assert.deepEqual((await read(second, "paid")).position, otherSaved.position);
 });

@@ -121,3 +121,104 @@ test("autosave keeps native keyboard focus and preserves an unsaved draft across
 	await page.locator("[data-reload-attempt]").waitFor({ state: "hidden" });
 	assert.equal(await radios.nth(1).isChecked(), true);
 });
+
+for (const responseStatus of [200, 503]) {
+	test(`quiz ignores a delayed ${responseStatus} save after restoring and saving newer choices`, async t => {
+		const app = await startLessonGateway({ quiz: true });
+		t.after(app.close);
+		const browser = await chromium.launch();
+		t.after(() => browser.close());
+		const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+		page.setDefaultTimeout(10000);
+		await page.goto(app.origin + "/account/login.html");
+		const email = `late-${responseStatus}@example.test`;
+		await page.getByLabel("כתובת אימייל").fill(email);
+		await page.getByLabel("סיסמה", { exact: true }).fill("correct-password");
+		await page.getByRole("button", { name: "כניסה לחשבון", exact: true }).click();
+		await page.waitForURL(app.origin + "/account/");
+		await app.grant(email);
+		// Hold an already-received response so abort alone cannot prevent acceptance.
+		await page.addInitScript(() => {
+			const fetch = window.fetch.bind(window);
+			window.fetch = async (url, options) => {
+				const response = await fetch(url, options);
+				if (!String(url).endsWith("/save") || !window.holdSave) return response;
+				window.holdSave = false;
+				const text = await response.text();
+				await new Promise(resolve => { window.releaseSave = resolve; });
+				setTimeout(() => { window.saveReleased = true; }, 0);
+				return new Response(text, { status: response.status, headers: response.headers });
+			};
+		});
+		await page.goto(app.origin + "/account/learning.html");
+		await page.getByRole("button", { name: "פתיחת התרגול", exact: true }).click();
+		if (responseStatus === 503) await page.route("**/api/attempts/*/save", route => route.fulfill({ status: 503, contentType: "application/json", body: '{"error":"unavailable"}' }), { times: 1 });
+		await page.evaluate(() => { window.holdSave = true; });
+		const fields = page.locator("[data-questions] fieldset");
+		await fields.nth(0).getByRole("radio").first().check();
+		await page.waitForFunction(() => typeof window.releaseSave === "function");
+		await page.evaluate(() => {
+			Object.defineProperty(document, "hidden", { configurable: true, value: true });
+			document.dispatchEvent(new Event("visibilitychange"));
+		});
+		assert.equal(await page.locator("[data-questions]").textContent(), "");
+		await page.evaluate(() => {
+			Object.defineProperty(document, "hidden", { configurable: true, value: false });
+			document.dispatchEvent(new Event("visibilitychange"));
+		});
+		await page.locator("[data-attempt]").waitFor();
+		await fields.nth(1).getByRole("radio").first().check();
+		await page.locator("[data-save-status]").filter({ hasText: "התשובות נשמרו" }).waitFor();
+		const feedback = await page.locator("[data-save-status]").textContent();
+		await page.evaluate(() => window.releaseSave());
+		await page.waitForFunction(() => window.saveReleased);
+		assert.equal(await page.locator("[data-save-status]").textContent(), feedback);
+		assert.equal(await fields.nth(0).getByRole("radio").first().isChecked(), true);
+		assert.equal(await fields.nth(1).getByRole("radio").first().isChecked(), true);
+		await page.reload();
+		await page.getByRole("button", { name: "פתיחת התרגול", exact: true }).click();
+		assert.equal(await fields.nth(1).getByRole("radio").first().isChecked(), true);
+	});
+}
+
+test("manual reload preserves unsaved quiz answers after a failed tab restore", async t => {
+	const app = await startLessonGateway({ quiz: true });
+	t.after(app.close);
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	const page = await browser.newPage();
+	page.setDefaultTimeout(10000);
+	await page.goto(app.origin + "/account/login.html");
+	await page.getByLabel("כתובת אימייל").fill("restore-retry@example.test");
+	await page.getByLabel("סיסמה", { exact: true }).fill("correct-password");
+	await page.getByRole("button", { name: "כניסה לחשבון", exact: true }).click();
+	await page.waitForURL(app.origin + "/account/");
+	await app.grant("restore-retry@example.test");
+	await page.goto(app.origin + "/account/learning.html");
+	await page.getByRole("button", { name: "פתיחת התרגול", exact: true }).click();
+	const answer = page.locator("[data-questions] fieldset").first().getByRole("radio").nth(1);
+	await page.route("**/api/attempts/*/save", route => route.fulfill({ status: 503, contentType: "application/json", body: '{"error":"unavailable"}' }));
+	await answer.check();
+	await page.locator("[data-save-status]").filter({ hasText: "בדקו את החיבור" }).waitFor();
+	await page.evaluate(() => {
+		Object.defineProperty(document, "hidden", { configurable: true, value: true });
+		document.dispatchEvent(new Event("visibilitychange"));
+	});
+	await page.route("**/api/learning", route => route.fulfill({ status: 503, contentType: "application/json", body: '{"error":"unavailable"}' }));
+	await page.evaluate(() => {
+		Object.defineProperty(document, "hidden", { configurable: true, value: false });
+		document.dispatchEvent(new Event("visibilitychange"));
+	});
+	await page.locator("[data-learning-status]").filter({ hasText: "בדקו את החיבור" }).waitFor();
+	await page.unroute("**/api/learning");
+	await page.locator("[data-reload]").click();
+	await page.waitForFunction(() => !document.querySelector("[data-reload]").disabled);
+	assert.equal(await page.locator("[data-questions] fieldset").count(), 20);
+	assert.equal(await answer.isChecked(), true);
+	await page.unroute("**/api/attempts/*/save");
+	await page.getByRole("button", { name: "שמירת תשובות", exact: true }).click();
+	await page.locator("[data-save-status]").filter({ hasText: "התשובות נשמרו" }).waitFor();
+	await page.reload();
+	await page.getByRole("button", { name: "פתיחת התרגול", exact: true }).click();
+	assert.equal(await answer.isChecked(), true);
+});

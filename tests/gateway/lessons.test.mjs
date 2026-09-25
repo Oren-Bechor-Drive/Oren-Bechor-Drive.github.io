@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { startAccountGateway, browserClient } from "../helpers/account-gateway.mjs";
+import { testSectionPath, testSections } from "../fixtures/test-sections.mjs";
 
 async function signedIn(app) {
 	const client = browserClient(app.origin);
@@ -8,7 +9,7 @@ async function signedIn(app) {
 	await client.request("login", { email: "learner@example.test", password: "correct-password" });
 	return client;
 }
-const read = (app, key, cookie = "", options = {}) => fetch(`${app.origin}/api/lessons/${key}`, { ...options, headers: { cookie } });
+const read = (app, key, cookie = "", options = {}) => fetch(`${app.origin}${testSectionPath(key)}`, { ...options, headers: { cookie } });
 
 test("test lesson reads require an ordinary signed-in session and never cache bodies", async t => {
 	const app = await startAccountGateway();
@@ -27,14 +28,14 @@ test("test lesson reads require an ordinary signed-in session and never cache bo
 	const allowed = await read(app, "free", client.cookie);
 	assert.equal(allowed.status, 200);
 	assert.equal(allowed.headers.get("cache-control"), "private, no-store");
-	assert.deepEqual(await allowed.json(), { lesson: { id: "version", sectionId: "a524e32d-2640-4d94-a51c-000000000001", accessLevel: "free", revision: 1, body: "תוכן בדיקה בלבד." }, position: null, csrf: client.csrf });
+	assert.deepEqual(await allowed.json(), { lesson: { id: "version", sectionId: testSections.free, accessLevel: "free", revision: 1, body: "תוכן בדיקה בלבד." }, position: null, csrf: client.csrf, media: [] });
 	assert.equal(calls[0].token, [...app.provider.tokens.keys()][0]);
 	const denied = await read(app, "paid", client.cookie);
 	assert.equal(denied.status, 404);
 	assert.deepEqual(await denied.json(), { error: "lesson_unavailable" });
 	assert.equal((await read(app, "free", client.cookie, { method: "POST" })).status, 405);
-	assert.equal((await read(app, "unknown", client.cookie)).status, 404);
-	assert.equal((await read(app, "free?learner_id=another&plan=paid", client.cookie)).status, 400);
+	assert.equal((await fetch(`${app.origin}/api/sections/unknown/free`, { headers: { cookie: client.cookie } })).status, 404);
+	assert.equal((await fetch(`${app.origin}${testSectionPath("free")}?learner_id=another&plan=paid`, { headers: { cookie: client.cookie } })).status, 400);
 	await client.request("logout", {});
 	assert.equal((await read(app, "free", client.cookie)).status, 401);
 });
@@ -94,7 +95,7 @@ test("lesson preparation admits once and returns only the learner's reading data
 	app.provider.learner = async () => ({ id: "learner@example.test", display_name: "" });
 	app.provider.readPosition = async (token, section, level) => {
 		assert.equal(token, [...app.provider.tokens.keys()][0]);
-		assert.equal(section, "a524e32d-2640-4d94-a51c-000000000001");
+		assert.equal(section, testSections.free);
 		assert.equal(level, "free");
 		return { content_version_id: "older-version", position: 3750, revision: "2", learner_id: "private" };
 	};
@@ -104,8 +105,8 @@ test("lesson preparation admits once and returns only the learner's reading data
 	const response = await read(app, "free", client.cookie);
 	assert.equal(response.status, 200);
 	assert.deepEqual(await response.json(), {
-		lesson: { id: "current-version", sectionId: "a524e32d-2640-4d94-a51c-000000000001", accessLevel: "free", revision: 3, body: "תוכן בדיקה בלבד." },
-		position: { contentVersionId: "older-version", position: 3750, revision: 2 }, csrf: client.csrf,
+		lesson: { id: "current-version", sectionId: testSections.free, accessLevel: "free", revision: 3, body: "תוכן בדיקה בלבד." },
+		position: { contentVersionId: "older-version", position: 3750, revision: 2 }, csrf: client.csrf, media: [],
 	});
 	assert.equal(admissions, 1);
 });
@@ -134,4 +135,15 @@ test("lesson access is checked after position preparation and denied results exp
 	const response = await read(app, "paid", client.cookie);
 	assert.equal(response.status, 404);
 	assert.deepEqual(await response.json(), { error: "lesson_unavailable" });
+});
+
+test("retired synthetic lesson routes are unavailable", async t => {
+	const app = await startAccountGateway();
+	t.after(app.close);
+	const client = await signedIn(app);
+	for (const path of ["/api/lessons/free", "/api/lessons/paid", "/api/lessons/free/position", "/api/lessons/paid/position"]) {
+		const response = await fetch(app.origin + path, { headers: { cookie: client.cookie } });
+		assert.equal(response.status, 404, path);
+		assert.deepEqual(await response.json(), { error: "not_found" });
+	}
 });

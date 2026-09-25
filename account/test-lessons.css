@@ -1,8 +1,0 @@
-.test-lesson-links { display: flex; flex-wrap: wrap; gap: 12px; margin-block: 0 24px; }
-.test-lesson-links .account-action { flex: 1 1 160px; }
-.test-lesson-links [aria-current="page"] { background: var(--primary); color: var(--on-primary); }
-.test-lesson-links [aria-current="page"]:hover { background: var(--primary-hover); }
-.test-lesson-body { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.65; }
-[data-lesson-content] h2 { margin-block: 0 12px; font-size: 20px; line-height: 1.4; }
-.test-lesson-position { margin-block-start: 24px; padding-block-start: 24px; border-block-start: 1px solid var(--border); }
-.test-lesson-position p { margin: 0; }

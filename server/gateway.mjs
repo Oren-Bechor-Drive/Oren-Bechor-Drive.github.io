@@ -132,20 +132,6 @@ export function createGateway({ origin, provider = null, media = null, googleEna
 				}
 				return respond(res, await accounts.learning(token, operation, ...args));
 			}
-			if (url.pathname.startsWith("/api/lessons/")) {
-				if (url.search) fail(400, "invalid_input");
-				if (!provider) fail(503, "unavailable");
-				const target = url.pathname.slice("/api/lessons/".length);
-				if (target.endsWith("/position")) {
-					const key = target.slice(0, -"/position".length);
-					if (req.method === "GET") return respond(res, await accounts.readPosition(token, key));
-					if (req.method !== "POST") fail(405, "method_not_allowed");
-					if (req.headers.origin !== origin || req.headers["content-type"]?.split(";")[0].trim() !== "application/json" || !accounts.acceptsRequest(token, req.headers["x-csrf-token"])) fail(403, "request_rejected");
-					return respond(res, await accounts.savePosition(token, key, await input(req, "position")));
-				}
-				if (req.method !== "GET") fail(405, "method_not_allowed");
-				return respond(res, await accounts.readLesson(token, target));
-			}
 			if (!url.pathname.startsWith("/api/account/")) fail(404, "not_found");
 			route = url.pathname.slice("/api/account/".length);
 			if (route === "session" && req.method === "GET") return respond(res, await accounts.session(token));

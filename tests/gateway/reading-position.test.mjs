@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { startLessonGateway } from "../helpers/test-lessons.mjs";
 import { browserClient } from "../helpers/account-gateway.mjs";
+import { testSectionPath } from "../fixtures/test-sections.mjs";
 
 async function login(origin, email) {
 	const client = browserClient(origin);
@@ -10,14 +11,18 @@ async function login(origin, email) {
 	return client;
 }
 function positionRequest(origin, client, key, body, headers = {}) {
-	return fetch(`${origin}/api/lessons/${key}/position`, {
+	return fetch(`${origin}${testSectionPath(key)}${body === undefined ? "" : "/position"}`, {
 		method: body === undefined ? "GET" : "POST",
 		headers: { cookie: client.cookie, origin, "content-type": "application/json", "x-csrf-token": client.csrf, ...headers },
 		...(body === undefined ? {} : { body: JSON.stringify(body) }),
 	});
 }
+async function readingPosition(origin, client, key) {
+	const response = await positionRequest(origin, client, key);
+	return { position: (await response.json()).position };
+}
 async function lesson(origin, client, key) {
-	return (await (await fetch(`${origin}/api/lessons/${key}`, { headers: { cookie: client.cookie } })).json()).lesson;
+	return (await (await fetch(`${origin}${testSectionPath(key)}`, { headers: { cookie: client.cookie } })).json()).lesson;
 }
 
 test("saved positions survive new sessions, reject stale changes and isolate learners", async t => {
@@ -25,7 +30,7 @@ test("saved positions survive new sessions, reject stale changes and isolate lea
 	t.after(app.close);
 	const first = await login(app.origin, "reader@example.test");
 	assert.equal((await positionRequest(app.origin, first, "free")).status, 200);
-	assert.deepEqual(await (await positionRequest(app.origin, first, "free")).json(), { position: null });
+	assert.deepEqual(await readingPosition(app.origin, first, "free"), { position: null });
 	const content = await lesson(app.origin, first, "free");
 	const input = { contentVersionId: content.id, position: 3750, expectedRevision: 0 };
 	const saved = await positionRequest(app.origin, first, "free", input);
@@ -35,17 +40,17 @@ test("saved positions survive new sessions, reject stale changes and isolate lea
 	assert.deepEqual(await saved.json(), expected);
 	assert.deepEqual(await (await positionRequest(app.origin, first, "free", input)).json(), expected);
 	const second = await login(app.origin, "reader@example.test");
-	assert.deepEqual(await (await positionRequest(app.origin, second, "free")).json(), expected);
+	assert.deepEqual(await readingPosition(app.origin, second, "free"), expected);
 	const conflict = await positionRequest(app.origin, second, "free", { ...input, position: 8000 });
 	assert.equal(conflict.status, 409);
 	assert.deepEqual(await conflict.json(), { error: "position_conflict", ...expected });
 	const updated = await positionRequest(app.origin, second, "free", { ...input, position: 8000, expectedRevision: 1 });
 	assert.equal((await updated.json()).position.revision, 2);
 	const other = await login(app.origin, "other@example.test");
-	assert.deepEqual(await (await positionRequest(app.origin, other, "free")).json(), { position: null });
+	assert.deepEqual(await readingPosition(app.origin, other, "free"), { position: null });
 	assert.equal((await positionRequest(app.origin, other, "free", { ...input, learnerId: "reader@example.test" })).status, 400);
 	assert.equal((await positionRequest(app.origin, other, "free", { ...input, position: 0 })).status, 200);
-	assert.equal((await (await positionRequest(app.origin, first, "free")).json()).position.position, 8000);
+	assert.equal((await readingPosition(app.origin, first, "free")).position.position, 8000);
 });
 
 test("position writes require valid inputs, CSRF and current paid access without losing saved data", async t => {
@@ -65,9 +70,10 @@ test("position writes require valid inputs, CSRF and current paid access without
 	assert.equal((await positionRequest(app.origin, client, "paid", input)).status, 200);
 	await app.revoke("paid-reader@example.test");
 	assert.equal((await positionRequest(app.origin, client, "paid", { ...input, position: 5000, expectedRevision: 1 })).status, 404);
-	assert.equal((await (await positionRequest(app.origin, client, "paid")).json()).position.position, 10000);
+	assert.equal((await positionRequest(app.origin, client, "paid")).status, 404);
 	assert.equal((await positionRequest(app.origin, client, "free", input)).status, 404);
 	await app.grant("paid-reader@example.test");
+	assert.equal((await readingPosition(app.origin, client, "paid")).position.position, 10000);
 	assert.equal((await positionRequest(app.origin, client, "paid", { ...input, position: 5000, expectedRevision: 1 })).status, 200);
 	await client.request("logout", {});
 	assert.equal((await positionRequest(app.origin, client, "paid")).status, 401);
