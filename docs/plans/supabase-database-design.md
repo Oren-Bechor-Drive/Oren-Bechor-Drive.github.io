@@ -4,6 +4,8 @@ Status: Approved and implemented for development on 2026-09-23. Migration `20260
 
 This is the first implementation slice of the [agreed product rules](paid-service-start.md), within the [paid-service architecture](paid-service-architecture.md). It specifies database ownership and access. The [local account gateway](../local-accounts.md) now implements account screens and cookie sessions. Live email delivery, Google OAuth configuration, payment integration, and production content publication remain separate work.
 
+The 2026-09-25 [test-lesson integration](../test-lessons.md) uses these existing database contracts for saved percentages, conflict recovery, expiry, retained progress and renewal. Local gateway and desktop/mobile browser tests exercise real PostgreSQL; [manual reproduction](../manual-test-lessons.md) uses the same disposable fixture. No schema change was required. These results do not extend the dated hosted verification to a live browser/gateway journey.
+
 ## What this slice proves
 
 A verified learner can read a free test explanation. A learner with a current paid entitlement can also read a paid test explanation in the same learning section. When that entitlement ends, the next request for paid text is denied without deleting progress. A new entitlement restores access. Another learner cannot read or change that progress.

@@ -242,7 +242,15 @@ Course-only utility icons use the same local Font Awesome Classic Solid source. 
 - Formatted as full pills (`9999px`), `label-sm` font, padding 4px 10px.
 
 ### Input Fields & Selects
-- **Text Inputs:** `#FFFFFF` fill, 1px border `#dfe5f0`, `0.5rem` radius, padding 12px 16px, text `#141D1E`, placeholder `#8C9799`. Active focus creates a crisp `#264796` border accompanied by a 3px diffused outer halo (`rgba(38, 71, 150, 0.16)`).
+- **Text Inputs:** `#FFFFFF` fill, 1px border `#dfe5f0`, `0.5rem` radius, padding 12px 16px, text `#141D1E`, placeholder `#8C9799`. Reserve the outer focus indicator for keyboard navigation, following Focus behavior below.
+
+### Focus behavior
+
+- Mouse clicks and touch taps must not display focus rings, outlines, or focus halos on fields, buttons, or links. Clicking a label and typing in a pointer-focused field must also keep the ring hidden.
+- Preserve native focus, caret placement, selection, editing and activation. Never blur a clicked control or prevent its default pointer action just to hide an outline. Do not autofocus fields on page load.
+- Tab and Shift+Tab navigation must show a clear focus indicator. Do not globally remove outlines. Keep the baseline `:focus-visible` styling when JavaScript is disabled or fails.
+- `:focus-visible` alone is insufficient for text and number inputs because browsers can match it after a click. Account pages share `account/focus.js` and the input-mode rules in `account/account.css`; import the helper from each account entry module instead of duplicating listeners. A pointer event hides rings; Tab restores them. Ordinary typing does not change the input mode.
+- Verify clicks, touch taps, label activation, typing after a click, and keyboard navigation when adding or changing controls. Include switching from keyboard navigation back to pointer input.
 
 ### Checkboxes, Radios & Switches
 - **Checkboxes & Radios:** Unchecked state features an empty `#FFFFFF` fill and `#c5cfe2` border. Checked state transitions to a royal blue `#264796` fill with a crisp check/bullet.

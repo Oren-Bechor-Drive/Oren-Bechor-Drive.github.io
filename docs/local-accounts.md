@@ -56,9 +56,11 @@ Enable the Google provider in Supabase and enter the Google client ID and secret
 - Authenticated sessions last at most 12 hours. Recovery authority lasts 10 minutes. Restarting Node signs everyone out. Local session storage is bounded to 1,000 records.
 - Sessions serialize refresh and changes. Password reset deletes local sessions for the user and invalidates authentication already in flight. This conservatively cancels an unrelated concurrent sign-in too; that learner may retry. If two recovery sessions complete password changes concurrently, local revocation does not turn an already-completed change into a false failure response.
 - Password reset requests global Supabase sign-out. If that provider call fails after the password changed, the response reports the completed change and the UI explains that other devices could not all be signed out. Local sessions are already gone. Ordinary sign-out always ends this local session and attempts Supabase local sign-out.
-- API responses never use shared caching. POST requests require the exact origin, JSON, a CSRF header, and a body of at most 16 KiB. Limits are 20 mutations per 15 minutes and 150 API requests per minute per socket address. Forwarded IP headers are not trusted.
+- API responses never use shared caching. POST requests require the exact origin, JSON, a CSRF header, and a body of at most 16 KiB. Limits are 20 account mutations per 15 minutes and 150 API requests per minute per socket address. Lesson-position saves use the general API limit. Forwarded IP headers are not trusted.
 - The local HTTP process binds to IPv4 loopback. HTTPS, external hosts, and IPv6 origins are rejected by this launcher because it serves plain HTTP on `127.0.0.1`. `NODE_ENV=production` is refused. Hosting needs durable session storage, distributed locking/rate limits if replicated, HTTPS/proxy configuration, and a reviewed deployment. Do not place this process behind a public proxy as a production launch.
-- The account page links to [two synthetic test lessons](test-lessons.md). Their bodies load through learner-scoped database reads; temporary paid access requires a privileged development SQL operation. Google and real email delivery require external setup. Payments, protected publication of actual course material, private media, and browser progress integration remain separate work.
+- The account page links to [two synthetic test lessons](test-lessons.md). Their bodies load through learner-scoped database reads; temporary paid access requires a privileged development SQL operation. Google and real email delivery require external setup. The test reader saves reading percentages, resumes saved positions and requires explicit reload after a stale-save conflict. Payments, protected publication and progress for actual course material, and private media remain separate work.
+
+For a credential-free manual exercise, use the [disposable test-lesson walkthrough](manual-test-lessons.md). It starts its own local gateway with deterministic synthetic Auth and real PostgreSQL, separate from `npm run dev` and the hosted development project. It covers cancellation simulation, expiry, retained progress, renewal and learner isolation.
 
 ## Verification
 
@@ -72,6 +74,8 @@ git diff --check
 ```
 
 Gateway tests make real local HTTP requests against a deterministic provider fixture. Adapter tests check the Supabase HTTP methods, PKCE payloads, token scopes, and error handling. Browser tests exercise login, registration, recovery/reset, sign-out, keyboard entry, password visibility, account navigation, errors, desktop/mobile layouts, and no-JavaScript fallbacks. The account layout checks also cover the standalone card, local icons, keyboard-only input outlines, viewport bounds, and access to controls on short screens. No real email is sent by these tests. They do not prove SMTP delivery or live Google configuration.
+
+The test-lesson gateway and desktop/mobile Chromium suites additionally exercise real PostgreSQL access checks, saved-position conflicts, renewal after a simulated 31-day lapse, learner isolation and delayed responses after reader invalidation. See [test seams and limits](test-lessons.md#verification-and-limits). These fixtures do not establish live gateway/PostgREST integration.
 
 ## Sources
 

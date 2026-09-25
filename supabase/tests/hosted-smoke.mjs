@@ -57,6 +57,7 @@ if (phase === "initial") {
 	check(grant.status===403,"Learners cannot extend entitlements");
 	const saved = await save(4200,0);
 	check(saved.status===200,"Paid progress saved");
+	check(!Array.isArray(saved.data) && saved.data?.position===4200 && saved.data?.content_version_id===fixture.paidVersion,"Save RPC returns the saved position as one object");
 	const retry = await save(4200,0);
 	assert.deepEqual(retry.data,saved.data);
 	check((await progress("free")).length===0,"Another learner cannot read paid learner's progress");

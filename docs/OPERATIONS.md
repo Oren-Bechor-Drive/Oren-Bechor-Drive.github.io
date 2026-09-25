@@ -1,6 +1,6 @@
 # Operations runbook
 
-This runbook covers content review, publication, support intake, and recovery for the current static site. GitHub Pages serves the root of `main` at `https://oren-bechor-drive.github.io/`. The repository has no account service, payment service, staff console, public support channel, monitoring system, or application database.
+This runbook covers content review, publication, support intake, and recovery for the current static site. GitHub Pages serves the root of `main` at `https://oren-bechor-drive.github.io/`. The published static site has no running account backend. The repository includes a local account gateway and a Supabase development database foundation; neither supplies a production account service. Payments, a staff console, a public support channel and application monitoring remain unimplemented.
 
 Use these project sources when a change touches their scope:
 
@@ -10,6 +10,12 @@ Use these project sources when a change touches their scope:
 - [Course topic coverage](reference/course-topic-coverage.md) maps the supplied PDF to adapted lessons.
 - [Official source review](reference/official-source-review-2026-09-22.md) records the latest bounded review and its limits.
 - [README](../README.md) contains maintenance commands and GitHub Pages settings.
+
+## Check local account and test-lesson changes
+
+Use [local account setup](local-accounts.md) for the configured development gateway and [test-lesson setup](test-lessons.md) for synthetic content and temporary development grants. Use the [manual browser/API walkthrough](manual-test-lessons.md) to check cancellation simulation, expiry, retained progress, renewal and learner isolation in an owned disposable database without hosted credentials. Close that fixture using `await app.close()` after testing.
+
+Run `npm test`, `npm run check:media`, `npm run check:links` and `git diff --check` before publishing these changes. Record local fixture results separately from [hosted verification](../supabase/tests/README.md). Pushing files to GitHub Pages does not deploy the gateway, apply migrations, grant access, or configure Auth providers. Keep real restricted course content out of public delivery.
 
 ## Keep evidence, approval, and technical checks separate
 

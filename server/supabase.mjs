@@ -45,6 +45,17 @@ export function createSupabaseProvider({ url, publishableKey, secretKey, fetcher
 				body: { p_section_id: sectionId, p_access_level: accessLevel } });
 			return rows[0] ?? null;
 		},
+		async readPosition(token, sectionId, accessLevel) {
+			const query = new URLSearchParams({ select: "content_version_id,position,revision", section_id: `eq.${sectionId}`, access_level: `eq.${accessLevel}`, limit: "1" });
+			const rows = await request(`/rest/v1/section_progress?${query}`, { token });
+			return rows[0] ?? null;
+		},
+		async savePosition(token, sectionId, accessLevel, { contentVersionId, position, expectedRevision }) {
+			// This RPC returns a single composite row, not a SETOF collection.
+			return request("/rest/v1/rpc/save_my_position", { method: "POST", token,
+				body: { p_section_id: sectionId, p_access_level: accessLevel, p_content_version_id: contentVersionId,
+					p_position: position, p_expected_revision: expectedRevision } });
+		},
 		updatePassword: (token, password) => request("/auth/v1/user", { method: "PUT", token, body: { password } }),
 		logout: (token, scope = "local") => request(`/auth/v1/logout?scope=${scope}`, { method: "POST", token }),
 	};

@@ -314,7 +314,7 @@ Browser tests derive the gallery count and last photo from the generated list. P
 
 The account/access migration is applied to development project `zurpazevlvtylnzvagoo`. It provides learner identities, separate free and paid text versions, development entitlements, and saved reading positions. Database policies enforce verified live sessions, account isolation, current publication, and entitlement expiry. Progress survives expiry and renewal.
 
-The local account gateway now uses verified Auth and learner provisioning. Its Hebrew registration, login, recovery, and account pages reuse the current site styles. The static course files are still public; payments, browser progress integration, and private media are not implemented. Google and real email delivery still need provider configuration. Do not put actual restricted lesson text or assets into this public repository.
+The local account gateway now uses verified Auth and learner provisioning. Its Hebrew registration, login, recovery, and account pages reuse the current site styles. The static course files are still public. Synthetic test lessons support saved reading percentages, conflict recovery and resume; payments, progress for actual course material, and private media are not implemented. Google and real email delivery still need provider configuration. Do not put actual restricted lesson text or assets into this public repository.
 
 ### Local account screens and gateway
 
@@ -323,6 +323,8 @@ npm run dev
 ```
 
 Open `http://localhost:3000/account/login.html`. This previews the screens immediately. To enable real authentication, copy `.env.example` to `.env.local`, fill the publishable and server-only Supabase keys, and restart. See [local account setup](docs/local-accounts.md) for the callback allowlist, Google, SMTP, and verification steps. MCP authentication does not configure runtime keys.
+
+For a disposable browser/API environment without hosted credentials, follow the [manual test-lesson walkthrough](docs/manual-test-lessons.md). It covers cancellation simulation, expiry, retained progress, renewal and two-learner isolation using synthetic accounts and real local PostgreSQL. This fixture is separate from `npm run dev`.
 
 `npm run test:gateway` exercises cookie sessions, CSRF, PKCE, isolation, expiry, revocation, concurrent refresh/reset, and the Supabase adapter. `npm test` also includes the Hebrew account browser journeys. The fixtures send no real email and do not verify live Google/SMTP setup.
 
@@ -346,7 +348,9 @@ See [database ownership](docs/ARCHITECTURE.md#accounts-and-access-development-da
 - [PRODUCT.md](PRODUCT.md): current audience, scope, and supplied evidence.
 - [DESIGN.md](DESIGN.md): visual system and the approved welcome-page composition.
 - [CONTEXT.md](CONTEXT.md): course and gallery terminology.
-- [Architecture](docs/ARCHITECTURE.md): content verification, site-wide media coverage and student-gallery ownership.
+- [Architecture](docs/ARCHITECTURE.md): content verification, media/gallery ownership, local account sessions and test-lesson reader boundaries.
+- [Local test lessons](docs/test-lessons.md): setup, lesson and reading-position API contracts, and verification limits.
+- [Manual browser/API walkthrough](docs/manual-test-lessons.md): disposable local cancellation, expiry, retention, renewal and learner-isolation scenarios.
 - [Paid-service architecture draft](docs/plans/paid-service-architecture.md): provider-neutral future service boundaries, data model and failure handling. It does not describe shipped capabilities.
 - [Paid-service decisions and first setup](docs/plans/paid-service-start.md): agreed free/paid access rules, monthly billing behavior, sign-in methods, progress retention, and the first Supabase development milestone.
 - [Supabase database and access design](docs/plans/supabase-database-design.md): implemented development tables, permissions, progress rules, and database acceptance tests. The local account gateway and [synthetic test lessons](docs/test-lessons.md) use this foundation; billing and protected publication of actual course material remain future work.
@@ -368,15 +372,15 @@ See [LICENSE](LICENSE) for the complete scope.
 
 Roadmap reviewed against the repository, agreed product decisions, account setup guide, and recorded review limits on 2026-09-23. This backlog covers the path from the current public welcome page and course preview to a paid learning service. It records future work, not available capabilities or authorization to implement every item. `PRODUCT.md` still describes the current release. Update it and the relevant architecture and domain documentation when each future capability is approved for implementation.
 
-Already present: the public welcome page with its five-row FAQ, a noindex 404 page, a searchable ten-topic library, ten reading pages covering the developed PDF topics, four placeholder practice quizzes, responsive Hebrew RTL layouts, baseline navigation and reading without JavaScript, media and local-link audits, search/sharing metadata for the public page, and CI with unit and Chromium coverage plus Firefox and WebKit smoke checks. Extend these rather than rebuilding them. The preview still has 16 video and 12 image/diagram placeholders, no real quiz questions or grading, and no payments or persistent browser progress. Accounts work through the local development gateway once provider credentials are configured.
+Already present: the public welcome page with its five-row FAQ, a noindex 404 page, a searchable ten-topic library, ten reading pages covering the developed PDF topics, four placeholder practice quizzes, responsive Hebrew RTL layouts, baseline navigation and reading without JavaScript, media and local-link audits, search/sharing metadata for the public page, and CI with unit and Chromium coverage plus Firefox and WebKit smoke checks. Extend these rather than rebuilding them. The preview still has 16 video and 12 image/diagram placeholders, no real quiz questions or grading, and no payments or persistent browser progress. Accounts work through the local development gateway once provider credentials are configured. Separate synthetic test lessons support saved reading percentages and the verified local access lifecycle described below.
 
 Work through the sections below in dependency order. Content production and public-page work can proceed alongside service planning. A paid launch depends on approved teaching material, working account and billing journeys, server-enforced access, and the launch checks below. Optional additions at the end are not launch requirements.
 
 ### Next development milestone
 
 - [x] Connect the local gateway to one account-only free test lesson and one paid test lesson using the existing learner-scoped database functions. The [local test lessons](docs/test-lessons.md) use synthetic content and privileged development entitlements, with no real checkout or paid material in the public repository. Local gateway/browser tests use real PostgreSQL access checks; hosted setup has seed readback only.
-- [ ] Connect saved reading positions to those test lessons. Exercise save/reload, stale-revision conflicts, and resuming on another signed-in browser.
-- [ ] Prove the full browser/API journey: signed-out requests receive no lesson body; a free learner cannot read paid text; simulated cancellation preserves access until the paid period ends; expiry blocks paid reads and saves while retaining progress and free access; renewal restores access and position; a second learner cannot read or overwrite the first learner's data. Database-only checks already cover these access rules. See the [first development milestone](docs/plans/paid-service-start.md#first-development-milestone).
+- [x] Connect saved reading positions to those test lessons. The explicit percentage control supports save/reload, stale-revision conflict recovery, and resuming on another signed-in browser. Gateway and desktop/mobile Chromium tests use real PostgreSQL; live hosted integration remains unverified. See [local test lessons](docs/test-lessons.md#save-and-resume-reading-positions).
+- [x] Prove the local browser/API journey: signed-out requests receive no lesson body; a free learner cannot read paid text; simulated cancellation preserves the finite paid period; expiry blocks paid reads and saves while retaining progress and free access; renewal restores access and position; a second learner cannot read or overwrite the first learner's data. Gateway and desktop/mobile Chromium tests use real PostgreSQL, including a simulated 31-day lapse. Cancellation and renewal use development entitlements, not a billing integration. See [verification and limits](docs/test-lessons.md#simulated-cancellation-expiry-and-renewal).
 
 ### Existing items reviewed
 

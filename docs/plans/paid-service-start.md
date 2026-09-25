@@ -58,9 +58,15 @@ Completed: the six-table database, explicit grants and RLS, trusted provisioning
 
 The gateway now reads an account-only free test lesson and a paid test lesson through the learner-scoped database function. The [test lesson guide](../test-lessons.md) records the synthetic seed, privileged grant operation, browser/API contract and verification limits. Local gateway and browser tests use actual PostgreSQL access checks; the hosted project has seed readback only.
 
-Next: connect saved reading positions to the test lessons. Prove save/reload, stale-revision conflicts, cross-device resume, entitlement expiry, retained progress, renewal, and cross-account isolation through the browser and API. This remains a local milestone with synthetic content and privileged test entitlements. Classifying and removing restricted material from public delivery is still required before publishing the real course. Monthly price and payment-provider decisions can proceed alongside this work; production hosting, durable sessions, and deployed email/Google checks remain launch requirements.
+Saved reading positions now support save/reload, stale-revision conflict recovery and resume in a separate signed-in browser. The local API and desktop/mobile Chromium journeys also verify finite paid access, expiry, retained progress after a simulated 31-day lapse, renewal and cross-account isolation. Simulated cancellation leaves the current finite entitlement unchanged until its end; no billing cancellation operation exists. See [the journey and its limits](../test-lessons.md#simulated-cancellation-expiry-and-renewal).
+
+The local test-lesson access milestone is covered. Hosted Auth, real email/Google sign-in, live gateway/PostgREST integration, payments and production deployment still need their own verification. Classifying and removing restricted material from public delivery is required before publishing the real course. Monthly price and payment-provider decisions can proceed alongside that work; production hosting and durable sessions remain launch requirements.
+
+The [manual browser/API walkthrough](../manual-test-lessons.md) reproduces the local journey without hosted credentials. The [completed reader architecture plan](2026-09-25-test-lesson-architecture.md) records coordinated lesson loading and ownership of browser requests and reading state.
 
 ## Engineering sequence
+
+The local synthetic implementation has completed the sequence below. Live provider and deployment verification remain subject to the limits above.
 
 1. Finalize the account-and-access design using Supabase Auth, PostgreSQL, and a trusted API. Resolve session handling and the development origins explicitly against the [architecture draft](paid-service-architecture.md); the draft's preferred service-owned cookie sessions must not silently become browser-stored provider sessions.
 2. Write the scoped implementation plan with migrations, API contracts, account pages, private test fixtures, and authorization tests. Preserve the plain HTML, CSS, and JavaScript frontend.

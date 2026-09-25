@@ -80,7 +80,7 @@ body {
 	line-height: 1.25;
 }
 .account-field input:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
-html[data-account-keyboard="false"] .account-field input:focus-visible { outline: none; }
+html[data-account-keyboard="false"] :is(input, button, a):focus-visible { outline: none; }
 .account-password { position: relative; }
 .account-password input { padding-right: 52px; }
 .password-toggle {

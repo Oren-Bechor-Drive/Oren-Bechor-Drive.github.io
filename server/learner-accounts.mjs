@@ -210,20 +210,47 @@ export function createLearnerAccounts({ origin, provider = null, googleEnabled =
 			}
 		});
 	}
+	async function withLessonSession(token, key, work) {
+		if (!Object.hasOwn(testLessons, key)) fail(404, "not_found");
+		const record = sessions.get(token);
+		if (!record || record.mode !== "authenticated") fail(401, "session_expired");
+		return sessions.run(record, async () => {
+			await current(record);
+			const result = await work(record.tokens.access_token, testLessons[key], record.csrf);
+			if (!sessions.live(record)) fail(401, "session_expired");
+			return result;
+		});
+	}
+	const positionData = row => row ? { contentVersionId: row.content_version_id, position: row.position, revision: Number(row.revision) } : null;
 	return {
 		session,
-		async readLesson(token, key) {
-			if (!Object.hasOwn(testLessons, key)) fail(404, "not_found");
-			const record = sessions.get(token);
-			if (!record || record.mode !== "authenticated") fail(401, "session_expired");
-			return sessions.run(record, async () => {
-				await current(record);
-				const { sectionId, accessLevel } = testLessons[key];
-				const row = await provider.readSection(record.tokens.access_token, sectionId, accessLevel);
-				if (!sessions.live(record)) fail(401, "session_expired");
+		readLesson(token, key) {
+			return withLessonSession(token, key, async (accessToken, { sectionId, accessLevel }, csrf) => {
+				// Prepare progress first; the body read then checks current publication and access.
+				// These are separate database statements, not a transactional snapshot.
+				const position = positionData(await provider.readPosition(accessToken, sectionId, accessLevel));
+				const row = await provider.readSection(accessToken, sectionId, accessLevel);
 				if (!row) fail(404, "lesson_unavailable");
 				return { data: { lesson: { id: row.id, sectionId: row.section_id, accessLevel: row.access_level,
-					revision: row.revision, body: row.body_text } } };
+					revision: row.revision, body: row.body_text }, position, csrf } };
+			});
+		},
+		readPosition(token, key) {
+			return withLessonSession(token, key, async (accessToken, { sectionId, accessLevel }) => ({
+				data: { position: positionData(await provider.readPosition(accessToken, sectionId, accessLevel)) },
+			}));
+		},
+		savePosition(token, key, input) {
+			return withLessonSession(token, key, async (accessToken, { sectionId, accessLevel }) => {
+				try {
+					return { data: { position: positionData(await provider.savePosition(accessToken, sectionId, accessLevel, input)) } };
+				} catch (error) {
+					if (error.code === "42501") fail(404, "lesson_unavailable");
+					if (error.code !== "40001") throw error;
+					// Read only this learner's current row; never forward provider error details.
+					return { status: 409, data: { error: "position_conflict",
+						position: positionData(await provider.readPosition(accessToken, sectionId, accessLevel)) } };
+				}
 			});
 		},
 		acceptsRequest(token, csrf) { return matches(sessions.get(token)?.csrf, csrf); },

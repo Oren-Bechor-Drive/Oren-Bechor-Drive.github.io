@@ -5,6 +5,7 @@ const fail = (status, code) => { throw Object.assign(new Error(code), { status, 
 const fields = {
 	login: ["email", "password"], register: ["email", "password"], recover: ["email"],
 	reset: ["password"], google: [], logout: [],
+	position: ["contentVersionId", "position", "expectedRevision"],
 };
 
 async function input(req, route) {
@@ -29,6 +30,9 @@ async function input(req, route) {
 			: body.password.length >= (route === "login" ? 1 : 12) && body.password.length <= 128;
 		if (!valid) fail(400, "invalid_password");
 	}
+	if (route === "position" && (typeof body.contentVersionId !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(body.contentVersionId)
+		|| !Number.isInteger(body.position) || body.position < 0 || body.position > 10000
+		|| !Number.isSafeInteger(body.expectedRevision) || body.expectedRevision < 0)) fail(400, "invalid_input");
 	return body;
 }
 
@@ -47,7 +51,7 @@ export function createGateway({ origin, provider = null, googleEnabled = false, 
 	const redirect = (res, destination) => { res.writeHead(303, { Location: destination }); res.end(); };
 	function respond(res, result) {
 		if (result.cookie) setCookie(res, result.cookie.token, result.cookie.maxAge);
-		return result.redirect ? redirect(res, result.redirect) : json(res, result.data);
+		return result.redirect ? redirect(res, result.redirect) : json(res, result.data, result.status);
 	}
 	return async function handle(req, res) {
 		res.setHeader("Cache-Control", "private, no-store");
@@ -61,10 +65,18 @@ export function createGateway({ origin, provider = null, googleEnabled = false, 
 			const cookies = (req.headers.cookie ?? "").split(";").map(part => part.trim()).filter(part => part.startsWith(`${cookieName}=`));
 			const token = cookies.length === 1 ? cookies[0].slice(cookieName.length + 1) : null;
 			if (url.pathname.startsWith("/api/lessons/")) {
-				if (req.method !== "GET") fail(405, "method_not_allowed");
 				if (url.search) fail(400, "invalid_input");
 				if (!provider) fail(503, "unavailable");
-				return respond(res, await accounts.readLesson(token, url.pathname.slice("/api/lessons/".length)));
+				const target = url.pathname.slice("/api/lessons/".length);
+				if (target.endsWith("/position")) {
+					const key = target.slice(0, -"/position".length);
+					if (req.method === "GET") return respond(res, await accounts.readPosition(token, key));
+					if (req.method !== "POST") fail(405, "method_not_allowed");
+					if (req.headers.origin !== origin || req.headers["content-type"]?.split(";")[0].trim() !== "application/json" || !accounts.acceptsRequest(token, req.headers["x-csrf-token"])) fail(403, "request_rejected");
+					return respond(res, await accounts.savePosition(token, key, await input(req, "position")));
+				}
+				if (req.method !== "GET") fail(405, "method_not_allowed");
+				return respond(res, await accounts.readLesson(token, target));
 			}
 			if (!url.pathname.startsWith("/api/account/")) fail(404, "not_found");
 			route = url.pathname.slice("/api/account/".length);
@@ -73,7 +85,7 @@ export function createGateway({ origin, provider = null, googleEnabled = false, 
 			if (route === "callback" && req.method === "GET") return respond(res, await accounts.completeCallback(token, {
 				state: url.searchParams.get("state"), code: url.searchParams.get("code"), error: url.searchParams.has("error"),
 			}));
-			if (!Object.hasOwn(fields, route)) fail(404, "not_found");
+			if (route === "position" || !Object.hasOwn(fields, route)) fail(404, "not_found");
 			if (req.method !== "POST") fail(405, "method_not_allowed");
 			if (req.headers.origin !== origin || req.headers["content-type"]?.split(";")[0].trim() !== "application/json" || !accounts.acceptsRequest(token, req.headers["x-csrf-token"])) fail(403, "request_rejected");
 			if (!mutationLimit(req.socket.remoteAddress)) fail(429, "rate_limited");

@@ -20,6 +20,12 @@ The 23 database tests exercise actual SQL roles and policies, including:
 
 The local Auth contract cannot prove token validation, hosted API configuration, Google OAuth, email delivery, browser cookie handling, or payment behavior.
 
+## Gateway and reader integration verified on 2026-09-25
+
+The local gateway and desktop/mobile Chromium journeys use deterministic Auth with real disposable PostgreSQL. They cover saved reading percentages, stale-save conflicts, expiry, progress retained after a simulated 31-day lapse, renewal and learner isolation. Reader lifetime tests hold real responses to verify that superseded loads and saves cannot restore cleared content or steal focus. See [ownership and test seams](../../docs/ARCHITECTURE.md) and the [manual browser/API walkthrough](../../docs/manual-test-lessons.md).
+
+The hosted smoke script now also asserts that `save_my_position` returns one saved-position object rather than an array. Adapter tests cover that response contract locally. This added hosted assertion has not been rerun against the hosted project; the dated hosted evidence below remains the earlier database-only verification.
+
 ## Hosted smoke test
 
 `hosted-smoke.mjs` exercises the real Auth and REST endpoints using a publishable key and two short-lived synthetic password accounts. It is manual and never runs as part of CI. Run it only in the development project, with a trusted operator coordinating SQL fixture setup and cleanup. It uses no service-role key.

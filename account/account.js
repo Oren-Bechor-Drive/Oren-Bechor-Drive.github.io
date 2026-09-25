@@ -1,4 +1,5 @@
 import { registrationPasswordChecks } from "./password-policy.js";
+import "./focus.js";
 
 const mode = document.body.dataset.account;
 const form = document.querySelector("[data-account-form]");
@@ -10,14 +11,6 @@ const retry = document.querySelector("[data-retry]");
 let session;
 let busy = false;
 let ready = false;
-
-// Keep click-to-type behavior while reserving field outlines for keyboard navigation.
-document.addEventListener("pointerdown", () => {
-	document.documentElement.dataset.accountKeyboard = "false";
-}, { capture: true });
-document.addEventListener("keydown", event => {
-	if (event.key === "Tab") document.documentElement.dataset.accountKeyboard = "true";
-}, { capture: true });
 
 const messages = {
 	sign_in_failed: "לא הצלחנו להתחבר. בדקו את כתובת האימייל והסיסמה, וודאו שאישרתם את האימייל.",
