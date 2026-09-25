@@ -161,9 +161,17 @@ test("course profile opens accounts only when the gateway is configured", async 
 	const browser = await chromium.launch();
 	t.after(async () => { await browser.close(); await app.close(); });
 	const page = await browser.newPage();
-	await page.goto(app.origin + "/course/");
-	await page.getByRole("link", { name: "כניסה לחשבון" }).click();
-	await page.waitForURL(/account\/login.html/);
+	for (const path of [
+		"/course/",
+		"/course/right-of-way/quizzes/left-turn/",
+		"/course/right-of-way/quizzes/right-turn/",
+		"/course/right-of-way/quizzes/u-turn/",
+		"/course/priority-hierarchy/quizzes/priority/",
+	]) {
+		await page.goto(app.origin + path);
+		await page.getByRole("link", { name: "כניסה לחשבון" }).click({ timeout: 3000 });
+		await page.waitForURL(/account\/login.html/);
+	}
 	for (const contextOptions of [{ javaScriptEnabled: false }, {}]) {
 		const fallback = await browser.newPage({ viewport: { width: 390, height: 844 }, ...contextOptions });
 		await fallback.route("**/api/account/session", route => route.abort());
