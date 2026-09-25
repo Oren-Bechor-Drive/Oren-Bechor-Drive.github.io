@@ -37,7 +37,7 @@ A sub-subject within a learning topic, with its own explanations. Learners may s
 _Avoid_: Locked step, required stage
 
 **Practice quiz**:
-A set of multiple-choice questions covering one learning topic. Public theory practice uses the question count appropriate to the topic, requires all answers before scoring, and offers self-check answers and retries. It does not grant topic completion. Protected paid-course quizzes currently use a separate 20-question assessment with a passing threshold of 17 correct answers.
+A set of multiple-choice questions covering one learning topic. Public theory practice uses the question count appropriate to the topic, requires all answers before scoring, and offers self-check answers and retries. It does not grant topic completion. Both public and protected practice require at least 85% correct to pass, rounding the required answer count up to a whole number. Passing a protected quiz enables optional topic completion.
 _Avoid_: Driving test, certification exam
 
 **Quiz attempt**:

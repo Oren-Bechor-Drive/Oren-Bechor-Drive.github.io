@@ -31,8 +31,9 @@ test("protected learning routes validate ownership boundaries, CSRF and draft in
 	assert.equal((await request(`attempts/${id}/submit`, { expectedRevision: 2 })).body.marker, "submitQuiz");
 	assert.equal((await request("quizzes/right-of-way/history")).body.marker, "quizHistory");
 	assert.equal((await request("topics/right-of-way/complete", {})).body.marker, "completeTopic");
+	assert.equal((await request(`attempts/${id}/save`, { answers: Object.fromEntries(Array.from({ length: 26 }, (_, i) => [`q${i}`, "a"])), expectedRevision: 1 })).status, 200);
 	assert.ok(calls.every(call => call[1].startsWith("access-")));
-	for (const body of [{ answers: [], expectedRevision: 1 }, { answers: { q1: 0 }, expectedRevision: 1 }, { answers: { q1: "a" }, expectedRevision: -1 }, { answers: {}, expectedRevision: 1, learnerId: id }, { answers: Object.fromEntries(Array.from({ length: 21 }, (_, i) => [`q${i}`, "a"])), expectedRevision: 1 }]) {
+	for (const body of [{ answers: [], expectedRevision: 1 }, { answers: { q1: 0 }, expectedRevision: 1 }, { answers: { q1: "a" }, expectedRevision: -1 }, { answers: {}, expectedRevision: 1, learnerId: id }]) {
 		assert.equal((await request(`attempts/${id}/save`, body)).status, 400);
 	}
 	assert.equal((await request(`attempts/${id}/submit`, { score: 20, expectedRevision: 1 })).status, 400);

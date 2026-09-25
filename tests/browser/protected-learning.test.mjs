@@ -5,7 +5,9 @@ import { startLessonGateway } from "../helpers/test-lessons.mjs";
 
 for (const width of [1440, 390]) {
 	test(`protected quiz resumes, grades and completes at ${width}px`, async t => {
-		const app = await startLessonGateway({ quiz: true });
+		const count = width === 390 ? 17 : 26;
+		const minimum = width === 390 ? 15 : 23;
+		const app = await startLessonGateway({ quiz: true, quizCount: count });
 		t.after(app.close);
 		const browser = await chromium.launch();
 		t.after(() => browser.close());
@@ -25,22 +27,24 @@ for (const width of [1440, 390]) {
 		await page.getByRole("button", { name: "פתיחת התרגול", exact: true }).click();
 		const question = i => page.locator("[data-questions] fieldset").nth(i);
 		await question(0).waitFor();
-		assert.equal(await page.locator("[data-questions] fieldset").count(), 20);
+		assert.equal(await page.locator("[data-questions] fieldset").count(), count);
 		await question(0).getByRole("radio").first().check();
 		await page.locator("[data-save-status]").filter({ hasText: "התשובות נשמרו" }).waitFor();
 		await page.reload();
 		await page.getByRole("button", { name: "פתיחת התרגול", exact: true }).click();
 		assert.equal(await question(0).getByRole("radio").first().isChecked(), true);
 		await page.getByRole("button", { name: "הגשת התרגול", exact: true }).click();
-		await page.locator("[data-save-status]").filter({ hasText: "כל 20" }).waitFor();
+		await page.locator("[data-save-status]").filter({ hasText: `כל ${count}` }).waitFor();
 		assert.equal(await page.locator("[data-results]").isVisible(), false);
-		for (let i = 1; i < 20; i++) {
-			await question(i).getByRole("radio").nth(i < 17 ? 0 : 1).check();
+		for (let i = 1; i < count; i++) {
+			await question(i).getByRole("radio").nth(i < minimum ? 0 : 1).check();
 			await page.locator("[data-save-status]").filter({ hasText: "התשובות נשמרו" }).waitFor();
 		}
 		await page.getByRole("button", { name: "הגשת התרגול", exact: true }).click();
-		await page.locator("[data-score]").filter({ hasText: "17/20" }).waitFor();
-		assert.equal(await page.locator("[data-results] li").count(), 20);
+		await page.locator("[data-score]").filter({ hasText: `${minimum}/${count}` }).waitFor();
+		assert.equal(await page.locator("[data-results] li").count(), count);
+		await page.getByRole("button", { name: "היסטוריית ניסיונות", exact: true }).click();
+		await page.locator("[data-history-list] button").filter({ hasText: `${minimum}/${count}` }).click();
 		await page.getByRole("button", { name: "סימון הנושא כהושלם", exact: true }).click();
 		await page.locator("[data-topics]").filter({ hasText: "הושלם" }).waitFor();
 		await page.getByRole("button", { name: "תרגול נוסף", exact: true }).click();

@@ -105,7 +105,7 @@ The fixture backdates pre-expiry progress and attempts as well as the entitlemen
 
 ## Quiz and learner isolation
 
-With paid access active, return to `/account/learning.html` and open the synthetic quiz. Answer its questions, navigate away and back, submit all answers, review the result, and mark the topic complete after a passing attempt. Before leaving with unsaved changes, use the page's save control. The fixture's quiz is test data, not course material.
+With paid access active, return to `/account/learning.html` and open the synthetic quiz. Answer its questions, navigate away and back, submit all answers, review the result, and mark the topic complete after a passing attempt. Before leaving with unsaved changes, use the page's save control. Passing requires at least 85% correct, rounded up to a whole answer: 17/20 for the default fixture. To test a different length, start a fresh fixture with `startLessonGateway({ quiz: true, quizCount: 17, longLesson: true })`; 14/17 fails and 15/17 passes. Restart an existing Node fixture to load new migrations. The fixture's quiz is test data, not course material.
 
 Sign in as B in the separate profile. B can read the free section but cannot read the paid section or quiz until granted access. After `await app.grant('learner-b@example.test')` in Node, B's paid read starts with `position: null`. Save a position as B and reread the section as A; A's position remains separate. A request with an extra `learnerId` or `claimedPlan` field in a position POST returns `400 invalid_input`.
 
