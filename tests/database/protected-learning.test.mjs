@@ -454,3 +454,20 @@ test("upgrading legacy sections preserves long machine keys without publishing t
 		await database.admin.query(`drop database ${name}`);
 	}
 });
+
+test("direct learner RPCs treat SQL-looking topic keys and answers as data", async () => {
+	const f = await fixture();
+	const draft = await start(f);
+	for (const value of ["' OR '1'='1", `${f.topic}'; DROP TABLE public.quiz_attempts; --`, "' UNION SELECT payload FROM private.gateway_sessions --"]) {
+		await rejected(f, "start_my_quiz", [value]);
+		await rejected(f, "my_quiz_history", [value, null]);
+		await rejected(f, "complete_my_topic", [value]);
+		await rejected(f, "save_my_quiz", [draft.id, JSON.stringify({ q1: value }), 0], "22023");
+	}
+	const unchanged = await actor(f, db => rpc(db, "read_my_attempt", [draft.id]));
+	assert.deepEqual(unchanged.answers, {});
+	assert.equal(unchanged.revision, 0);
+	const saved = await actor(f, db => rpc(db, "save_my_quiz", [draft.id, JSON.stringify({ q1: "a" }), 0]));
+	assert.deepEqual(saved.answers, { q1: "a" });
+	assert.equal(saved.revision, 1);
+});

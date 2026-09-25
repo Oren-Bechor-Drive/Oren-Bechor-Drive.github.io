@@ -4,9 +4,11 @@ Decisions supplied by the owner on 2026-09-25. This document defines the target 
 
 ## Audience and launch
 
-The first release accepts real payments and serves anyone learning to drive or improving their driving. All ten existing learning topics, the 16 planned videos, the 12 planned images/diagrams, and ten topic quizzes must be complete before launch. The owner reports that the final media and revised texts exist and will be supplied by Oren; they are not yet available in the repository.
+The first paid release accepts real payments and serves anyone learning to drive or improving their driving. All ten existing learning topics, the 16 planned videos, the 12 planned images/diagrams, and ten topic quizzes must be complete before paid launch. The owner's latest update on 2026-09-25 is that the final course files are not ready and will be supplied later, superseding the earlier report that finished files were awaiting delivery.
 
-Oren approves all instructional text, media, questions, answer keys and explanations. The owner records approvals and subsequent corrections. The owner and their agents handle learner support, billing/refunds and content publication. No launch date, usage forecast or operating budget has been set.
+Oren approves all instructional text, media, questions, answer keys and explanations. The owner records approvals and subsequent corrections. The owner and their agents handle learner support, billing/refunds and content publication. No launch date or usage forecast has been set. The current infrastructure budget permits free plans that restrict service instead of charging overages, with annual domain registration as the exception.
+
+Before the paid release, the owner wants three days of hosted testing for the owner and Oren, followed by public registration only after the owner's explicit go-ahead. Both Google and email/password registration are required. Public registrants receive only approved free basic material while billing remains disabled. The free-material draft still needs Oren's review. This testing period is separate from the paid-content trial below. See [current recommendations and owner decisions](../recommendation.md).
 
 ## Access and billing
 

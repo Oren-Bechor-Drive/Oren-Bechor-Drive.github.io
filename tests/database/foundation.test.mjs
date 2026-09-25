@@ -64,6 +64,7 @@ async function visible(client) {
 test("all application tables have RLS and no anonymous table privileges", async () => {
 	const tables = (await database.admin.query("select c.oid,n.nspname,c.relname,c.relrowsecurity from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private') and c.relkind='r'")).rows;
 	assert.deepEqual(tables.map(table => `${table.nspname}.${table.relname}`).sort(), [
+		"private.gateway_sessions", "private.gateway_session_control", "private.gateway_rate_buckets",
 		"private.learner_identities", "private.learning_retention", "private.quiz_topics", "private.quiz_versions",
 		"public.entitlements", "public.learners", "public.learning_sections", "public.quiz_attempts",
 		"public.section_progress", "public.section_versions", "public.topic_completions",
@@ -290,7 +291,8 @@ test("effective function privileges and search paths restrict every administrati
 			...["my_learning", "start_my_quiz", "read_my_attempt", "save_my_quiz", "submit_my_quiz", "my_quiz_history", "complete_my_topic", "read_my_sections"]
 				.flatMap(name => [`private.${name}`, `public.${name}`]),
 		],
-		service_role: ["private.provision_learner", "public.provision_learner", "public.publish_section",
+		service_role: ["private.gateway_session", "public.gateway_session", "private.gateway_rate_limit", "public.gateway_rate_limit",
+			"private.sweep_gateway_rate_limits", "public.sweep_gateway_rate_limits", "private.provision_learner", "public.provision_learner", "public.publish_section",
 			"public.publish_learning_section", "private.publish_quiz", "public.publish_quiz", "private.sweep_expired_learning", "public.sweep_expired_learning"],
 	};
 	for (const [role,names] of Object.entries(allowed)) {
@@ -317,4 +319,16 @@ test("the existing auto-RLS trigger works without browser execution privileges",
 	await db.query("create table public.rls_fixture_probe(id integer)");
 	const table = await db.query("select relrowsecurity from pg_class where oid='public.rls_fixture_probe'::regclass");
 	assert.equal(table.rows[0].relrowsecurity,true);
+}));
+
+test("SQL-looking text stays literal and cannot broaden direct learner reads", async () => transaction("free", async db => {
+	const text = "x'; DROP TABLE public.learners; --";
+	await db.query("update public.learners set display_name=$1 where id=$2", [text, learners[users.free]]);
+	assert.equal((await db.query("select display_name from public.learners")).rows[0].display_name, text);
+	for (const level of ["free' OR '1'='1", "paid'; SELECT * FROM private.learner_identities; --"]) {
+		assert.equal((await db.query("select * from public.read_section($1,$2)", [section, level])).rowCount, 0);
+	}
+	assert.deepEqual(await visible(db), ["free"]);
+	assert.equal((await db.query("select * from public.read_section($1,'free')", [section])).rowCount, 1);
+	assert.equal((await db.query("select * from public.read_section($1,'paid')", [section])).rowCount, 0);
 }));

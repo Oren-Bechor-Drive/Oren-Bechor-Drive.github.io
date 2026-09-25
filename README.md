@@ -325,7 +325,7 @@ For a disposable browser/API environment without hosted credentials, follow the 
 
 `npm run test:gateway` exercises cookie sessions, CSRF, PKCE, isolation, expiry, revocation, concurrent refresh/reset, and the Supabase adapter. `npm test` also includes the Hebrew account browser journeys. The fixtures send no real email and do not verify live Google/SMTP setup.
 
-Sessions currently live in bounded Node memory; restarting signs users out. The process binds to loopback and refuses production mode. Hosting and persistent session storage are still to be chosen. On GitHub Pages, account forms explain that the service is unavailable and course profile controls stay disabled.
+The local launcher uses bounded Node memory; restarting signs users out. It binds to loopback and refuses production mode. The separate [hosted gateway](docs/hosting.md) adds a Cloudflare Worker, encrypted durable Supabase sessions, shared request limits and a private pilot gate. Hosted deployment and verification remain outstanding. On GitHub Pages, account forms explain that the service is unavailable and course profile controls stay disabled.
 
 Run the isolated database suite:
 
@@ -369,9 +369,11 @@ See [LICENSE](LICENSE) for the complete scope.
 
 The local gateway now includes [saved learning and protected delivery](docs/protected-learning.md): graded topic quizzes, resumable drafts, paginated attempt history, manual completion after 17/20, a titled lesson reader with saved scroll position, and authenticated private media streaming. Learning progress expires ten days after an unrenewed subscription ends; completed topics remain. The new migration is locally tested and has not been applied to hosted Supabase. Install its documented Cron job when deploying.
 
-Open `/account/learning.html` through `npm run dev` after publishing approved content into the development database. Synthetic fixtures test the complete flow without real driving questions. Billing stays disabled by the owner's request; the future offer is ILS 150.00/month and a three-day trial. Real content, production hosting/durable sessions and provider setup remain release requirements. The static `course/` preview remains public and ungraded.
+Open `/account/learning.html` through `npm run dev` after publishing approved content into the development database. Synthetic fixtures test the complete flow without real driving questions. Billing stays disabled by the owner's request; the future offer is ILS 150.00/month and a three-day trial. Real content, hosted deployment/verification and provider setup remain release requirements. The [hosting implementation and operating guide](docs/hosting.md) covers the locally tested production adapters. The static `course/` preview remains public and ungraded.
 
 ## Todo
+
+The owner currently requires free infrastructure that restricts or stops service instead of charging overages. An annual domain-registration fee is the approved exception; other paid upgrades remain deferred unless the owner changes this policy. Current and future recommendations are recorded in [Project recommendations](docs/recommendation.md); provider proposals there are not completed deployments.
 
 Roadmap updated with the owner's 2026-09-25 [paid-release decisions](docs/plans/paid-release-scope.md) and the completed local topic-quiz/protected-learning milestones. This backlog covers the path from the current public welcome page and course preview to a paid learning service. It records future work, not available capabilities or authorization to implement every item. `PRODUCT.md` still describes the current release. Update it and the relevant architecture and domain documentation when each future capability is approved for implementation.
 
@@ -384,7 +386,8 @@ Work through the sections below in dependency order. Content production and publ
 - [x] Replace the four section quizzes with ten topic-level 20-question previews, preserve former URLs as transition pages, and require every question to be answered before finishing. Placeholder previews still give no grade or saved progress.
 - [x] Implement and locally verify protected quiz publication, server grading at 17/20, saved unfinished/submitted attempts and optional topic completion. Synthetic fixtures are used until Oren supplies and approves the real questions. See the [release scope and sequence](docs/plans/paid-release-scope.md).
 - [x] Implement and locally verify ten-day post-expiry cleanup for reading positions and quiz data while retaining completed topics, including early/late renewal and lock races. Deployment of the migration and cleanup schedule is still required.
-- [ ] Choose production hosting and durable session storage, deploy the reviewed migrations and cleanup job, then import Oren-approved content. Billing remains disabled until the owner resumes provider setup.
+- [x] Implement and locally test Cloudflare hosting, encrypted durable Supabase sessions, shared rate limits, manual pilot admission and private Storage streaming. See [hosting preparation](docs/hosting.md).
+- [ ] Configure the selected hosted providers, deploy the reviewed migrations and cleanup jobs, verify both login methods and the private pilot, then import Oren-approved content. Public registration waits for the owner's go-ahead. Billing remains disabled.
 
 ### Completed account development milestones
 
@@ -413,7 +416,7 @@ Work through the sections below in dependency order. Content production and publ
 - [ ] Define which policy versions require acceptance, when to request it, and what acceptance evidence to retain.
 - [x] Set the audience to anyone learning or improving their driving. Require a purchase declaration that the buyer is 18 or older or has guardian approval.
 - [ ] Obtain qualified review of applicable consumer, privacy, accessibility, tax and minor-consent requirements, including the purchase declaration and acceptance evidence. Business details, support contact, policies and a reviewer have not been supplied.
-- [ ] Turn the owner's launch requirement, a complete website/course with protected content, into measurable release checks. No launch date, usage forecast or operating budget is set. Establish service costs for video delivery, authentication, transactional email, payments and storage.
+- [ ] Turn the owner's launch requirement, a complete website/course with protected content, into measurable release checks. No launch date or usage forecast is set. The current infrastructure budget permits free plans that restrict service instead of charging overages, with annual domain registration as the exception. Establish service costs for video delivery, authentication, transactional email, payments and storage before proposing any budget change.
 
 ### Teaching content, media and practice
 
@@ -421,7 +424,7 @@ Work through the sections below in dependency order. Content production and publ
 - [ ] Obtain source material for definitions, summary/conclusions and uphill/downhill priority, which are currently listed without developed explanations. Decide whether each needs a new page or a section in an existing topic; resolve the unexplained resource label only when its meaning and destination are supplied.
 - [x] Complete the bounded 2026-09-22 review of official resource links and higher-risk driving, licensing, penalty-points and right-of-way claims. Record the evidence and limits in the [official source review](docs/reference/official-source-review-2026-09-22.md).
 - [ ] Assign and run recurring official-source reviews, resolve the documented publication-timing limit, and obtain Oren's approval of the teaching material. Do not copy stale numerical claims from the PDF.
-- [ ] Receive the 16 planned videos, 12 images/diagrams and revised lesson texts from Oren. The owner reports they are finished, but they have not been supplied to this repository. Confirm each asset's teaching purpose, rights and permission to show identifiable people or vehicles; preserve supplied originals and record source/approval information.
+- [ ] Receive the 16 planned videos, 12 images/diagrams and revised lesson texts from Oren. The owner's latest update is that the files are not ready and will be supplied later. Confirm each asset's teaching purpose, rights and permission to show identifiable people or vehicles; preserve supplied originals and record source/approval information.
 - [ ] Add Hebrew captions, transcripts, useful alternative text and descriptions of essential visual information. Review text embedded in road diagrams for readability on phones.
 - [ ] Add accessible video playback with keyboard controls, playback speed, captions, loading/error states and retry. Verify mobile playback, slow connections and delivery costs; choose hosting and encoding based on the approved public/paid split.
 - [ ] Replace all 200 placeholder questions across the ten topic quizzes with instructor-approved scenarios, choices, answer keys and explanations. Select question media from the scenario and remove placeholder notices/markers only when the content is ready.
@@ -468,7 +471,8 @@ Proposed page names below describe responsibilities. Choose final paths during i
 - [x] Choose email/password and Google sign-in. Complete the local account UI and code review, including the registration-only password requirements bar, keyboard focus, responsive layouts and reduced motion.
 - [ ] Verify hosted Auth settings match [local account setup](docs/local-accounts.md#supabase-auth-settings): email confirmation enabled, minimum password length 9, and the correct Site URL/callback allowlist. Test valid 9-character registration and actual confirmation/recovery links. Editing local Supabase configuration does not change hosted settings.
 - [ ] Complete Google OAuth consent/client configuration and a real browser sign-in. Configure custom SMTP and Hebrew confirmation/recovery templates, then test delivery to non-team addresses, expired/reused links, and same-browser callback requirements. Local fixtures do not verify these external services.
-- [ ] Select hosting and add durable session storage, production expiry/revocation operations, trusted-proxy limits, and deployed cross-device checks before launch. If the service uses multiple processes, coordinate session changes, refresh locks and rate limits across them. Verify HTTPS/Secure cookies, restarts and failover before replacing the local-only startup restriction.
+- [x] Add the separate Cloudflare hosting adapter with durable encrypted sessions, coordinated refresh/rotation/revocation, expiry cleanup, trusted client-address limits and closed/pilot/public admission. Local PostgreSQL and Workers-runtime tests cover these boundaries.
+- [ ] Verify hosted HTTPS/Secure cookies, restarts, failure recovery, both authentication methods and cross-device behavior. The local launcher remains loopback-only; use the [Worker deployment guide](docs/hosting.md).
 - [ ] Expand the implemented conditional profile link and basic account page with supported identity changes, notification preferences, and session management. Static hosting retains the unavailable profile fallback.
 - [x] Add a learner page and protected reader with saved positions and independently reachable entitled sections. Optional bookmarks are not implemented.
 - [x] Implement and locally test database-persisted reading positions, unfinished/submitted attempts and durable topic completion after 17/20, with conflict handling and versioned content. Hosted cross-device verification remains part of deployment. Video-position resume is outside the agreed initial requirement.

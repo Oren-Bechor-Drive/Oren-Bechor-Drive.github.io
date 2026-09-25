@@ -7,3 +7,10 @@ node_modules/
 .env
 .env.*
 !.env.example
+
+.worker/
+.wrangler/
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+!.env.hosted.example

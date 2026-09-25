@@ -16,9 +16,13 @@ test("private media requires a live paid version, supports byte ranges and rejec
 	await symlink(path.join(root, "video.mp4"), path.join(root, "link.mp4"));
 	const sectionId = testSections.paid;
 	// Version is discovered from the owned fixture, never accepted from a request.
-	const entries = [];
-	const media = await createPrivateMedia({ root, entries });
-	const app = await startLessonGateway({ media });
+	let media = await createPrivateMedia({ root, entries: [] });
+	// Forward the entire adapter while this fixture discovers its database-owned version.
+	const app = await startLessonGateway({ media: {
+		lookup: (...args) => media.lookup(...args),
+		forSection: (...args) => media.forSection(...args),
+		send: (...args) => media.send(...args),
+	} });
 	t.after(app.close);
 	const client = browserClient(app.origin);
 	await client.request();
@@ -26,9 +30,9 @@ test("private media requires a live paid version, supports byte ranges and rejec
 	await app.grant("media@example.test");
 	const lesson = await (await fetch(app.origin + testSectionPath("paid"), { headers: { cookie: client.cookie } })).json();
 	// Use a new validated media registry, with server-owned immutable descriptors.
-	const configured = await createPrivateMedia({ root, entries: [{ id: "video", sectionId, contentVersionId: lesson.lesson.id, file: "video.mp4", type: "video/mp4", title: "סרטון בדיקה" }] });
-	media.lookup = configured.lookup;
-	media.send = configured.send;
+	media = await createPrivateMedia({ root, entries: [{ id: "video", sectionId, contentVersionId: lesson.lesson.id, file: "video.mp4", type: "video/mp4", title: "סרטון בדיקה" }] });
+	const configuredLesson = await (await fetch(app.origin + testSectionPath("paid"), { headers: { cookie: client.cookie } })).json();
+	assert.deepEqual(configuredLesson.media, [{ id: "video", title: "סרטון בדיקה", type: "video/mp4", url: "/api/media/video" }]);
 	const fetchMedia = (headers = {}) => fetch(app.origin + "/api/media/video", { headers });
 	assert.equal((await fetchMedia()).status, 401);
 	let response = await fetchMedia({ cookie: client.cookie });

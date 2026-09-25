@@ -3,7 +3,7 @@ import { createSupabaseProvider } from "./supabase.mjs";
 import { createPrivateMedia } from "./private-media.mjs";
 import { readFile } from "node:fs/promises";
 
-if (process.env.NODE_ENV === "production") throw new Error("Choose persistent session storage and a hosting design before production deployment.");
+if (process.env.NODE_ENV === "production") throw new Error("Use the Worker entry with persistent session storage for production; this launcher is local only.");
 const origin = process.env.APP_ORIGIN ?? "http://localhost:3000";
 const { SUPABASE_URL: url, SUPABASE_PUBLISHABLE_KEY: publishableKey, SUPABASE_SECRET_KEY: secretKey } = process.env;
 const configured = Boolean(url && publishableKey && secretKey);

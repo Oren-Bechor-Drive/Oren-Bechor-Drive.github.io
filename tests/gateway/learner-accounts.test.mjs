@@ -18,9 +18,9 @@ test("account results are detached snapshots without provider credentials", asyn
 	signed.cookie.token = "replaced";
 	const current = await accounts.session(token);
 	assert.deepEqual(current.data.user, { email: credentials.email, displayName: "" });
-	assert.equal(accounts.acceptsRequest(token, current.data.csrf), true);
-	assert.equal(accounts.acceptsRequest(token, signed.data.csrf), false);
-	assert.equal(accounts.acceptsRequest(anonymous.cookie.token, anonymous.data.csrf), false);
+	assert.equal(await accounts.acceptsRequest(token, current.data.csrf), true);
+	assert.equal(await accounts.acceptsRequest(token, signed.data.csrf), false);
+	assert.equal(await accounts.acceptsRequest(anonymous.cookie.token, anonymous.data.csrf), false);
 });
 
 test("operations queued behind logout recheck authority before calling the provider", async () => {

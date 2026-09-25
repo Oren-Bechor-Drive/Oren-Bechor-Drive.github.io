@@ -43,14 +43,14 @@ async function input(req, route) {
 	return body;
 }
 
-export function createGateway({ origin, provider = null, media = null, googleEnabled = false, now = Date.now, authLimit = 20, sessionLimit = 1000 }) {
+export function createGateway({ origin, provider = null, media = null, googleEnabled = false, now = Date.now, authLimit = 20, sessionLimit = 1000, sessions, admit, requestLimiter, mutationLimiter }) {
 	const address = new URL(origin);
 	if (address.origin !== origin || (address.protocol !== "https:" && !(address.protocol === "http:" && ["127.0.0.1", "localhost", "[::1]"].includes(address.hostname)))) throw new Error("An exact HTTPS origin or loopback HTTP origin is required");
 	const secure = address.protocol === "https:";
 	const cookieName = secure ? "__Host-oren_session" : "oren_session";
-	const accounts = createLearnerAccounts({ origin, provider, googleEnabled, now, sessionLimit });
-	const mutationLimit = createRateLimit({ now, limit: authLimit });
-	const requestLimit = createRateLimit({ now, limit: 150, windowMs: 60_000 });
+	const accounts = createLearnerAccounts({ origin, provider, googleEnabled, now, sessionLimit, sessions, admit });
+	const mutationLimit = mutationLimiter ?? createRateLimit({ now, limit: authLimit });
+	const requestLimit = requestLimiter ?? createRateLimit({ now, limit: 150, windowMs: 60_000 });
 	function setCookie(res, token, maxAge) {
 		res.setHeader("Set-Cookie", `${cookieName}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${secure ? "; Secure" : ""}`);
 	}
@@ -67,7 +67,7 @@ export function createGateway({ origin, provider = null, media = null, googleEna
 		res.setHeader("X-Content-Type-Options", "nosniff");
 		let route;
 		try {
-			if (!requestLimit(req.socket.remoteAddress)) fail(429, "rate_limited");
+			if (!await requestLimit(req.socket.remoteAddress)) fail(429, "rate_limited");
 			const url = new URL(req.url, origin);
 			const cookies = (req.headers.cookie ?? "").split(";").map(part => part.trim()).filter(part => part.startsWith(`${cookieName}=`));
 			const token = cookies.length === 1 ? cookies[0].slice(cookieName.length + 1) : null;
@@ -83,7 +83,7 @@ export function createGateway({ origin, provider = null, media = null, googleEna
 				const [, sectionId, accessLevel, position] = match;
 				if (position) {
 					if (req.method !== "POST") fail(405, "method_not_allowed");
-					if (req.headers.origin !== origin || req.headers["content-type"]?.split(";")[0].trim() !== "application/json" || !accounts.acceptsRequest(token, req.headers["x-csrf-token"])) fail(403, "request_rejected");
+					if (req.headers.origin !== origin || req.headers["content-type"]?.split(";")[0].trim() !== "application/json" || !await accounts.acceptsRequest(token, req.headers["x-csrf-token"])) fail(403, "request_rejected");
 					return respond(res, await accounts.saveSectionPosition(token, sectionId, accessLevel, await input(req, "position")));
 				}
 				if (req.method !== "GET") fail(405, "method_not_allowed");
@@ -126,7 +126,7 @@ export function createGateway({ origin, provider = null, media = null, googleEna
 				if (url.search && (operation !== "quizHistory" || [...url.searchParams.keys()].some(key => key !== "before") || url.searchParams.getAll("before").length !== 1)) fail(400, "invalid_input");
 				if (req.method !== (bodyType ? "POST" : "GET")) fail(405, "method_not_allowed");
 				if (bodyType) {
-					if (req.headers.origin !== origin || req.headers["content-type"]?.split(";")[0].trim() !== "application/json" || !accounts.acceptsRequest(token, req.headers["x-csrf-token"])) fail(403, "request_rejected");
+					if (req.headers.origin !== origin || req.headers["content-type"]?.split(";")[0].trim() !== "application/json" || !await accounts.acceptsRequest(token, req.headers["x-csrf-token"])) fail(403, "request_rejected");
 					const body = await input(req, bodyType);
 					if (bodyType !== "empty") args.push(body);
 				}
@@ -141,8 +141,8 @@ export function createGateway({ origin, provider = null, media = null, googleEna
 			}));
 			if (!["login", "register", "recover", "reset", "google", "logout"].includes(route)) fail(404, "not_found");
 			if (req.method !== "POST") fail(405, "method_not_allowed");
-			if (req.headers.origin !== origin || req.headers["content-type"]?.split(";")[0].trim() !== "application/json" || !accounts.acceptsRequest(token, req.headers["x-csrf-token"])) fail(403, "request_rejected");
-			if (!mutationLimit(req.socket.remoteAddress)) fail(429, "rate_limited");
+			if (req.headers.origin !== origin || req.headers["content-type"]?.split(";")[0].trim() !== "application/json" || !await accounts.acceptsRequest(token, req.headers["x-csrf-token"])) fail(403, "request_rejected");
+			if (!await mutationLimit(req.socket.remoteAddress)) fail(429, "rate_limited");
 			const body = await input(req, route);
 			return respond(res, await accounts.perform(token, route, body));
 		} catch (error) {

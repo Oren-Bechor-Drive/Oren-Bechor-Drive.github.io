@@ -1,11 +1,11 @@
 import { readFile, realpath, stat } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { publicTypes as types, publicTopFiles, publicDirectories } from "./public-files.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
-const types = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".svg": "image/svg+xml", ".png": "image/png", ".webp": "image/webp", ".jpg": "image/jpeg", ".woff2": "font/woff2", ".txt": "text/plain", ".xml": "application/xml", ".webmanifest": "application/manifest+json" };
-const topFiles = new Set(["index.html", "404.html", "robots.txt", "sitemap.xml", "llms.txt", "site.webmanifest"]);
-const directories = new Set(["account", "assets", "css", "js", "course"]);
+const topFiles = new Set(publicTopFiles);
+const directories = new Set(publicDirectories);
 
 export async function servePublicFile(req, res) {
 	res.setHeader("X-Content-Type-Options", "nosniff");

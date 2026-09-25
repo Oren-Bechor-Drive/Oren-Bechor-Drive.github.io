@@ -17,7 +17,11 @@
     "minify:html": "node scripts/minify-html.mjs",
     "test:unit": "node --test tests/unit/*.test.mjs",
     "test:browser": "node --test tests/browser/*.test.mjs",
-    "test:database": "node --test tests/database/*.test.mjs"
+    "test:database": "node --test tests/database/*.test.mjs",
+    "package:worker": "node scripts/package-worker.mjs",
+    "check:hosting": "node --env-file-if-exists=.env.hosted.local scripts/check-hosting.mjs",
+    "dev:worker": "npm run package:worker && wrangler dev --local",
+    "test:hosting": "node --test tests/hosting/*.test.mjs"
   },
   "devDependencies": {
     "embedded-postgres": "17.6.0-beta.15",
@@ -26,7 +30,8 @@
     "jsdom": "30.0.1",
     "playwright": "^1.63.0",
     "sharp": "^0.35.4",
-    "supabase": "2.117.0"
+    "supabase": "2.117.0",
+    "wrangler": "4.140.0"
   },
   "allowScripts": {
     "@embedded-postgres/linux-x64@17.6.0-beta.15": true

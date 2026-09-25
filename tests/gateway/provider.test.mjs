@@ -99,3 +99,19 @@ test("position adapter scopes reads and saves to the learner token and preserves
 	response = Response.json([]);
 	assert.equal(await provider.readPosition("learner-token", "section", "free"), null);
 });
+
+test("SQL-looking values stay in JSON arguments to fixed learner RPC endpoints", async () => {
+	const calls = [];
+	const provider = createSupabaseProvider({ url: "https://project.supabase.co", publishableKey: "sb_publishable_test", secretKey: "sb_secret_test",
+		async fetcher(url, init) { calls.push({ url, ...init }); return Response.json({}); } });
+	const value = "'); SELECT pg_sleep(10); DROP TABLE public.learners; --";
+	await provider.startQuiz("learner-token", value);
+	await provider.saveQuiz("learner-token", value, { answers: { q1: value }, expectedRevision: 0 });
+	assert.deepEqual(calls.map(call => call.url), ["https://project.supabase.co/rest/v1/rpc/start_my_quiz", "https://project.supabase.co/rest/v1/rpc/save_my_quiz"]);
+	assert.deepEqual(JSON.parse(calls[0].body), { p_topic_key: value });
+	assert.deepEqual(JSON.parse(calls[1].body), { p_attempt_id: value, p_answers: { q1: value }, p_expected_revision: 0 });
+	for (const call of calls) {
+		assert.equal(call.headers.apikey, "sb_publishable_test");
+		assert.equal(call.headers.authorization, "Bearer learner-token");
+	}
+});
