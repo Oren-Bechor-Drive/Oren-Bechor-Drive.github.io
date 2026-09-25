@@ -37,11 +37,11 @@ start_my_quiz(p_topic_key text): attempt
 read_my_attempt(p_attempt_id uuid): attempt
 save_my_quiz(p_attempt_id uuid,p_answers jsonb,p_expected_revision bigint): attempt
 submit_my_quiz(p_attempt_id uuid,p_expected_revision bigint): attempt
-my_quiz_history(p_topic_key text): {attempts:[{id,submittedAt,score,passed}], hasMore:boolean}
+my_quiz_history(p_topic_key text,p_before uuid default null): {attempts:[{id,submittedAt,score,passed}], hasMore:boolean, nextCursor:null|uuid}
 complete_my_topic(p_topic_key text): {key,completedAt}
 ```
 
-`attempt = {id,topicKey,title,revision,status:'draft'|'submitted',questions:[{id,prompt,options:[{id,text}]}],answers:{questionId:optionId},score:null|integer,passed:boolean,submittedAt:null|string}`. Submitted only adds `results:[{questionId,correctOptionId,explanation,correct}]`. History latest 50 with `hasMore`; add cursor later only if needed for fixture history >50 (must make all history accessible, extend contract with cursor then inform controller).
+`attempt = {id,topicKey,title,revision,status:'draft'|'submitted',questions:[{id,prompt,options:[{id,text}]}],answers:{questionId:optionId},score:null|integer,passed:boolean,submittedAt:null|string}`. Submitted only adds `results:[{questionId,correctOptionId,explanation,correct}]`. History returns the latest 50 entries with `hasMore` and `nextCursor`; `p_before` retrieves every older page.
 
 Publication service RPC: `publish_quiz(p_topic_key text,p_title text,p_questions jsonb,p_approval_reference text)` returns version UUID. Authored question adds `correctOptionId,explanation` to safe question shape. Errors: `42501` unavailable, `22023` invalid input, `40001` stale revision. Notify controller of exact cleanup RPC and contract additions before integration.
 
@@ -66,15 +66,17 @@ Files: server learning catalog/provider routes, private-media module; learner UI
 
 - [x] Run relevant tests while developing, then complete `npm test`, `npm run check:links`, `npm run check:media`, `git diff --check`.
 - [x] Check desktop/mobile and pointer/keyboard focus in collaborative browser or local Chromium when unavailable.
-- [ ] Complete final whole-branch review. Database and gateway/UI task reviews have already found and verified fixes.
+- [x] Complete final whole-branch review. Database, gateway/UI and final scoped reviews verified all fixes with no remaining important findings.
 - [x] Update README, PRODUCT, CONTEXT and architecture with actual capabilities, scheduled cleanup setup and remaining external inputs. Record provider/price status without implying live billing is enabled.
 
 ## Verification record
 
-- `npm test`: 478 tests passed, 0 failures/skips, 2026-09-25. Includes native PostgreSQL, Chromium account/learning/media/gallery/delivery checks and existing Firefox/WebKit checks.
+- `npm test`: 479 tests passed, 0 failures/skips, 2026-09-25. Includes native PostgreSQL, Chromium account/learning/media/gallery/delivery checks and existing Firefox/WebKit checks.
 - `npm run check:links`: 530 local references across 36 authored pages.
 - `npm run check:media`: 171 image references across 36 authored pages.
 - `git diff --check`: clean.
 - Desktop1440 and mobile390 Chromium journeys verify resume,17/20 grading,manualcompletion,expiry,real scroll position and keyboard/pointer focus. Failure tests cover autosave outages, repeated background restoration and revision conflicts.
 - Collaborative browser could navigate and sign in, but snapshot/click/resize automation failed intermittently and then lost its host. Local Playwright Chromium completed the affected journeys and visual inspection; screenshots are temporary verification artifacts outside the repo.
 - Billing remains disabled at the owner's request; ILS150/month and3-day trial recorded. No hosted migration, cleanup schedule, content publication or deployment performed.
+
+Final review approved the implementation through `b2f633d`, including visible reader-load errors and successful retry. Final full-suite rerun: 479 passed, 0 failed/skipped, 53.3 seconds. All changes are retained on `feat/topic-quiz-launch`; production integration and deployment have not been performed.
