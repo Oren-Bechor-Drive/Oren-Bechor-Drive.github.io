@@ -61,9 +61,13 @@ async function visible(client) {
 	return (await client.query("select access_level from public.section_versions order by access_level")).rows.map((r) => r.access_level);
 }
 
-test("all six application tables have RLS and no anonymous table privileges", async () => {
+test("all application tables have RLS and no anonymous table privileges", async () => {
 	const tables = (await database.admin.query("select c.oid,n.nspname,c.relname,c.relrowsecurity from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private') and c.relkind='r'")).rows;
-	assert.equal(tables.length, 6);
+	assert.deepEqual(tables.map(table => `${table.nspname}.${table.relname}`).sort(), [
+		"private.learner_identities", "private.learning_retention", "private.quiz_topics", "private.quiz_versions",
+		"public.entitlements", "public.learners", "public.learning_sections", "public.quiz_attempts",
+		"public.section_progress", "public.section_versions", "public.topic_completions",
+	].sort());
 	for (const table of tables) {
 		assert.equal(table.relrowsecurity, true, table.relname);
 		for (const role of ["anon", "authenticated"]) {
@@ -280,8 +284,14 @@ test("soft-deleted Auth accounts lose access and cannot be provisioned again", a
 test("effective function privileges and search paths restrict every administrative helper", async () => {
 	const allowed = {
 		anon: [],
-		authenticated: ["private.active_learner_id", "private.has_paid_access", "private.save_my_position", "public.read_section", "public.save_my_position"],
-		service_role: ["private.provision_learner", "public.provision_learner", "public.publish_section"],
+		authenticated: [
+			"private.active_learner_id", "private.has_paid_access", "private.my_learning_cutoff", "private.section_has_accessible_version",
+			"private.save_my_position", "public.read_section", "public.save_my_position", "public.read_my_position",
+			...["my_learning", "start_my_quiz", "read_my_attempt", "save_my_quiz", "submit_my_quiz", "my_quiz_history", "complete_my_topic", "read_my_sections"]
+				.flatMap(name => [`private.${name}`, `public.${name}`]),
+		],
+		service_role: ["private.provision_learner", "public.provision_learner", "public.publish_section",
+			"public.publish_learning_section", "private.publish_quiz", "public.publish_quiz", "private.sweep_expired_learning", "public.sweep_expired_learning"],
 	};
 	for (const [role,names] of Object.entries(allowed)) {
 		const rows = (await database.admin.query("select n.nspname||'.'||p.proname as name, has_function_privilege($1,p.oid,'EXECUTE') as allowed, p.proconfig from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname in ('public','private')",[role])).rows;
