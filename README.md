@@ -139,6 +139,8 @@ The public canonical URL is `https://oren-bechor-drive.github.io/`. If the site 
 
 After editing metadata, run `npm run minify:html`, `npm test`, and `git diff --check`. Run `npm run check:media` as well when changing HTML image declarations, preload metadata, or assets. Publish `index.html`, `robots.txt`, `sitemap.xml`, and `llms.txt` together. After deployment, check those public URLs and use Search Console URL Inspection to verify what Google can fetch. Repository tests cannot confirm indexing or social-platform preview caches.
 
+Run `npm run generate:sitemap` to regenerate the sitemap from canonical, indexable HTML, or `npm run check:search` to detect drift. The homepage includes the owner-supplied Google verification tag; Bing supports either importing the verified Google property or adding its supplied `msvalidate.01` tag. `npm run check:search:production` checks the actual deployed responses and verification tags. The Search publication workflow verifies the successful Pages revision before sending IndexNow notifications. See [search configuration and ownership](docs/search-indexing.md) for account verification, sitemap submission, live URL tests, notification responses and maintenance.
+
 ## Production caching
 
 The public site is hosted at `https://oren-bechor-drive.github.io/` on GitHub Pages. On September 17, 2026, live HTTP checks at this address confirmed that the page, crawler files, and the stylesheet, JavaScript, font, and image URLs listed below returned HTTP 200 with `Expires` and `Cache-Control: max-age=600`. The browser can reuse fresh cached responses for ten minutes. When both headers are present, [`Cache-Control: max-age` takes precedence](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Expires).

@@ -21,7 +21,11 @@
     "package:worker": "node scripts/package-worker.mjs",
     "check:hosting": "node --env-file-if-exists=.env.hosted.local scripts/check-hosting.mjs",
     "dev:worker": "npm run package:worker && wrangler dev --local",
-    "test:hosting": "node --test tests/hosting/*.test.mjs"
+    "test:hosting": "node --test tests/hosting/*.test.mjs",
+    "generate:sitemap": "node scripts/search-discovery.mjs",
+    "check:search": "node scripts/search-discovery.mjs --check",
+    "check:search:production": "node scripts/search-production.mjs",
+    "notify:indexnow": "node scripts/search-production.mjs --notify"
   },
   "devDependencies": {
     "embedded-postgres": "17.6.0-beta.15",
@@ -31,7 +35,7 @@
     "playwright": "^1.63.0",
     "sharp": "^0.35.4",
     "supabase": "2.117.0",
-    "wrangler": "4.140.0"
+    "wrangler": "4.143.1"
   },
   "allowScripts": {
     "@embedded-postgres/linux-x64@17.6.0-beta.15": true

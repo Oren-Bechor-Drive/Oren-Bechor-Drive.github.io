@@ -19,12 +19,14 @@ async function fixture(t) {
 
 test("packages only public file types and directories, preserving bytes", async t => {
 	const { root, output, file } = await fixture(t);
-	for (const relative of ["index.html", "404.html", "robots.txt", "sitemap.xml", "llms.txt", "site.webmanifest", "account/login/index.html", "assets/fonts/site.woff2", "assets/image.png", "css/main.css", "js/main.js", "course/topic/index.html"]) await file(relative);
-	for (const relative of [".env", "server/secrets.js", "tests/fixture.html", "docs/private.txt", "supabase/schema.sql", "package.json", "assets/private.json", "assets/source.psd", "assets/.secret.txt", "js/main.js.map", "course/.hidden/index.html"]) await file(relative, "SECRET");
+	for (const relative of ["index.html", "404.html", "robots.txt", "sitemap.xml", "indexnow-key.txt", "llms.txt", "site.webmanifest", "account/login/index.html", "assets/fonts/site.woff2", "assets/image.png", "css/main.css", "js/main.js", "course/topic/index.html"]) await file(relative);
+	for (const relative of [".env", "private-key.txt", "server/secrets.js", "tests/fixture.html", "docs/private.txt", "supabase/schema.sql", "package.json", "assets/private.json", "assets/source.psd", "assets/.secret.txt", "js/main.js.map", "course/.hidden/index.html"]) await file(relative, "SECRET");
 	const result = await packageWorkerAssets({ root, output });
-	assert.equal(result.files.length, 12);
+	assert.equal(result.files.length, 13);
+	assert.equal(await readFile(path.join(output, "indexnow-key.txt"), "utf8"), "indexnow-key.txt");
+	await assert.rejects(readFile(path.join(output, "private-key.txt")), { code: "ENOENT" });
 	assert.equal(await readFile(path.join(output, "assets/image.png"), "utf8"), "assets/image.png");
-	assert.deepEqual((await readdir(output)).sort(), ["404.html", "_headers", "account", "assets", "course", "css", "index.html", "js", "llms.txt", "robots.txt", "site.webmanifest", "sitemap.xml"]);
+	assert.deepEqual((await readdir(output)).sort(), ["404.html", "_headers", "account", "assets", "course", "css", "index.html", "indexnow-key.txt", "js", "llms.txt", "robots.txt", "site.webmanifest", "sitemap.xml"]);
 	await assert.rejects(readFile(path.join(output, "assets/private.json")), { code: "ENOENT" });
 	await file("js/new.js");
 	await rm(path.join(root, "assets/image.png"));
