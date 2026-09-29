@@ -1,0 +1,65 @@
+name: Search publication
+
+on:
+  workflow_run:
+    workflows: [pages-build-deployment]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: read
+
+concurrency:
+  group: search-publication
+  cancel-in-progress: false
+
+jobs:
+  verify-and-notify:
+    if: >-
+      github.repository == 'Oren-Bechor-Drive/Oren-Bechor-Drive.github.io' &&
+      (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Resolve the successfully deployed revision
+        id: deployed
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          EVENT_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          gh api "repos/$REPOSITORY/pages/builds/latest" > "$RUNNER_TEMP/pages-build.json"
+          jq -e '.status == "built" and .error.message == null' "$RUNNER_TEMP/pages-build.json"
+          DEPLOYED_SHA=$(jq -r '.commit' "$RUNNER_TEMP/pages-build.json")
+          if [ -n "$EVENT_SHA" ] && [ "$EVENT_SHA" != "$DEPLOYED_SHA" ]; then
+            echo "A newer Pages build superseded this event. Skipping notification."
+            exit 0
+          fi
+          echo "sha=$DEPLOYED_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Check out the deployed revision
+        if: steps.deployed.outputs.sha != ''
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ steps.deployed.outputs.sha }}
+          persist-credentials: false
+
+      - name: Set up Node.js
+        if: steps.deployed.outputs.sha != ''
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install verification dependencies
+        if: steps.deployed.outputs.sha != ''
+        run: npm ci
+
+      - name: Verify production and notify IndexNow
+        if: steps.deployed.outputs.sha != ''
+        run: |
+          set -o pipefail
+          npm run notify:indexnow | tee "$RUNNER_TEMP/search-publication.txt"
+          cat "$RUNNER_TEMP/search-publication.txt" >> "$GITHUB_STEP_SUMMARY"

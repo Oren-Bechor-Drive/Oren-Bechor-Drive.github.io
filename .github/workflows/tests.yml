@@ -44,5 +44,8 @@ jobs:
       - name: Audit local links
         run: npm run check:links
 
+      - name: Check search discovery
+        run: npm run check:search
+
       - name: Run all tests, including browser checks
         run: npm test
