@@ -3,6 +3,19 @@ import test from "node:test";
 import { chromium } from "playwright";
 import { serveRoadMedia } from "../helpers/road-media.mjs";
 
+async function pauseNextTransitions(locator) {
+	await locator.evaluate((element) => {
+		function pause(event) {
+			if (event.target !== element) return;
+			element.removeEventListener("transitionrun", pause);
+			element.getAnimations().forEach((animation) => animation.pause());
+		}
+		// Capture in the renderer before a slow test-driver round trip can miss
+		// the 80-180ms transition. Descendant transitions do not consume the hook.
+		element.addEventListener("transitionrun", pause);
+	});
+}
+
 test("mobile disclosures animate pointer input without delaying keyboard or focus", async (t) => {
 	const browser = await chromium.launch();
 	t.after(() => browser.close());
@@ -20,14 +33,14 @@ test("mobile disclosures animate pointer input without delaying keyboard or focu
 		await t.test(surfaceSelector, async () => {
 			const trigger = page.locator(triggerSelector);
 			const surface = page.locator(surfaceSelector);
+			await pauseNextTransitions(surface);
 			await trigger.click();
-			const opening = await surface.evaluate((element) => {
-				const animations = element.getAnimations();
-				animations.forEach((animation) => animation.pause());
-				return animations.map(
-					(animation) => animation.transitionProperty,
-				);
-			});
+			// Deliberately inspect after the natural entrance duration. This catches
+			// regressions that move animation capture back to the test driver.
+			await new Promise((resolve) => setTimeout(resolve, 250));
+			const opening = await surface.evaluate((element) =>
+				element.getAnimations().map((animation) => animation.transitionProperty),
+			);
 			assert.ok(
 				opening.includes("opacity"),
 				"pointer opening must bridge the visibility change",
@@ -42,6 +55,7 @@ test("mobile disclosures animate pointer input without delaying keyboard or focu
 					animation.currentTime = 70;
 				});
 			});
+			await pauseNextTransitions(surface);
 			await trigger.click();
 			assert.equal(
 				await surface.evaluate((element) => element.inert),
@@ -84,6 +98,7 @@ test("mobile disclosures animate pointer input without delaying keyboard or focu
 			);
 			await page.keyboard.press("Escape");
 			await trigger.hover();
+			await pauseNextTransitions(trigger);
 			await page.mouse.down();
 			assert.ok(
 				await trigger.evaluate(
@@ -153,6 +168,7 @@ test("mobile disclosures animate pointer input without delaying keyboard or focu
 				element.getAnimations().map((animation) => animation.finished),
 			);
 		});
+		await pauseNextTransitions(page.locator(surfaceSelector));
 		await page.locator(triggerSelector).click();
 		assert.ok(
 			await page
@@ -169,6 +185,9 @@ test("mobile disclosures animate pointer input without delaying keyboard or focu
 				),
 			"reduced-motion closing must retain the gentle fade while immediately blocking input",
 		);
+		await page.locator(surfaceSelector).evaluate((element) => {
+			element.getAnimations().forEach((animation) => animation.finish());
+		});
 		await page.locator(surfaceSelector).waitFor({ state: "hidden" });
 	}
 	await page.setViewportSize({ width: 1280, height: 800 });
