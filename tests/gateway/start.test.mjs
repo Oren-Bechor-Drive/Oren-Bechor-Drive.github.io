@@ -6,22 +6,37 @@ import test from "node:test";
 
 const execute = promisify(execFile);
 const start = new URL("../../server/start.mjs", import.meta.url);
+const missingProvider = { category: "configuration", operation: "startup", status: 503, field: "SUPABASE_URL", reason: "missing" };
+const failureMessage = "Local gateway startup failed. Check the configuration and local port.";
+function startupDiagnostics(stderr, expected, { failed = false } = {}) {
+	const lines = stderr.trimEnd().split("\n");
+	if (failed) assert.equal(lines.pop(), failureMessage);
+	assert.deepEqual(lines.map(line => JSON.parse(line)), expected);
+	assert.doesNotMatch(stderr, /https?:\/\/|test-public|test-secret|Error:|\bat\s+.*\([^)]*:\d+:\d+\)|server\/start\.mjs/);
+}
+function failedStartup(error, expected) {
+	assert.equal(error.code, 1);
+	assert.equal(error.stdout, "");
+	startupDiagnostics(error.stderr, expected, { failed: true });
+	return true;
+}
 
 test("local startup rejects origins that its plain HTTP loopback listener cannot serve", async () => {
 	for (const origin of ["https://localhost:0", "https://site.example:0", "http://[::1]:0"]) {
 		await assert.rejects(execute(process.execPath, [start.pathname], {
 			env: { APP_ORIGIN: origin }, timeout: 1500,
-		}), error => error.code === 1 && /APP_ORIGIN must be an exact HTTP origin on localhost or 127\.0\.0\.1/.test(error.stderr), origin);
+		}), error => failedStartup(error, [missingProvider,
+			{ category: "configuration", operation: "startup", status: 503, field: "APP_ORIGIN", reason: "invalid" }]), origin);
 	}
 });
 
 test("local startup refuses production and plaintext provider credentials", async () => {
 	await assert.rejects(execute(process.execPath, [start.pathname], {
 		env: { NODE_ENV: "production" }, timeout: 1500,
-	}), error => error.code === 1 && /persistent session storage/.test(error.stderr));
+	}), error => failedStartup(error, [{ category: "unexpected", operation: "startup", status: 503 }]));
 	await assert.rejects(execute(process.execPath, [start.pathname], {
 		env: { SUPABASE_URL: "http://localhost:54321", SUPABASE_PUBLISHABLE_KEY: "test-public", SUPABASE_SECRET_KEY: "test-secret" }, timeout: 1500,
-	}), error => error.code === 1 && /SUPABASE_URL must use HTTPS/.test(error.stderr));
+	}), error => failedStartup(error, [{ category: "configuration", operation: "startup", status: 503, field: "SUPABASE_URL", reason: "invalid" }]));
 });
 
 for (const signal of ["SIGINT", "SIGTERM"]) {
@@ -30,7 +45,7 @@ for (const signal of ["SIGINT", "SIGTERM"]) {
 			env: { APP_ORIGIN: "http://127.0.0.1:0" }, stdio: ["ignore", "pipe", "pipe"],
 		});
 		t.after(() => { if (child.exitCode === null) child.kill("SIGKILL"); });
-		const exited = once(child, "exit");
+		const exited = once(child, "close");
 		let output = "", errors = "";
 		child.stderr.on("data", data => { errors += data; });
 		const origin = await new Promise((resolve, reject) => {
@@ -51,6 +66,7 @@ for (const signal of ["SIGINT", "SIGTERM"]) {
 		assert.equal((await session.json()).available, false);
 		child.kill(signal);
 		assert.deepEqual(await exited, [0, null]);
-		assert.equal(errors, "");
+		startupDiagnostics(errors, [missingProvider]);
+		await assert.rejects(fetch(`${origin}/api/account/session`));
 	});
 }
