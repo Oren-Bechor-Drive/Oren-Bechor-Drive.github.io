@@ -66,4 +66,3 @@ export async function privateMediaReader(t, { width = 390, reducedMotion = "redu
 	};
 	return { app, page, email, open, summary: page.getByText("תמלול הסרטון", { exact: true }), transcript: page.locator(".reading-transcript-text") };
 }
-
