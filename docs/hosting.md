@@ -23,6 +23,8 @@ The [local recovery rehearsal](local-recovery.md) checks owned synthetic databas
 
 `npm run check:pilot:local` checks the closed/disabled defaults, actual public package and synthetic account, reading, quiz, withdrawal and media boundaries. It accepts only the fixed local mode, ignores environment-based targets, removes its owned fixtures and returns a nonzero exit status on failure. Its nine external gates remain explicit even when all local checks pass. The [local benchmark](local-performance.md) records latency, errors, transfer and bounded concurrency separately; it does not measure hosted capacity.
 
+The [2026-10-08 readiness report](reviews/local-readiness-2026-10-08.md) records 837 passing integrated tests, 9/9 local pilot checks, 11/11 recovery checks and the clean-checkout benchmark. No authorized local hosted-configuration file was supplied, so `check:hosting` and live provider/deployment checks remain unperformed.
+
 ## Configuration
 
 Copy [.env.hosted.example](../.env.hosted.example) to ignored `.env.hosted.local`, fill the selected environment's values, then run `npm run check:hosting`. This validates structure locally and makes no network requests. It does not verify a provider plan or prove that authentication works.

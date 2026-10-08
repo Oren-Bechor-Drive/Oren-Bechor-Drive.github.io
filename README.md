@@ -379,6 +379,7 @@ See [database ownership](docs/ARCHITECTURE.md#accounts-and-access-development-da
 - [Official source review](docs/reference/official-source-review-2026-09-22.md): dated official-resource audit, evidence and limits.
 - [Site quality review](docs/reviews/site-quality-2026-09-22.md): current responsive, accessibility and local resource audit with remaining manual checks.
 - [Local performance baseline](docs/local-performance.md): synthetic timing, transfer and bounded-concurrency evidence.
+- [Local readiness verification](docs/reviews/local-readiness-2026-10-08.md): completed independent improvements, final 837-test result, recovery/benchmark evidence and unresolved hosted/human gates.
 - [Owner launch inputs](docs/launch-inputs.md): concrete supplied facts, missing decisions, data-policy dependencies and pilot inputs.
 - [AGENTS.md](AGENTS.md): contributor boundaries and required checks.
 - [Font sources and license](assets/fonts/README.md): the local font files and their delivery requirements.
@@ -494,6 +495,7 @@ Proposed page names below describe responsibilities. Choose final paths during i
 - [ ] Configure real private storage and publish approved restricted content, then verify deployed delivery, expiry and shared-cache behavior.
 - [ ] Deliver paid media for website viewing without a course-content download feature. Bound media grants by the paid-access end and a short delivery lifetime, and verify expiry and private-origin access with the selected provider. Document that screen capture and copying content already delivered cannot be prevented completely.
 - [x] Rehearse synthetic learner data restoration, withdrawal preservation, authorization, history/completion, private-media copy/hash and session-key behavior in owned disposable databases through `npm run rehearse:recovery`. This archive is separate from provider backup formats.
+- [x] Add repeatable local pilot and performance commands with synthetic fixtures, real failure exits and bounded concurrency. Final local verification passed 837 tests, nine pilot checks and eleven recovery checks; [dated evidence](docs/reviews/local-readiness-2026-10-08.md) keeps hosted capacity, configuration and human/device checks outstanding.
 - [ ] Supply and configure hosted backup destination, schedule, retention and key custody; authorize and verify hosted restore/rollback and monitored migrations before storing live learner data.
 
 ### Accounts and learner area

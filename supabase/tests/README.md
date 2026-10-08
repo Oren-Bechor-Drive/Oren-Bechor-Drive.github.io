@@ -20,6 +20,12 @@ The foundation's 23 database cases exercise actual SQL roles and policies, inclu
 
 The local Auth contract cannot prove token validation, hosted API configuration, Google OAuth, email delivery, browser cookie handling, or payment behavior.
 
+## Integrated local verification on 2026-10-08
+
+Checkpoint `bc49088a37eace5d2a4be252dada9c9c2dde27be` passed all 837 integrated tests, with zero failures or skips. Disposable PostgreSQL fixtures applied all nine migrations, including the new cooldown decision and quiz withdrawal migrations. The local pilot command passed 9/9 checks and the recovery command passed 11/11, covering withdrawn drafts, submitted history/completion, authorization/retention, atomic corruption rollback, session-key behavior and separate synthetic media copy/hash.
+
+The [dated readiness report](../../docs/reviews/local-readiness-2026-10-08.md) records the real browser/Worker boundaries, final benchmark and review corrections. These results do not apply migrations to hosted Supabase, exercise live Auth/SMTP/Google, establish hosted backup formats or approve teaching. No authorized `.env.hosted.local` was present; hosted configuration and API verification remain outstanding. Earlier dated evidence below remains historical.
+
 ## Gateway and reader integration verified on 2026-09-25
 
 The local gateway and desktop/mobile Chromium journeys use deterministic Auth with real disposable PostgreSQL. They cover saved reading percentages, stale-save conflicts, expiry, renewal and learner isolation. The current protected-learning migration retains positions and attempts during the ten-day lapse window, then clears them while preserving explicitly completed topics. Renewal before that deadline retains learning data; renewal after it starts fresh, even when scheduled cleanup was delayed. Reader lifetime tests hold real responses to verify that superseded loads and saves cannot restore cleared content or steal focus. See [ownership and test seams](../../docs/ARCHITECTURE.md) and the [manual browser/API walkthrough](../../docs/manual-test-lessons.md).

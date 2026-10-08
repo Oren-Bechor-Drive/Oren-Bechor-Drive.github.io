@@ -125,4 +125,4 @@ The [dated browser evidence](reviews/site-quality-2026-09-22.md#protected-learni
 - Check actual browser text-only 200% zoom at a narrow 320px viewport and platform forced colors. Automated 200% root-font sizing and forced-color emulation are proxies.
 - Once approved real media is supplied, verify caption synchronization and completeness, Hebrew transcript comprehension, essential visual descriptions and native playback controls.
 
-Fixture `withdrawQuiz` and `publishQuiz` controls belong only to disposable tests. The [trusted withdrawal procedure](OPERATIONS.md#withdraw-a-protected-quiz-version) owns future operator actions.
+Fixture `republishSection`, `withdrawQuiz` and `publishQuiz` controls belong only to disposable tests. The [trusted withdrawal procedure](OPERATIONS.md#withdraw-a-protected-quiz-version) owns future operator actions.

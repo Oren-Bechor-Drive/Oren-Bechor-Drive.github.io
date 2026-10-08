@@ -14,18 +14,25 @@
 
 Local work started on 2026-10-08 in `t3/audit-missing-website-pieces`.
 
-| Task | Current evidence |
+| Task | Completed evidence |
 | --- | --- |
-| 1 | Committed `4bda41f`: scope/retention/hosted teardown documentation corrected. Final dated evidence follows Task 13. |
-| 2 | Committed `0fe5a7f`: 36 focused tests and collaborative desktop/mobile checks pass. Restoration reauthorizes immediately, reconciling an exact observed in-flight acknowledgement without waiting for network completion; stale UI effects remain isolated. |
-| 3 | Committed `820a9f5`: 56 focused cases pass after correcting a test locator; synthetic browser Google callback returns to the authorized reader, durable encrypted return flow verified. Live Google remains disabled. |
-| 4 | Committed `b7ce402`, `94fe5d5`: ten browser-helper/lifetime unit cases and 48 focused cooldown cases pass. Integrated full suite follows parallel protected-media/withdrawal work. |
-| 5 | Committed `4bb1e27`: 81 topic / 59 explanation references, 74 focused tests, links and media audits pass. Teaching/question/source bytes preserved. |
-| 6-7 | In progress with separate media and withdrawal owners. |
-| 8 | Pending safe diagnostics integration. |
-| 9 | Baseline committed `66574f1`: 88 database tests and ten rehearsal checks pass. Withdrawal recovery is being added after Task 7. |
-| 10 | Unpublished instructor/owner packets in progress. |
-| 11-13 | Pending final browser, performance and readiness integration. |
+| 1 | `4bda41f`: scope, ten-day retention and safe hosted-fixture boundaries. Final dated evidence is recorded in the readiness report. |
+| 2 | `0fe5a7f`, `c9a3b43`, `fc0df6e`, `bc49088`: suspension queue, repeated restoration and acknowledged initial/republished zero positions. Final focused suite: 47 passed; collaborative desktop/mobile checks passed. |
+| 3 | `820a9f5`, `62dabe3`: shared normalized return allowlist, encrypted durable synthetic Google flow and uppercase UUID normalization. Live Google remains disabled. |
+| 4 | `b7ce402`, `94fe5d5`, `27e6582`: actual cooldown contract, server/database/browser consumers and malformed-address rejection. |
+| 5 | `4bb1e27`, `d1d459a`: 81 neutral topic / 59 explanation references, faithful generation and corrected actual-navigation assertions. |
+| 6 | `7dcc8df`: private Hebrew native captions and bounded plaintext transcripts with authorization/lifetime isolation; owned synthetic media verification. |
+| 7 | `831e787`: immutable withdrawal, explicit empty replacement, preserved submitted evidence and operator runbook. |
+| 8 | `f6c7a92`, `99bc340`: privacy-safe diagnostics and actual startup/failure/shutdown assertions. Cloud logging policy unchanged. |
+| 9 | `66574f1`, `831e787`, `91c899a`: owned archive/restore and reliable CLI exit. Final rehearsal: 11/11 checks. |
+| 10 | `1183479`: unpublished instructor/owner packets, 81 mappings, 39 draft groups and 28 media briefs. All await approval; 42 unverified mappings remain held. |
+| 11 | `c99bc9a`, `0189723`: 44 focused engine/accessibility checks, current reader desktop/mobile verification and explicit unperformed human/device follow-up. |
+| 12 | `2084f28`: repeatable local benchmark. Final clean-checkout run: 28 scenarios, 200 successes, zero unexpected errors, five deliberate throttles. |
+| 13 | `91c899a`, `0189723`: local-only checker and documented commands. Final full suite: 837/837; pilot: 9/9; source/links/media/search/package audits pass. |
+
+All autonomous deliverables are complete. See the [final local readiness report](../../reviews/local-readiness-2026-10-08.md) for checkpoint `bc49088`, actual measurements, review corrections and remaining external gates.
+
+Execution adjustment for Task 2: fresh authorization runs immediately while the opaque save queue settles independently. Exact own acknowledgements are reconciled across repeated restorations; other revisions or positions require reload. The reader also supplies current-version acknowledgement separately from the previous progress row's concurrency revision, so an explicit zero is really saved for initial and republished versions.
 
 ## Global Constraints
 
@@ -62,11 +69,11 @@ This plan is complete when these local deliverables pass their acceptance checks
 
 **Interfaces:** Consumes the current migrations and audit. Produces a consistent distinction between implemented local features, unverified hosted behavior and owner-dependent future work; no runtime interface changes.
 
-- [ ] Read the current Todo entries and compare each backend/auth/progress item with implemented source and tests. Split mixed entries into local implementation and hosted verification. Keep billing, actual publication and policy decisions outstanding.
-- [ ] Replace the current 31-day retention claim with the implemented ten-day cleanup boundary, including renewal-before-deadline versus renewal-after-cleanup behavior. Keep account deletion separate from learning-data cleanup.
-- [ ] Correct the hosted smoke cleanup instructions: entitlement deletion is forbidden by the current retention trigger, and immutable content cannot be casually deleted. Mark the old four-phase evidence as foundation-only history. Require an explicitly authorized disposable development project and a verified fixture teardown before rerunning a newer hosted exercise. Do not add a production trigger bypass.
-- [ ] Recheck every referenced command, file and heading. Add a dated local-evidence entry only after the final suite in Task 13, using that run's actual counts.
-- [ ] Run `git diff --check`. Commit only these documentation changes with message `docs: distinguish local learning from hosted readiness`.
+- [x] Read the current Todo entries and compare each backend/auth/progress item with implemented source and tests. Split mixed entries into local implementation and hosted verification. Keep billing, actual publication and policy decisions outstanding.
+- [x] Replace the current 31-day retention claim with the implemented ten-day cleanup boundary, including renewal-before-deadline versus renewal-after-cleanup behavior. Keep account deletion separate from learning-data cleanup.
+- [x] Correct the hosted smoke cleanup instructions: entitlement deletion is forbidden by the current retention trigger, and immutable content cannot be casually deleted. Mark the old four-phase evidence as foundation-only history. Require an explicitly authorized disposable development project and a verified fixture teardown before rerunning a newer hosted exercise. Do not add a production trigger bypass.
+- [x] Recheck every referenced command, file and heading. Add a dated local-evidence entry only after the final suite in Task 13, using that run's actual counts.
+- [x] Run `git diff --check`. Commit only these documentation changes with message `docs: distinguish local learning from hosted readiness`.
 
 **Acceptance:** A reader cannot mistake implemented local accounts for deployed accounts or follow the obsolete delete-entitlements cleanup sequence. Documentation-only work does not require rerunning application tests.
 
@@ -78,10 +85,10 @@ This plan is complete when these local deliverables pass their acceptance checks
 
 - Extend `createProtectedPage({ clear, restore, beforeSuspend = () => {}, window, document })`. `beforeSuspend()` runs synchronously once per suspension, before request invalidation and DOM clearing. The learning screen's existing consumer continues using the default.
 - Export `createReaderPosition({ send })`. `send({ contentVersionId, position, expectedRevision, csrf })` returns `Promise<{ position: { contentVersionId, position, revision } }>` through the existing authorized position API.
-- Return `hydrate({ contentVersionId, position, revision, csrf })`, `update(position)`, `flush(): Promise<void>`, `settled(): Promise<void>` and `clear()`. The coordinator owns only opaque position/revision/version/CSRF values, its serial save queue and failure state. It owns no instructional text, media or DOM.
+- Return `hydrate({ contentVersionId, position, revision, csrf, acknowledged })`, `update(position)`, `flush(): Promise<void>`, `settled(): Promise<void>` and `clear()`. The coordinator owns only opaque position/revision/version/CSRF values, its serial save queue and failure state. It owns no instructional text, media or DOM.
 - `hydrate` consumes a fresh authorized snapshot. Retain a newer local position only if the content version matches and the server revision still equals the coordinator's last acknowledged revision. A conflicting revision requires reload; do not overwrite another device's progress.
 
-- [ ] Add a regression to the existing lifetime fixture for scroll followed immediately by hide, before the 600 ms timer fires:
+- [x] Add a regression to the existing lifetime fixture for scroll followed immediately by hide, before the 600 ms timer fires:
 
 ```js
 const r = await reader(t, 390); // Existing in-file lifetime fixture.
@@ -100,8 +107,8 @@ await restoredNear(r.page, 0.75);
 
 Add deterministic coordinator tests for an earlier save in flight, repeated hide events, conflicting revisions, changed versions and denial after logout/revocation.
 
-- [ ] Run `node --test tests/unit/protected-page.test.mjs tests/browser/test-lesson-lifetime.test.mjs` and confirm the new pre-debounce regression fails on current behavior.
-- [ ] Implement the coordinator and suspension hook. Snapshot `currentPosition()` before clearing the body; cancel the debounce timer; enqueue the latest value. Serialize writes so a later value uses the earlier response's revision rather than the same stale revision.
+- [x] Run `node --test tests/unit/protected-page.test.mjs tests/browser/test-lesson-lifetime.test.mjs` and confirm the new pre-debounce regression fails on current behavior.
+- [x] Implement the coordinator and suspension hook. Snapshot `currentPosition()` before clearing the body; cancel the debounce timer; enqueue the latest value. Serialize writes so a later value uses the earlier response's revision rather than the same stale revision.
 
 ```js
 const sendPosition = async input => {
@@ -120,9 +127,9 @@ const sendPosition = async input => {
 
 Use this small keepalive request for ordinary saves as well, so an already-issued write can finish during suspension. Keep its transport separate from the aborted rendering lifetime. Replies can update the coordinator's opaque revision; every UI effect remains guarded by `lifetime.run`/`commit`.
 
-- [ ] On restoration, settle outstanding writes within their existing timeout, then reauthorize and read the section/position. Clear coordinator state on 401/404, content-version changes and ordinary reset. Surface 409 through the existing reload path. Do not use localStorage, IndexedDB or `sendBeacon`, which cannot carry the required CSRF header.
-- [ ] Run `node --test tests/unit/reader-position.test.mjs tests/unit/protected-page.test.mjs tests/browser/test-lesson-lifetime.test.mjs tests/browser/section-reader.test.mjs tests/gateway/reading-position.test.mjs`. Verify the real disposable gateway journey at desktop/mobile sizes, immediate private-DOM clearing and late-response isolation.
-- [ ] Document best-effort suspension flushing: server acknowledgement establishes persistence; offline exits and forced browser termination cannot be guaranteed. Commit with message `fix: flush pending reader position on suspension`.
+- [x] On restoration, immediately reauthorize and read the section/position while outstanding opaque writes settle within their existing timeout. Reconcile an exact observed own acknowledgement without waiting for its transport reply. Clear coordinator state on 401/404, content-version changes and ordinary reset. Surface 409 through the existing reload path. Do not use localStorage, IndexedDB or `sendBeacon`, which cannot carry the required CSRF header.
+- [x] Run `node --test tests/unit/reader-position.test.mjs tests/unit/protected-page.test.mjs tests/browser/test-lesson-lifetime.test.mjs tests/browser/section-reader.test.mjs tests/gateway/reading-position.test.mjs`. Verify the real disposable gateway journey at desktop/mobile sizes, immediate private-DOM clearing and late-response isolation.
+- [x] Document best-effort suspension flushing: server acknowledgement establishes persistence; offline exits and forced browser termination cannot be guaranteed. Commit with message `fix: flush pending reader position on suspension`.
 
 **Acceptance:** The reproduced 20%-to-75% loss is fixed when the save reaches the server. Concurrent saves, access loss and stale responses do not restore private DOM or silently overwrite newer server progress.
 
@@ -132,7 +139,7 @@ Use this small keepalive request for ordinary saves as well, so an already-issue
 
 **Interfaces:** Export `normalizeAccountReturn(value, origin): string`, shared by the browser and server. Accept `/account/`, `/account/learning.html` with no query, and `/account/reader.html` with exactly one canonical UUID `section` and one `access=free|paid`. Return `/account/` for every other input. Add optional `returnTo` to the Google POST body and store the normalized path in the encrypted server-held flow.
 
-- [ ] Add pure allowlist tests and a synthetic Google callback test:
+- [x] Add pure allowlist tests and a synthetic Google callback test:
 
 ```js
 const origin = "https://course.example.test";
@@ -152,9 +159,9 @@ assert.equal(completed.redirect, wanted);
 
 This uses the existing deterministic provider's `url` result, state parameter and `valid-code` exchange. Cover duplicate parameters, encoded separators, backslashes, hashes, control characters, overlong values, expired/replayed callbacks and destinations from another origin.
 
-- [ ] Run the focused unit/gateway test and confirm the callback currently lands on `/account/`.
-- [ ] Extract the existing browser allowlist into the pure module, strengthen UUID validation and use it for password login too. Extend the gateway's Google field allowlist to `["returnTo"]`; reject a non-string or value longer than 2048 characters. Preserve empty-body compatibility.
-- [ ] Store and revalidate the path only in the Google flow:
+- [x] Run the focused unit/gateway test and confirm the callback currently lands on `/account/`.
+- [x] Extract the existing browser allowlist into the pure module, strengthen UUID validation and use it for password login too. Extend the gateway's Google field allowlist to `["returnTo"]`; reject a non-string or value longer than 2048 characters. Preserve empty-body compatibility.
+- [x] Store and revalidate the path only in the Google flow:
 
 ```js
 flow.returnTo = normalizeAccountReturn(body.returnTo, origin);
@@ -165,7 +172,7 @@ const redirect = flow.kind === "google"
 
 Keep recovery's `/account/reset.html` destination and signup behavior unchanged. Verify the existing durable session serializer retains `returnTo` encrypted across gateway reconstruction; no new provider redirect URL or browser token is needed.
 
-- [ ] Run `node --test tests/unit/return-destination.test.mjs tests/gateway/learner-accounts.test.mjs tests/gateway/session.test.mjs tests/database/gateway-sessions.test.mjs tests/browser/account-browser.test.mjs`, then `npm run check:links`. Commit with message `fix: restore protected destination after Google sign-in`.
+- [x] Run `node --test tests/unit/return-destination.test.mjs tests/gateway/learner-accounts.test.mjs tests/gateway/session.test.mjs tests/database/gateway-sessions.test.mjs tests/browser/account-browser.test.mjs`, then `npm run check:links`. Commit with message `fix: restore protected destination after Google sign-in`.
 
 **Acceptance:** A locally simulated Google flow returns to the requested protected section. Malicious inputs fall back safely. This does not enable or verify live Google OAuth.
 
@@ -179,7 +186,7 @@ Keep recovery's `/account/reset.html` destination and signup behavior unchanged.
 - New service-only RPC `public.gateway_rate_limit_decision(p_bucket_key text, p_limit integer, p_window_seconds integer) returns jsonb` delegates to a private definer with empty search path. Keep the old boolean RPC as a compatibility wrapper over the same single counter transaction, so existing hosted callers remain compatible after a future authorized migration.
 - Export `readRetryAfter(value): number | null` and `retryGuidance(seconds): string`. The browser helper accepts an integer header from 1 through 86400; a missing/invalid value produces generic Hebrew waiting guidance. All account consumers share this actual second consumer requirement.
 
-- [ ] Strengthen the injected-clock gateway test: deny a mutation at a 900-second window, assert `Retry-After: 900`, advance 60 seconds, assert the next header is `840`, then permit the request at expiry. Assert a database decision has the same contract and never leaks the bucket/address.
+- [x] Strengthen the injected-clock gateway test: deny a mutation at a 900-second window, assert `Retry-After: 900`, advance 60 seconds, assert the next header is `840`, then permit the request at expiry. Assert a database decision has the same contract and never leaks the bucket/address.
 
 ```js
 const decision = (await client.query(
@@ -197,10 +204,10 @@ assert.ok(denied.retryAfterSeconds >= 899 && denied.retryAfterSeconds <= 900);
 
 The database test uses a service-role connection from the existing disposable fixture. Include concurrent old/new RPC consumers, anon/authenticated denial, expired windows, global capacity and malformed RPC responses.
 
-- [ ] Run the focused gateway/database files and observe the new assertions fail before changing the contract.
-- [ ] Run `npx --no-install supabase migration new gateway_rate_limit_decisions`. Add the decision RPC using the existing advisory lock, table, limits and sweeper. Compute `greatest(1, ceil(extract(epoch from expires_at - clock_timestamp())))::integer` after acquiring the lock. At global capacity, report the earliest bucket expiry; reject invalid client addresses as 400 and database/network failures as 503 rather than fabricating a retry window.
-- [ ] Update every JavaScript limiter consumer and injected fixture from boolean to decision. Use `graft callers createDatabaseRateLimit --depth all` and exhaustive limiter searches during execution before deleting the old JavaScript contract. Keep the SQL compatibility wrapper because it has a real older deployed caller boundary.
-- [ ] Propagate `retryAfterSeconds` on known 429 errors and set the response header only when its value is valid. For early verification-email resend, use the remaining `nextResendAt` interval without changing that policy. A provider-originated 429 without known retry metadata gets generic waiting guidance and no invented 60-second header. Preserve known metadata when parsing account and protected-page errors; replace hard-coded one-minute reader/learning messages with:
+- [x] Run the focused gateway/database files and observe the new assertions fail before changing the contract.
+- [x] Run `npx --no-install supabase migration new gateway_rate_limit_decisions`. Add the decision RPC using the existing advisory lock, table, limits and sweeper. Compute `greatest(1, ceil(extract(epoch from expires_at - clock_timestamp())))::integer` after acquiring the lock. At global capacity, report the earliest bucket expiry; reject invalid client addresses as 400 and database/network failures as 503 rather than fabricating a retry window.
+- [x] Update every JavaScript limiter consumer and injected fixture from boolean to decision. Use `graft callers createDatabaseRateLimit --depth all` and exhaustive limiter searches during execution before deleting the old JavaScript contract. Keep the SQL compatibility wrapper because it has a real older deployed caller boundary.
+- [x] Propagate `retryAfterSeconds` on known 429 errors and set the response header only when its value is valid. For early verification-email resend, use the remaining `nextResendAt` interval without changing that policy. A provider-originated 429 without known retry metadata gets generic waiting guidance and no invented 60-second header. Preserve known metadata when parsing account and protected-page errors; replace hard-coded one-minute reader/learning messages with:
 
 ```js
 export function retryGuidance(seconds) {
@@ -212,7 +219,7 @@ export function retryGuidance(seconds) {
 
 Keep inputs and current draft state intact. Do not automatically resubmit credentials or change the separate verification-email resend cooldown.
 
-- [ ] Run `node --test tests/unit/retry-guidance.test.mjs tests/gateway/rate-limit.test.mjs tests/gateway/session.test.mjs tests/gateway/mutation-admission.test.mjs tests/gateway/production.test.mjs tests/gateway/verification.test.mjs tests/database/gateway-rate-limits.test.mjs tests/browser/account-feedback-browser.test.mjs`, then `npm test`. Commit with message `fix: report remaining rate-limit cooldown`.
+- [x] Run `node --test tests/unit/retry-guidance.test.mjs tests/gateway/rate-limit.test.mjs tests/gateway/session.test.mjs tests/gateway/mutation-admission.test.mjs tests/gateway/production.test.mjs tests/gateway/verification.test.mjs tests/database/gateway-rate-limits.test.mjs tests/browser/account-feedback-browser.test.mjs`, then `npm test`. Commit with message `fix: report remaining rate-limit cooldown`.
 
 **Acceptance:** Retry guidance agrees with both local and persistent windows. Database failure remains an unavailable response. The migration is checked in and tested locally, not applied to Supabase.
 
@@ -222,7 +229,7 @@ Keep inputs and current draft state intact. Do not automatically resubmit creden
 
 **Interfaces:** Add `lessonReferenceKind: "explanation" | "topic"` to every reviewed question. It records link intent, not instructor approval. Existing section/topic fields remain the editorial teaching-placement destination. A topic reference renders `../#topic` and the neutral label `חזרה לנושא הלימוד`; an explanation reference retains the existing validated section destination and `חזרה להסבר בנושא`.
 
-- [ ] In the publisher's existing temp-tree fixture, set question `0988` to `lessonReferenceKind: "topic"`, publish and assert its review link points to `../#topic` with the neutral label. Also assert an explanation reference to another topic still reaches its section:
+- [x] In the publisher's existing temp-tree fixture, set question `0988` to `lessonReferenceKind: "topic"`, publish and assert its review link points to `../#topic` with the neutral label. Also assert an explanation reference to another topic still reaches its section:
 
 ```js
 const f = await fixture(t); // Existing publisher test fixture.
@@ -236,9 +243,9 @@ assert.equal(link.textContent, "חזרה לנושא הלימוד");
 dom.window.close();
 ```
 
-- [ ] Run `node --test tests/unit/theory-quiz-publisher.test.mjs` and confirm the new link-intent test fails.
-- [ ] Transcribe the existing editorial assessment without reclassifying driving rules: all 56 Gap and 25 Partial questions get `topic`; the 48 Covered and 11 Elsewhere questions retain `explanation`. Require a valid kind, and still validate existing section destinations for editorial integrity. Missing or unknown values fail with the source file and question ID.
-- [ ] Render only the link's destination/label according to the kind:
+- [x] Run `node --test tests/unit/theory-quiz-publisher.test.mjs` and confirm the new link-intent test fails.
+- [x] Transcribe the existing editorial assessment without reclassifying driving rules: all 56 Gap and 25 Partial questions get `topic`; the 48 Covered and 11 Elsewhere questions retain `explanation`. Require a valid kind, and still validate existing section destinations for editorial integrity. Missing or unknown values fail with the source file and question ID.
+- [x] Render only the link's destination/label according to the kind:
 
 ```js
 const topicReference = question.lessonReferenceKind === "topic";
@@ -248,7 +255,7 @@ const label = topicReference ? "חזרה לנושא הלימוד" : "חזרה ל
 
 Do not alter questions, keys, explanations, provenance, adaptations or original diagrams. Update the coverage document's heading and notes to distinguish assessed placement from the new neutral public navigation.
 
-- [ ] Run `node scripts/publish-theory-quizzes.mjs`, then `node scripts/publish-theory-quizzes.mjs --check`. Run `node --test tests/unit/theory-quiz-publisher.test.mjs tests/unit/theory-quiz-publication.test.mjs tests/browser/quiz-review-browser.test.mjs`, `npm run check:links` and `npm run check:media`. Check one enhanced mistake-review path and its JavaScript-disabled native disclosure. Commit with message `fix: distinguish topic links from explanation links`.
+- [x] Run `node scripts/publish-theory-quizzes.mjs`, then `node scripts/publish-theory-quizzes.mjs --check`. Run `node --test tests/unit/theory-quiz-publisher.test.mjs tests/unit/theory-quiz-publication.test.mjs tests/browser/quiz-review-browser.test.mjs`, `npm run check:links` and `npm run check:media`. Check one enhanced mistake-review path and its JavaScript-disabled native disclosure. Commit with message `fix: distinguish topic links from explanation links`.
 
 **Acceptance:** Q0988 no longer claims the obstruction section explains engine braking. All 81 incomplete placements have honest navigation; existing accurate cross-topic links remain useful. This does not fill or approve the missing teaching.
 
@@ -263,10 +270,10 @@ Do not alter questions, keys, explanations, provenance, adaptations or original 
 - `forSection(sectionId, contentVersionId)` continues returning root media descriptors; videos additionally expose same-origin caption/transcript descriptors with `/api/media/<id>` URLs. `lookup(id)` includes sidecars so the existing learner/version authorization protects every text request too.
 - Reject duplicate references, mismatched versions, unsupported language tags, overlong labels, orphan sidecars and unknown sidecar fields during registry construction.
 
-- [ ] Add a manifest contract regression using one synthetic video, a Hebrew VTT file and a UTF-8 transcript. Assert descriptors nest correctly; unauthenticated, expired, revoked, wrong-learner and superseded-version requests cannot fetch either sidecar. Assert authorized responses use the precise type, `nosniff` and `private, no-store`.
-- [ ] Run `node --test tests/gateway/media-contract.test.mjs tests/gateway/private-media.test.mjs` and confirm text sidecars are currently rejected.
-- [ ] Add sidecar validation/delivery in the shared policy and both file/Storage adapters without exposing filenames or bucket details. Preserve HEAD, range handling, upstream cancellation and bounded delivery; a reader transcript must be limited to 256 KiB of UTF-8 text and aborted on suspension.
-- [ ] Render native caption tracks and an on-demand transcript disclosure:
+- [x] Add a manifest contract regression using one synthetic video, a Hebrew VTT file and a UTF-8 transcript. Assert descriptors nest correctly; unauthenticated, expired, revoked, wrong-learner and superseded-version requests cannot fetch either sidecar. Assert authorized responses use the precise type, `nosniff` and `private, no-store`.
+- [x] Run `node --test tests/gateway/media-contract.test.mjs tests/gateway/private-media.test.mjs` and confirm text sidecars are currently rejected.
+- [x] Add sidecar validation/delivery in the shared policy and both file/Storage adapters without exposing filenames or bucket details. Preserve HEAD, range handling, upstream cancellation and bounded delivery; a reader transcript must be limited to 256 KiB of UTF-8 text and aborted on suspension.
+- [x] Render native caption tracks and an on-demand transcript disclosure:
 
 ```js
 for (const item of descriptor.captions ?? []) {
@@ -284,8 +291,8 @@ for (const item of descriptor.captions ?? []) {
 
 Use the current reader lifetime for transcript fetches. Read bounded bytes, decode UTF-8 and insert `textContent`, never `innerHTML`. Clearing private media must pause videos, remove track/video sources, close disclosures and remove transcript text. A denied sidecar follows the reader's existing access-loss path.
 
-- [ ] Add browser assertions for Hebrew track selection, keyboard disclosure operation, escaped hostile transcript text, revoked access and no late transcript repopulation. Use the current design tokens/focus rules; add no media marketing claims or fabricated instructional videos.
-- [ ] Run the affected gateway/browser/Worker tests and `npm test`. Verify desktop/mobile and reduced-motion reader behavior. Confirm the packaged public output contains none of the fixture files. Commit with message `feat: support authorized video captions and transcripts`.
+- [x] Add browser assertions for Hebrew track selection, keyboard disclosure operation, escaped hostile transcript text, revoked access and no late transcript repopulation. Use the current design tokens/focus rules; add no media marketing claims or fabricated instructional videos.
+- [x] Run the affected gateway/browser/Worker tests and `npm test`. Verify desktop/mobile and reduced-motion reader behavior. Confirm the packaged public output contains none of the fixture files. Commit with message `feat: support authorized video captions and transcripts`.
 
 **Acceptance:** Accessible alternatives can be delivered privately when real approved media arrives. Actual captions, transcripts, rights and instructor approval remain asset dependencies. The [W3C caption guidance](https://www.w3.org/WAI/WCAG22/Understanding/captions-prerecorded.html) supports using synchronized captions; a transcript is an additional reading alternative.
 
@@ -300,7 +307,7 @@ Use the current reader lifetime for transcript fetches. Read bounded bytes, deco
 - Add `withdrawn_at` to `public.quiz_attempts` and replace the one-draft index predicate with `submitted_at is null and withdrawn_at is null`. A withdrawn attempt can never also be submitted.
 - An owned withdrawn draft reads as `{ id, topicKey, revision, status: "withdrawn" }`, without questions, answer keys or explanations. Save/submit on it uses SQLSTATE `P4100`, mapped only for that code to HTTP 410 `{ error: "quiz_withdrawn" }`. Submitted attempts keep their original contract/results.
 
-- [ ] Add database tests that publish a synthetic version, start two learners' drafts and submit a third learner's passing attempt. Withdraw the version; assert unfinished reads contain no questions, save/submit are denied, and submitted history/completion are byte-for-byte unchanged. Repeated withdrawal is idempotent; anon/authenticated cannot call the trusted RPC.
+- [x] Add database tests that publish a synthetic version, start two learners' drafts and submit a third learner's passing attempt. Withdraw the version; assert unfinished reads contain no questions, save/submit are denied, and submitted history/completion are byte-for-byte unchanged. Repeated withdrawal is idempotent; anon/authenticated cannot call the trusted RPC.
 
 ```sql
 set local role service_role;
@@ -312,9 +319,9 @@ select public.save_my_quiz($2, '{"q1":"a"}'::jsonb, 0);
 
 Use existing fixture IDs and `actAs` for separate service/learner transactions. Also test a corrected current version, no corrected version, old normal drafts after ordinary publication, stale revisions and access revocation.
 
-- [ ] Run the focused database suite and confirm no withdrawal operation exists yet.
-- [ ] Run `npx --no-install supabase migration new protected_quiz_withdrawal`. Introduce the state and replace only current RPC definitions affected by withdrawal. Start from the latest `my_learning`, grading threshold and history definitions, preserving `latestAttempt`, original question counts and `hadPaidAccess`.
-- [ ] Establish the concurrency rule in SQL: learner operations keep their existing learner/attempt locks, then acquire a shared quiz-version lock before testing withdrawal and exposing or grading an unfinished version. The trusted withdrawal takes an exclusive lock on that version and touches no learner rows. Acquire multiple version locks in UUID order if restart examines both old and current versions. This avoids an operator taking a learner lock after a version lock.
+- [x] Run the focused database suite and confirm no withdrawal operation exists yet.
+- [x] Run `npx --no-install supabase migration new protected_quiz_withdrawal`. Introduce the state and replace only current RPC definitions affected by withdrawal. Start from the latest `my_learning`, grading threshold and history definitions, preserving `latestAttempt`, original question counts and `hadPaidAccess`.
+- [x] Establish the concurrency rule in SQL: learner operations keep their existing learner/attempt locks, then acquire a shared quiz-version lock before testing withdrawal and exposing or grading an unfinished version. The trusted withdrawal takes an exclusive lock on that version and touches no learner rows. Acquire multiple version locks in UUID order if restart examines both old and current versions. This avoids an operator taking a learner lock after a version lock.
 
 ```sql
 -- Learner operation, after its existing ownership/learner checks:
@@ -325,9 +332,9 @@ perform 1 from private.quiz_versions where id = v_attempt.version_id for share;
 
 A concurrent submission either commits before withdrawal or observes withdrawal and fails. Test both schedules with two connections and barriers; do not rely on a timing sleep.
 
-- [ ] In `start_my_quiz`, mark a learner's old withdrawn draft `withdrawn_at` under the learner lock. On an explicit start action, create a new draft only if the current version is not withdrawn. Keep withdrawn records subject to existing retention; do not invent a new retention policy. Filter withdrawn current versions from the active catalog. Preserve ordinary immutable-version resume behavior.
-- [ ] In `createLearnerAccounts.learning`, map `error.code === "P4100"` to `fail(410, "quiz_withdrawn")` before rethrowing other provider errors. Add that product code to the gateway's safe error allowlist. Clear unsafe questions/editing controls and preserved editor draft state on withdrawal. Show Hebrew feedback `גרסת התרגול אינה זמינה עוד. חזרו ללמידה ובחרו גרסה מעודכנת.` with an explicit return/reload action. Never automatically copy answers into the replacement version.
-- [ ] Run the database, gateway, editor and protected browser tests, then `npm test`. Add an operator runbook with exact version ID, reason/review reference, publication order, verification and scope of admission closure. Withdrawal itself requires no approval claim; publishing replacement instruction still does. Commit with message `feat: withdraw unsafe protected quiz drafts`.
+- [x] In `start_my_quiz`, mark a learner's old withdrawn draft `withdrawn_at` under the learner lock. On an explicit start action, create a new draft only if the current version is not withdrawn. Keep withdrawn records subject to existing retention; do not invent a new retention policy. Filter withdrawn current versions from the active catalog. Preserve ordinary immutable-version resume behavior.
+- [x] In `createLearnerAccounts.learning`, map `error.code === "P4100"` to `fail(410, "quiz_withdrawn")` before rethrowing other provider errors. Add that product code to the gateway's safe error allowlist. Clear unsafe questions/editing controls and preserved editor draft state on withdrawal. Show Hebrew feedback `גרסת התרגול אינה זמינה עוד. חזרו ללמידה ובחרו גרסה מעודכנת.` with an explicit return/reload action. Never automatically copy answers into the replacement version.
+- [x] Run the database, gateway, editor and protected browser tests, then `npm test`. Add an operator runbook with exact version ID, reason/review reference, publication order, verification and scope of admission closure. Withdrawal itself requires no approval claim; publishing replacement instruction still does. Commit with message `feat: withdraw unsafe protected quiz drafts`.
 
 **Acceptance:** Operators have a locally proven emergency withdrawal path. Affected unfinished instruction stops; unrelated drafts, submitted history and completion remain intact. No hosted quiz is withdrawn by this implementation task.
 
@@ -337,7 +344,7 @@ A concurrent submission either commits before withdrawal or observes withdrawal 
 
 **Interfaces:** Export `createDiagnostics({ write, now = Date.now }): { emit(event): void }`. Whitelist `category` (`configuration`, `dependency`, `unexpected`), `operation` (`startup`, `account`, `learning`, `position`, `media`, `rate_limit`), integer HTTP `status` and optional configuration `field`/`reason`. Allowed fields are `APP_ORIGIN`, `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`, `SESSION_SECRET`, `GOOGLE_AUTH_ENABLED`, `PRIVATE_MEDIA_BUCKET` and `PRIVATE_MEDIA_ENTRIES`; reason is `missing` or `invalid`. An internally computed positive integer `count` may summarize repeated events. Accept no arbitrary message, request URL, user/section ID, cookie, body, stack or provider payload.
 
-- [ ] Add a redaction test against deliberately sensitive input:
+- [x] Add a redaction test against deliberately sensitive input:
 
 ```js
 const lines = [];
@@ -349,8 +356,8 @@ assert.deepEqual(JSON.parse(lines[0]), { category: "configuration", operation: "
 assert.doesNotMatch(lines.join("\n"), /do-not-log|private learner text/);
 ```
 
-- [ ] Run `node --test tests/gateway/diagnostics.test.mjs` and confirm the module is absent.
-- [ ] Add structured configuration errors to `createProductionGatewayOptions`, carrying only approved field/reason values. In the Worker initialization catch, emit one safe configuration event per environment before retaining the current unavailable-API fallback. Add a reporter injection at the gateway's error boundary; use coarse route classes, never raw paths/query strings. Make reporter failure nonfatal.
+- [x] Run `node --test tests/gateway/diagnostics.test.mjs` and confirm the module is absent.
+- [x] Add structured configuration errors to `createProductionGatewayOptions`, carrying only approved field/reason values. In the Worker initialization catch, emit one safe configuration event per environment before retaining the current unavailable-API fallback. Add a reporter injection at the gateway's error boundary; use coarse route classes, never raw paths/query strings. Make reporter failure nonfatal.
 
 ```js
 catch (error) {
@@ -360,9 +367,9 @@ catch (error) {
 }
 ```
 
-- [ ] Exercise failed Auth, database, rate-store and media dependencies locally. Assert the learner still receives generic safe errors and the public homepage still works. Emit the first event, then suppress repeated events with the same category/operation/field/reason for 60 seconds. The next event after that window includes the accumulated count and resets the counter. Bound this map by the finite allowlists and test the behavior with an injected clock; no account-identifying correlation IDs are needed.
-- [ ] Document which signals are emitted locally, which cloud log collection remains disabled, and which alert/responder choices still require an owner. Leave `wrangler.jsonc` observability unchanged. Add incident verification steps that probe account/learning/media behavior rather than treating a 200 homepage as backend health.
-- [ ] Run `node --test tests/gateway/diagnostics.test.mjs tests/gateway/production.test.mjs tests/hosting/worker.test.mjs` and commit with message `feat: report safe gateway diagnostic categories`.
+- [x] Exercise failed Auth, database, rate-store and media dependencies locally. Assert the learner still receives generic safe errors and the public homepage still works. Emit the first event, then suppress repeated events with the same category/operation/field/reason for 60 seconds. The next event after that window includes the accumulated count and resets the counter. Bound this map by the finite allowlists and test the behavior with an injected clock; no account-identifying correlation IDs are needed.
+- [x] Document which signals are emitted locally, which cloud log collection remains disabled, and which alert/responder choices still require an owner. Leave `wrangler.jsonc` observability unchanged. Add incident verification steps that probe account/learning/media behavior rather than treating a 200 homepage as backend health.
+- [x] Run `node --test tests/gateway/diagnostics.test.mjs tests/gateway/production.test.mjs tests/hosting/worker.test.mjs` and commit with message `feat: report safe gateway diagnostic categories`.
 
 **Acceptance:** Local failures expose a useful category/configuration field without private data. Hosted alert delivery and retention are not claimed or silently enabled.
 
@@ -372,10 +379,10 @@ catch (error) {
 
 **Interfaces:** Add fixture-owned `dumpData(): Promise<Uint8Array>` and `restoreData(bytes): Promise<void>` operations through the recovery helper. They are attached only to a database instance created by `startDatabase`, never to a URL, environment-supplied credentials or destination path. Use a versioned fixture archive containing migration filenames/hashes, an allowed relation/column manifest and unchanged PostgreSQL-generated JSON row text. Export `rehearseLocalRecovery(): Promise<RecoveryReport>` from `scripts/rehearse-local-recovery.mjs`. `RecoveryReport` is `{ scope: "local", checks: Array<{ name: string, passed: boolean }>, migrations: string[], durationMs: number }`; it contains neither archive bytes nor credentials.
 
-- [ ] Seed synthetic identities, grants, positions, quiz versions, submitted attempts, completions, withdrawal records and retention deadlines in source fixture A. Restore into empty, independently initialized fixture B. Assert current access decisions and learner isolation, identical history/completion, withdrawn-draft denial and stored-position revisions through actual RPCs.
-- [ ] Add a negative case: corrupt the owned dump and assert restoration fails atomically. Confirm both databases, dump files and connections are removed even after an assertion failure.
-- [ ] Run `node --test tests/database/recovery.test.mjs` and confirm no recovery helper exists yet.
-- [ ] Implement a fixture-specific logical archive with the existing `pg` connection. The pinned embedded package contains only `postgres`, `pg_ctl` and `initdb`, so this task must not depend on nonexistent dump/restore utilities. In a read-only repeatable-read transaction, discover ordinary tables in the fixture's `auth`, `public` and `private` schemas, record their columns and export `row_to_json(row)::text` without converting large integers through JavaScript numbers.
+- [x] Seed synthetic identities, grants, positions, quiz versions, submitted attempts, completions, withdrawal records and retention deadlines in source fixture A. Restore into empty, independently initialized fixture B. Assert current access decisions and learner isolation, identical history/completion, withdrawn-draft denial and stored-position revisions through actual RPCs.
+- [x] Add a negative case: corrupt the owned dump and assert restoration fails atomically. Confirm both databases, dump files and connections are removed even after an assertion failure.
+- [x] Run `node --test tests/database/recovery.test.mjs` and confirm no recovery helper exists yet.
+- [x] Implement a fixture-specific logical archive with the existing `pg` connection. The pinned embedded package contains only `postgres`, `pg_ctl` and `initdb`, so this task must not depend on nonexistent dump/restore utilities. In a read-only repeatable-read transaction, discover ordinary tables in the fixture's `auth`, `public` and `private` schemas, record their columns and export `row_to_json(row)::text` without converting large integers through JavaScript numbers.
 
 ```sql
 begin isolation level repeatable read read only;
@@ -386,8 +393,8 @@ commit;
 
 The archive stores row strings as strings; restore passes each string as a bound `$1::jsonb` value to `jsonb_populate_record(NULL::<verified relation>, $1::jsonb)`. Quote relation/column identifiers from the target's independently discovered manifest, reject unknown relations/columns and require identical migration hashes. Restore into the empty migrated target in one local-admin transaction, using `set local session_replication_role = replica` only within that owned fixture transaction to avoid circular-FK/fixture-trigger ordering. Reject nonempty targets and reset the transaction on any failure. Before commit, enumerate every fixture FK from `pg_constraint` and run a child-to-parent anti-join for its column pairs, following its null/match semantics; reject any orphan row. Add a corrupted-archive test that omits a referenced learner and proves this check rolls back. Restore normal trigger behavior at commit, then verify the behavioral authorization assertions.
 
-- [ ] Include a separate synthetic private-media copy/hash check; database backups do not contain Storage object bytes. Exercise session restoration with a fixture-generated stable encryption key, then separately verify key rotation/invalidated sessions require fresh sign-in. Keep the key and ciphertext out of reports. Supabase documents the object-storage limitation in [Database Backups](https://supabase.com/docs/guides/platform/backups).
-- [ ] Add the command `npm run rehearse:recovery`, with loopback-only behavior and a JSON summary. Run it and `node --test tests/database/recovery.test.mjs tests/database/gateway-sessions.test.mjs`. Record that the archive rehearses application state against source-controlled migrations; it is not a complete Supabase backup or proof of a provider's dump format. Commit with message `test: rehearse local learner data restoration`.
+- [x] Include a separate synthetic private-media copy/hash check; database backups do not contain Storage object bytes. Exercise session restoration with a fixture-generated stable encryption key, then separately verify key rotation/invalidated sessions require fresh sign-in. Keep the key and ciphertext out of reports. Supabase documents the object-storage limitation in [Database Backups](https://supabase.com/docs/guides/platform/backups).
+- [x] Add the command `npm run rehearse:recovery`, with loopback-only behavior and a JSON summary. Run it and `node --test tests/database/recovery.test.mjs tests/database/gateway-sessions.test.mjs`. Record that the archive rehearses application state against source-controlled migrations; it is not a complete Supabase backup or proof of a provider's dump format. Commit with message `test: rehearse local learner data restoration`.
 
 **Acceptance:** Recovery can be repeated and checked locally. A real backup destination, schedule, retention, encryption-key custody and authorized hosted restoration remain decisions outside this task.
 
@@ -397,13 +404,13 @@ The archive stores row strings as strings; restore passes each string as a bound
 
 **Interfaces:** Consumes the 140-question maintenance source, existing coverage draft, supplied PDF, release media scope and Task 5's link intent. Produces unpublished review drafts keyed by the existing official question IDs, topic IDs and section anchors; exact-revision approval remains the existing Operations record.
 
-- [ ] Build the review packet for all 81 Gap/Partial questions. Group related missing propositions into proposed lesson changes, retain every question ID, and record the existing section, source evidence, answer-critical condition, proposed passage reference and `awaiting instructor review` state. Preserve all 11 Elsewhere links without treating navigation as new teaching approval.
-- [ ] Independently research each time-sensitive teaching proposition against supplied material and current primary Israeli government/Ministry sources. Record access dates, publication/effective dates where available and source conflicts. Where a source cannot be verified, record `source unverified` and exclude that passage from the ready-for-approval group. Do not present an answer explanation as Ministry-authored text.
-- [ ] Draft concise Hebrew lesson additions and matching scenarios/self-checks in the unpublished draft document. Start from the already reviewed question's course-authored explanation, then check its conditions against the primary evidence. Keep each proposed addition linked to the questions it would prepare the learner to answer. Do not edit public lessons or change question selection in this task.
-- [ ] Prepare the 16 video storyboards and 12 image/diagram briefs from the existing paid-release scope and 19 current media notes. Each brief records lesson placement, learning purpose, shots/diagram elements, needed source rights, Hebrew caption/transcript needs, approval state and delivery destination. Describe missing sign visuals first. Preserve supplied original artwork and student-photo bytes.
-- [ ] Build an owner-input sheet covering the real contact/report destination, support responder, approved privacy/terms and deletion rules, provider/admin availability, target origin, SMTP/Google settings, approved free content, backup destination, alert responder and the three-day pilot. Distinguish an absent supplied value from an unverified external setting.
-- [ ] Add a data inventory for current identity/profile/session/grant/progress/attempt/completion/media records: source, storage boundary, existing cleanup behavior, export/deletion dependencies and documented policy questions. Draft the request/operator workflow without selecting new retention durations or exposing a nonfunctional public form.
-- [ ] Verify IDs/counts against the reviewed source and every local/external citation. Confirm the files are outside the Worker/static allowlist and marked as drafts. Run `git diff --check`. Commit with message `docs: prepare teaching media and launch review packets`.
+- [x] Build the review packet for all 81 Gap/Partial questions. Group related missing propositions into proposed lesson changes, retain every question ID, and record the existing section, source evidence, answer-critical condition, proposed passage reference and `awaiting instructor review` state. Preserve all 11 Elsewhere links without treating navigation as new teaching approval.
+- [x] Independently research each time-sensitive teaching proposition against supplied material and current primary Israeli government/Ministry sources. Record access dates, publication/effective dates where available and source conflicts. Where a source cannot be verified, record `source unverified` and exclude that passage from the ready-for-approval group. Do not present an answer explanation as Ministry-authored text.
+- [x] Draft concise Hebrew lesson additions and matching scenarios/self-checks in the unpublished draft document. Start from the already reviewed question's course-authored explanation, then check its conditions against the primary evidence. Keep each proposed addition linked to the questions it would prepare the learner to answer. Do not edit public lessons or change question selection in this task.
+- [x] Prepare the 16 video storyboards and 12 image/diagram briefs from the existing paid-release scope and 19 current media notes. Each brief records lesson placement, learning purpose, shots/diagram elements, needed source rights, Hebrew caption/transcript needs, approval state and delivery destination. Describe missing sign visuals first. Preserve supplied original artwork and student-photo bytes.
+- [x] Build an owner-input sheet covering the real contact/report destination, support responder, approved privacy/terms and deletion rules, provider/admin availability, target origin, SMTP/Google settings, approved free content, backup destination, alert responder and the three-day pilot. Distinguish an absent supplied value from an unverified external setting.
+- [x] Add a data inventory for current identity/profile/session/grant/progress/attempt/completion/media records: source, storage boundary, existing cleanup behavior, export/deletion dependencies and documented policy questions. Draft the request/operator workflow without selecting new retention durations or exposing a nonfunctional public form.
+- [x] Verify IDs/counts against the reviewed source and every local/external citation. Confirm the files are outside the Worker/static allowlist and marked as drafts. Run `git diff --check`. Commit with message `docs: prepare teaching media and launch review packets`.
 
 **Acceptance:** Oren and the owner receive concrete reviewable passages, production briefs and decisions to supply. All material remains unpublished and unapproved; nobody must infer missing inputs from a broad backlog.
 
@@ -413,8 +420,8 @@ The archive stores row strings as strings; restore passes each string as a bound
 
 **Interfaces:** Consume the final reader/Google/retry/withdrawal/media contracts. Produce automated evidence across Chromium, Firefox and WebKit, plus a distinct unperformed human-check list. Add helper exports only for a demonstrated second test consumer.
 
-- [ ] Add focused Firefox/WebKit journeys for password login, allowed section return, reading-position restore, private-DOM clearing, paid-access revocation and withdrawn quiz handling. Keep the existing public smoke coverage and actual real-database fixture; do not emulate Google/provider production behavior.
-- [ ] Add assertions for native role/name relationships, feedback focus, keyboard radio/disclosure interaction, pointer/touch ring suppression and keyboard ring visibility. Check Hebrew reading order and 320 CSS-pixel reflow, 200% text sizing and forced-colors contrast/boundaries. Reuse existing tested cases rather than duplicating the homepage suite.
+- [x] Add focused Firefox/WebKit journeys for password login, allowed section return, reading-position restore, private-DOM clearing, paid-access revocation and withdrawn quiz handling. Keep the existing public smoke coverage and actual real-database fixture; do not emulate Google/provider production behavior.
+- [x] Add assertions for native role/name relationships, feedback focus, keyboard radio/disclosure interaction, pointer/touch ring suppression and keyboard ring visibility. Check Hebrew reading order and 320 CSS-pixel reflow, 200% text sizing and forced-colors contrast/boundaries. Reuse existing tested cases rather than duplicating the homepage suite.
 
 ```js
 await page.emulateMedia({ forcedColors: "active", reducedMotion: "reduce" });
@@ -427,9 +434,9 @@ assert.equal(await page.locator(":focus").count(), 1);
 
 Pair these structural assertions with actual protected control interactions; a focused element alone does not prove usable focus styling.
 
-- [ ] Run the new tests against current/final behavior and fix confirmed defects within the relevant task's ownership. A gallery pause control remains outside this plan because it conflicts with an explicit owner decision.
-- [ ] Verify affected paths in the collaborative browser at desktop/mobile and reduced motion. Keep NVDA/VoiceOver, physical iOS/Android playback, actual captions, text comprehension and native-video assistive control checks listed as requiring human/device evidence. Automated screenshots or accessibility trees are not screen-reader certification.
-- [ ] Run `node --test tests/browser/cross-browser-smoke.test.mjs tests/browser/design-accessibility.test.mjs tests/browser/protected-accessibility.test.mjs tests/browser/private-media-accessibility.test.mjs` and commit with message `test: cover protected journeys across browser engines`.
+- [x] Run the new tests against current/final behavior and fix confirmed defects within the relevant task's ownership. A gallery pause control remains outside this plan because it conflicts with an explicit owner decision.
+- [x] Verify affected paths in the collaborative browser at desktop/mobile and reduced motion. Keep NVDA/VoiceOver, physical iOS/Android playback, actual captions, text comprehension and native-video assistive control checks listed as requiring human/device evidence. Automated screenshots or accessibility trees are not screen-reader certification.
+- [x] Run `node --test tests/browser/cross-browser-smoke.test.mjs tests/browser/design-accessibility.test.mjs tests/browser/protected-accessibility.test.mjs tests/browser/private-media-accessibility.test.mjs` and commit with message `test: cover protected journeys across browser engines`.
 
 **Acceptance:** Previously public-only alternate-engine evidence includes the protected flows, and accessibility claims stay within the checks actually performed.
 
@@ -439,7 +446,7 @@ Pair these structural assertions with actual protected control interactions; a f
 
 **Interfaces:** Export `runLocalBenchmark({ iterations = 5 }): Promise<BenchmarkReport>` from the script. `BenchmarkReport` contains `scope: "local"`, `checkout: string`, `environment: { node: string, browser: string, viewport: { width, height }, network: string, cpuSlowdown: number }` and `scenarios: Array<{ name: string, synthetic: boolean, count: number, medianMs: number, p95Ms: number, errorCount: number, rateLimitedCount: number, transferredBytes: number }>`. The command owns loopback fixture servers and accepts no remote URL.
 
-- [ ] Add unit checks for report aggregation and remote-target rejection. Verify the harness closes browsers/servers when a scenario fails. Do not write a test that equates a made-up latency number with production readiness.
+- [x] Add unit checks for report aggregation and remote-target rejection. Verify the harness closes browsers/servers when a scenario fails. Do not write a test that equates a made-up latency number with production readiness.
 
 ```js
 assert.deepEqual(summarizeSamples([10, 20, 30, 40, 50]),
@@ -448,10 +455,10 @@ assert.deepEqual(summarizeSamples([10, 20, 30, 40, 50]),
 
 Define/export `summarizeSamples(samples): { count, medianMs, p95Ms }` in the benchmark script using sorted nearest-rank percentiles; this is the only extra test interface.
 
-- [ ] Measure cold/warm homepage, course library and public quiz loads in Chromium at desktop and mobile sizes, then free/paid synthetic reader loads, saved-position requests, quiz save/submit and private-media range playback. Use explicit fixed local network/CPU settings; exclude deliberate rate-limit responses from successful-request latency summaries but report their count.
-- [ ] Run bounded gateway concurrency at 1, 5 and 10 synthetic readers using owned fixtures and sufficient fixture-only rate limits. Record p50/p95/error counts and database/process resources available locally. Label all capacity results as local synthetic measurements; make no prediction about Supabase/Cloudflare quotas, actual media egress or real phone playback.
-- [ ] Record the first baseline and identify actual regressions or excessive delivery. Reuse the existing image budgets and optimizer; optimize only measured offenders, sequentially, preserving supplied original bytes. If a real optimization is justified, include its before/after evidence and run the media/gallery delivery checks. Do not impose an arbitrary new pass/fail budget on a noisy first run.
-- [ ] Run `node --test tests/unit/local-benchmark.test.mjs`, then `npm run benchmark:local`. Save sanitized summarized results in the runbook, with raw synthetic output in an ignored/temporary location. Commit with message `test: add reproducible local performance baseline`.
+- [x] Measure cold/warm homepage, course library and public quiz loads in Chromium at desktop and mobile sizes, then free/paid synthetic reader loads, saved-position requests, quiz save/submit and private-media range playback. Use explicit fixed local network/CPU settings; exclude deliberate rate-limit responses from successful-request latency summaries but report their count.
+- [x] Run bounded gateway concurrency at 1, 5 and 10 synthetic readers using owned fixtures and sufficient fixture-only rate limits. Record p50/p95/error counts and database/process resources available locally. Label all capacity results as local synthetic measurements; make no prediction about Supabase/Cloudflare quotas, actual media egress or real phone playback.
+- [x] Record the first baseline and identify actual regressions or excessive delivery. Reuse the existing image budgets and optimizer; optimize only measured offenders, sequentially, preserving supplied original bytes. If a real optimization is justified, include its before/after evidence and run the media/gallery delivery checks. Do not impose an arbitrary new pass/fail budget on a noisy first run.
+- [x] Run `node --test tests/unit/local-benchmark.test.mjs`, then `npm run benchmark:local`. Save sanitized summarized results in the runbook, with raw synthetic output in an ignored/temporary location. Commit with message `test: add reproducible local performance baseline`.
 
 **Acceptance:** There is a repeatable measured baseline. Real hosted cost/capacity and physical-device evidence remain explicitly unverified.
 
@@ -461,8 +468,8 @@ Define/export `summarizeSamples(samples): { count, medianMs, p95Ms }` in the ben
 
 **Interfaces:** Export `checkLocalPilotReadiness(): Promise<{ scope: "local", checkout: string, migrations: string[], checks: Array<{ name: string, passed: boolean }>, externalDependencies: string[] }>`; the command accepts only `--local` and rejects hosted URLs/credentials/deployment arguments. It reports the checkout and migration list, allowlist/package checks, synthetic account/learning/media journeys and unresolved external inputs. Exit success means local checks passed, not permission to open registration.
 
-- [ ] Add unit tests proving a local pass retains `scope: "local"` and the hosted dependency list. Test failure exit behavior and rejection of unsupported hosted/deploy flags. No environment secret or learner record may enter the report.
-- [ ] Assemble existing package/configuration validators and the owned synthetic gateway fixture into the local check. Verify free reading, explicit fixture-only paid grants, position persistence, quiz history, withdrawal and caption access. Report actual checked-in admission/Google/billing defaults separately from fixture behavior.
+- [x] Add unit tests proving a local pass retains `scope: "local"` and the hosted dependency list. Test failure exit behavior and rejection of unsupported hosted/deploy flags. No environment secret or learner record may enter the report.
+- [x] Assemble existing package/configuration validators and the owned synthetic gateway fixture into the local check. Verify free reading, explicit fixture-only paid grants, position persistence, quiz history, withdrawal and caption access. Report actual checked-in admission/Google/billing defaults separately from fixture behavior.
 
 ```js
 const report = {
@@ -476,8 +483,8 @@ const report = {
 };
 ```
 
-- [ ] Run `npm run check:pilot:local`, `npm run rehearse:recovery` and the benchmark command once against the final checkout. Keep reports sanitized and label synthetic evidence.
-- [ ] Run the final application checks:
+- [x] Run `npm run check:pilot:local`, `npm run rehearse:recovery` and the benchmark command once against the final checkout. Keep reports sanitized and label synthetic evidence.
+- [x] Run the final application checks:
 
 ```bash
 npm test
@@ -491,9 +498,9 @@ git diff --check
 
 Inspect the package for private fixture/content exclusion. Run `npm run check:hosting` only with an already authorized local configuration file; record its absence as external configuration still needed, not as a fabricated pass. If `index.html` changed because of a justified delivery optimization, run `npm run minify:html` after that optimizer and repeat the relevant audits.
 
-- [ ] Review affected public paths with JavaScript disabled and the entry module blocked. Review protected controls with pointer and keyboard input, desktop/mobile sizes and reduced motion. Check that delayed responses never repopulate cleared private content or steal focus.
-- [ ] Write the dated readiness report with actual tests/counts, measured/rehearsed outcomes, commit revision and unresolved gates. Update only the backlog items these changes completed. Preserve the original audit as the baseline.
-- [ ] Commit with message `docs: record independent local readiness improvements`. Hand back the completed local work and precise remaining owner dependencies; do not publish, deploy or start a timed opening.
+- [x] Review affected public paths with JavaScript disabled and the entry module blocked. Review protected controls with pointer and keyboard input, desktop/mobile sizes and reduced motion. Check that delayed responses never repopulate cleared private content or steal focus.
+- [x] Write the dated readiness report with actual tests/counts, measured/rehearsed outcomes, commit revision and unresolved gates. Update only the backlog items these changes completed. Preserve the original audit as the baseline.
+- [x] Commit with message `docs: record independent local readiness improvements`. Hand back the completed local work and precise remaining owner dependencies; do not publish, deploy or start a timed opening.
 
 **Acceptance:** Every autonomous deliverable is implemented and verified, and its evidence is easy to review. A passing report cannot be confused with teaching approval or live service verification.
 
@@ -519,12 +526,12 @@ Inspect the package for private fixture/content exclusion. Run `npm run check:ho
 
 ## Final self-review and rollback boundaries
 
-- [ ] Each audit finding maps to a task or an explicit dependency in the table. No supplied fact, approval or hosted verification is invented.
-- [ ] Browser/server/SQL contract names match across tasks. New JavaScript modules have concrete consumers; speculative shared abstractions are absent.
-- [ ] The old rate-limit RPC survives as a single-count compatibility wrapper. New hosted code must not precede its authorized database migration.
-- [ ] Withdrawal is additive state and preserves submitted evidence. A rollback must not reactivate withdrawn instruction; disable affected entry points until compatible code is restored.
-- [ ] Runtime commits can be reviewed independently. Database changes are forward migrations; do not undo them by rewriting historical files.
-- [ ] Source publication is reproducible, public fallbacks still work and protected fixture/draft files remain outside published output.
-- [ ] Privacy-safe local tooling and benchmarks accept no remote target. Operational destinations, policies and deployment stay visible as external dependencies.
+- [x] Each audit finding maps to a task or an explicit dependency in the table. No supplied fact, approval or hosted verification is invented.
+- [x] Browser/server/SQL contract names match across tasks. New JavaScript modules have concrete consumers; speculative shared abstractions are absent.
+- [x] The old rate-limit RPC survives as a single-count compatibility wrapper. New hosted code must not precede its authorized database migration.
+- [x] Withdrawal is additive state and preserves submitted evidence. A rollback must not reactivate withdrawn instruction; disable affected entry points until compatible code is restored.
+- [x] Runtime commits can be reviewed independently. Database changes are forward migrations; do not undo them by rewriting historical files.
+- [x] Source publication is reproducible, public fallbacks still work and protected fixture/draft files remain outside published output.
+- [x] Privacy-safe local tooling and benchmarks accept no remote target. Operational destinations, policies and deployment stay visible as external dependencies.
 
 The Supabase [function security guidance](https://supabase.com/docs/guides/database/functions#secure-a-database-function) supports the pinned search path and explicit execute privileges used here. Relevant official documentation and the [changelog](https://supabase.com/changelog) were checked on 2026-10-08; recheck them before implementation involving providers. No dependency upgrade or external configuration change is part of this plan.
