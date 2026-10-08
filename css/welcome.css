@@ -1,4 +1,9 @@
 .hero {
+	--hero-entrance-duration: 500ms;
+	--hero-underline-duration: 320ms;
+	--hero-underline-stagger: 80ms;
+	--hero-entrance-x: 36px;
+	--hero-entrance-y: 0px;
 	position: relative;
 	display: grid;
 	min-height: calc(100vh - var(--header-height));
@@ -72,6 +77,8 @@
 }
 
 .hero-underline {
+	position: relative;
+	display: inline-block;
 	text-decoration: underline;
 	text-decoration-color: var(--secondary-bright);
 	text-decoration-thickness: 0.1em;
@@ -127,6 +134,7 @@
 }
 
 .hero-visual {
+	--hero-entrance-x: -36px;
 	position: relative;
 	min-width: 0;
 	width: min(100%, clamp(220px, 40svh, 400px));

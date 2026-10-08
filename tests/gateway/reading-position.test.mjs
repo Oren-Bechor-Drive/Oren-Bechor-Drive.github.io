@@ -87,6 +87,51 @@ test("the reader accepts a matching position saved by another session and uses i
 	assert.equal(conflict.status, 409);
 });
 
+test("a delayed idempotent write advances the restored revision before saving newer reader progress", async t => {
+	const app = await startLessonGateway();
+	t.after(app.close);
+	const first = await login(app.origin, "restored-matching-reader@example.test");
+	const second = await login(app.origin, "restored-matching-reader@example.test");
+	const content = await lesson(app.origin, first, "free");
+	assert.equal((await positionRequest(app.origin, first, "free", { contentVersionId: content.id, position: 2000, expectedRevision: 0 })).status, 200);
+	let release;
+	const held = new Promise(resolve => { release = resolve; });
+	const requests = [];
+	const saver = createReaderPosition({ send: async ({ csrf, ...input }) => {
+		assert.equal(csrf, first.csrf);
+		requests.push(input);
+		if (requests.length === 1) await held;
+		const response = await positionRequest(app.origin, first, "free", input);
+		assert.equal(response.status, 200);
+		return response.json();
+	} });
+	saver.hydrate({ contentVersionId: content.id, csrf: first.csrf,
+		savedPosition: (await readingPosition(app.origin, first, "free")).position });
+	saver.update(3000);
+	const pending = saver.flush();
+	saver.update(7500);
+	try {
+		const observed = await positionRequest(app.origin, second, "free", { contentVersionId: content.id, position: 3000, expectedRevision: 1 });
+		assert.equal(observed.status, 200);
+		assert.equal((await observed.json()).position.revision, 2);
+		assert.deepEqual(saver.hydrate({ contentVersionId: content.id, csrf: first.csrf,
+			savedPosition: (await readingPosition(app.origin, first, "free")).position }), { position: 7500, contentChanged: false });
+		for (const [position, expectedRevision] of [[4000, 2], [3000, 3]]) {
+			const response = await positionRequest(app.origin, second, "free", { contentVersionId: content.id, position, expectedRevision });
+			assert.equal(response.status, 200);
+			assert.equal((await response.json()).position.revision, expectedRevision + 1);
+		}
+		release();
+		await pending;
+		assert.deepEqual(requests.map(({ position, expectedRevision }) => [position, expectedRevision]), [[3000, 1], [7500, 4]]);
+		assert.deepEqual(await readingPosition(app.origin, first, "free"),
+			{ position: { contentVersionId: content.id, position: 7500, revision: 5 } });
+	} finally {
+		release();
+		await pending.catch(() => {});
+	}
+});
+
 test("position writes require valid inputs, CSRF and current paid access without losing saved data", async t => {
 	const app = await startLessonGateway();
 	t.after(app.close);

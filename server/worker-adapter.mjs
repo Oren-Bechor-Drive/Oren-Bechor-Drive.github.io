@@ -2,14 +2,9 @@ import { createServer } from "node:http";
 import { isIP } from "node:net";
 import { httpServerHandler } from "cloudflare:node";
 import { createGateway } from "./gateway.mjs";
-import { publicTypes, publicTopFiles, publicDirectories } from "./public-files.mjs";
+import { publicTypes, publicTopFiles, publicDirectories, publicSecurityHeaders } from "./public-files.mjs";
 
-const securityHeaders = {
-	"X-Content-Type-Options": "nosniff",
-	"Referrer-Policy": "no-referrer",
-	"Content-Security-Policy": "frame-ancestors 'none'",
-};
-const privateHeaders = { ...securityHeaders, "Cache-Control": "private, no-store", Pragma: "no-cache" };
+const privateHeaders = { ...publicSecurityHeaders, "Cache-Control": "private, no-store", Pragma: "no-cache" };
 const unavailable = () => Response.json({ error: "unavailable" }, { status: 503, headers: privateHeaders });
 
 // CF-Connecting-IP is supplied by Cloudflare at ingress. Generic proxy headers
@@ -68,7 +63,7 @@ export function createWorker({ gatewayOptions = null } = {}) {
 			}
 			const pathname = publicPath(url.pathname);
 			const account = pathname === "/account" || pathname?.startsWith("/account/");
-			const headers = { ...securityHeaders, "Cache-Control": account ? "private, no-store" : "no-cache" };
+			const headers = { ...publicSecurityHeaders, "Cache-Control": account ? "private, no-store" : "no-cache" };
 			if (!["GET", "HEAD"].includes(request.method)) return new Response(null, { status: 405, headers });
 			if (!pathname) return new Response(request.method === "HEAD" ? null : "לא נמצא", { status: 404, headers: { ...headers, "Content-Type": "text/plain; charset=utf-8" } });
 			if (!env.ASSETS) return unavailable();

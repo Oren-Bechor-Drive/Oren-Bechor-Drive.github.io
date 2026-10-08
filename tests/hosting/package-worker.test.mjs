@@ -25,6 +25,7 @@ test("packages only public file types and directories, preserving bytes", async 
 	for (const relative of [".env", "private-key.txt", "server/secrets.js", "tests/fixture.html", "docs/private.txt", "supabase/schema.sql", "package.json", "assets/private.json", "assets/source.psd", "assets/.secret.txt", "js/main.js.map", "course/.hidden/index.html"]) await file(relative, "SECRET");
 	const result = await packageWorkerAssets({ root, output });
 	assert.equal(result.files.length, 13);
+	assert.equal(await readFile(path.join(output, "_headers"), "utf8"), "/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n  Content-Security-Policy: frame-ancestors 'none'\n  Cache-Control: no-cache\n");
 	assert.equal(await readFile(path.join(output, "indexnow-key.txt"), "utf8"), "indexnow-key.txt");
 	await assert.rejects(readFile(path.join(output, "private-key.txt")), { code: "ENOENT" });
 	assert.equal(await readFile(path.join(output, "assets/image.png"), "utf8"), "assets/image.png");

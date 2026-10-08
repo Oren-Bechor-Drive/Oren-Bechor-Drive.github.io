@@ -1,7 +1,7 @@
 import { copyFile, lstat, mkdir, mkdtemp, readdir, realpath, rename, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { publicTypes, publicTopFiles, publicDirectories } from "../server/public-files.mjs";
+import { publicTypes, publicTopFiles, publicDirectories, publicSecurityHeaders } from "../server/public-files.mjs";
 
 const siteRoot = fileURLToPath(new URL("../", import.meta.url));
 function within(parent, child) {
@@ -43,7 +43,8 @@ export async function packageWorkerAssets({ root = siteRoot, output } = {}) {
 		await mkdir(prepared);
 		for (const relative of [...publicTopFiles, ...publicDirectories]) await copy(relative);
 		if (!files.includes("index.html")) throw new Error("Public index.html is required.");
-		await writeFile(path.join(prepared, "_headers"), "/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n  Content-Security-Policy: frame-ancestors 'none'\n  Cache-Control: no-cache\n");
+		const headers = { ...publicSecurityHeaders, "Cache-Control": "no-cache" };
+		await writeFile(path.join(prepared, "_headers"), `/*\n${Object.entries(headers).map(([name, value]) => `  ${name}: ${value}`).join("\n")}\n`);
 		if (existing) await rename(output, previous);
 		try { await rename(prepared, output); }
 		catch (installationError) {

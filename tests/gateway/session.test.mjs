@@ -255,11 +255,20 @@ test("account rate limits reject excess requests before reaching the provider", 
 test("static service exposes only public files", async t => {
 	const { origin } = await setup(t);
 	for (const path of ["/.env", "/.git/config", "/package.json", "/server/start.mjs", "/supabase/config.toml", "/tests/helpers/account-gateway.mjs", "/docs/plans/session-gateway-design.md", "/assets/../package.json"]) {
-		assert.equal((await fetch(origin + path)).status, 404, path);
+		const response = await fetch(origin + path);
+		assert.equal(response.status, 404, path);
+		assert.equal(response.headers.get("x-content-type-options"), "nosniff");
+		assert.equal(response.headers.get("referrer-policy"), "no-referrer");
+		assert.equal(response.headers.get("content-security-policy"), "frame-ancestors 'none'");
 	}
-	assert.equal((await fetch(origin + "/")).status, 200);
-	assert.equal((await fetch(origin + "/course/")).status, 200);
-	assert.equal((await fetch(origin + "/site.webmanifest")).status, 200);
+	for (const path of ["/", "/course/", "/css/base.css", "/account/login.html", "/site.webmanifest"]) {
+		const response = await fetch(origin + path);
+		assert.equal(response.status, 200, path);
+		assert.equal(response.headers.get("x-content-type-options"), "nosniff");
+		assert.equal(response.headers.get("referrer-policy"), "no-referrer");
+		assert.equal(response.headers.get("content-security-policy"), "frame-ancestors 'none'");
+		assert.equal(response.headers.get("cache-control"), path.startsWith("/account/") ? "private, no-store" : "no-cache");
+	}
 });
 
 for (const attempt of ["login", "callback", "anonymous-login"]) {
