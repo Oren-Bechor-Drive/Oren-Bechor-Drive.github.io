@@ -1,4 +1,5 @@
 import { inspectPassword } from "./password-policy.js";
+import { normalizeAccountReturn } from "./return-destination.js";
 import "../js/input-mode.js";
 
 const mode = document.body.dataset.account;
@@ -33,17 +34,8 @@ const messages = {
 	request_failed: "הבקשה לא הושלמה. נסו שוב בעוד רגע.",
 };
 
-// Only protected account destinations are accepted after password sign-in.
 function returnDestination() {
-	const value = new URLSearchParams(location.search).get("return");
-	if (!value?.startsWith("/account/") || value.includes("\\")) return "/account/";
-	const target = new URL(value, location.origin);
-	if (target.origin !== location.origin || target.hash) return "/account/";
-	if (target.pathname === "/account/learning.html" && !target.search) return target.pathname;
-	if (target.pathname === "/account/reader.html" && /^[0-9a-f-]{36}$/i.test(target.searchParams.get("section") ?? "")
-		&& ["free", "paid"].includes(target.searchParams.get("access"))
-		&& target.searchParams.size === 2) return target.pathname + target.search;
-	return "/account/";
+	return normalizeAccountReturn(new URLSearchParams(location.search).get("return"), location.origin);
 }
 function fieldError(input) {
 	const value = input.value;
@@ -243,7 +235,7 @@ if (mode === "verify") {
 }
 document.querySelector("[data-change-email]")?.addEventListener("click", () => { confirmation.hidden = true; form.hidden = false; document.querySelector("#email").focus(); });
 google?.addEventListener("click", () => void perform(async () => {
-	const result = await request("google", {}); const target = new URL(result.url);
+	const result = await request("google", { returnTo: returnDestination() }); const target = new URL(result.url);
 	if (target.protocol !== "https:") throw new Error("request_failed");
 	location.assign(target.href);
 }));

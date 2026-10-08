@@ -5,6 +5,17 @@ import { accountProvider } from "../helpers/account-gateway.mjs";
 
 const credentials = { email: "learner@example.test", password: "correct-password" };
 
+test("Google preserves its server-held protected destination and ignores callback redirect claims", async () => {
+	const accounts = createLearnerAccounts({ origin: "https://course.example.test", provider: accountProvider(), googleEnabled: true });
+	const anonymous = await accounts.session();
+	const returnTo = "/account/reader.html?section=a524e32d-2640-4d94-a51c-000000000001&access=free";
+	const begun = await accounts.perform(anonymous.cookie.token, "google", { returnTo });
+	const state = new URL(begun.data.url).searchParams.get("state");
+	const signed = await accounts.completeCallback(anonymous.cookie.token, { state, code: "valid-code", returnTo: "https://evil.test" });
+	assert.equal(signed.redirect, returnTo);
+	assert.equal((await accounts.completeCallback(anonymous.cookie.token, { state, code: "valid-code" })).redirect, "/account/login.html?status=link-expired");
+});
+
 test("account results are detached snapshots without provider credentials", async () => {
 	const accounts = createLearnerAccounts({ origin: "http://localhost", provider: accountProvider() });
 	const anonymous = await accounts.session();

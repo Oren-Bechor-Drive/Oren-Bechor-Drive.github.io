@@ -71,6 +71,8 @@ These changes preserve separate static quiz content and the small runtime intera
 
 `account/password-policy.js` owns password inspection for both new and existing passwords through `inspectPassword(password, { existing })`. Browser feedback and gateway validation consume the same Unicode length and precise required/too-short/too-long outcome. Registration/reset apply the owner-approved 12-character and 72-byte rules; existing login keeps its separate 1-128-character policy. Tests cross this interface and the real browser/HTTP flows, without repeating policy decisions in callers.
 
+`account/return-destination.js` owns the protected return-path allowlist shared by password-login navigation and server-held Google flows. It admits only the account page, learning page or the exact reader section/access contract. `learner-accounts` stores the normalized Google destination with PKCE state and revalidates it after callback authentication; neither provider URLs nor callback parameters choose it.
+
 `server/start.mjs` reads provider credentials only from the server environment, refuses production startup because sessions are intentionally process-local, and connects process signals to application shutdown. It and the test gateway fixture both use `startLocalApplication` from `server/application.mjs` to serve the public site, `/api/account/*`, section routes, and quiz routes on loopback. The [account setup guide](local-accounts.md) owns runtime configuration and the [design](plans/session-gateway-design.md) records the account slice.
 
 | Module | Ownership |

@@ -42,6 +42,20 @@ async function login(account) {
 	return account.perform(anonymous.cookie.token, "login", credentials);
 }
 
+test("Google return destinations survive encrypted durable flow restoration", async () => {
+	const provider = accountProvider();
+	const make = async () => createLearnerAccounts({ origin: "https://example.test", provider, googleEnabled: true, sessions: await store() });
+	const first = await make();
+	const anonymous = await first.session();
+	const returnTo = "/account/reader.html?section=a524e32d-2640-4d94-a51c-000000000001&access=free";
+	const begun = await first.perform(anonymous.cookie.token, "google", { returnTo });
+	const state = new URL(begun.data.url).searchParams.get("state");
+	assert.equal(JSON.stringify((await database.admin.query("select * from private.gateway_sessions")).rows).includes(returnTo), false);
+	const second = await make();
+	const result = await second.completeCallback(anonymous.cookie.token, { state, code: "valid-code" });
+	assert.equal(result.redirect, returnTo);
+});
+
 test("pending verification survives an instance change encrypted and serializes the resend cooldown", async () => {
 	let clock = Date.now();
 	const now = () => clock;

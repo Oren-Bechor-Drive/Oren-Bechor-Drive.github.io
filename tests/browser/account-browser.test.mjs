@@ -2,6 +2,24 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { chromium } from "playwright";
 import { startAccountGateway } from "../helpers/account-gateway.mjs";
+import { startLessonGateway } from "../helpers/test-lessons.mjs";
+
+test("synthetic Google sign-in returns to the requested authorized reader", async t => {
+	const app = await startLessonGateway({ googleEnabled: true });
+	const browser = await chromium.launch();
+	t.after(async () => { await browser.close(); await app.close(); });
+	const page = await browser.newPage();
+	const destination = "/account/reader.html?section=a524e32d-2640-4d94-a51c-000000000001&access=free";
+	await page.route("https://accounts.google.com/test?*", async route => {
+		const state = new URL(route.request().url()).searchParams.get("state");
+		await route.fulfill({ status: 302, headers: { location: `${app.origin}/api/account/callback?state=${state}&code=valid-code` } });
+	});
+	await page.goto(`${app.origin}/account/login.html?return=${encodeURIComponent(destination)}`);
+	await page.getByRole("button", { name: "המשך עם Google" }).click();
+	await page.waitForURL(app.origin + destination);
+	await page.locator("[data-reading-body]").waitFor({ state: "visible" });
+	assert.equal(await page.evaluate(() => localStorage.length + sessionStorage.length), 0);
+});
 
 test("Hebrew login works with server cookies and signs out without browser token storage", async t => {
 	const app = await startAccountGateway();

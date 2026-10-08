@@ -1,5 +1,6 @@
 import { createMemorySessions } from "./session-memory.mjs";
 import { subscriptionOffer } from "./subscription-offer.mjs";
+import { normalizeAccountReturn } from "../account/return-destination.js";
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 
 const randomToken = () => randomBytes(32).toString("base64url");
@@ -106,7 +107,8 @@ export function createLearnerAccounts({ origin, provider = null, googleEnabled =
 				}
 				const { user, learner } = await authenticate(tokens);
 				await canIssue(record, generation);
-				return { ...destination("/account/"), cookie: (await rotate(record, "authenticated", tokens, user, learner)).cookie };
+				const returnTo = flow.kind === "google" ? normalizeAccountReturn(flow.returnTo, origin) : "/account/";
+				return { ...destination(returnTo), cookie: (await rotate(record, "authenticated", tokens, user, learner)).cookie };
 			} catch {
 				if (tokens?.access_token) await provider.logout(tokens.access_token).catch(() => {});
 				return destination("/account/login.html?status=link-expired");
@@ -172,7 +174,9 @@ export function createLearnerAccounts({ origin, provider = null, googleEnabled =
 			}
 			if (route === "google") {
 				if (!googleEnabled) fail(503, "google_unavailable");
-				return { data: { url: provider.google(startFlow(record, "google")) } };
+				const flow = startFlow(record, "google");
+				flow.returnTo = normalizeAccountReturn(body.returnTo, origin);
+				return { data: { url: provider.google(flow) } };
 			}
 			if (route === "logout") {
 				const token = record.tokens?.access_token;

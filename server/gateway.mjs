@@ -4,7 +4,7 @@ import { inspectPassword } from "../account/password-policy.js";
 const fail = (status, code) => { throw Object.assign(new Error(code), { status, code }); };
 const fields = {
 	login: ["email", "password"], register: ["email", "password"], recover: ["email"],
-	reset: ["password"], google: [], logout: [], resend: [],
+	reset: ["password"], google: ["returnTo"], logout: [], resend: [],
 	position: ["contentVersionId", "position", "expectedRevision"],
 	quizSave: ["answers", "expectedRevision"], quizSubmit: ["expectedRevision"], empty: [],
 };
@@ -31,6 +31,7 @@ async function input(req, route) {
 		if (typeof body.password !== "string") fail(400, "invalid_password");
 		if (inspectPassword(body.password, { existing: route === "login" }).error) fail(400, "invalid_password");
 	}
+	if (route === "google" && body.returnTo !== undefined && (typeof body.returnTo !== "string" || body.returnTo.length > 2048)) fail(400, "invalid_input");
 	if (route === "position" && (typeof body.contentVersionId !== "string" || !uuid.test(body.contentVersionId)
 		|| !Number.isInteger(body.position) || body.position < 0 || body.position > 10000
 		|| !Number.isSafeInteger(body.expectedRevision) || body.expectedRevision < 0)) fail(400, "invalid_input");
