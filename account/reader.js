@@ -171,7 +171,8 @@ async function load(preservePosition = false) {
 		reading = data;
 		const sameVersion = !data.position || data.position.contentVersionId === data.lesson.id;
 		const resumed = positions.hydrate({ contentVersionId: data.lesson.id, csrf: data.csrf,
-			position: sameVersion ? (data.position?.position ?? 0) : 0, revision: data.position?.revision ?? 0 });
+			position: sameVersion ? (data.position?.position ?? 0) : 0, revision: data.position?.revision ?? 0,
+			acknowledged: sameVersion && Boolean(data.position) });
 		heading.textContent = descriptor.title;
 		body.textContent = data.lesson.body;
 		for (const item of data.media) {

@@ -33,6 +33,26 @@ test("a missing initial revision cannot masquerade as an acknowledged position",
 	await assert.rejects(saver.flush(), { status: 503 });
 });
 
+test("an explicit zero on a new content version retains the old row revision until acknowledged", async () => {
+	const requests = [];
+	const saver = createReaderPosition({ send: async input => {
+		requests.push(input);
+		return { position: { contentVersionId: input.contentVersionId, position: input.position, revision: input.expectedRevision + 1 } };
+	} });
+	const freshVersion = snapshot({ position: 0, revision: 3, acknowledged: false });
+	saver.hydrate(freshVersion);
+	await saver.flush();
+	assert.equal(requests.length, 0);
+	saver.update(0);
+	assert.equal(saver.hydrate(freshVersion), 0);
+	await saver.flush();
+	assert.deepEqual(requests.map(({ position, expectedRevision }) => [position, expectedRevision]), [[0, 3]]);
+	saver.hydrate(snapshot({ position: 0, revision: 4, acknowledged: true }));
+	saver.update(0);
+	await saver.flush();
+	assert.equal(requests.length, 1);
+});
+
 test("flush drains a newer position after an in-flight save using its acknowledged revision", async () => {
 	const first = deferred(), requests = [];
 	const saver = createReaderPosition({ send: async input => {

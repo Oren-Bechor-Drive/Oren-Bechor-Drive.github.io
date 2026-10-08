@@ -3,15 +3,16 @@ export function createReaderPosition({ send }) {
 	let state, active, inFlight;
 	function hydrate(input) {
 		const old = state;
+		const acknowledged = input.acknowledged ?? (input.revision > 0);
 		const same = old && old.contentVersionId === input.contentVersionId && old.csrf === input.csrf;
 		const dirty = same && (old.latest !== old.saved || old.pendingInitial);
-		const unchanged = same && old.revision === input.revision && old.saved === input.position;
-		const observedWrite = same && inFlight
+		const unchanged = same && old.revision === input.revision && old.saved === input.position && old.acknowledged === acknowledged;
+		const observedWrite = same && acknowledged && inFlight
 			&& old.contentVersionId === inFlight.input.contentVersionId && old.csrf === inFlight.input.csrf
 			&& old.revision === inFlight.input.expectedRevision
 			&& input.revision === inFlight.input.expectedRevision + 1 && input.position === inFlight.input.position;
-		state = { ...input, saved: input.position, latest: dirty ? old.latest : input.position,
-			pendingInitial: Boolean(dirty && old.pendingInitial && input.revision === 0) };
+		state = { ...input, acknowledged, saved: input.position, latest: dirty ? old.latest : input.position,
+			pendingInitial: Boolean(dirty && old.pendingInitial && !acknowledged) };
 		if (dirty && (!unchanged && !observedWrite || old.error)) {
 			state.error = Object.assign(new Error("position_conflict"), { status: 409 });
 			throw state.error;
@@ -38,6 +39,7 @@ export function createReaderPosition({ send }) {
 						|| state.revision === position.revision && state.saved === position.position)) {
 					state.saved = position.position;
 					state.revision = position.revision;
+					state.acknowledged = true;
 					state.pendingInitial = false;
 				}
 			} catch (error) {
@@ -54,7 +56,7 @@ export function createReaderPosition({ send }) {
 			if (!Number.isInteger(position) || position < 0 || position > 10000) throw new Error("Invalid reading position");
 			if (state && !state.error) {
 				state.latest = position;
-				if (state.revision === 0) state.pendingInitial = true;
+				if (!state.acknowledged) state.pendingInitial = true;
 			}
 		},
 		flush() {

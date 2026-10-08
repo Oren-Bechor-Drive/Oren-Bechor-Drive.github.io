@@ -97,6 +97,22 @@ export async function startLessonGateway({ quiz = false, quizCount = 20, quizTop
 		app = await startAccountGateway({ provider, ...gatewayOptions });
 		return {
 			origin: app.origin,
+			async republishSection(sectionId) {
+				return connected(async client => {
+					const result = await client.query(`select s.id,s.source_key,s.current_revision,s.title,v.access_level,v.body_text
+						from public.learning_sections s join public.section_versions v
+						on v.section_id=s.id and v.revision=s.current_revision
+						where s.id=$1 and s.source_key in ('development-test-free','development-test-paid')`, [sectionId]);
+					if (result.rowCount !== 1) throw new Error("Supply an owned synthetic section");
+					const section = result.rows[0];
+					const text = section.body_text + "\n\nעדכון סינתטי לבדיקה.";
+					await client.query("select public.publish_learning_section($1,$2,$3,$4,$5,$6)",
+						[section.id, section.source_key, section.current_revision, section.title,
+							section.access_level === "free" ? text : null, section.access_level === "paid" ? text : null]);
+					return (await client.query(`select v.id from public.section_versions v join public.learning_sections s
+						on s.id=v.section_id and s.current_revision=v.revision where s.id=$1`, [section.id])).rows[0].id;
+				});
+			},
 			async withdrawQuiz(topicKey, reasonReference = "synthetic-withdrawal-review") {
 				const rows = await connected(client => client.query(`select public.withdraw_quiz_version(current_version_id,$2) as result
 					from private.quiz_topics where key=$1`, [topicKey, reasonReference]));

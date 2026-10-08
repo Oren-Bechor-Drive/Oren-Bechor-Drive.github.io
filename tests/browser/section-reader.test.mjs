@@ -2,6 +2,32 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { chromium } from "playwright";
 import { startLessonGateway } from "../helpers/test-lessons.mjs";
+import { endpoint, login, openReader, saveAt, sections } from "./reader-journey-helpers.mjs";
+
+for (const width of [1440, 390]) {
+	test(`an explicit zero save moves progress to a republished section at ${width}px`, async t => {
+		const app = await startLessonGateway({ longLesson: true });
+		t.after(app.close);
+		const browser = await chromium.launch();
+		t.after(() => browser.close());
+		const page = await browser.newPage({ viewport: { width, height: 844 }, reducedMotion: "reduce" });
+		page.setDefaultTimeout(5000);
+		await login(page, app.origin, `republished-reader-${width}@example.test`);
+		await openReader(page, app.origin);
+		await saveAt(page, 0.4);
+		const versionId = await app.republishSection(sections.free);
+		await page.reload();
+		await page.locator("[data-reading]:visible").waitFor();
+		assert.match(await page.locator("[data-position-status]").innerText(), /קטע הלימוד עודכן/);
+		const saved = await saveAt(page, 0);
+		assert.equal((await saved.json()).position.contentVersionId, versionId);
+		await page.reload();
+		await page.locator("[data-reading]:visible").waitFor();
+		assert.match(await page.locator("[data-position-status]").innerText(), /קטע הלימוד נטען/);
+		const snapshot = await (await page.request.get(app.origin + endpoint())).json();
+		assert.deepEqual(snapshot.position, { contentVersionId: versionId, position: 0, revision: 2 });
+	});
+}
 
 for (const width of [1440, 390]) {
 	test(`protected reader saves actual scroll position and preserves keyboard focus at ${width}px`, async t => {
