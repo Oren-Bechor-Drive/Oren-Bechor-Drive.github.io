@@ -42,6 +42,53 @@ async function login(account) {
 	return account.perform(anonymous.cookie.token, "login", credentials);
 }
 
+test("pending verification survives an instance change encrypted and serializes the resend cooldown", async () => {
+	let clock = Date.now();
+	const now = () => clock;
+	const provider = accountProvider();
+	const makeAccounts = async () => createLearnerAccounts({ origin: "https://example.test", provider, now, sessions: await store({ now }) });
+	const first = await makeAccounts();
+	const anonymous = await first.session();
+	await first.perform(anonymous.cookie.token, "register", credentials);
+	const original = { ...provider.calls.find(call => call[0] === "signup")[2] };
+	const second = await makeAccounts();
+	const pending = await second.session(anonymous.cookie.token);
+	assert.deepEqual(pending.data.verification, { maskedEmail: "l***@example.test", resendAfter: 60, expiresAfter: 3600 });
+	assert.equal((await second.session()).data.verification, null);
+	const rows = JSON.stringify((await database.admin.query("select * from private.gateway_sessions")).rows);
+	for (const value of [credentials.email, credentials.password, original.verifier, original.state]) assert.equal(rows.includes(value), false);
+	assert.doesNotMatch(JSON.stringify(pending), /learner@example|verifier|challenge|refresh-/);
+	clock += 60_000;
+	const outcomes = await Promise.allSettled([first.perform(anonymous.cookie.token, "resend", {}), second.perform(anonymous.cookie.token, "resend", {})]);
+	assert.equal(outcomes.filter(result => result.status === "fulfilled").length, 1);
+	assert.equal(outcomes.find(result => result.status === "rejected").reason.status, 429);
+	assert.equal(provider.calls.filter(call => call[0] === "resend").length, 1);
+	const sent = provider.calls.find(call => call[0] === "resend")[2];
+	for (const key of ["state", "verifier", "challenge", "expires"]) assert.equal(sent[key], original[key]);
+	assert.equal((await second.session(anonymous.cookie.token)).data.verification.resendAfter, 60);
+	await second.completeCallback(anonymous.cookie.token, { state: original.state, code: "valid-code" });
+	assert.equal((await first.session(anonymous.cookie.token)).data.verification, null);
+});
+
+test("verification expiry and failed resend cooldown persist across durable instances", async () => {
+	let clock = Date.now();
+	const now = () => clock;
+	const provider = accountProvider();
+	const makeAccounts = async () => createLearnerAccounts({ origin: "https://example.test", provider, now, sessions: await store({ now }) });
+	const first = await makeAccounts();
+	const anonymous = await first.session();
+	await first.perform(anonymous.cookie.token, "register", credentials);
+	clock += 60_000;
+	provider.resend = async () => { throw Object.assign(new Error("synthetic provider failure"), { status: 503 }); };
+	assert.equal((await first.perform(anonymous.cookie.token, "resend", {})).data.ok, true);
+	const second = await makeAccounts();
+	assert.equal((await second.session(anonymous.cookie.token)).data.verification.resendAfter, 60);
+	await assert.rejects(second.perform(anonymous.cookie.token, "resend", {}), { status: 429 });
+	clock += 3_600_000;
+	assert.equal((await second.session(anonymous.cookie.token)).data.verification, null);
+	assert.deepEqual((await second.perform(anonymous.cookie.token, "resend", {})).data, { ok: true, verification: null });
+});
+
 test("signed-in sessions survive a new account instance without plaintext credentials in storage", async () => {
 	const provider = accountProvider();
 	const first = await accounts(provider);

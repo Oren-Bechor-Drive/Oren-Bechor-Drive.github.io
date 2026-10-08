@@ -4,22 +4,37 @@ import { JSDOM } from "jsdom";
 
 import { initTopicExplorer } from "../../js/topic-explorer.js";
 
-function setup(t, { reducedMotion = true } = {}) {
+function setup(t, { reducedMotion = true, mobile = false } = {}) {
 	const dom = new JSDOM(
-		`<!doctype html><div data-topic-explorer>
+		`<!doctype html><div data-topic-explorer tabindex="-1"><div class="topic-rail">
     <button class="topic-card" data-active="true" aria-expanded="true">נושא ראשון</button>
     <button class="topic-card" data-active="false" aria-expanded="false">נושא שני</button>
     <button class="topic-card" data-active="false" aria-expanded="false">נושא שלישי</button>
-    <div data-topic-summaries><p>תיאור ראשון</p><p>תיאור שני</p><p>תיאור שלישי</p></div>
+    </div><div data-topic-summaries><section><h3><a href="first/">נושא ראשון</a></h3><p>תיאור ראשון</p></section><section><h3><a href="second/">נושא שני</a></h3><p>תיאור שני</p></section><section><h3><a href="third/">נושא שלישי</a></h3><p>תיאור שלישי</p></section></div>
     <div data-topic-panel hidden><h3 data-topic-panel-title>ישן</h3><p data-topic-panel-description>ישן</p></div>
   </div>`,
 		{ pretendToBeVisual: true },
 	);
 	t.after(() => dom.window.close());
-	dom.window.matchMedia = () => ({ matches: reducedMotion });
+	const mediaQueries = new Map();
+	dom.window.matchMedia = query => {
+		const media = new dom.window.EventTarget();
+		media.matches = query.includes("reduced-motion") ? reducedMotion : mobile;
+		mediaQueries.set(query, media);
+		return media;
+	};
 	const root = dom.window.document.querySelector("[data-topic-explorer]");
 	initTopicExplorer(root);
-	return { dom, root, cards: [...root.querySelectorAll(".topic-card")] };
+	return {
+		dom,
+		root,
+		cards: [...root.querySelectorAll(".topic-card")],
+		setMobile(matches) {
+			const media = mediaQueries.get("(max-width: 639px)");
+			media.matches = matches;
+			media.dispatchEvent(new dom.window.Event("change"));
+		},
+	};
 }
 
 test("initialization reconciles the panel with the active topic", (t) => {
@@ -44,7 +59,7 @@ test("selection updates one complete selected-state invariant", (t) => {
 		["false", "true", "false"],
 	);
 	assert.deepEqual(
-		cards.map((card) => card.getAttribute("aria-expanded")),
+		cards.map((card) => card.getAttribute("aria-selected")),
 		["false", "true", "false"],
 	);
 	assert.equal(
@@ -86,7 +101,7 @@ test("RTL arrows, Home, and End move focus in display order", (t) => {
 
 test("missing panel hooks fail at the module interface", (t) => {
 	const dom = new JSDOM(
-		'<div data-topic-explorer><button class="topic-card">נושא</button></div>',
+		'<div data-topic-explorer tabindex="-1"><div class="topic-rail"><button class="topic-card">נושא</button></div>',
 	);
 	t.after(() => dom.window.close());
 	const root = dom.window.document.querySelector("[data-topic-explorer]");
@@ -130,68 +145,60 @@ test("a superseded selection never appears while the latest transition is pendin
 	);
 });
 
-test("dropdown includes every topic and starts with the active selection", (t) => {
-	const { root, cards } = setup(t);
-	const dropdown = root.querySelector(".topic-select");
-	const options = [...root.querySelectorAll('[role="option"]')];
-	assert.equal(dropdown.textContent, cards[0].textContent.trim());
-	assert.deepEqual(
-		options.map((option) => option.textContent),
-		cards.map((card) => card.textContent.trim()),
-	);
-	assert.equal(dropdown.getAttribute("aria-expanded"), "false");
-	assert.equal(root.querySelector('[role="listbox"]').hidden, true);
+test("desktop tabs expose one roving tab stop and identify their controlled panel", t => {
+ const { root, cards } = setup(t);
+ const panel = root.querySelector("[data-topic-panel]");
+ assert.equal(root.querySelector(".topic-rail").getAttribute("role"), "tablist");
+ assert.equal(panel.getAttribute("role"), "tabpanel");
+ assert.equal(panel.getAttribute("aria-live"), null);
+ assert.equal(panel.getAttribute("aria-labelledby"), cards[0].id);
+ assert.deepEqual(cards.map(card => card.tabIndex), [0, -1, -1]);
+ for (const card of cards) {
+  assert.equal(card.getAttribute("role"), "tab");
+  assert.equal(card.getAttribute("aria-controls"), panel.id);
+  assert.equal(card.getAttribute("aria-expanded"), null);
+ }
+ cards[2].click();
+ assert.deepEqual(cards.map(card => card.tabIndex), [-1, -1, 0]);
+ assert.equal(panel.getAttribute("aria-labelledby"), cards[2].id);
 });
 
-test("dropdown selection updates the preview and desktop card selection", (t) => {
-	const { root, cards } = setup(t);
-	const dropdown = root.querySelector(".topic-select");
-	dropdown.click();
-	root.querySelectorAll('[role="option"]')[2].click();
-	assert.equal(
-		root.querySelector("[data-topic-panel-title]").textContent,
-		"נושא שלישי",
-	);
-	assert.deepEqual(
-		cards.map((card) => card.dataset.active),
-		["false", "false", "true"],
-	);
-	assert.equal(dropdown.getAttribute("aria-expanded"), "false");
-	assert.equal(root.ownerDocument.activeElement, dropdown);
+test("mobile keeps every baseline description visible without inactive topic controls", t => {
+ const { root, cards } = setup(t, { mobile: true });
+ assert.equal(root.querySelector("[data-topic-summaries]").hidden, false);
+ assert.equal(root.querySelectorAll("[data-topic-summaries] p").length, cards.length);
+ assert.equal(root.querySelector(".topic-rail").hidden, true);
+ assert.equal(root.querySelector("[data-topic-panel]").hidden, true);
+ assert.equal(root.querySelector(".topic-select, [role=listbox]"), null);
+});
+
+test("presentation changes keep the focused topic visible and selected", t => {
+	const { dom, root, cards, setMobile } = setup(t, { mobile: true });
+	const links = [...root.querySelectorAll("[data-topic-summaries] h3 a")];
+	links[2].focus();
+	setMobile(false);
+	assert.equal(dom.window.document.activeElement, cards[2]);
+	assert.equal(root.querySelector("[data-topic-panel-title]").textContent, "נושא שלישי");
+	assert.equal(cards[2].getAttribute("aria-selected"), "true");
+	setMobile(true);
+	assert.equal(dom.window.document.activeElement, links[2]);
+	assert.equal(root.querySelector("[data-topic-summaries]").hidden, false);
+	setMobile(false);
+	root.querySelector("[data-topic-panel]").focus();
+	setMobile(true);
+	assert.equal(dom.window.document.activeElement, links[2]);
+});
+
+test("presentation changes preserve unrelated focus and the selected topic", t => {
+	const { dom, root, cards, setMobile } = setup(t);
 	cards[1].click();
-	assert.equal(dropdown.textContent, "נושא שני");
-});
-
-test("dropdown keyboard navigation and dismissal keep open state accurate", (t) => {
-	const { dom, root } = setup(t);
-	const dropdown = root.querySelector(".topic-select");
-	const options = [...root.querySelectorAll('[role="option"]')];
-	const key = (name) =>
-		dom.window.document.activeElement.dispatchEvent(
-			new dom.window.KeyboardEvent("keydown", {
-				key: name,
-				bubbles: true,
-			}),
-		);
-	dropdown.focus();
-	key("ArrowDown");
-	assert.equal(dropdown.getAttribute("aria-expanded"), "true");
-	assert.equal(dom.window.document.activeElement, options[0]);
-	key("ArrowDown");
-	assert.equal(dom.window.document.activeElement, options[1]);
-	key("End");
-	assert.equal(dom.window.document.activeElement, options[2]);
-	key("Home");
-	assert.equal(dom.window.document.activeElement, options[0]);
-	key("Escape");
-	assert.equal(dropdown.getAttribute("aria-expanded"), "false");
-	assert.equal(dom.window.document.activeElement, dropdown);
-	dropdown.click();
-	dom.window.document.body.dispatchEvent(
-		new dom.window.Event("pointerdown", { bubbles: true }),
-	);
-	assert.equal(dropdown.getAttribute("aria-expanded"), "false");
-	dropdown.click();
-	root.querySelector(".topic-card").focus();
-	assert.equal(dropdown.getAttribute("aria-expanded"), "false");
+	const unrelated = dom.window.document.createElement("button");
+	dom.window.document.body.append(unrelated);
+	unrelated.focus();
+	for (const mobile of [true, false]) {
+		setMobile(mobile);
+		assert.equal(dom.window.document.activeElement, unrelated);
+		assert.equal(cards[1].getAttribute("aria-selected"), "true");
+		assert.equal(root.querySelector("[data-topic-panel-title]").textContent, "נושא שני");
+	}
 });

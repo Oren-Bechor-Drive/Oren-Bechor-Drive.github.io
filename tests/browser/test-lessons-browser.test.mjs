@@ -20,7 +20,7 @@ for (const width of [1440, 390]) {
 	const email = `reader-journey-${width}@example.test`;
 	await login(page, app.origin, email);
 	await page.goto(app.origin + "/account/learning.html");
-	await page.getByRole("link", { name: "הגדרה לבדיקה - הגדרה" }).click();
+	await page.locator("[data-sections] .learning-topic").filter({ hasText: "הגדרה לבדיקה" }).getByRole("link", { name: "פתיחת חומר הקריאה" }).click();
 	await page.locator("[data-reading-body]").filter({ hasText: "פסקת בדיקה" }).waitFor();
 	await saveAt(page, 0.35);
 	assert.equal(await page.locator("html").getAttribute("dir"), "rtl");
@@ -28,8 +28,9 @@ for (const width of [1440, 390]) {
 	assert.equal(await page.evaluate(() => localStorage.length + sessionStorage.length), 0);
 	await page.reload();
 	await restoredNear(page, 0.35);
-	const save = page.locator("[data-save-position]");
-	await save.click();
+	const save = page.getByRole("link", { name: "חזרה לרשימת קטעי הלימוד", exact: true });
+	await save.evaluate(node => node.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })));
+		await save.focus();
 	assert.equal(await save.evaluate(node => getComputedStyle(node).outlineStyle), "none");
 	await page.keyboard.press("Shift+Tab");
 	await page.keyboard.press("Tab");
@@ -38,14 +39,14 @@ for (const width of [1440, 390]) {
 	await page.locator("[data-reader-status]").filter({ hasText: "אינו זמין לחשבון" }).waitFor();
 	assert.equal(await page.locator("[data-reading-body]").textContent(), "");
 	await app.grant(email);
-	await page.getByRole("button", { name: "טעינת השיעור מחדש" }).click();
+	await page.getByRole("button", { name: "טעינת קטע הלימוד מחדש" }).click();
 	await page.locator("[data-reading-body]").filter({ hasText: "תוכן בדיקה בתשלום" }).waitFor();
 	await page.route(`**${endpoint()}`, route => route.abort());
 	await page.goto(readerUrl(app.origin));
-	await page.locator("[data-reader-status]").filter({ hasText: "לא הצלחנו" }).waitFor();
+	await page.locator("[data-reader-status]").filter({ hasText: "לא הושלמו" }).waitFor();
 	assert.equal(await page.locator("[data-reading-body]").textContent(), "");
 	await page.unroute(`**${endpoint()}`);
-	await page.getByRole("button", { name: "טעינת השיעור מחדש" }).click();
+	await page.getByRole("button", { name: "טעינת קטע הלימוד מחדש" }).click();
 	await page.locator("[data-reading-body]").filter({ hasText: "פסקת בדיקה" }).waitFor();
 });
 }
@@ -61,7 +62,8 @@ test("reader shell retains navigation when JavaScript is disabled or its module 
 		const response = await page.goto(readerUrl(app.origin));
 		assert.doesNotMatch(await response.text(), /תוכן בדיקה חינמי|תוכן בדיקה בתשלום/);
 		assert.ok(await page.getByRole("link", { name: "חזרה ללמידה שלכם" }).isVisible());
-		assert.ok(await page.getByRole("link", { name: "כניסה לחשבון" }).isVisible());
+		assert.ok(await page.getByRole("link", { name: "לנושאי הלימוד ולתרגול החינמי" }).isVisible());
+		assert.equal(await page.locator("[data-reload]").isVisible(), false);
 		assert.equal(await page.locator("[data-reading-body]").textContent(), "");
 		assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
 		await page.close();
@@ -85,16 +87,14 @@ test("two browsers resume, reject stale saves, and retry failed saves", async t 
 		await saveAt(first, 0.60);
 		await scrollToFraction(second, 0.80);
 		const conflictResponse = second.waitForResponse(response => response.url().endsWith(`${endpoint()}/position`) && response.request().method() === "POST");
-		await second.locator("[data-save-position]").evaluate(button => button.click());
 		assert.equal((await conflictResponse).status(), 409);
 		await second.locator("[data-position-status]").filter({ hasText: "בחלון אחר" }).waitFor();
 		assert.equal(await second.locator("[data-save-position]").isEnabled(), false);
-		await second.getByRole("button", { name: "טעינת השיעור מחדש" }).click();
+		await second.getByRole("button", { name: "טעינת קטע הלימוד מחדש" }).click();
 		await restoredNear(second, 0.60);
 		await second.route(`**${endpoint()}/position`, route => route.abort());
 		await scrollToFraction(second, 0.75);
-		await second.locator("[data-save-position]").evaluate(button => button.click());
-		await second.locator("[data-position-status]").filter({ hasText: "לא הצלחנו" }).waitFor();
+		await second.locator("[data-position-status]").filter({ hasText: "לא הושלמו" }).waitFor();
 		await second.unroute(`**${endpoint()}/position`);
 		await saveAt(second, 0.75);
 		await first.reload();

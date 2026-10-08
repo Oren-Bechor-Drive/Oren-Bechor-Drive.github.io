@@ -3,13 +3,14 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#f2f5fc" />
 		<meta
 			http-equiv="Content-Security-Policy"
 			content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
 		/>
 		<meta name="referrer" content="strict-origin-when-cross-origin" />
 		<meta name="robots" content="noindex" />
-		<title>זיהוי כבישים ונתיבים - קורס נהיגה נכונה עם אורן בכור</title>
+		<title>זיהוי כבישים ונתיבים - נהיגה נכונה עם אורן בכור</title>
 		<meta
 			name="description"
 			content="זיהוי כביש חד-סטרי ודו-סטרי, נתיבי השתלבות, חיצי הכוונה ונתיבים שמיועדים לפנייה."
@@ -21,25 +22,25 @@
 		/>
 		<link
 			rel="preload"
-			href="../../assets/fonts/varela-round-v21-hebrew.woff2"
+			href="../../assets/fonts/fredoka-v17-hebrew.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
 		/>
 		<link
 			rel="preload"
-			href="../../assets/fonts/varela-round-v21-latin.woff2"
+			href="../../assets/fonts/fredoka-v17-latin.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
 		/>
-		<link rel="stylesheet" href="../../css/base.css" />
+		<link rel="stylesheet" href="../../css/base.css?v=3" />
 		<link rel="stylesheet" href="../css/course.css" />
 		<link rel="stylesheet" href="../css/lesson.css" />
 		<script type="module" src="../js/account-link.js"></script>
 	</head>
 	<body>
-		<a class="skip-link" href="#main">דילוג לתוכן הלמידה</a>
+		<a class="skip-link" href="#main">דילוג לתוכן הראשי</a>
 		<header class="course-header">
 			<div class="course-shell course-header-inner">
 				<a
@@ -59,7 +60,11 @@
 					/><span
 						><strong>נהיגה נכונה</strong><small>עם אורן בכור</small></span
 					></a
-				><button
+				>
+				<nav class="course-header-nav" aria-label="ניווט ראשי">
+					<a class="course-library-link" href="../">נושאי הלימוד</a>
+				</nav>
+				<button
 					class="course-profile"
 					type="button"
 					aria-label="הפרופיל עדיין אינו זמין"
@@ -84,22 +89,30 @@
 					קוראים את מבנה הדרך ואת הסימונים מוקדם, כדי לבחור כיוון ונתיב לפני
 					שמגיעים לנקודת ההחלטה.
 				</p>
-				<p class="lesson-draft">פרקי קריאה. התמונות והתרשימים יתווספו בהמשך.</p>
+				<p class="lesson-meta" data-reading-minutes="2">
+					זמן קריאה משוער: 2 דקות.
+				</p>
+				<p class="lesson-draft">
+					אפשר לקרוא ולתרגל. סרטונים ותרשימים יתווספו בהמשך.
+				</p>
 			</div>
 			<div class="lesson-layout">
-				<nav class="lesson-contents" aria-labelledby="contents-title">
+				<nav
+					class="lesson-contents"
+					aria-labelledby="contents-title"
+					id="contents"
+				>
 					<h2 id="contents-title">מה לומדים כאן?</h2>
-					<p>אפשר להתחיל בכל חלק.</p>
+
 					<ul>
-						<li><a href="#road-direction">כיוון הדרך</a></li>
-						<li><a href="#lane-markings">סימוני נתיבים</a></li>
+						<li><a href="#road-direction">כביש חד-סטרי או דו-סטרי</a></li>
+						<li><a href="#lane-markings">נתיבי השתלבות ונתיבי פנייה</a></li>
 					</ul>
 				</nav>
 				<article
 					class="lesson-content"
 					id="topic"
 					aria-labelledby="topic-title"
-					aria-label="הסברים על זיהוי דרכים ונתיבים"
 				>
 					<section
 						class="lesson-section"
@@ -119,17 +132,32 @@
 						</p>
 						<h3>חנייה בצד שמאל</h3>
 						<p>
-							בדרך חד-סטרית, שבה אין תנועה נגדית, אפשר לחנות גם
-							בצד שמאל כאשר יתר ההוראות במקום מאפשרות זאת. לפני כל חנייה בודקים
-							תמרורים, סימוני שפה, הפרעה לתנועה ומרחק בטוח מצומת או מעבר חצייה.
+							בדרך חד-סטרית, שבה אין תנועה נגדית, אפשר לחנות גם בצד שמאל כאשר
+							יתר ההוראות במקום מאפשרות זאת. לפני כל חנייה בודקים תמרורים,
+							סימוני שפה, הפרעה לתנועה ומרחק בטוח מצומת או מעבר חצייה.
 						</p>
-						<div
-							class="image-placeholder"
-							role="img"
-							aria-label="מקום לתמונה או לתרשים: כביש חד-סטרי ודו-סטרי עם חצי כיוון וסימונים"
+						<aside
+							class="lesson-scenario"
+							aria-labelledby="road-direction-scenario-title"
 						>
-							<span>תמונה או תרשים: כביש חד-סטרי ודו-סטרי עם חצי כיוון וסימונים</span>
-						</div>
+							<h3 id="road-direction-scenario-title">מצב מהכביש</h3>
+							<p>
+								אתם רואים אי תנועה מקומי בצומת. בודקים גם את התמרורים ואת המשך
+								הכביש לפני שמסיקים מה הם כיווני הנסיעה.
+							</p>
+						</aside>
+						<details class="lesson-self-check">
+							<summary>
+								האם אי תנועה מקומי הופך בהכרח כל זרוע לדרך נפרדת?
+							</summary>
+							<p>לא. מזהים את מבנה הדרך ואת ההוראות החלות בה.</p>
+						</details>
+						<p class="image-placeholder" role="note">
+							המחשה תתווסף בהמשך: כיווני נסיעה וסימונים בכביש.
+						</p>
+						<a class="lesson-return-contents" href="#contents"
+							>חזרה לתוכן העניינים</a
+						>
 					</section>
 					<section
 						class="lesson-section"
@@ -159,13 +187,7 @@
 								המסלול בהמשך.
 							</li>
 						</ul>
-						<div
-							class="image-placeholder"
-							role="img"
-							aria-label="מקום לתמונה או לתרשים: סימוני נתיב השתלבות וחצים בנתיב פנייה"
-						>
-							<span>תמונה או תרשים: סימוני נתיב השתלבות וחצים בנתיב פנייה</span>
-						</div>
+
 						<aside class="lesson-takeaway">
 							<strong>הסימון מספר מה יקרה בהמשך</strong>
 							<p>
@@ -173,24 +195,53 @@
 								האחרון יוצר סיכון גם אם היעד נמצא בכיוון אחר.
 							</p>
 						</aside>
+						<aside
+							class="lesson-scenario"
+							aria-labelledby="lane-markings-scenario-title"
+						>
+							<h3 id="lane-markings-scenario-title">מצב מהכביש</h3>
+							<p>
+								החץ בנתיב מורה ימינה, אבל המסלול שלכם ממשיך ישר. אם אי אפשר
+								לעבור נתיב בבטחה, ממשיכים לפי החץ ומתקנים את המסלול בהמשך.
+							</p>
+						</aside>
+						<details class="lesson-self-check">
+							<summary>מה עושים כשאי אפשר לעבור בזמן לנתיב המתאים?</summary>
+							<p>ממשיכים לפי כיוון הנתיב ולא מבצעים שינוי חד ברגע האחרון.</p>
+						</details>
+						<p class="image-placeholder" role="note">
+							המחשה תתווסף בהמשך: נתיב השתלבות וחצי פנייה.
+						</p>
+						<a class="lesson-return-contents" href="#contents"
+							>חזרה לתוכן העניינים</a
+						>
 					</section>
 					<div class="lesson-quiz">
 						<p>תרגול בנושא זיהוי כבישים ונתיבים</p>
-						<a class="course-button lesson-quiz-link" href="quiz/">לשאלון התרגול</a>
+						<a
+							class="btn btn-primary course-button lesson-quiz-link"
+							href="quiz/"
+							>לשאלון התרגול</a
+						>
 						<small>15 שאלות בנושא, עם ציון והסברים לתשובות.</small>
 					</div>
 					<footer class="lesson-end">
-						<p>אפשר לחזור לספרייה ולבחור כל נושא אחר.</p>
-						<a class="course-button" href="../#roads-and-lanes"
-							>חזרה לנושאי הלימוד</a
-						>
+						<a class="lesson-next" href="../right-of-way/"
+							>הנושא הבא: זכויות קדימה ופניות<span
+								class="direction-icon icon-arrow-left-long"
+								aria-hidden="true"
+							></span
+						></a>
+						<a href="../#roads-and-lanes">לכל הנושאים</a>
 					</footer>
 				</article>
 			</div>
 		</main>
 		<footer class="course-shell course-footer">
-			<p>הקורס משלים את התרגול בשיעורי הנהיגה ואינו מחליף את מורה הנהיגה.</p>
-			<a href="../../index.html">חזרה לדף הבית</a>
+			<p>נהיגה נכונה עם אורן בכור</p>
+			<nav aria-label="קישורי האתר">
+				<a href="../../index.html">לדף הבית</a><a href="../">לנושאי הלימוד</a>
+			</nav>
 		</footer>
 	</body>
 </html>

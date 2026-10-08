@@ -104,7 +104,12 @@ function* srcsetCandidates(srcset) {
 }
 
 export async function auditRoadMedia({ rootDir, htmlPath = "index.html" }) {
-	const absoluteHtmlPath = path.resolve(rootDir, htmlPath);
+	const root = path.resolve(rootDir);
+	const absoluteHtmlPath = path.resolve(root, htmlPath);
+	const pageUrl = new URL(
+		path.relative(root, absoluteHtmlPath).split(path.sep).map(encodeURIComponent).join("/"),
+		"https://media.invalid/",
+	);
 	const html = await readFile(absoluteHtmlPath, "utf8");
 	const dom = new JSDOM(html);
 	const document = dom.window.document;
@@ -118,16 +123,20 @@ export async function auditRoadMedia({ rootDir, htmlPath = "index.html" }) {
 		// Audit local declarations only. Never fetch external or embedded assets.
 		if (/^(?:[a-z][a-z\d+.-]*:|\/\/)/i.test(source)) return null;
 		if (inspectedSources.has(source)) return inspectedSources.get(source);
-		let inspected;
+		let inspected, extension;
 		try {
 			if (!source) throw new Error("image source is empty");
-			const decodedSource = decodeURIComponent(source);
-			const absoluteImagePath = decodedSource.startsWith("/")
-				? path.resolve(rootDir, `.${decodedSource}`)
-				: path.resolve(path.dirname(absoluteHtmlPath), decodedSource);
+			const url = new URL(source, pageUrl);
+			if (url.origin !== pageUrl.origin) return null;
+			const decodedSource = decodeURIComponent(url.pathname.slice(1));
+			const absoluteImagePath = path.resolve(root, decodedSource);
+			const relativeImagePath = path.relative(root, absoluteImagePath);
+			if (relativeImagePath === ".." || relativeImagePath.startsWith(`..${path.sep}`) || path.isAbsolute(relativeImagePath))
+				throw new Error("image path escapes the media root");
+			extension = path.extname(decodedSource).toLowerCase();
 			const bytes = await readFile(absoluteImagePath);
 			inspected =
-				path.extname(decodedSource).toLowerCase() === ".svg"
+				extension === ".svg"
 					? inspectSvg(bytes)
 					: inspectImage(bytes);
 		} catch (error) {
@@ -137,9 +146,7 @@ export async function auditRoadMedia({ rootDir, htmlPath = "index.html" }) {
 			inspectedSources.set(source, null);
 			return null;
 		}
-		const declaredFormat = EXTENSION_FORMATS.get(
-			path.extname(source).toLowerCase(),
-		);
+		const declaredFormat = EXTENSION_FORMATS.get(extension);
 
 		if (declaredFormat !== inspected.format) {
 			issues.push(
@@ -204,7 +211,7 @@ export async function auditRoadMedia({ rootDir, htmlPath = "index.html" }) {
 				`${source}: declared ${declaredWidth}x${declaredHeight}, file is ${inspected.width}x${inspected.height}`,
 			);
 		}
-		if (!alt) issues.push(`${source}: alternative text is empty`);
+		if (!alt && (image.getAttribute("aria-hidden") !== "true" || !image.hasAttribute("alt"))) issues.push(`${source}: alternative text is empty`);
 		inspected.alt = alt;
 	}
 	for (const source of document.querySelectorAll(

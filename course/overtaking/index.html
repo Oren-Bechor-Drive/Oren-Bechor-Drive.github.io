@@ -3,13 +3,14 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#f2f5fc" />
 		<meta
 			http-equiv="Content-Security-Policy"
 			content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
 		/>
 		<meta name="referrer" content="strict-origin-when-cross-origin" />
 		<meta name="robots" content="noindex" />
-		<title>עקיפה ואיסורי עקיפה - קורס נהיגה נכונה עם אורן בכור</title>
+		<title>עקיפה ואיסורי עקיפה - נהיגה נכונה עם אורן בכור</title>
 		<meta
 			name="description"
 			content="איסורי עקיפה, קו הפרדה רצוף, שדה ראייה מוגבל ורכב שעצר לפני מעבר חצייה."
@@ -21,25 +22,25 @@
 		/>
 		<link
 			rel="preload"
-			href="../../assets/fonts/varela-round-v21-hebrew.woff2"
+			href="../../assets/fonts/fredoka-v17-hebrew.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
 		/>
 		<link
 			rel="preload"
-			href="../../assets/fonts/varela-round-v21-latin.woff2"
+			href="../../assets/fonts/fredoka-v17-latin.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
 		/>
-		<link rel="stylesheet" href="../../css/base.css" />
+		<link rel="stylesheet" href="../../css/base.css?v=3" />
 		<link rel="stylesheet" href="../css/course.css" />
 		<link rel="stylesheet" href="../css/lesson.css" />
 		<script type="module" src="../js/account-link.js"></script>
 	</head>
 	<body>
-		<a class="skip-link" href="#main">דילוג לתוכן הלמידה</a>
+		<a class="skip-link" href="#main">דילוג לתוכן הראשי</a>
 		<header class="course-header">
 			<div class="course-shell course-header-inner">
 				<a
@@ -59,7 +60,11 @@
 					/><span
 						><strong>נהיגה נכונה</strong><small>עם אורן בכור</small></span
 					></a
-				><button
+				>
+				<nav class="course-header-nav" aria-label="ניווט ראשי">
+					<a class="course-library-link" href="../">נושאי הלימוד</a>
+				</nav>
+				<button
 					class="course-profile"
 					type="button"
 					aria-label="הפרופיל עדיין אינו זמין"
@@ -84,19 +89,19 @@
 					לפני עקיפה בודקים אם היא מותרת, אם רואים מספיק רחוק ואם אפשר להשלים
 					אותה בלי להפתיע משתמש דרך אחר.
 				</p>
-				<p class="lesson-draft">ההסבר זמין לקריאה. התמונות והתרשימים יתווספו בהמשך.</p>
+				<p class="lesson-meta" data-reading-minutes="2">
+					זמן קריאה משוער: 2 דקות.
+				</p>
+				<p class="lesson-draft">
+					אפשר לקרוא ולתרגל. סרטונים ותרשימים יתווספו בהמשך.
+				</p>
 			</div>
-			<div class="lesson-layout">
-				<nav class="lesson-contents" aria-labelledby="contents-title">
-					<h2 id="contents-title">מה לומדים כאן?</h2>
-					<p>מצבים שבהם נמנעים מעקיפה.</p>
-					<ul>
-						<li><a href="#restrictions">מתי לא עוקפים?</a></li>
-					</ul>
-				</nav>
-				<article class="lesson-content"
+			<div class="lesson-layout lesson-layout-single">
+				<article
+					class="lesson-content"
 					id="topic"
-					aria-labelledby="topic-title" aria-label="הסבר על איסורי עקיפה">
+					aria-labelledby="topic-title"
+				>
 					<section
 						class="lesson-section"
 						id="restrictions"
@@ -134,13 +139,7 @@
 							והאפשרות לחזור לימין בלי לחתוך אותו. אם צריך להאיץ מעבר למותר או
 							להסתמך על כך שנהג אחר יפנה מקום, התנאים אינם מתאימים.
 						</p>
-						<div
-							class="image-placeholder"
-							role="img"
-							aria-label="מקום לתמונה או לתרשים: איסורי עקיפה, שדה ראייה מוגבל והולכי רגל מוסתרים"
-						>
-							<span>תמונה או תרשים: איסורי עקיפה, שדה ראייה מוגבל והולכי רגל מוסתרים</span>
-						</div>
+
 						<aside class="lesson-takeaway">
 							<strong>אי ודאות היא סיבה להמתין</strong>
 							<p>
@@ -148,26 +147,50 @@
 								ושומרים מרחק.
 							</p>
 						</aside>
+						<aside
+							class="lesson-scenario"
+							aria-labelledby="restrictions-scenario-title"
+						>
+							<h3 id="restrictions-scenario-title">מצב מהכביש</h3>
+							<p>
+								הרכב שלפניכם עוצר לפני מעבר חצייה. הוא עלול להסתיר הולך רגל.
+								נשארים מאחור ונערכים לעצירה.
+							</p>
+						</aside>
+						<details class="lesson-self-check">
+							<summary>האם עוקפים רכב שעצר לפני מעבר חצייה?</summary>
+							<p>לא. הוא עשוי להסתיר הולך רגל.</p>
+						</details>
+						<p class="image-placeholder" role="note">
+							המחשה תתווסף בהמשך: איסורי עקיפה ושדה ראייה מוגבל.
+						</p>
 					</section>
 					<div class="lesson-quiz">
 						<p>תרגול בנושא עקיפה ואיסורי עקיפה</p>
-						<a class="course-button lesson-quiz-link" href="quiz/">לשאלון התרגול</a>
+						<a
+							class="btn btn-primary course-button lesson-quiz-link"
+							href="quiz/"
+							>לשאלון התרגול</a
+						>
 						<small>17 שאלות בנושא, עם ציון והסברים לתשובות.</small>
 					</div>
 					<footer class="lesson-end">
-						<p>
-							תרגול מלא של עקיפה ידרוש חומר נוסף ואישור מדריך.
-						</p>
-						<a class="course-button" href="../#overtaking"
-							>חזרה לנושאי הלימוד</a
-						>
+						<a class="lesson-next" href="../trip-planning/"
+							>הנושא הבא: תכנון נסיעה<span
+								class="direction-icon icon-arrow-left-long"
+								aria-hidden="true"
+							></span
+						></a>
+						<a href="../#overtaking">לכל הנושאים</a>
 					</footer>
 				</article>
 			</div>
 		</main>
 		<footer class="course-shell course-footer">
-			<p>הקורס משלים את התרגול בשיעורי הנהיגה ואינו מחליף את מורה הנהיגה.</p>
-			<a href="../../index.html">חזרה לדף הבית</a>
+			<p>נהיגה נכונה עם אורן בכור</p>
+			<nav aria-label="קישורי האתר">
+				<a href="../../index.html">לדף הבית</a><a href="../">לנושאי הלימוד</a>
+			</nav>
 		</footer>
 	</body>
 </html>

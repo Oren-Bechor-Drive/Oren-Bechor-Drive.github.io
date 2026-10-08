@@ -3,10 +3,10 @@ import test from "node:test";
 import { chromium } from "playwright";
 import { serveRoadMedia } from "../helpers/road-media.mjs";
 
-test("hero car follows the resized road, waits five seconds, repeats and respects reduced motion", async (t) => {
+test("hero car follows the resized road, runs once, preserves resize state and respects reduced motion", async (t) => {
 	const browser = await chromium.launch();
 	t.after(() => browser.close());
-	for (const width of [1860, 390]) {
+	for (const width of [1860, 1366]) {
 		const page = await browser.newPage({
 			viewport: { width, height: 930 },
 			reducedMotion: "no-preference",
@@ -102,13 +102,15 @@ test("hero car follows the resized road, waits five seconds, repeats and respect
 			assert.equal(state.transform, finish.transform);
 		}
 		assert.equal(
-			(await sample(23_000)).transform,
-			(await sample(3000)).transform,
-			"next drive repeats the route",
+			await page.locator(".hero-road-car").evaluate(
+				(car) => car.getAnimations()[0].effect.getTiming().iterations,
+			),
+			1,
+			"decorative motion has a finite traversal",
 		);
 		await sample(6000);
 		await page.setViewportSize({
-			width: width === 390 ? 768 : 1366,
+			width: width === 1860 ? 1366 : 1860,
 			height: 844,
 		});
 		await page.evaluate(
@@ -155,6 +157,25 @@ test("hero car follows the resized road, waits five seconds, repeats and respect
 				() => document.documentElement.scrollWidth > innerWidth,
 			),
 			false,
+		);
+		await page.close();
+	}
+});
+
+test("hero car stays out of phone and tablet copy", async (t) => {
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	for (const width of [390, 768]) {
+		const page = await browser.newPage({
+			viewport: { width, height: 844 },
+			reducedMotion: "no-preference",
+		});
+		await page.route("**/*", serveRoadMedia);
+		await page.goto("http://gallery.test/");
+		assert.equal(await page.locator(".hero-road-car").isVisible(), false);
+		assert.equal(
+			await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+			true,
 		);
 		await page.close();
 	}

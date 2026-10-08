@@ -39,6 +39,9 @@ for (const failure of ["disabled", "module unavailable"]) {
 					0,
 					"nonfunctional topic buttons are not offered",
 				);
+				assert.equal(await page.locator("[data-topic-summaries] h3 a:visible").count(), 10);
+				const dividers = await page.locator("[data-topic-summaries] section").evaluateAll(sections => sections.map(section => getComputedStyle(section).borderBlockStartWidth));
+				assert.deepEqual(dividers, ["0px", ...Array(9).fill("1px")], "consecutive topics have dividers in the baseline experience");
 				const content = await page.locator("#about").innerText();
 				for (const description of [
 					"לקרוא את מבנה הצומת",
@@ -114,27 +117,25 @@ test(
 			}
 			await page.locator('.site-menu a[href="#about"]').click();
 			if (width < 640) {
-				await page.locator(".topic-select").focus();
-				await page.keyboard.press("ArrowDown");
+				assert.equal(await page.locator("[data-topic-summaries] h3 a:visible").count(), 10);
+				assert.equal(await page.locator(".topic-card:visible, [data-topic-panel]:visible").count(), 0);
+				assert.equal(await page.locator(".topic-select, .topic-options").count(), 0);
+				const topicLink = page.locator("[data-topic-summaries] h3 a").last();
+				await topicLink.focus();
+				await page.keyboard.press("Enter");
+				await page.waitForURL("**/course/licensing-and-points/");
+				assert.equal(new URL(page.url()).pathname, "/course/licensing-and-points/");
+			} else {
+				const tabs = page.getByRole("tab");
+				assert.equal(await tabs.count(), 10);
+				await tabs.first().focus();
 				await page.keyboard.press("End");
-			} else await page.locator(".topic-card").last().focus();
-			await page.keyboard.press("Enter");
-			assert.equal(
-				await page.locator("[data-topic-panel-title]").innerText(),
-				"טעויות נפוצות בטסט",
-			);
-			assert.ok(
-				(
-					await page
-						.locator("[data-topic-panel-description]")
-						.innerText()
-				).startsWith("להכיר את המצבים שבהם תלמידים נכשלים"),
-			);
-			assert.equal(
-				await page.locator("[data-topic-summaries]").isVisible(),
-				false,
-				"baseline summaries do not duplicate the enhanced panel",
-			);
+				assert.equal(await tabs.last().getAttribute("aria-selected"), "true");
+				assert.equal(await page.locator("[data-topic-panel-title]").innerText(), "נהג חדש, רישוי ושיטת הניקוד");
+				assert.equal(await page.getByRole("tabpanel").getAttribute("aria-labelledby"), await tabs.last().getAttribute("id"));
+				assert.equal(await page.locator("[data-topic-summaries]").isVisible(), false);
+			}
+
 			assert.equal(
 				await page.evaluate(
 					() => document.documentElement.scrollWidth <= innerWidth,

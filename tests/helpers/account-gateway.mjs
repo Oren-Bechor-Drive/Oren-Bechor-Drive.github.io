@@ -13,6 +13,7 @@ export function accountProvider({ createSessionUser = email => ({ id: email, ema
 			return issue(email);
 		},
 		async signup(email, password, flow) { calls.push(["signup", email, flow]); },
+		async resend(email, flow) { calls.push(["resend", email, { ...flow }]); },
 		async recover(email, flow) { calls.push(["recover", email, flow]); },
 		google(flow) { calls.push(["google", flow]); return `https://accounts.google.com/test?state=${flow.state}`; },
 		async exchange(code, verifier) {

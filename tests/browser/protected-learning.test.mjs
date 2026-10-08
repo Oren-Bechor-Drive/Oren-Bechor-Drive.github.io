@@ -43,11 +43,17 @@ for (const width of [1440, 390]) {
 		await page.getByRole("button", { name: "הגשת התרגול", exact: true }).click();
 		await page.locator("[data-score]").filter({ hasText: `${minimum}/${count}` }).waitFor();
 		assert.equal(await page.locator("[data-results] li").count(), count);
+		assert.ok(await page.locator("[data-result-summary]").evaluate(node => Boolean(node.compareDocumentPosition(document.querySelector("[data-questions]")) & Node.DOCUMENT_POSITION_FOLLOWING)));
+		assert.equal(await question(0).locator('[data-correct="true"][data-chosen="true"]').count(), 1);
+		assert.equal(await question(count - 1).locator('[data-correct="false"][data-chosen="true"]').count(), 1);
+		assert.equal(await page.locator("[data-sign-in]").isVisible(), false);
+		assert.equal(await page.locator("[data-reload]").isVisible(), false);
+		assert.equal(await page.locator("[data-retention]").isVisible(), true);
 		await page.getByRole("button", { name: "היסטוריית ניסיונות", exact: true }).click();
 		await page.locator("[data-history-list] button").filter({ hasText: `${minimum}/${count}` }).click();
 		await page.getByRole("button", { name: "סימון הנושא כהושלם", exact: true }).click();
 		await page.locator("[data-topics]").filter({ hasText: "הושלם" }).waitFor();
-		await page.getByRole("button", { name: "תרגול נוסף", exact: true }).click();
+		await page.getByRole("button", { name: "ניסיון חדש", exact: true }).click();
 		await page.locator("[data-results]").waitFor({ state: "hidden" });
 		assert.equal(await question(0).getByRole("radio").first().isChecked(), false);
 		assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
@@ -64,7 +70,9 @@ for (const width of [1440, 390]) {
 			Object.defineProperty(document, "hidden", { configurable: true, value: false });
 			document.dispatchEvent(new Event("visibilitychange"));
 		});
-		await page.locator("[data-learning-status]").filter({ hasText: "מנוי פעיל" }).waitFor();
+		await page.locator("[data-learning-status]").filter({ hasText: "החשבון החינמי" }).waitFor();
+		assert.equal(await page.locator("[data-retention]").isVisible(), true, "previously paid learners retain the retention guidance after access expires");
+		assert.ok(await page.getByRole("link", { name: "לנושאי הלימוד ולתרגול החינמי" }).isVisible());
 		assert.match(await page.locator("[data-topics]").textContent(), /הושלם/);
 	});
 }

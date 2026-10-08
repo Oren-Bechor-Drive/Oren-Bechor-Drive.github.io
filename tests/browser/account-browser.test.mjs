@@ -13,7 +13,7 @@ test("Hebrew login works with server cookies and signs out without browser token
 	await page.getByLabel("כתובת אימייל").fill("learner@example.test");
 	await page.getByLabel("סיסמה", { exact: true }).fill("wrong-password");
 	await page.getByRole("button", { name: "כניסה לחשבון", exact: true }).click();
-	await page.getByRole("alert").filter({ hasText: "לא הצלחנו להתחבר" }).waitFor();
+	await page.getByRole("alert").filter({ hasText: "ההתחברות לא הושלמה" }).waitFor();
 	await page.getByLabel("סיסמה", { exact: true }).fill("correct-password");
 	await page.getByRole("button", { name: "הצגת הסיסמה" }).click();
 	assert.equal(await page.getByLabel("סיסמה", { exact: true }).getAttribute("type"), "text");
@@ -36,7 +36,7 @@ test("registration and recovery guide the learner through email confirmation", a
 	const page = await browser.newPage();
 	await page.goto(app.origin + "/account/register.html");
 	await page.getByLabel("כתובת אימייל").fill("learner@example.test");
-	await page.getByLabel("סיסמה", { exact: true }).fill("Abcdefg1!");
+	await page.getByLabel("סיסמה", { exact: true }).fill("abcdefghijkl");
 	await page.getByRole("button", { name: "יצירת חשבון חינמי" }).click();
 	await page.waitForURL(/verify.html/);
 	assert.ok(await page.getByRole("heading", { name: "בדקו את האימייל שלכם" }).isVisible());
@@ -63,7 +63,7 @@ test("account pages preserve Hebrew style, mobile layout and no-JavaScript navig
 			await page.goto(`${app.origin}/account/${screen}.html`);
 			assert.equal(await page.locator("html").getAttribute("dir"), "rtl");
 			assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
-			assert.match(await page.locator("body").evaluate(node => getComputedStyle(node).fontFamily), /Varela Round/);
+			assert.match(await page.locator("body").evaluate(node => getComputedStyle(node).fontFamily), /Fredoka/);
 			assert.equal(await page.locator(".account-card").evaluate(node => getComputedStyle(node).backgroundColor), "rgb(255, 255, 255)");
 		}
 		await page.close();
@@ -96,6 +96,7 @@ test("recovery clears the previous confirmation while a new request is pending",
 		await pending;
 		await route.abort();
 	});
+	await page.getByRole("button", { name: "שינוי כתובת האימייל" }).click();
 	await page.getByLabel("כתובת אימייל").fill("another@example.test");
 	await page.getByRole("button", { name: "שליחת קישור לאיפוס" }).click();
 	assert.ok(await page.getByLabel("כתובת אימייל").isDisabled());
@@ -114,8 +115,8 @@ test("unconfigured service allows typing while keeping submission disabled", asy
 		const page = await browser.newPage({ viewport: { width, height: 900 } });
 		for (const screen of ["login", "register", "recovery", "reset"]) {
 			await page.goto(`${app.origin}/account/${screen}.html`);
-			await page.getByRole("alert").filter({ hasText: "ההתחברות אינה זמינה כרגע" }).waitFor();
-			for (const input of await page.locator("input").all()) {
+			await page.getByRole("alert").filter({ hasText: /אינה זמינה כרגע|אינו זמין כרגע/ }).waitFor();
+			for (const input of await page.locator("input:visible").all()) {
 				const value = await input.getAttribute("type") === "email" ? "learner@example.test" : "correct-password";
 				await input.fill(value, { timeout: 1500 });
 				assert.equal(await input.inputValue(), value);
@@ -176,7 +177,7 @@ test("course profile opens accounts only when the gateway is configured", async 
 		const fallback = await browser.newPage({ viewport: { width: 390, height: 844 }, ...contextOptions });
 		await fallback.route("**/api/account/session", route => route.abort());
 		await fallback.goto(app.origin + "/course/");
-		assert.ok(await fallback.getByRole("button", { name: "הפרופיל עדיין אינו זמין" }).isDisabled());
+		assert.equal(await fallback.locator(".course-profile").isVisible(), false);
 		assert.ok(await fallback.locator(".subject summary").first().isVisible());
 	}
 });

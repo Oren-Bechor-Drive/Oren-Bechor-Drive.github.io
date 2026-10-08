@@ -3,13 +3,14 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#f2f5fc" />
 		<meta
 			http-equiv="Content-Security-Policy"
 			content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
 		/>
 		<meta name="referrer" content="strict-origin-when-cross-origin" />
 		<meta name="robots" content="noindex" />
-		<title>תמרורים ומהירויות - קורס נהיגה נכונה עם אורן בכור</title>
+		<title>תמרורים ומהירויות - נהיגה נכונה עם אורן בכור</title>
 		<meta
 			name="description"
 			content="תמרורים נפוצים, סוגי דרכים, מהירות מרבית ומהירות סבירה לפי תנאי הדרך."
@@ -21,25 +22,25 @@
 		/>
 		<link
 			rel="preload"
-			href="../../assets/fonts/varela-round-v21-hebrew.woff2"
+			href="../../assets/fonts/fredoka-v17-hebrew.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
 		/>
 		<link
 			rel="preload"
-			href="../../assets/fonts/varela-round-v21-latin.woff2"
+			href="../../assets/fonts/fredoka-v17-latin.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
 		/>
-		<link rel="stylesheet" href="../../css/base.css" />
+		<link rel="stylesheet" href="../../css/base.css?v=3" />
 		<link rel="stylesheet" href="../css/course.css" />
 		<link rel="stylesheet" href="../css/lesson.css" />
 		<script type="module" src="../js/account-link.js"></script>
 	</head>
 	<body>
-		<a class="skip-link" href="#main">דילוג לתוכן הלמידה</a>
+		<a class="skip-link" href="#main">דילוג לתוכן הראשי</a>
 		<header class="course-header">
 			<div class="course-shell course-header-inner">
 				<a
@@ -59,7 +60,11 @@
 					/><span
 						><strong>נהיגה נכונה</strong><small>עם אורן בכור</small></span
 					></a
-				><button
+				>
+				<nav class="course-header-nav" aria-label="ניווט ראשי">
+					<a class="course-library-link" href="../">נושאי הלימוד</a>
+				</nav>
+				<button
 					class="course-profile"
 					type="button"
 					aria-label="הפרופיל עדיין אינו זמין"
@@ -84,20 +89,31 @@
 					מזהים את סוג הדרך ואת ההוראות שמוצבות בה, ואז בוחרים מהירות שמתאימה גם
 					לחוק וגם למה שקורה בפועל.
 				</p>
-				<p class="lesson-draft">פרקי קריאה. הסרטונים וההמחשות יתווספו בהמשך.</p>
+				<p class="lesson-meta" data-reading-minutes="3">
+					זמן קריאה משוער: 3 דקות.
+				</p>
+				<p class="lesson-draft">
+					אפשר לקרוא ולתרגל. סרטונים ותרשימים יתווספו בהמשך.
+				</p>
 			</div>
 			<div class="lesson-layout">
-				<nav class="lesson-contents" aria-labelledby="contents-title">
+				<nav
+					class="lesson-contents"
+					aria-labelledby="contents-title"
+					id="contents"
+				>
 					<h2 id="contents-title">מה לומדים כאן?</h2>
-					<p>אפשר להתחיל בכל חלק.</p>
+
 					<ul>
 						<li><a href="#common-signs">תמרורים נפוצים</a></li>
 						<li><a href="#speed">מהירות והדרך</a></li>
 					</ul>
 				</nav>
-				<article class="lesson-content"
+				<article
+					class="lesson-content"
 					id="topic"
-					aria-labelledby="topic-title" aria-label="הסברים על תמרורים ומהירות">
+					aria-labelledby="topic-title"
+				>
 					<section
 						class="lesson-section"
 						id="common-signs"
@@ -131,13 +147,26 @@
 								הוא מתייחס, גם אם יש די מקום גיאומטרי לסיבוב.
 							</li>
 						</ul>
-						<div
-							class="image-placeholder"
-							role="img"
-							aria-label="מקום לתמונה או לתרשים: תמרורים נפוצים ומשמעותם"
+						<aside
+							class="lesson-scenario"
+							aria-labelledby="common-signs-scenario-title"
 						>
-							<span>תמונה או תרשים: תמרורים נפוצים ומשמעותם</span>
-						</div>
+							<h3 id="common-signs-scenario-title">מצב מהכביש</h3>
+							<p>
+								אתם מתקרבים לפסי האטה. מפחיתים מהירות לפני המכשול, כדי להגיע
+								אליו במהירות שמתאימה למעבר.
+							</p>
+						</aside>
+						<details class="lesson-self-check">
+							<summary>מתי מפחיתים מהירות לקראת פס האטה?</summary>
+							<p>לפני המכשול, ולא בזמן העלייה עליו.</p>
+						</details>
+						<p class="image-placeholder" role="note">
+							המחשה תתווסף בהמשך: תמרורים נפוצים ומשמעותם.
+						</p>
+						<a class="lesson-return-contents" href="#contents"
+							>חזרה לתוכן העניינים</a
+						>
 					</section>
 					<section
 						class="lesson-section"
@@ -190,13 +219,7 @@
 								הקטע.
 							</li>
 						</ul>
-						<div
-							class="video-placeholder"
-							role="img"
-							aria-label="מקום לסרטון הסבר: הגבלת מהירות ושינוי מהירות בקטע דרך"
-						>
-							<span>סרטון הסבר: הגבלת מהירות ושינוי מהירות בקטע דרך</span>
-						</div>
+
 						<aside class="lesson-takeaway">
 							<strong>המספר הוא גבול, והמצב קובע את הקצב</strong>
 							<p>
@@ -204,24 +227,58 @@
 								מסתמכים על לוח התמרורים והמידע הרשמי העדכני.
 							</p>
 						</aside>
+						<aside
+							class="lesson-scenario"
+							aria-labelledby="speed-scenario-title"
+						>
+							<h3 id="speed-scenario-title">מצב מהכביש</h3>
+							<p>
+								בדרך יורד גשם והאחיזה פחות טובה. גם אם התמרור מתיר מהירות גבוהה
+								יותר, בוחרים מהירות שמשאירה שליטה ויכולת לעצור.
+							</p>
+						</aside>
+						<details class="lesson-self-check">
+							<summary>
+								האם המהירות המרבית היא המהירות שצריך לשמור תמיד?
+							</summary>
+							<p>
+								לא. זו תקרה; המהירות הסבירה תלויה בתנאי הדרך, בראייה וביכולת
+								לעצור.
+							</p>
+						</details>
+						<p class="video-placeholder" role="note">
+							סרטון יתווסף בהמשך: בחירת מהירות ושינוי לאורך הדרך.
+						</p>
+						<a class="lesson-return-contents" href="#contents"
+							>חזרה לתוכן העניינים</a
+						>
 					</section>
 					<div class="lesson-quiz">
 						<p>תרגול בנושא תמרורים ומהירויות</p>
-						<a class="course-button lesson-quiz-link" href="quiz/">לשאלון התרגול</a>
+						<a
+							class="btn btn-primary course-button lesson-quiz-link"
+							href="quiz/"
+							>לשאלון התרגול</a
+						>
 						<small>14 שאלות בנושא, עם ציון והסברים לתשובות.</small>
 					</div>
 					<footer class="lesson-end">
-						<p>מקרי הווידאו על אי-ציות ומהירות מופרזת עדיין אינם זמינים.</p>
-						<a class="course-button" href="../#signs-and-speed"
-							>חזרה לנושאי הלימוד</a
-						>
+						<a class="lesson-next" href="../roads-and-lanes/"
+							>הנושא הבא: זיהוי כבישים ונתיבים<span
+								class="direction-icon icon-arrow-left-long"
+								aria-hidden="true"
+							></span
+						></a>
+						<a href="../#signs-and-speed">לכל הנושאים</a>
 					</footer>
 				</article>
 			</div>
 		</main>
 		<footer class="course-shell course-footer">
-			<p>הקורס משלים את התרגול בשיעורי הנהיגה ואינו מחליף את מורה הנהיגה.</p>
-			<a href="../../index.html">חזרה לדף הבית</a>
+			<p>נהיגה נכונה עם אורן בכור</p>
+			<nav aria-label="קישורי האתר">
+				<a href="../../index.html">לדף הבית</a><a href="../">לנושאי הלימוד</a>
+			</nav>
 		</footer>
 	</body>
 </html>

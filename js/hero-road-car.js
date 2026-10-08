@@ -68,7 +68,7 @@ export function initHeroRoadCar(hero) {
 		frames.push({ ...frames.at(-1), offset: 1 });
 		animation = car.animate(frames, {
 			duration: cycleDuration,
-			iterations: Infinity,
+			iterations: 1,
 			easing: "linear",
 		});
 		animation.currentTime = elapsed;

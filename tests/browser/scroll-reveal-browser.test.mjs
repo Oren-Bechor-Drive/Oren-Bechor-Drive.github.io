@@ -9,11 +9,11 @@ const revealCases = [
 		section: "#instructor",
 		targets: [".instructor-intro", ".instructor-photo"],
 		start: [
-			{ x: 24, y: 0 },
-			{ x: -24, y: 0 },
+			{ x: 0, y: 0 },
+			{ x: 0, y: 0 },
 		],
-		durations: [520, 520],
-		delays: [0, 90],
+		durations: [280, 280],
+		delays: [0, 0],
 	},
 	{
 		section: "#about",
@@ -29,8 +29,8 @@ const revealCases = [
 			{ x: 0, y: 20 },
 			{ x: 0, y: 16 },
 		],
-		durations: [480, 480, 480, 520],
-		delays: [0, 0, 0, 110],
+		durations: [280, 280, 280, 280],
+		delays: [0, 0, 0, 0],
 	},
 ];
 
@@ -158,7 +158,7 @@ test(
 							delay,
 							easing,
 						})),
-					durations.map((duration, index) => ({
+					section === "#instructor" ? [] : durations.map((duration, index) => ({
 						duration,
 						delay: delays[index],
 						easing: "cubic-bezier(0.23, 1, 0.32, 1)",
@@ -362,19 +362,8 @@ test(
 		page.on("pageerror", (error) => errors.push(error.message));
 		await page.route("**/*", serveRoadMedia);
 		await page.goto("http://gallery.test/");
-		await page.locator(".topic-select").click();
-		await page.locator(".topic-option").nth(1).click();
-		await page.waitForFunction(
-			() =>
-				document.querySelector("[data-topic-panel-title]")
-					.textContent ===
-				document.querySelectorAll(".topic-card")[1].textContent.trim(),
-		);
-		assert.equal(
-			await page.locator(".footer-social img").count(),
-			4,
-			"footer icons do not depend on optional browser APIs",
-		);
+		assert.equal(await page.locator("[data-topic-summaries] h3 a:visible").count(), 10);
+		assert.equal(await page.locator(".site-footer nav a").count(), 2, "footer destinations do not depend on optional browser APIs");
 		assert.deepEqual(
 			errors,
 			[],
@@ -396,7 +385,7 @@ test(
 );
 
 test(
-	"the instructor title and photo enter upward on phones",
+	"the instructor title and photo fade without movement on phones",
 	{ timeout: 15_000 },
 	async (t) => {
 		const browser = await chromium.launch();
@@ -418,8 +407,8 @@ test(
 				revealCases[0].targets,
 			),
 			[
-				{ opacity: 0, x: 0, y: 16 },
-				{ opacity: 0, x: 0, y: 16 },
+				{ opacity: 0, x: 0, y: 0 },
+				{ opacity: 0, x: 0, y: 0 },
 			],
 		);
 		const root = page.locator("#instructor");
@@ -492,7 +481,7 @@ test(
 				}
 				const focused = await page.evaluate(() => {
 					const control = document.querySelector(
-						innerWidth < 640 ? ".topic-select" : ".topic-card",
+						innerWidth < 640 ? "[data-topic-summaries] h3 a" : ".topic-card",
 					);
 					control.focus({ preventScroll: true });
 					return control === document.activeElement;
@@ -662,7 +651,7 @@ test("hero actions take keyboard and pointer users to the instructor and topic p
 		t.after(() => page.close());
 		await page.route("**/*", serveRoadMedia);
 		await page.goto("http://gallery.test/");
-		const instructorLink = page.locator(".hero-actions a").first();
+		const instructorLink = page.locator(".hero-actions a[href=\"#instructor\"]");
 		assert.equal(await instructorLink.getAttribute("href"), "#instructor");
 		await instructorLink.focus();
 		await page.keyboard.press("Enter");
@@ -687,11 +676,11 @@ test("hero actions take keyboard and pointer users to the instructor and topic p
 		await page.locator(".hero-actions [data-topics-link]").click();
 		await page.waitForFunction(
 			() =>
-				location.hash === "#about" &&
-				document.activeElement.id === "about",
+				location.hash === "#topics" &&
+				document.activeElement.id === "topics",
 		);
 		assert.ok(
-			await page.locator("#about").evaluate((element) => {
+			await page.locator("#topics").evaluate((element) => {
 				const rect = element.getBoundingClientRect();
 				return (
 					Math.abs(
@@ -725,7 +714,7 @@ test("section links respect the sticky header or baseline scroll offset with and
 			t.after(() => page.close());
 			await page.route("**/*", serveRoadMedia);
 			await page.goto("http://gallery.test/");
-			for (const href of ["#instructor", "#about", "#top"]) {
+			for (const href of ["#instructor", "#topics", "#top"]) {
 				const link = page
 					.locator(
 						`.hero-actions a[href="${href}"], .brand[href="${href}"]`,

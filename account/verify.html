@@ -3,27 +3,44 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#f2f5fc" />
 		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'" />
 		<meta name="referrer" content="no-referrer" />
 		<meta name="robots" content="noindex" />
 		<title>בדקו את האימייל שלכם - נהיגה נכונה עם אורן בכור</title>
 		<meta name="description" content="אם אפשר להשלים את ההרשמה עם הכתובת שהזנתם, יישלח אליה קישור לאישור החשבון." />
 		<link rel="icon" href="../assets/images/optimized/favicon.png?v=2" type="image/png" />
-		<link rel="preload" href="../assets/fonts/varela-round-v21-hebrew.woff2" as="font" type="font/woff2" crossorigin />
-		<link rel="preload" href="../assets/fonts/varela-round-v21-latin.woff2" as="font" type="font/woff2" crossorigin />
-		<link rel="stylesheet" href="../css/base.css" />
+		<link rel="preload" href="../assets/fonts/fredoka-v17-hebrew.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="../assets/fonts/fredoka-v17-latin.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="stylesheet" href="../css/base.css?v=3" />
 		<link rel="stylesheet" href="account.css" />
+		<script type="module" src="account.js"></script>
 	</head>
 	<body data-account="verify">
-		<a class="skip-link" href="#main">דילוג לתוכן</a>
+		<a class="skip-link" href="#main">דילוג לתוכן הראשי</a>
 		<main id="main" class="account-shell" tabindex="-1">
 			<a class="account-back" href="../index.html">חזרה לדף הבית</a>
+			<a class="account-brand" href="../index.html"><img src="../assets/images/optimized/course-icon.webp" srcset="../assets/images/optimized/course-icon.webp 42w, ../assets/images/optimized/course-icon-84.webp 84w" sizes="42px" width="42" height="42" alt="" /><span class="account-brand-copy"><strong>נהיגה נכונה</strong><small>עם אורן בכור</small></span></a>
 			<section class="account-card" aria-labelledby="account-heading">
 				<h1 id="account-heading">בדקו את האימייל שלכם</h1>
 				<p class="account-intro">אם אפשר להשלים את ההרשמה עם הכתובת שהזנתם, יישלח אליה קישור לאישור החשבון.</p>
-				<div class="account-detail"><p>פתחו את הקישור באותו דפדפן שבו התחלתם את ההרשמה.</p><p class="account-hint">האימייל לא הגיע? בדקו גם בתיקיית הספאם. אם כבר יש לכם חשבון, אפשר לחזור לכניסה או לאפס את הסיסמה.</p></div>
-				<a class="account-action" href="login.html">חזרה לכניסה לחשבון</a>
-				<p class="account-links"><a href="register.html">ניסיון הרשמה נוסף</a></p>
+				<div class="account-detail"><h2>פתחו את הקישור באותו דפדפן</h2><p>הקישור יעבוד בדפדפן שבו התחלתם את ההרשמה.</p><p class="account-hint">הקישור נפתח בתוך אפליקציית האימייל? העתיקו אותו והדביקו בשורת הכתובת של הדפדפן שבו נרשמתם.</p><p class="account-hint">האימייל לא הגיע? בדקו גם בתיקיית הספאם. אם כבר יש לכם חשבון, אפשר לחזור לכניסה או <a href="recovery.html">לבקש קישור לאיפוס הסיסמה</a>.</p></div>
+				<div data-verification-feedback>
+					<p class="account-feedback account-error" role="alert" tabindex="-1" hidden></p>
+					<p class="account-feedback" role="status" hidden></p>
+					<p class="account-hint" data-startup hidden>בודקים את בקשת ההרשמה...</p>
+				</div>
+				<div class="account-detail" data-verification-controls hidden>
+					<p>כתובת האימייל שהוזנה: <bdi dir="ltr" data-verification-email></bdi></p>
+					<button class="account-action btn btn-secondary" type="button" data-verification-resend aria-describedby="verification-wait" disabled>שליחת קישור נוסף לאישור</button>
+					<p class="account-hint" id="verification-wait" data-verification-wait></p>
+				</div>
+				<p class="account-hint" data-verification-missing>כדי לבקש קישור נוסף, חזרו להרשמה באותו דפדפן והזינו את כתובת האימייל.</p>
+				<button class="account-retry btn btn-secondary" type="button" data-retry hidden>ניסיון נוסף</button>
+				<p class="account-hint" data-unavailable-library hidden>אפשר להמשיך בינתיים אל <a href="../course/">נושאי הלימוד</a>.</p>
+				<noscript><p class="account-feedback">כדי לשלוח קישור נוסף יש להפעיל JavaScript. אפשר להשתמש בקישור שכבר התקבל באימייל.</p></noscript>
+				<a class="account-action btn btn-primary" href="login.html">חזרה לכניסה לחשבון</a>
+				<p class="account-links"><a href="register.html">חזרה להרשמה</a></p>
 			</section>
 			<p class="account-footer">נהיגה נכונה עם אורן בכור</p>
 		</main>

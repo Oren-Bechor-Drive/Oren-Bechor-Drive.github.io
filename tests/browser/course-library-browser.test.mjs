@@ -203,15 +203,14 @@ test("mobile cards animate their full height in both directions and reverse with
 	await sampleToggle("signs-and-speed");
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	await page.waitForFunction(() =>
-		[...document.querySelectorAll(".subject")].every(
-			(subject) =>
-				subject
-					.getAnimations()
-					.every((animation) =>
-						animation.effect
-							.getKeyframes()
-							.every((keyframe) => !("height" in keyframe)),
-					),
+		[...document.querySelectorAll(".subject")].every((subject) =>
+			subject
+				.getAnimations()
+				.every((animation) =>
+					animation.effect
+						.getKeyframes()
+						.every((keyframe) => !("height" in keyframe)),
+				),
 		),
 	);
 	await topicControl(page, "signs-and-speed").tap();
@@ -289,8 +288,9 @@ test("mobile subject switching preserves the activated summary's viewport positi
 	await waitForTwoFrames(page);
 	assert.ok(
 		Math.abs(
-			(await target.evaluate((summary) => summary.getBoundingClientRect().top)) -
-				top,
+			(await target.evaluate(
+				(summary) => summary.getBoundingClientRect().top,
+			)) - top,
 		) < 2,
 		"enabling reduced motion finishes the position correction at the settled height",
 	);
@@ -310,12 +310,14 @@ test("mobile fragment navigation supersedes active subject position tracking", a
 		location.hash = "roundabouts";
 	});
 	await waitForTwoFrames(page);
-	const position = await topicControl(page, "roundabouts").evaluate((summary) => ({
-		scrollPadding: Number.parseFloat(
-			getComputedStyle(document.documentElement).scrollPaddingTop,
-		),
-		top: summary.getBoundingClientRect().top,
-	}));
+	const position = await topicControl(page, "roundabouts").evaluate(
+		(summary) => ({
+			scrollPadding: Number.parseFloat(
+				getComputedStyle(document.documentElement).scrollPaddingTop,
+			),
+			top: summary.getBoundingClientRect().top,
+		}),
+	);
 	assert.ok(
 		Math.abs(position.top - position.scrollPadding) < 2,
 		"the fragment target keeps the scroll position chosen by fragment navigation",
@@ -338,7 +340,9 @@ test("mobile filtering supersedes active subject position tracking", async (t) =
 	await waitForTwoFrames(page);
 	assert.equal(
 		await page.evaluate(() => scrollY),
-		await page.evaluate(() => document.documentElement.scrollHeight - innerHeight),
+		await page.evaluate(
+			() => document.documentElement.scrollHeight - innerHeight,
+		),
 		"filtering keeps the browser's clamped scroll position",
 	);
 	await page.close();
@@ -358,7 +362,9 @@ test("mobile filtering supersedes active subject position tracking", async (t) =
 		() => document.querySelector("#signs-and-speed").style.height === "",
 	);
 	const target = topicControl(page, "right-of-way");
-	await target.evaluate((summary) => summary.scrollIntoView({ block: "center" }));
+	await target.evaluate((summary) =>
+		summary.scrollIntoView({ block: "center" }),
+	);
 	const box = await target.boundingBox();
 	await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
 	await page.evaluate(() => {
@@ -383,7 +389,7 @@ test("mobile filtering supersedes active subject position tracking", async (t) =
 test("library learning content has contextual validation diagnostics", () =>
 	assert.deepEqual(issues, []));
 
-test("course preview preserves the welcome page's seven topic descriptions", async () => {
+test("course preview preserves the welcome page's topic descriptions", async () => {
 	const read = async (path) =>
 		new JSDOM(await readFile(new URL(`../../${path}`, import.meta.url), "utf8"))
 			.window.document;
@@ -427,7 +433,7 @@ test("course preview preserves the welcome page's seven topic descriptions", asy
 	);
 });
 
-test("course headers expose an unavailable profile control and only link the brand to home", async () => {
+test("course headers link to the public library and retain the account fallback", async () => {
 	for (const file of [
 		"course/index.html",
 		...lessons.map((lesson) => lesson.file),
@@ -436,7 +442,11 @@ test("course headers expose an unavailable profile control and only link the bra
 			await readFile(new URL(`../../${file}`, import.meta.url), "utf8"),
 		).window.document;
 		const header = document.querySelector(".course-header");
-		assert.equal(header.querySelectorAll("a").length, 1);
+		assert.equal(header.querySelectorAll("a").length, 2);
+		assert.equal(
+			header.querySelector(".course-library-link").textContent.trim(),
+			"נושאי הלימוד",
+		);
 		assert.equal(
 			new URL(
 				header.querySelector("a").getAttribute("href"),
@@ -493,9 +503,9 @@ for (const mode of ["enhanced", "disabled", "blocked module"]) {
 					await page.keyboard.press("Enter");
 					assert.equal(await topicOutline(page, id).isVisible(), true);
 					assert.equal(
-						await topicOutline(page, id).textContent(),
-						await page.locator(`#${id} .subject-outline`).textContent(),
-						"the reader preserves the complete authored outline",
+						await topicOutline(page, id).locator("ul").textContent(),
+						await page.locator(`#${id} .subject-outline ul`).textContent(),
+						"the reader preserves the authored learning outline",
 					);
 					if (desktop) {
 						assert.equal(await control.getAttribute("aria-selected"), "true");
@@ -531,8 +541,8 @@ for (const mode of ["enhanced", "disabled", "blocked module"]) {
 							[id],
 						);
 						assert.ok(
-							positions.every(({ height }) => height < 120),
-							"closed topics are compact rows",
+							positions.every(({ height }) => height < 300),
+							"closed topics remain compact with readable descriptions",
 						);
 					}
 					assert.equal(
@@ -588,7 +598,9 @@ for (const mode of ["enhanced", "disabled", "blocked module"]) {
 				);
 				for (const lesson of lessons) {
 					await page.goto(`http://gallery.test/${lesson.file}`);
-					for (const { id } of [...lesson.sections].reverse()) {
+					for (const { id } of lesson.sections.length > 1
+						? [...lesson.sections].reverse()
+						: []) {
 						await page.locator(`.lesson-contents a[href="#${id}"]`).click();
 						assert.equal(new URL(page.url()).hash, `#${id}`);
 						const top = await page
@@ -613,7 +625,7 @@ for (const mode of ["enhanced", "disabled", "blocked module"]) {
 					);
 					await page
 						.getByRole("link", {
-							name: "חזרה לנושאי הלימוד",
+							name: "לכל הנושאים",
 							exact: true,
 						})
 						.click();
@@ -802,6 +814,41 @@ test(
 	},
 );
 
+test("filtered desktop tabs follow their displayed relevance order for keyboard navigation", async t => {
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: "reduce" });
+	await page.route("**/*", serveRoadMedia);
+	await page.goto("http://gallery.test/course/");
+	const tabs = page.locator(".topic-tab:visible");
+	const initial = await tabs.evaluateAll(tabs => tabs.map(tab => tab.dataset.topic));
+	await page.getByRole("searchbox").fill("כביש");
+	const ranked = await tabs.evaluateAll(tabs => tabs.map(tab => tab.dataset.topic));
+	assert.deepEqual(ranked, ["roads-and-lanes", "signs-and-speed", "trip-planning", "driving-test"]);
+	await tabs.first().focus();
+	const assertSelected = async id => {
+		assert.equal(await page.evaluate(() => document.activeElement.dataset.topic), id);
+		assert.equal(await page.getByRole("tab", { selected: true }).getAttribute("data-topic"), id);
+		assert.equal(await page.getByRole("tabpanel").getAttribute("data-subject"), id);
+		assert.equal(await page.getByRole("tabpanel").getAttribute("aria-labelledby"), await topicControl(page, id).getAttribute("id"));
+	};
+	for (const id of [...ranked.slice(1), ranked[0]]) {
+		await page.keyboard.press("ArrowDown");
+		await assertSelected(id);
+	}
+	await page.keyboard.press("ArrowUp");
+	await assertSelected(ranked.at(-1));
+	await page.keyboard.press("Home");
+	await assertSelected(ranked[0]);
+	await page.keyboard.press("End");
+	await assertSelected(ranked.at(-1));
+	await page.getByRole("button", { name: "ניקוי החיפוש" }).click();
+	assert.deepEqual(await tabs.evaluateAll(tabs => tabs.map(tab => tab.dataset.topic)), initial);
+	await tabs.first().focus();
+	await page.keyboard.press("ArrowDown");
+	await assertSelected(initial[1]);
+});
+
 test("topic browsing does not read or write browser storage", async (t) => {
 	const browser = await chromium.launch();
 	t.after(() => browser.close());
@@ -877,9 +924,7 @@ for (const failure of ["disabled", "blocked module"]) {
 				),
 				true,
 			);
-			await page
-				.getByRole("link", { name: "חזרה לדף הבית", exact: true })
-				.click();
+			await page.getByRole("link", { name: "לדף הבית", exact: true }).click();
 			assert.equal(new URL(page.url()).pathname, "/index.html");
 			await page.close();
 		}

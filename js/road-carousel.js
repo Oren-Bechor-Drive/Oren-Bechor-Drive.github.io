@@ -209,7 +209,8 @@ export async function initRoadCarousel(root, photoSources) {
 			document.baseURI,
 		).href;
 		const optimized = photoSources[number];
-		image.alt = `אורן בכור ותלמידיו לאחר מעבר הטסט, תמונה ${number}`;
+		image.alt = "";
+		image.setAttribute("aria-hidden", "true");
 		image.draggable = false;
 		image.decoding = "async";
 		image.fetchPriority = number <= templates.length ? "high" : "low";
@@ -306,6 +307,12 @@ export async function initRoadCarousel(root, photoSources) {
 	);
 	track.addEventListener("animationiteration", schedulePublish);
 	browserWindow.addEventListener("resize", resize);
+	const syncAccessibility = () => {
+		if (motionPreference?.matches) root.tabIndex = 0;
+		else root.removeAttribute("tabindex");
+	};
+	syncAccessibility();
+	motionPreference?.addEventListener("change", syncAccessibility);
 	motionPreference?.addEventListener("change", schedulePublish);
 	try {
 		await loadListedPhotos();
@@ -326,6 +333,7 @@ export async function initRoadCarousel(root, photoSources) {
 			track.removeEventListener("animationiteration", schedulePublish);
 			browserWindow.removeEventListener("resize", resize);
 			motionPreference?.removeEventListener("change", schedulePublish);
+		motionPreference?.removeEventListener("change", syncAccessibility);
 		}
 	}
 }

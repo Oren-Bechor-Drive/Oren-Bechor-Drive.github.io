@@ -33,13 +33,14 @@ test("course headers match home and remain visible above scrolled content", asyn
 			"course/priority-hierarchy/quiz/",
 		]) {
 			await page.goto(`http://gallery.test/${path}`);
-			assert.equal(
+			assert.notEqual(
 				await page.evaluate(
 					() =>
 						getComputedStyle(document.documentElement)
 							.scrollbarWidth,
 				),
 				"none",
+				"the native page scrollbar remains available",
 			);
 			const header = page.locator(".course-header");
 			assert.deepEqual(await header.evaluate(appearance), expected);

@@ -141,7 +141,7 @@ for (const width of [1440, 390]) {
 		await r.reading.waitFor({ state: "visible" });
 		await release(r.page);
 		assert.equal(await r.reading.isVisible(), true);
-		assert.doesNotMatch(await r.page.locator("[data-reader-status]").textContent(), /לא הצלחנו/);
+		assert.doesNotMatch(await r.page.locator("[data-reader-status]").textContent(), /לא הושלמו/);
 	});
 
 	test(`restored reader ignores an already received old save failure at ${width}px`, async t => {
@@ -160,7 +160,7 @@ for (const width of [1440, 390]) {
 		await r.reading.waitFor({ state: "visible" });
 		await release(r.page);
 		assert.equal(await r.save.isEnabled(), true);
-		assert.equal(await r.status.textContent(), "השיעור נטען.");
+		assert.equal(await r.status.textContent(), "קטע הלימוד נטען.");
 	});
 
 	test(`superseded conflict reload does not steal focus at ${width}px`, async t => {
@@ -172,7 +172,7 @@ for (const width of [1440, 390]) {
 		await r.save.evaluate(button => button.click());
 		await r.status.filter({ hasText: "בחלון אחר" }).waitFor();
 		await hold(r.page, "load");
-		await r.page.getByRole("button", { name: "טעינת השיעור מחדש" }).click();
+		await r.page.getByRole("button", { name: "טעינת קטע הלימוד מחדש" }).click();
 		await held(r.page);
 		await hide(r.page);
 		await restore(r.page);

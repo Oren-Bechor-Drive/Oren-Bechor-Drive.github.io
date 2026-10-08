@@ -2,6 +2,10 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { firefox, webkit } from "playwright";
 import { serveRoadMedia } from "../helpers/road-media.mjs";
+import { roadPhotoSources } from "../../js/road-photo-sources.js";
+
+const photoNumbers = Object.keys(roadPhotoSources).map(Number).sort((a, b) => a - b);
+const latePhotos = new Set(photoNumbers.slice(-3));
 
 const engines = [
 	["Firefox", firefox],
@@ -30,19 +34,20 @@ async function finishQuizAfterMissingAnswers(page) {
 	await page.locator("[data-quiz-next]").click();
 	assert.equal(await page.locator("[data-quiz-result]").isVisible(), false);
 	assert.equal(await questions.nth(1).isVisible(), true);
-	assert.equal(
-		await page.locator("[data-quiz-validation]").innerText(),
-		"יש לענות על כל השאלות לפני סיום השאלון.",
-	);
+	const missing = Array.from({ length: count - 2 }, (_, index) => index + 2);
+	assert.equal(await page.locator("[data-quiz-validation]").innerText(),
+		`נשארו ${missing.length} שאלות בלי תשובה: ${missing.join(", ")}. אפשר לענות עליהן ואז לסיים.`);
 	for (let index = 1; index < count - 1; index++) {
 		await questions.nth(index).locator("input").first().check();
 		await page.locator("[data-quiz-next]").click();
 	}
 	assert.equal(await page.locator("[data-quiz-validation]").innerText(), "");
 	await page.locator("[data-quiz-next]").click();
+	await page.locator("[data-quiz-submit]").click();
 	assert.equal(await page.locator("[data-quiz-result]").isVisible(), true);
 	assert.match(await page.locator("[data-quiz-count]").innerText(),
-		new RegExp(`עניתם נכון על \\d+ מתוך ${count} שאלות\\. הציון: \\d+%`));
+		new RegExp(`עניתם נכון על \\d+ מתוך ${count} שאלות`));
+	assert.match(await page.locator("[data-quiz-score]").innerText(), /\d+%/);
 }
 
 function trackPageErrors(page) {
@@ -51,21 +56,36 @@ function trackPageErrors(page) {
 	return () => assert.deepEqual(errors, [], errors.join("\n"));
 }
 
+async function finishGalleryLoading(page) {
+	await page.locator("[data-road-carousel]").scrollIntoViewIfNeeded();
+	// Complete this page's image work before navigation cancels its requests.
+	await page.waitForFunction(count =>
+		document.querySelector(".road-carousel-group").children.length === count,
+		photoNumbers.length,
+	);
+}
+
 async function exerciseDesktopJourney(browser) {
 	const page = await browser.newPage({
 		viewport: { width: 1440, height: 900 },
 		reducedMotion: "reduce",
 	});
-	await page.route("**/*", serveRoadMedia);
+	await page.route("**/*", async route => {
+		// Keep the lesson's first layout pending after its document commits.
+		if (new URL(route.request().url()).pathname === "/course/css/lesson.css")
+			await new Promise(resolve => setTimeout(resolve, 500));
+		return serveRoadMedia(route);
+	});
 	const assertNoPageErrors = trackPageErrors(page);
 
 	await openPage(page, "/");
+	await finishGalleryLoading(page);
 	await page.locator('.site-menu a[href="#about"]').click();
 	assert.equal(new URL(page.url()).hash, "#about");
-	await page.locator(".topic-card").last().click();
+	await page.getByRole("tab", {name:"טעויות נפוצות בטסט המעשי"}).click();
 	assert.equal(
 		await page.locator("[data-topic-panel-title]").innerText(),
-		"טעויות נפוצות בטסט",
+		"טעויות נפוצות בטסט המעשי",
 	);
 	await assertNoHorizontalOverflow(page);
 
@@ -73,18 +93,18 @@ async function exerciseDesktopJourney(browser) {
 	await page.locator("#topic-search").fill("מדרג");
 	assert.equal(
 		await page.locator("[data-search-status]").innerText(),
-		"נמצאו 1 נושאים",
+		"נמצא נושא אחד",
 	);
 	await page
 		.locator('.topic-tab[data-topic="priority-hierarchy"]')
 		.click();
 	await page.locator(".topic-reader .subject-learn").click();
+	await page.waitForURL("**/course/priority-hierarchy/", { waitUntil: "load" });
 	assert.equal(new URL(page.url()).pathname, "/course/priority-hierarchy/");
 
-	await page.locator('.lesson-contents a[href="#priority"]').click();
-	assert.equal(new URL(page.url()).hash, "#priority");
 	assert.equal(await page.locator("#priority").isVisible(), true);
 	await page.locator(".lesson-content > .lesson-quiz .lesson-quiz-link").click();
+	await page.waitForURL("**/course/priority-hierarchy/quiz/", { waitUntil: "load" });
 	assert.equal(
 		new URL(page.url()).pathname,
 		"/course/priority-hierarchy/quiz/",
@@ -107,19 +127,22 @@ async function exerciseMobileJourney(browser) {
 		viewport: { width: 390, height: 844 },
 		reducedMotion: "reduce",
 	});
-	await page.route("**/*", serveRoadMedia);
+	await page.route("**/*", async route => {
+		const number = Number(new URL(route.request().url()).pathname.match(/students-pass\/(\d+)\.png$/)?.[1]);
+		if (route.request().method() === "HEAD" && latePhotos.has(number))
+			await new Promise(resolve => setTimeout(resolve, 1000));
+		return serveRoadMedia(route);
+	});
 	const assertNoPageErrors = trackPageErrors(page);
 
 	await openPage(page, "/");
+	await finishGalleryLoading(page);
 	assert.equal(await page.locator(".site-menu").isVisible(), false);
 	await page.locator(".menu-toggle").click();
 	await page.locator('.site-menu a[href="#about"]').click();
-	await page.locator(".topic-select").click();
-	await page.locator(".topic-option").last().click();
-	assert.equal(
-		await page.locator("[data-topic-panel-title]").innerText(),
-		"טעויות נפוצות בטסט",
-	);
+	assert.equal(await page.locator("[data-topic-summaries] section").count(), 10);
+	assert.equal(await page.locator("[data-topic-summaries]").isVisible(), true);
+	assert.equal(await page.locator(".topic-select").count(), 0);
 
 	await openPage(page, "/course/");
 	await page.locator("#priority-hierarchy > summary").click();
@@ -128,8 +151,8 @@ async function exerciseMobileJourney(browser) {
 		true,
 	);
 	await page.locator("#priority-hierarchy .subject-learn").click();
-	await page.locator('.lesson-contents a[href="#priority"]').click();
-	assert.equal(new URL(page.url()).hash, "#priority");
+	await page.waitForURL("**/course/priority-hierarchy/", { waitUntil: "load" });
+	assert.equal(await page.locator("#priority").isVisible(), true);
 	await page.locator(".lesson-content > .lesson-quiz .lesson-quiz-link").click();
 	await page.locator("[data-quiz-controls]").waitFor({ state: "visible" });
 	const firstAnswer = page.locator(".quiz-question").first().locator("input").first();
@@ -182,8 +205,8 @@ async function exerciseFallback(browser, mode) {
 		true,
 	);
 	await page.locator("#priority-hierarchy .subject-learn").click();
-	await page.locator('.lesson-contents a[href="#priority"]').click();
-	assert.equal(new URL(page.url()).hash, "#priority");
+	await page.waitForURL("**/course/priority-hierarchy/", { waitUntil: "load" });
+	assert.equal(await page.locator("#priority").isVisible(), true);
 	await page.locator(".lesson-content > .lesson-quiz .lesson-quiz-link").click();
 	// Firefox can finish the click before render-blocking stylesheets load.
 	await page.waitForURL("**/course/priority-hierarchy/quiz/", {
@@ -200,7 +223,7 @@ async function exerciseFallback(browser, mode) {
 for (const [name, browserType] of engines) {
 	test(
 		`${name} supports the representative desktop journey`,
-		{ timeout: 30_000 },
+		{ timeout: 90_000 },
 		async (t) => {
 			const browser = await browserType.launch();
 			t.after(() => browser.close());
@@ -210,7 +233,7 @@ for (const [name, browserType] of engines) {
 
 	test(
 		`${name} supports the representative mobile journey`,
-		{ timeout: 30_000 },
+		{ timeout: 90_000 },
 		async (t) => {
 			const browser = await browserType.launch();
 			t.after(() => browser.close());

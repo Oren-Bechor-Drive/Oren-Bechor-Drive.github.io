@@ -10,7 +10,10 @@ const canonicalUrl = "https://oren-bechor-drive.github.io/";
 
 test("llms overview points to real public pages and sections", async () => {
 	const overview = await read("llms.txt");
-	const pages = new Map([["/", new JSDOM(await read("index.html"))]]);
+	const pages = new Map([
+		["/", new JSDOM(await read("index.html"))],
+		["/course/", new JSDOM(await read("course/index.html"))],
+	]);
 	try {
 		assert.match(overview, /^# .+/);
 		const links = [
@@ -25,6 +28,7 @@ test("llms overview points to real public pages and sections", async () => {
 			/\[[^\]]+\]\(https:\/\/oren-bechor-drive\.github\.io\/#faq\)/,
 		);
 		assert.doesNotMatch(overview, /\/help\//);
+		assert.equal(pages.get("/course/").window.document.querySelector('meta[name="robots"]').content, "noindex", "public preview links do not change the indexing boundary");
 		for (const [, href] of links) {
 			const url = new URL(href);
 			assert.equal(url.origin, new URL(canonicalUrl).origin);

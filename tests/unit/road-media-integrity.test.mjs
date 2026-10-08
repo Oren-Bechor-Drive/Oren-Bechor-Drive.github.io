@@ -31,7 +31,7 @@ test("road-media declarations match their files", async () => {
 	);
 	assert.ok(
 		audit.assets.some(
-			(asset) => asset.source === "assets/images/stop-sign.png",
+			(asset) => asset.source === "assets/images/stop-sign-red.png",
 		),
 	);
 });
@@ -503,5 +503,16 @@ for (const problem of ["missing file", "wrong width", "valid candidate"]) {
 						),
 				),
 			);
+	});
+}
+
+for (const decoration of ['alt="" aria-hidden="true"', 'alt=""', 'aria-hidden="true"']) {
+	test(`marked media empty alt requires explicit decoration: ${decoration}`, async t => {
+		const directory = await mkdtemp(path.join(os.tmpdir(), "road-decoration-"));
+		t.after(() => rm(directory, { recursive: true, force: true }));
+		await writeFile(path.join(directory, "photo.jpg"), testJpeg);
+		await writeFile(path.join(directory, "index.html"), `<img data-road-media src="photo.jpg" width="2" height="2" ${decoration}>`);
+		const audit = await auditRoadMedia({rootDir: directory});
+		assert.deepEqual(audit.issues, decoration.includes('alt=') && decoration.includes('aria-hidden') ? [] : ['photo.jpg: alternative text is empty']);
 	});
 }

@@ -7,30 +7,34 @@ import { JSDOM } from "jsdom";
 const root = new URL("../../", import.meta.url);
 const read = (path) => readFile(new URL(path, root), "utf8");
 
-test("homepage FAQ answers the five course questions with native disclosures", async () => {
+test("homepage FAQ answers course questions and current availability with native disclosures", async () => {
 	const dom = new JSDOM(await read("index.html"));
 	try {
 		const { document } = dom.window;
 		const faq = document.querySelector("#faq");
 		assert.ok(faq, "homepage must expose the FAQ anchor");
 		assert.equal(faq.getAttribute("aria-labelledby"), "faq-title");
-		assert.equal(faq.querySelector("h2#faq-title")?.textContent.trim(), "שאלות ותשובות");
+		assert.equal(faq.querySelector("h2#faq-title")?.textContent.trim(), "שאלות נפוצות");
 		assert.deepEqual(
 			[...faq.querySelectorAll("details")].map((item) =>
 				item.querySelector(":scope > summary")?.textContent.trim(),
 			),
 			[
 				"למי מיועד הקורס?",
-				"האם הקורס מחליף שיעורים עם מורה נהיגה?",
+				"האם הקורס מחליף שיעורי נהיגה?",
 				"איך לומדים בקורס?",
 				"מה כוללים הסרטונים?",
 				"איך עובדים שאלוני התרגול?",
+				"מתי הקורס המלא יהיה זמין?",
 			],
 		);
-		assert.equal(faq.querySelectorAll("details").length, 5);
-		assert.equal(faq.querySelectorAll("summary").length, 5);
+		assert.equal(faq.querySelectorAll("details").length, 6);
+		assert.equal(faq.querySelectorAll("summary").length, 6);
 		assert.equal(faq.querySelectorAll("button").length, 0);
 		assert.equal(faq.querySelectorAll("[role]").length, 0);
+
+		assert.equal(faq.querySelector('.faq-item:last-child a').getAttribute("href"), "course/");
+		assert.match(faq.querySelector('.faq-item:last-child').textContent, /מועד פתיחה עדיין לא פורסם/);
 
 		const copy = faq.textContent.replace(/\s+/g, " ");
 		for (const fact of [
@@ -44,8 +48,9 @@ test("homepage FAQ answers the five course questions with native disclosures", a
 		}
 		assert.doesNotMatch(
 			copy,
-			/עדיין אינם זמינים|ממלאי מקום|ללא ציון|אינן נשמרות|הרשמה|תשלום|חשבון|JavaScript/,
+			/ממלאי מקום|ללא ציון|אינן נשמרות|תשלום|חשבון|JavaScript/,
 		);
+		assert.match(faq.querySelector(".faq-availability").textContent, /הסרטונים וההרשמה לקורס המלא עדיין אינם זמינים/);
 		assert.ok(
 			document.head.querySelector('link[rel="stylesheet"][href="css/faq.css"]'),
 			"homepage must load the FAQ stylesheet",

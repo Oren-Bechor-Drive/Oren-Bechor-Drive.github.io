@@ -56,10 +56,9 @@ test("finishing an incomplete quiz returns to the first unanswered question", as
 		await questions.nth(1).locator("legend").evaluate((legend) => legend === document.activeElement),
 		true,
 	);
-	assert.equal(
-		await page.locator("[data-quiz-validation]").innerText(),
-		"יש לענות על כל השאלות לפני סיום השאלון.",
-	);
+	const missing = Array.from({ length: (await questions.count()) - 2 }, (_, index) => index + 2);
+	assert.equal(await page.locator("[data-quiz-validation]").innerText(),
+		`נשארו ${missing.length} שאלות בלי תשובה: ${missing.join(", ")}. אפשר לענות עליהן ואז לסיים.`);
 	await page.keyboard.press("Tab");
 	assert.equal(
 		await questions.nth(1).locator("input").first().evaluate((input) => input.matches(":focus-visible")),
@@ -110,12 +109,14 @@ async function exerciseQuiz(page, count) {
 			await page.locator(".quiz-form").evaluate((form) => form.requestSubmit());
 		else await page.locator("[data-quiz-next]").click();
 	}
+	if (await page.locator(".quiz-form[data-quiz-graded]").count())
+		await page.locator("[data-quiz-submit]").click();
 	assert.equal(await page.locator("[data-quiz-result]").isVisible(), true);
 	if (await page.locator(".quiz-form[data-quiz-graded]").count()) {
 		const correct = await questions.evaluateAll(items => items.filter(question =>
 			question.querySelector("input:checked").value === question.dataset.correctAnswer).length);
 		assert.ok((await page.locator("[data-quiz-count]").innerText()).startsWith(
-			`עניתם נכון על ${correct} מתוך ${count} שאלות. הציון: ${Math.round(correct / count * 100)}%.`));
+			`עניתם נכון על ${correct} מתוך ${count} שאלות.`));
 	} else {
 		assert.equal(await page.locator("[data-quiz-count]").innerText(),
 			`סימנתם תשובה ב-${count} מתוך ${count} שאלות.`);
@@ -123,8 +124,11 @@ async function exerciseQuiz(page, count) {
 	await page
 		.getByRole("button", { name: "חזרה לשאלות", exact: true })
 		.click();
-	assert.equal(await questions.nth(last).isVisible(), true);
-	assert.equal(await questions.nth(last).locator("input:checked").count(), 1);
+	const reviewStart = await page.locator(".quiz-form[data-quiz-graded]").count()
+		? await questions.evaluateAll(items => Math.max(0, items.findIndex(question => question.dataset.result === "incorrect")))
+		: last;
+	assert.equal(await questions.nth(reviewStart).isVisible(), true);
+	assert.equal(await questions.nth(reviewStart).locator("input:checked").count(), 1);
 	await selectQuestion(page, 0);
 	assert.equal(
 		await questions.first().locator("input").first().isChecked(),

@@ -8,12 +8,12 @@ This is not a deployed paid service. The local launcher still refuses production
 
 ## Local use
 
-Follow [account setup](local-accounts.md), apply both checked-in migrations to the intended development database, then run `npm run dev`. The original foundation migration is unchanged, and the protected-learning migration has not yet been applied to the hosted development project. Open `/account/learning.html` after signing in. Newly created databases contain no course content. The hosted synthetic seed uses legacy `publish_section` and has no titles under the new migration; [republish it with `publish_learning_section`](test-lessons.md#publish-hosted-development-fixtures) before expecting it in the catalog.
+Follow [account setup](local-accounts.md), apply all checked-in migrations in order to the intended development database, then run `npm run dev`. The original foundation migration is unchanged, and the protected-learning migration has not yet been applied to the hosted development project. Open `/account/learning.html` after signing in. Newly created databases contain no course content. The hosted synthetic seed uses legacy `publish_section` and has no titles under the new migration; [republish it with `publish_learning_section`](test-lessons.md#publish-hosted-development-fixtures) before expecting it in the catalog.
 
 - `/account/learning.html` lists accessible published learning sections and available quizzes. Opening a quiz resumes the one unfinished attempt for that topic or starts a fresh attempt.
 - Answers save after each choice. Failed saves keep the visible choices and offer retry. A conflicting revision requires explicitly loading the saved attempt.
 - All authored questions must be answered. Submission grades in PostgreSQL, returns the correct-answer count and explanations, and preserves that attempt's immutable quiz version. At least 85% correct enables manual topic completion, with the required answer count rounded up: 15/17, 17/20, or 23/26. History includes `questionCount` from that attempt's version; later publications do not change its denominator or passing result. Retrying creates another attempt; it never overwrites history.
-- `/account/reader.html?section=<uuid>&access=free|paid` fetches one entitled section, resumes its saved position, and saves scroll progress. Updated content starts from the top with a notice. The explicit save button also saves the current reading position.
+- `/account/reader.html?section=<uuid>&access=free|paid` fetches one entitled section, resumes its saved position, and saves scroll progress. New readings, a saved position of zero and updated content start at the document top, keeping the section title visible; updated content also shows a notice. Scroll position autosaves. Failed saves offer a retry beside the reading status without moving to the end of the text.
 - `account/protected-page.js` aborts requests and clears private content on pagehide/background, then fetches fresh authorization when restored. It stops stale request completions, errors, and finalizers from changing a newer view. The quiz page owns its draft/save behavior; the reader owns scroll and media behavior. Private responses are not cached. Public topic descriptions and navigation continue to work without JavaScript.
 
 ## Publication
@@ -74,7 +74,7 @@ All learner routes use the signed-in learner; none accept learner IDs. POST rout
 
 | Route | Operation |
 | --- | --- |
-| `GET /api/learning` | Quiz topics, durable completion dates, paid-access state and disabled subscription offer |
+| `GET /api/learning` | Quiz topics with latest submitted attempt summaries, durable completion dates, paid-access state and disabled subscription offer |
 | `GET /api/sections` | Accessible current section IDs, Hebrew titles and access levels |
 | `GET /api/sections/<uuid>/<free-or-paid>` | Authorized body, saved position, CSRF and authorized media descriptors |
 | `POST /api/sections/<uuid>/<free-or-paid>/position` | Save contentVersionId, position 0-10000, expectedRevision |
@@ -90,6 +90,14 @@ Each authorized section GET includes its saved position and CSRF token. There is
 
 `tests/database/protected-learning.test.mjs` owns real-role/ACL/RLS, grading, revision, pagination and lock-race evidence. `tests/helpers/test-lessons.mjs` owns deterministic Auth plus a disposable PostgreSQL database and optional synthetic quiz/long-text fixtures. The HTTP and Chromium journeys use those real database operations. The fixture's backdated expiry moves its pre-expiry progress/attempt timestamps too; application clocks stay real. These tests do not prove hosted Auth, REST, Cron, SMTP or payment-provider setup.
 
+The `20261008081459_learning_latest_attempt_summary.sql` migration adds `latestAttempt` to each quiz topic in `GET /api/learning`. It is `null` without a submitted attempt or current paid access; otherwise it contains `id`, `submittedAt`, `score` and `questionCount`. The database chooses the latest submission by timestamp and attempt ID, and reads the count from that attempt's immutable quiz version. Initial catalog loading needs no per-topic history requests. Opening history still uses the existing paginated endpoint. This migration has been verified locally; it has not been applied to hosted Supabase.
+
 ## Billing investigation
 
 The owner confirmed an Israeli business and Israeli business bank account, then chose to leave billing disabled. Stripe's [supported-country list](https://stripe.com/global) does not include Israel as a direct payments merchant country. Charging in ILS is a separate capability from merchant eligibility. PayPlus documents [recurring ILS payments and delayed first charges](https://docs.payplus.co.il/reference/post_recurringpayments-add), but no provider was selected and no account was created. Exact trial cutoff, cancellation, retries and receipts still need provider sandbox verification when billing resumes.
+
+## Retention guidance in the learner view
+
+`my_learning` returns `hadPaidAccess` alongside current `paidAccess`. The history flag is scoped to the authenticated learner's started, effective paid-access periods; future grants and grants revoked before their start do not qualify. It changes explanatory copy visibility only. It does not grant access, restore progress or change cleanup. The learner view shows the retention policy to current or previously paid learners and hides it from accounts that have never had paid access.
+
+The local migration `20261008051628_learning_paid_access_history.sql` adds this response field. Disposable database and browser checks are local evidence; applying the migration and verifying the hosted response remain deployment work.

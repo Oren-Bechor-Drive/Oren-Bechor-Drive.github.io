@@ -33,6 +33,7 @@ test(
 			{ width: 1440, height: 900 },
 			{ width: 390, height: 844 },
 			{ width: 320, height: 568, short: true },
+			{ width: 844, height: 390, short: true },
 		]) {
 			const page = await browser.newPage({
 				javaScriptEnabled: false,
@@ -98,10 +99,11 @@ test(
 
 			if (viewport.short) {
 				assert.ok(layout.messageTop >= 24, "short view keeps the start visible");
-				assert.ok(
-					layout.documentHeight > viewport.height,
-					"short view scrolls vertically when the content cannot fit",
-				);
+				const recovery = page.locator(".recovery-actions a").last();
+				await recovery.scrollIntoViewIfNeeded();
+				const bounds = await recovery.boundingBox();
+				assert.ok(bounds.y >= 0 && bounds.y + bounds.height <= viewport.height,
+					"short views keep the final recovery action reachable, scrolling when needed");
 			} else {
 				assert.ok(
 					Math.abs(layout.messageCenterY - layout.mainCenterY) <= 1,

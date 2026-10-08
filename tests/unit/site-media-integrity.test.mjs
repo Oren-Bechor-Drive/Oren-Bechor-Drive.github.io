@@ -137,6 +137,56 @@ test("ordinary external and embedded references are skipped without fetching", a
 	assert.equal(audit.assets.length, 2);
 });
 
+test("decoded filenames and browser URL resolution apply to images, picture sources and preloads", async (t) => {
+	const rootDir = await fixture(t, {
+		"index.html": "<!doctype html><title>בית</title>",
+		"lessons/page.html": [
+			'<img data-road-media src="../pixel%2Epng?rev=2" width="1" height="1" alt="בדיקה">',
+			'<img src="/pixel%2Epng" srcset="../pixel%2Epng 1w">',
+			'<picture><source srcset="/pixel%2Epng 1w"><img src="./local%2Epng"></picture>',
+			'<link rel="preload" as="image" href="/pixel%2Epng" imagesrcset="../pixel%2Epng 1w" type="image/png">',
+			'<img src="/icon%2Esvg"><link rel="preload" as="image" href="/icon%2Esvg" type="image/svg+xml">',
+		].join(""),
+		"pixel.png": png,
+		"lessons/local.png": png,
+		"icon.svg": '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"/>',
+	});
+	const audit = await media.auditSiteMedia({ rootDir });
+	assert.deepEqual(audit.issues, []);
+	assert.ok(audit.assets.some(asset => asset.source === "../pixel%2Epng" && asset.format === "png"));
+	assert.ok(audit.assets.some(asset => asset.source === "/icon%2Esvg" && asset.format === "svg"));
+
+	await writeFile(path.join(rootDir, "lessons/page.html"), '<img data-road-media src="../pixel%2Epng" width="2" height="1" alt="">');
+	assert.deepEqual((await media.auditSiteMedia({ rootDir })).issues, [
+		"lessons/page.html: ../pixel%2Epng: declared 2x1, file is 1x1",
+		"lessons/page.html: ../pixel%2Epng: alternative text is empty",
+	]);
+});
+
+test("every image declaration stays inside the supplied root and diagnoses its authored reference", async (t) => {
+	const parent = await fixture(t, { "outside.png": png });
+	const rootDir = path.join(parent, "site");
+	await mkdir(rootDir);
+	await writeFile(path.join(rootDir, "index.html"), [
+		'<img src="../outside.png">',
+		'<img src="..%2Foutside.png">',
+		'<img srcset="..%2Foutside.png 1w">',
+		'<picture><source srcset="%2E%2E%2Foutside.png 1w"><img src="/missing.png"></picture>',
+		'<link rel="preload" as="image" href="%2E%2E%2Foutside.png" type="image/png">',
+		'<link rel="preload" as="image" imagesrcset="..%2Foutside.png 1w">',
+		'<img src="/%2Foutside.png">',
+	].join(""));
+	const audit = await media.auditSiteMedia({ rootDir });
+	assert.deepEqual(audit.assets, []);
+	assert.deepEqual(audit.issues, [
+		"index.html: ../outside.png: file does not exist",
+		"index.html: ..%2Foutside.png: image path escapes the media root",
+		"index.html: /missing.png: file does not exist",
+		"index.html: /%2Foutside.png: image path escapes the media root",
+		"index.html: %2E%2E%2Foutside.png: image path escapes the media root",
+	]);
+});
+
 test("responsive-only preload MIME declarations are checked against their candidates", async (t) => {
 	const rootDir = await fixture(t, {
 		"index.html":

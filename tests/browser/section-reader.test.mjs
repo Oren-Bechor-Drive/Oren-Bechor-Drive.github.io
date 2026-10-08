@@ -17,8 +17,11 @@ for (const width of [1440, 390]) {
 		await page.getByRole("button", { name: "כניסה לחשבון", exact: true }).click();
 		await page.waitForURL(app.origin + "/account/");
 		await page.goto(app.origin + "/account/learning.html");
-		await page.getByRole("link", { name: "הגדרה לבדיקה - הגדרה", exact: true }).click();
+		await page.locator("[data-sections] .learning-topic").filter({ hasText: "הגדרה לבדיקה" }).getByRole("link", { name: "פתיחת חומר הקריאה" }).click();
 		await page.locator("[data-reading]").waitFor();
+		const initial = await page.locator("#reader-heading").boundingBox();
+		assert.ok(initial.y >= 0 && initial.y + initial.height <= 844, "a new reading keeps the section title visible");
+		assert.equal(await page.evaluate(() => scrollY), 0);
 		const pending = page.waitForResponse(response => response.url().endsWith("/position") && response.request().method() === "POST");
 		await page.evaluate(() => {
 			const body = document.querySelector("[data-reading-body]");
@@ -33,9 +36,10 @@ for (const width of [1440, 390]) {
 		await page.waitForFunction(() => scrollY > 1000);
 		const fraction = await page.evaluate(() => (20 - document.querySelector("[data-reading-body]").getBoundingClientRect().top) / (document.querySelector("[data-reading-body]").offsetHeight - innerHeight));
 		assert.ok(Math.abs(fraction - 0.45) < 0.03);
-		const save = page.getByRole("button", { name: "שמירת מיקום הקריאה", exact: true });
-		await save.click();
-		await page.locator("[data-position-status]").filter({ hasText: "מיקום הקריאה נשמר" }).waitFor();
+		const save = page.getByRole("link", { name: "חזרה לרשימת קטעי הלימוד", exact: true });
+		await save.evaluate(node => node.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })));
+		await save.focus();
+		assert.equal(await page.locator("[data-save-position]").isVisible(), false);
 		assert.equal(await save.evaluate(node => getComputedStyle(node).outlineStyle), "none");
 		await page.keyboard.press("Shift+Tab");
 		await page.keyboard.press("Tab");
@@ -46,7 +50,7 @@ for (const width of [1440, 390]) {
 			Object.defineProperty(document, "hidden", { configurable: true, value: true });
 			document.dispatchEvent(new Event("visibilitychange"));
 		});
-		assert.equal(await page.locator("#reader-heading").textContent(), "קריאת שיעור");
+		assert.equal(await page.locator("#reader-heading").textContent(), "קריאת קטע לימוד");
 		assert.equal(await page.locator("[data-reading-body]").textContent(), "");
 		await page.evaluate(() => {
 			Object.defineProperty(document, "hidden", { configurable: true, value: false });
@@ -74,7 +78,7 @@ test("reader saves a scroll made before its restore frame runs", async t => {
 	await page.getByRole("button", { name: "כניסה לחשבון", exact: true }).click();
 	await page.waitForURL(app.origin + "/account/");
 	await page.goto(app.origin + "/account/learning.html");
-	await page.getByRole("link", { name: "הגדרה לבדיקה - הגדרה", exact: true }).click();
+	await page.locator("[data-sections] .learning-topic").filter({ hasText: "הגדרה לבדיקה" }).getByRole("link", { name: "פתיחת חומר הקריאה" }).click();
 	await page.locator("[data-reading]").waitFor();
 	const pending = page.waitForResponse(response => response.url().endsWith("/position") && response.request().method() === "POST", { timeout: 3500 });
 	const moved = await page.evaluate(() => {
@@ -105,10 +109,40 @@ test("reader shows load failures outside the hidden article and retries both cat
 	for (const path of ["/api/sections", `/api/sections/${id}/free`]) {
 		await page.route(app.origin + path, route => route.fulfill({ status: 503, contentType: "application/json", body: '{"error":"unavailable"}' }));
 		await page.goto(`${app.origin}/account/reader.html?section=${id}&access=free`);
-		await page.locator("[data-reader-status]").filter({ hasText: "לא הצלחנו" }).waitFor();
+		await page.locator("[data-reader-status]").filter({ hasText: "לא הושלמו" }).waitFor();
 		assert.equal(await page.locator("[data-reading]").isVisible(), false);
 		await page.unroute(app.origin + path);
-		await page.getByRole("button", { name: "טעינת השיעור מחדש", exact: true }).click();
+		await page.getByRole("button", { name: "טעינת קטע הלימוד מחדש", exact: true }).click();
 		await page.locator("[data-reading]").waitFor();
+	}
+});
+
+test("zero saved positions and changed content keep the reader title at the document top", async t => {
+	const app = await startLessonGateway({ longLesson: true });
+	t.after(app.close);
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+	await page.goto(app.origin + "/account/login.html");
+	await page.getByLabel("כתובת אימייל").fill("reader-top@example.test");
+	await page.getByLabel("סיסמה", { exact: true }).fill("correct-password");
+	await page.getByRole("button", { name: "כניסה לחשבון", exact: true }).click();
+	await page.waitForURL(app.origin + "/account/");
+	const id = "a524e32d-2640-4d94-a51c-000000000001";
+	for (const changed of [false, true]) {
+		const endpoint = `${app.origin}/api/sections/${id}/free`;
+		await page.route(endpoint, async route => {
+			const response = await route.fetch();
+			const data = await response.json();
+			data.position = { contentVersionId: changed ? "outdated-test-version" : data.lesson.id, position: changed ? 4500 : 0, revision: 1 };
+			await route.fulfill({ response, json: data });
+		});
+		await page.goto(`${app.origin}/account/reader.html?section=${id}&access=free`);
+		await page.locator("[data-reading]").waitFor();
+		const title = await page.locator("#reader-heading").boundingBox();
+		assert.ok(title.y >= 0 && title.y + title.height <= 844);
+		assert.equal(await page.evaluate(() => scrollY), 0);
+		assert.match(await page.locator("[data-position-status]").innerText(), changed ? /קטע הלימוד עודכן/ : /קטע הלימוד נטען/);
+		await page.unroute(endpoint);
 	}
 });

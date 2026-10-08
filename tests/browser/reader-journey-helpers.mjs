@@ -20,9 +20,26 @@ export async function openReader(page, origin, access = "free") {
 }
 
 export async function scrollToFraction(page, fraction) {
+	// Let loaded fonts and scroll restoration settle before the learner scrolls.
+	await page.evaluate(async () => {
+		await document.fonts.ready;
+		await new Promise(resolve => {
+			let previous, stable = 0;
+			const settle = () => {
+				const body = document.querySelector("[data-reading-body]");
+				const position = [scrollY, body.getBoundingClientRect().top, body.offsetHeight];
+				stable = previous?.every((value, index) => Math.abs(value - position[index]) < 0.5) ? stable + 1 : 0;
+				previous = position;
+				if (stable >= 2) resolve();
+				else requestAnimationFrame(settle);
+			};
+			requestAnimationFrame(settle);
+		});
+	});
 	await page.evaluate(fraction => {
 		const body = document.querySelector("[data-reading-body]");
-		window.scrollTo({ top: scrollY + body.getBoundingClientRect().top + fraction * Math.max(0, body.offsetHeight - innerHeight) - 20, behavior: "instant" });
+		const top = scrollY + body.getBoundingClientRect().top + fraction * Math.max(0, body.offsetHeight - innerHeight) - 20;
+		window.scrollTo({ top: fraction === 0 ? Math.floor(top) : top, behavior: "instant" });
 	}, fraction);
 	await page.waitForFunction(fraction => {
 		const body = document.querySelector("[data-reading-body]");
@@ -34,7 +51,7 @@ export async function scrollToFraction(page, fraction) {
 export async function saveAt(page, fraction, expectedStatus = 200, access = "free") {
 	await scrollToFraction(page, fraction);
 	const responsePromise = page.waitForResponse(response => response.url().endsWith(`${endpoint(access)}/position`) && response.request().method() === "POST");
-	await page.locator("[data-save-position]").evaluate(button => button.click());
+	if (await page.locator("[data-save-position]").isVisible()) await page.locator("[data-save-position]").click();
 	const response = await responsePromise;
 	assert.equal(response.status(), expectedStatus);
 	assert.equal(response.headers()["cache-control"], "private, no-store");

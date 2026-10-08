@@ -3,13 +3,14 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#f2f5fc" />
 		<meta
 			http-equiv="Content-Security-Policy"
 			content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
 		/>
 		<meta name="referrer" content="strict-origin-when-cross-origin" />
 		<meta name="robots" content="noindex" />
-		<title>שאלון: נהג חדש, רישוי ושיטת הניקוד - קורס נהיגה נכונה עם אורן בכור</title>
+		<title>שאלון: נהג חדש, רישוי ושיטת הניקוד - נהיגה נכונה עם אורן בכור</title>
 		<meta
 			name="description"
 			content="תרגול בנושא נהג חדש, רישוי ושיטת הניקוד עם שאלות ממאגר התאוריה, ציון והסברים לתשובות."
@@ -21,19 +22,19 @@
 		/>
 		<link
 			rel="preload"
-			href="../../../assets/fonts/varela-round-v21-hebrew.woff2"
+			href="../../../assets/fonts/fredoka-v17-hebrew.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
 		/>
 		<link
 			rel="preload"
-			href="../../../assets/fonts/varela-round-v21-latin.woff2"
+			href="../../../assets/fonts/fredoka-v17-latin.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
 		/>
-		<link rel="stylesheet" href="../../../css/base.css" />
+		<link rel="stylesheet" href="../../../css/base.css?v=3" />
 		<link rel="stylesheet" href="../../css/course.css" />
 		<link rel="stylesheet" href="../../css/lesson.css" />
 		<link rel="stylesheet" href="../../css/quiz.css" />
@@ -41,7 +42,7 @@
 		<script type="module" src="../../js/account-link.js"></script>
 	</head>
 	<body>
-		<a class="skip-link" href="#main">דילוג לשאלון</a>
+		<a class="skip-link" href="#main">דילוג לתוכן הראשי</a>
 		<header class="course-header">
 			<div class="course-shell course-header-inner">
 				<a
@@ -65,6 +66,9 @@
 						><small>עם אורן בכור</small></span
 					>
 				</a>
+				<nav class="course-header-nav" aria-label="ניווט ראשי">
+					<a class="course-library-link" href="../../">נושאי הלימוד</a>
+				</nav>
 				<button
 					class="course-profile"
 					type="button"
@@ -87,12 +91,12 @@
 			<div class="lesson-intro">
 				<h1 data-quiz-title>שאלון: נהג חדש, רישוי ושיטת הניקוד</h1>
 				<p>
-					17 שאלות בנושא. אפשר לעבור בין השאלות ולשנות תשובות לפני ההגשה. כדי לקבל
-					ציון יש לענות על כולן.
+					17 שאלות בנושא. זמן משוער: 17-26 דקות. ענו על השאלות וחזרו להסברים כדי
+					להבין את הבחירות.
 				</p>
 				<p class="quiz-note">
-					תרגול על בסיס מאגר התאוריה של משרד התחבורה. בסיום מוצגים הציון, התשובות
-					הנכונות והסברי הקורס.
+					תרגול על בסיס מאגר התאוריה של משרד התחבורה. בחישוב הציון נדרשת תשובה לכל
+					שאלה. לפני הבדיקה אפשר לשנות תשובות.
 				</p>
 			</div>
 			<p data-quiz-fallback>
@@ -176,9 +180,10 @@
 								בעל הרכב צריך לוודא שהאדם שנוהג בו מורשה לנהוג בסוג הרכב ושאין פסילה או
 								מגבלה המונעת זאת.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#new-driver">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0003 ממאגר משרד התחבורה.
+							מקור: שאלה 0003.
 						</p>
 					</fieldset>
 					<fieldset
@@ -241,12 +246,13 @@
 								שנים.
 							</p>
 							<p data-quiz-explanation>
-								המלווה צריך רישיון תקף לאותו סוג רכב ולענות על דרישות הגיל והוותק. למורה
-								נהיגה מוסמך יש חריג לדרישת הגיל.
+								המלווה צריך רישיון מתאים ובתוקף ולעמוד בדרישות הגיל והוותק. למורה נהיגה
+								מוסמך יש חריג לדרישת הגיל.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#new-driver">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							עיבוד לשאלת המקור 0004 ממאגר משרד התחבורה.
+							מקור: שאלה 0004 (נוסח מעודכן).
 						</p>
 					</fieldset>
 					<fieldset
@@ -258,7 +264,7 @@
 					>
 						<legend tabindex="-1">שאלה 3</legend>
 						<p id="question-0052-prompt">
-							&quot;שיטת הניקוד בעבירות תעבורה&quot; היא על פי החוק :
+							&quot;שיטת הניקוד בעבירות תעבורה&quot; היא על פי החוק:
 						</p>
 						<div class="quiz-answers">
 							<label
@@ -306,12 +312,13 @@
 								שנקבע להן ניקוד, לפי הדין.
 							</p>
 							<p data-quiz-explanation>
-								הניקוד נרשם לפי הדין גם בהליך המתאים להפרת תעבורה מנהלית. לא כל רישום
-								מחייב אותו אמצעי תיקון.
+								הנקודות נרשמות לפי הדין, גם בהליך של הפרת תעבורה מנהלית. הרישום אינו
+								מחייב תמיד אותו אמצעי תיקון.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#points">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							עיבוד לשאלת המקור 0052 ממאגר משרד התחבורה.
+							מקור: שאלה 0052 (נוסח מעודכן).
 						</p>
 					</fieldset>
 					<fieldset
@@ -373,9 +380,10 @@
 							<p data-quiz-explanation>
 								השלט צריך להיראות בבירור לנהגים שמאחור, בחלק התחתון של השמשה האחורית.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#new-driver">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0054 ממאגר משרד התחבורה.
+							מקור: שאלה 0054.
 						</p>
 					</fieldset>
 					<fieldset
@@ -435,9 +443,10 @@
 							<p data-quiz-explanation>
 								החובה נמשכת כל עוד חל מעמד נהג חדש, גם אם המעמד הוארך מעבר לשנתיים.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#new-driver">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0055 ממאגר משרד התחבורה.
+							מקור: שאלה 0055.
 						</p>
 					</fieldset>
 					<fieldset
@@ -496,12 +505,13 @@
 								התשובה הנכונה: כן, בתנאי שהנהג בקיא בהפעלתו ובשימוש בו.
 							</p>
 							<p data-quiz-explanation>
-								רישיון מתאים אינו תחליף להכרת אופן הפעלת הרכב. הנהיגה כפופה גם לתנאים
-								ולהגבלות שברישיון, כגון הגבלה לרכב אוטומטי.
+								רישיון מתאים אינו מחליף היכרות עם אופן הפעלת הרכב. מקיימים גם את התנאים
+								שברישיון, למשל הגבלה לנהיגה ברכב אוטומטי.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#new-driver">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0070 ממאגר משרד התחבורה.
+							מקור: שאלה 0070.
 						</p>
 					</fieldset>
 					<fieldset
@@ -563,9 +573,10 @@
 								אמצעי תיקון אינם מבטלים עונש של בית המשפט. אין להסיק מכך שכל אמצעי תיקון
 								דורש משפט קודם.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#points">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0127 ממאגר משרד התחבורה.
+							מקור: שאלה 0127.
 						</p>
 					</fieldset>
 					<fieldset
@@ -628,9 +639,10 @@
 								צבירת נקודות יכולה לחייב מבחנים, קורסים או פסילה בהתאם לדין ולהחלטת רשות
 								הרישוי.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#points">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0220 ממאגר משרד התחבורה.
+							מקור: שאלה 0220.
 						</p>
 					</fieldset>
 					<fieldset
@@ -691,12 +703,13 @@
 								ונספחים נדרשים.
 							</p>
 							<p data-quiz-explanation>
-								הפטור מנשיאת רישיונות אינו פטור מרישיון תקף. נושאים תעודה מזהה רשמית של
-								מדינת ישראל (תעודת זהות או דרכון), תעודת ביטוח ונספחים כנדרש.
+								הרישיונות צריכים להיות בתוקף גם כשלא נושאים אותם. נושאים תעודה מזהה רשמית
+								של מדינת ישראל (תעודת זהות או דרכון), וגם תעודת ביטוח ונספחים נדרשים.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#new-driver">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							עיבוד לשאלת המקור 0251 ממאגר משרד התחבורה.
+							מקור: שאלה 0251 (נוסח מעודכן).
 						</p>
 					</fieldset>
 					<fieldset
@@ -760,9 +773,10 @@
 								בתוכנית הרגילה שלושה חודשים של ליווי בכל שעות היממה ואחריהם שלושה חודשים
 								בלילה. נדרשת גם השלמת התוכנית והצהרה.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#new-driver">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							עיבוד לשאלת המקור 0266 ממאגר משרד התחבורה.
+							מקור: שאלה 0266 (נוסח מעודכן).
 						</p>
 					</fieldset>
 					<fieldset
@@ -823,9 +837,10 @@
 								החובה הרגילה חלה על נהג חדש צעיר שטרם מלאו לו 24. נהג חדש בן 24 ומעלה
 								פטור מחובת הליווי.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#new-driver">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							עיבוד לשאלת המקור 0267 ממאגר משרד התחבורה.
+							מקור: שאלה 0267 (נוסח מעודכן).
 						</p>
 					</fieldset>
 					<fieldset
@@ -887,9 +902,10 @@
 								לאחר הליווי המחייב, נהג חדש מתחת לגיל 21 מוגבל לשני נוסעים בלי מלווה
 								מתאים היושב לצדו.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#new-driver">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0268 ממאגר משרד התחבורה.
+							מקור: שאלה 0268.
 						</p>
 					</fieldset>
 					<fieldset
@@ -950,9 +966,10 @@
 							<p data-quiz-explanation>
 								מלווה תחת השפעת אלכוהול אינו יכול למלא את תפקיד הליווי כחוק.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#new-driver">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0296 ממאגר משרד התחבורה.
+							מקור: שאלה 0296.
 						</p>
 					</fieldset>
 					<fieldset
@@ -1010,12 +1027,13 @@
 								התשובה הנכונה: 16 שנים ו-9 חודשים.
 							</p>
 							<p data-quiz-explanation>
-								זהו גיל הזכאות המזערי לרישיון B, בכפוף לעמידה בכל יתר הדרישות. הוא שונה
-								מגיל תחילת הלימוד או התאוריה.
+								זהו הגיל המינימלי לקבלת רישיון B. עדיין נדרשת עמידה בשאר הדרישות. גיל
+								תחילת הלימוד או התאוריה הוא תנאי נפרד.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#new-driver">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							עיבוד לשאלת המקור 0333 ממאגר משרד התחבורה.
+							מקור: שאלה 0333 (נוסח מעודכן).
 						</p>
 					</fieldset>
 					<fieldset
@@ -1077,9 +1095,10 @@
 								רשות הרישוי מחליטה בענייני הרישיון לפי סמכויותיה. חוות דעת רפואית נבחנת
 								במסגרת הליך זה.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#official-information">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0335 ממאגר משרד התחבורה.
+							מקור: שאלה 0335.
 						</p>
 					</fieldset>
 					<fieldset
@@ -1140,9 +1159,10 @@
 								רשות הרישוי מוסמכת לחייב השתלמות בהתאם לתקנות, גם בלי הרשעה חדשה בעבירת
 								תעבורה.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#points">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0336 ממאגר משרד התחבורה.
+							מקור: שאלה 0336.
 						</p>
 					</fieldset>
 					<fieldset
@@ -1202,9 +1222,10 @@
 							<p data-quiz-explanation>
 								הגבלות הרשומות ברישיון הן תנאי לנהיגה ואינן המלצה לבחירת הנהג.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#new-driver">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 1641 ממאגר משרד התחבורה.
+							מקור: שאלה 1641.
 						</p>
 					</fieldset>
 				</form>
@@ -1217,13 +1238,13 @@
 				></p>
 				<div class="quiz-controls" data-quiz-controls hidden>
 					<button
-						class="quiz-previous"
+						class="quiz-previous btn btn-secondary"
 						type="button"
 						data-quiz-previous
 					>
 						השאלה הקודמת
 					</button>
-					<button class="course-button" type="button" data-quiz-next>
+					<button class="course-button btn btn-primary" type="button" data-quiz-next>
 						השאלה הבאה
 					</button>
 				</div>
@@ -1235,12 +1256,13 @@
 				hidden
 			>
 				<h2 id="quiz-result-title" tabindex="-1">תוצאות השאלון</h2>
+				<p class="quiz-score" data-quiz-score aria-hidden="true"></p>
 				<p data-quiz-count></p>
-				<p>אפשר לעבור על התשובות וההסברים או להתחיל ניסיון חדש.</p>
-				<p>זהו תרגול עצמי, ולא מבחן תאוריה רשמי. התוצאה אינה נשמרת בחשבון.</p>
+				<p data-quiz-threshold></p>
+				<p class="quiz-result-note">זהו תרגול עצמי, ולא מבחן תאוריה רשמי. התוצאה אינה נשמרת בחשבון.</p>
 				<div class="quiz-result-actions">
-					<button class="course-button" type="button" data-quiz-review>חזרה לשאלות</button>
-					<button class="quiz-previous" type="button" data-quiz-retry>ניסיון חדש</button>
+					<button class="course-button btn btn-primary" type="button" data-quiz-review>חזרה לשאלות</button>
+					<button class="quiz-previous btn btn-secondary" type="button" data-quiz-retry>ניסיון חדש</button>
 					<a data-lesson-link href="../#topic">חזרה לנושא הלימוד</a>
 				</div>
 			</section>
@@ -1251,14 +1273,17 @@
 					ברישיון <a href="https://opendefinition.org/licenses/cc-by/">Creative Commons Attribution</a>.
 				</p>
 				<p>
-					הותאמו העיצוב וסימני הפיסוק. שאלות שנוסחן עודכן מסומנות כעיבוד לשאלת
-					המקור. השיוך לנושאים וההסברים הם של הקורס, ואינם מטעם משרד התחבורה.
+					העיצוב והפיסוק הותאמו לאתר. שאלות שנוסחן עודכן מסומנות כך. השיוך לנושאים
+					וההסברים הם של הקורס, ואינם מטעם משרד התחבורה.
 				</p>
 			</aside>
 		</main>
 		<footer class="course-shell course-footer">
-			<p>אפשר לתרגל כל נושא בכל זמן. התרגול אינו נועל את המשך הלמידה.</p>
-			<a href="../../">לכל נושאי הלימוד</a>
+			<p>נהיגה נכונה עם אורן בכור.</p>
+			<nav aria-label="קישורי האתר">
+				<a href="../../../index.html">דף הבית</a>
+				<a href="../../">נושאי הלימוד</a>
+			</nav>
 		</footer>
 	</body>
 </html>

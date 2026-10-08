@@ -175,7 +175,7 @@ test("recovery session has only reset authority and invalidates all local user s
 test("signup sends PKCE without retaining or returning credentials", async t => {
 	const { client, provider } = await setup(t);
 	await client.request();
-	const result = await client.request("register", { ...credentials, password: "Abcdefg1!" });
+	const result = await client.request("register", { ...credentials, password: "twelve chars" });
 	assert.deepEqual(result.data, { ok: true });
 	const flow = provider.calls.find(call => call[0] === "signup")[2];
 	assert.ok(flow.challenge);
@@ -183,18 +183,43 @@ test("signup sends PKCE without retaining or returning credentials", async t => 
 	assert.equal((await client.request()).data.user, null);
 });
 
-test("registration enforces all password requirements before contacting the provider", async t => {
-	const { client, provider } = await setup(t);
+test("registration and reset require 12 Unicode characters and at most 72 UTF-8 bytes without composition", async t => {
+	const { client, provider } = await setup(t, { authLimit: 100 });
 	await client.request();
-	for (const password of ["Abcdef1!", "abcdefghijk1!", "ABCDEFGHIJK1!", "Abcdefghijkl!", "Abcdefghijk12", "Abcdefghijk1 ", "Abcdefghijk1א", "Abcdefg1!" + "a".repeat(120)]) {
-		const result = await client.request("register", { ...credentials, password });
-		assert.equal(result.response.status, 400, password);
-		assert.equal(result.data.error, "invalid_password");
+	for (const password of ["", "a".repeat(11), "a".repeat(73), "א".repeat(37), "😀".repeat(6), "😀".repeat(6) + "a".repeat(5), "😀".repeat(19), "a\u0301".repeat(25), "א".repeat(34) + "aaaaa"]) {
+		for (const route of ["register", "reset"]) {
+			const result = await client.request(route, route === "register" ? { ...credentials, password } : { password });
+			assert.equal(result.response.status, 400, `${route}: ${[...password].length}`);
+			assert.equal(result.data.error, "invalid_password");
+		}
 	}
 	assert.equal(provider.calls.length, 0);
-	for (const password of ["Abcdefg1!", "Abcdefg1#", "Abcdefg1%", "Abcdefg1!" + "a".repeat(119)]) {
+	for (const password of ["abcdefghijkl", "אבגדהוזחטיכל", "1".repeat(12), " ".repeat(12), "a".repeat(72), "א".repeat(36), "😀".repeat(12), "😀".repeat(18), "a\u0301".repeat(6), "א".repeat(34) + "aaaa"]) {
 		assert.equal((await client.request("register", { ...credentials, password })).response.status, 200);
 	}
+	for (const password of ["a".repeat(72), "א".repeat(36), "😀".repeat(18), "a\u0301".repeat(6)]) {
+		await client.request();
+		await client.request("recover", { email: credentials.email });
+		const flow = provider.calls.findLast(call => call[0] === "recover")[2];
+		await client.request(`callback?state=${flow.state}&code=valid-code`);
+		await client.request();
+		assert.equal((await client.request("reset", { password })).response.status, 200);
+		assert.ok(provider.calls.some(call => call[0] === "update" && call[2] === password));
+	}
+});
+
+test("login keeps existing short passwords and its 128 Unicode character maximum", async t => {
+	const { client, provider } = await setup(t);
+	const received = [];
+	const issue = provider.password;
+	provider.password = async (email, password) => { received.push(password); return issue(email, credentials.password); };
+	for (const password of ["😀", "😀".repeat(12), "😀".repeat(128)]) {
+		await client.request();
+		assert.equal((await client.request("login", { ...credentials, password })).response.status, 200);
+	}
+	await client.request();
+	assert.equal((await client.request("login", { ...credentials, password: "😀".repeat(129) })).data.error, "invalid_password");
+	assert.deepEqual(received, ["😀", "😀".repeat(12), "😀".repeat(128)]);
 });
 
 test("account rate limits reject excess requests before reaching the provider", async t => {

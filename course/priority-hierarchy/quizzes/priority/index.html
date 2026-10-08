@@ -3,13 +3,14 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#f2f5fc" />
 		<meta
 			http-equiv="Content-Security-Policy"
 			content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
 		/>
 		<meta name="referrer" content="strict-origin-when-cross-origin" />
 		<meta name="robots" content="noindex" />
-		<title>השאלון עבר - מדרג הציות</title>
+		<title>השאלון עבר - מדרג הציות - נהיגה נכונה עם אורן בכור</title>
 		<meta
 			name="description"
 			content="השאלון עבר לעמוד הנושא. אפשר להמשיך לשאלון החדש או לחזור לתוכן הלמידה."
@@ -21,26 +22,26 @@
 		/>
 		<link
 			rel="preload"
-			href="../../../../assets/fonts/varela-round-v21-hebrew.woff2"
+			href="../../../../assets/fonts/fredoka-v17-hebrew.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
 		/>
 		<link
 			rel="preload"
-			href="../../../../assets/fonts/varela-round-v21-latin.woff2"
+			href="../../../../assets/fonts/fredoka-v17-latin.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
 		/>
-		<link rel="stylesheet" href="../../../../css/base.css" />
+		<link rel="stylesheet" href="../../../../css/base.css?v=3" />
 		<link rel="stylesheet" href="../../../css/course.css" />
 		<link rel="stylesheet" href="../../../css/lesson.css" />
 		<link rel="stylesheet" href="../../../css/quiz.css" />
 		<script type="module" src="../../../js/account-link.js"></script>
 	</head>
 	<body>
-		<a class="skip-link" href="#main">דילוג לתוכן</a>
+		<a class="skip-link" href="#main">דילוג לתוכן הראשי</a>
 		<header class="course-header">
 			<div class="course-shell course-header-inner">
 				<a
@@ -64,6 +65,9 @@
 						><small>עם אורן בכור</small></span
 					>
 				</a>
+				<nav class="course-header-nav" aria-label="ניווט ראשי">
+					<a class="course-library-link" href="../../../">נושאי הלימוד</a>
+				</nav>
 				<button
 					class="course-profile"
 					type="button"
@@ -79,9 +83,16 @@
 			<div class="lesson-intro">
 				<h1>השאלון עבר לנושא מדרג הציות</h1>
 				<p>השאלון של הנושא זמין כעת בעמוד חדש.</p>
-				<a class="course-button" href="../../quiz/">לשאלון בנושא מדרג הציות</a>
+				<a class="course-button btn btn-primary" href="../../quiz/">לשאלון בנושא מדרג הציות</a>
 				<p><a class="lesson-back" href="../../#priority">חזרה לנושא הלימוד</a></p>
 			</div>
 		</main>
+		<footer class="course-shell course-footer">
+			<p>נהיגה נכונה עם אורן בכור.</p>
+			<nav aria-label="קישורי האתר">
+				<a href="../../../../index.html">דף הבית</a>
+				<a href="../../../">נושאי הלימוד</a>
+			</nav>
+		</footer>
 	</body>
 </html>

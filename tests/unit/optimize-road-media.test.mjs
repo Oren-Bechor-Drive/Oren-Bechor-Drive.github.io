@@ -42,6 +42,7 @@ async function publicationFixture(t) {
 		"assets/images/optimized/students-pass/obsolete.webp": "obsolete delivery",
 		"assets/images/optimized/students-pass/z-obsolete.webp": "another obsolete delivery",
 		"assets/images/optimized/favicon.png": "previous favicon",
+		"favicon.ico": "previous default favicon",
 	};
 	for (const [file, bytes] of Object.entries(files)) {
 		await mkdir(path.dirname(path.join(cwd, file)), { recursive: true });
@@ -116,9 +117,45 @@ for (const failure of ["corrupt later photo", "missing later asset"]) {
 	});
 }
 
-for (const failure of ["installation", "obsolete-file removal"]) {
-	test(`optimizer rolls back ${failure} and can retry`, async (t) => {
+test("a present optional source read failure preserves publication and can retry", async (t) => {
+	const { cwd, optimize } = await publicationFixture(t);
+	const source = "assets/images/stop-sign-red.png";
+	const delivery = "assets/images/optimized/stop-sign-red.webp";
+	await writeFile(path.join(cwd, source), await readFile(path.join(cwd, "assets/images/stop-sign.png")));
+	await writeFile(path.join(cwd, delivery), "previous red delivery");
+	const before = await snapshotFiles(cwd);
+	const preload = filesystemFailure(`
+		const read = fs.readFile;
+		fs.readFile = async (file, ...args) => {
+			if (path.resolve(file) === path.resolve('${source}'))
+				throw Object.assign(new Error('injected optional source read failure'), { code: 'ENOENT' });
+			return read(file, ...args);
+		};
+	`);
+	await assert.rejects(optimize(preload), /injected optional source read failure/);
+	assert.deepEqual(await snapshotFiles(cwd), before);
+	assert.equal((await readdir(cwd)).some((name) => name.startsWith(".road-media-")), false);
+	await optimize();
+	assert.equal(inspectImage(await readFile(path.join(cwd, delivery))).format, "webp");
+	assert.deepEqual(await readFile(path.join(cwd, source)), before[source]);
+});
+
+test("a genuinely absent optional source still permits media publication", async (t) => {
+	const { cwd, optimize } = await publicationFixture(t);
+	await assert.rejects(readFile(path.join(cwd, "assets/images/stop-sign-red.png")), { code: "ENOENT" });
+	await optimize();
+	assert.equal(inspectImage(await readFile(path.join(cwd, "assets/images/optimized/stop-sign.webp"))).format, "webp");
+	await assert.rejects(readFile(path.join(cwd, "assets/images/optimized/stop-sign-red.webp")), { code: "ENOENT" });
+});
+
+for (const [failure, existingIcon] of [
+	["installation", true],
+	["installation", false],
+	["obsolete-file removal", true],
+]) {
+	test(`optimizer rolls back ${failure}${existingIcon ? "" : " without a previous default icon"} and can retry`, async (t) => {
 		const { cwd, optimize } = await publicationFixture(t);
+		if (!existingIcon) await rm(path.join(cwd, "favicon.ico"));
 		const before = await snapshotFiles(cwd);
 		const preload = filesystemFailure(`
 			const rename = fs.rename;
@@ -142,6 +179,38 @@ for (const failure of ["installation", "obsolete-file removal"]) {
 		await assert.rejects(readFile(path.join(cwd, "assets/images/optimized/students-pass/obsolete.webp")), { code: "ENOENT" });
 	});
 }
+
+test("default ICO embeds the generated 32px PNG and follows course-icon changes", async (t) => {
+	const { cwd, optimize } = await publicationFixture(t);
+	let previousIcon;
+	for (const background of ["#264796", "#d83243"]) {
+		const original = await sharp({
+			create: { width: 48, height: 48, channels: 3, background },
+		}).png().toBuffer();
+		await writeFile(path.join(cwd, "assets/icons/course-icon.png"), original);
+		await optimize();
+		const icon = await readFile(path.join(cwd, "favicon.ico"));
+		const png = await readFile(path.join(cwd, "assets/images/optimized/favicon.png"));
+		assert.deepEqual(icon.subarray(0, 6), Buffer.from([0, 0, 1, 0, 1, 0]), "one image in an ICO container");
+		assert.equal(icon[6], 32);
+		assert.equal(icon[7], 32);
+		assert.equal(icon[8], 0);
+		assert.equal(icon[9], 0);
+		assert.equal(icon.readUInt16LE(10), 1);
+		assert.equal(icon.readUInt16LE(12), 32);
+		assert.equal(icon.readUInt32LE(14), png.length);
+		assert.equal(icon.readUInt32LE(18), 22);
+		assert.deepEqual(icon.subarray(22), png, "ICO and HTML favicon use identical PNG bytes");
+		const dimensions = inspectImage(png);
+		assert.equal(dimensions.width, 32);
+		assert.equal(dimensions.height, 32);
+		assert.deepEqual(await readFile(path.join(cwd, "assets/icons/course-icon.png")), original);
+		if (previousIcon) assert.notDeepEqual(icon, previousIcon, "changing course artwork refreshes the default icon");
+		previousIcon = icon;
+	}
+	await optimize();
+	assert.deepEqual(await readFile(path.join(cwd, "favicon.ico")), previousIcon, "unchanged input regenerates identical ICO bytes");
+});
 
 test("optimizer retains recovery files when rollback itself fails", async (t) => {
 	const { cwd, optimize } = await publicationFixture(t);
@@ -363,6 +432,7 @@ test("optimizer preserves originals, discovers later photos and synchronizes res
 	const before = await Promise.all(
 		names.map((name) => readFile(path.join(directory, name))),
 	);
+	const defaultIcon = await readFile(path.join(cwd, "favicon.ico"));
 	const obsolete = [
 		"1.webp",
 		"1-405.webp",
@@ -385,6 +455,7 @@ test("optimizer preserves originals, discovers later photos and synchronizes res
 		),
 		before,
 	);
+	assert.deepEqual(await readFile(path.join(cwd, "favicon.ico")), defaultIcon);
 	for (const name of obsolete)
 		await assert.rejects(
 			readFile(path.join(directory, "students-pass", name)),

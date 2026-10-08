@@ -35,7 +35,7 @@ for (const malformed of [false, true]) {
 		assert.notEqual(
 			document.activeElement,
 			road,
-			"The carousel must not capture focus",
+			"The static fallback does not offer inactive carousel controls",
 		);
 		const originalCars = [...road.querySelectorAll(".road-car > img")];
 		assert.ok(
@@ -74,7 +74,7 @@ for (const malformed of [false, true]) {
 		await new Promise((resolve) =>
 			dom.window.requestAnimationFrame(resolve),
 		);
-		assert.equal(document.activeElement, document.querySelector("#about"));
+		assert.equal(document.activeElement, document.querySelector("#topics"));
 		assert.equal(
 			warning.mock.callCount(),
 			1,

@@ -38,31 +38,25 @@ test("page introduces the instructor before the combined learning section", asyn
 	assert.deepEqual(navigationTargets, ["#instructor", "#about", "#faq"]);
 });
 
-test("unavailable course and social actions do not pretend to be working links", async () => {
+test("course actions and footer links open supplied public destinations", async () => {
 	const document = new JSDOM(await read("index.html")).window.document;
 	assert.equal(document.querySelector('a[href="#"]'), null);
 	for (const selector of [".nav-action", "#start .button"]) {
 		const action = document.querySelector(selector);
-		assert.equal(action.tagName, "BUTTON");
-		assert.equal(action.disabled, true);
-		assert.match(action.textContent, /אינה זמינה/);
+		assert.equal(action.tagName, "A");
+		assert.equal(action.getAttribute("href"), "course/");
+		assert.match(action.textContent, /נושאי הלימוד/);
 	}
+	assert.match(document.querySelector("#start p").textContent, /הסרטונים וההרשמה עדיין אינם זמינים/);
 	assert.equal(document.querySelector("[data-icon-kit]"), null);
-	const profiles = [...document.querySelectorAll(".footer-social > span")];
-	assert.deepEqual(
-		profiles.map((item) => item.textContent.trim()),
-		["אינסטגרם", "טיקטוק", "יוטיוב", "וואטסאפ"],
-	);
-	for (const profile of profiles) {
-		assert.equal(profile.getAttribute("aria-disabled"), "true");
-		const image = profile.querySelector("img");
-		assert.equal(image.getAttribute("alt"), "");
-		assert.ok((await read(image.getAttribute("src"))).includes("<svg"));
-	}
-	assert.match(
-		document.querySelector("#contact-status").textContent,
-		/יתווספו בהמשך/,
-	);
+	const social = document.querySelector(".footer-social");
+	assert.equal(social.getAttribute("aria-describedby"), "contact-status");
+	assert.deepEqual([...social.querySelectorAll(':scope > span[aria-disabled="true"] > span')].map(item => item.textContent), ["אינסטגרם", "טיקטוק", "יוטיוב", "וואטסאפ"]);
+	assert.equal(social.querySelector("a, button, [tabindex]"), null);
+	assert.match(document.querySelector("#contact-status").textContent, /קישורי יצירת הקשר והרשתות החברתיות יתווספו בהמשך/);
+	const footerLinks = [...document.querySelectorAll(".site-footer nav a")];
+	assert.deepEqual(footerLinks.map(link => link.getAttribute("href")), ["./", "course/"]);
+	assert.ok(document.querySelector(".site-footer p").textContent.includes("אורן בכור"));
 });
 
 test("course icon brands the header and browser tab", async () => {
@@ -83,14 +77,14 @@ test("course icon brands the header and browser tab", async () => {
 	assert.equal(favicon?.getAttribute("type"), "image/png");
 });
 
-test("page uses Varela Round as its global typeface", async () => {
+test("page uses Fredoka with supplied real weights as its global typeface", async () => {
 	const css = await read("css/base.css");
 	const { window } = new JSDOM(
 		`<!doctype html><style>${css}</style><body></body>`,
 	);
 	const bodyFont = window.getComputedStyle(window.document.body).fontFamily;
 
-	assert.match(bodyFont, /^"Varela Round",/);
+	assert.match(bodyFont, /^"Fredoka",/);
 });
 
 test("mobile and Windows icons reference PNG files at their declared dimensions", async () => {
@@ -140,8 +134,8 @@ test("topic controls keep their native button semantics", async () => {
 				control.getAttribute("role") === "button",
 		);
 	}
-	assert.equal(
-		document.querySelector(".topic-rail").getAttribute("role"),
-		"group",
-	);
+	assert.equal(document.querySelector(".topic-rail").hidden, true);
+	assert.equal(controls.length, 10, "all library topics have desktop controls");
+	assert.equal(document.querySelectorAll("[data-topic-summaries] h3 a").length, 10);
+	assert.equal(document.querySelector("[data-topic-summaries]").hidden, false);
 });

@@ -3,34 +3,40 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#f2f5fc" />
 		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'" />
 		<meta name="referrer" content="no-referrer" />
 		<meta name="robots" content="noindex" />
 		<title>החשבון שלכם - נהיגה נכונה עם אורן בכור</title>
 		<meta name="description" content="כאן אפשר לראות את פרטי ההתחברות ולחזור לנושאי הלימוד." />
 		<link rel="icon" href="../assets/images/optimized/favicon.png?v=2" type="image/png" />
-		<link rel="preload" href="../assets/fonts/varela-round-v21-hebrew.woff2" as="font" type="font/woff2" crossorigin />
-		<link rel="preload" href="../assets/fonts/varela-round-v21-latin.woff2" as="font" type="font/woff2" crossorigin />
-		<link rel="stylesheet" href="../css/base.css" />
+		<link rel="preload" href="../assets/fonts/fredoka-v17-hebrew.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="../assets/fonts/fredoka-v17-latin.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="stylesheet" href="../css/base.css?v=3" />
 		<link rel="stylesheet" href="account.css" />
 		<script type="module" src="account.js"></script>
 	</head>
 	<body data-account="account">
-		<a class="skip-link" href="#main">דילוג לתוכן</a>
+		<a class="skip-link" href="#main">דילוג לתוכן הראשי</a>
 		<main id="main" class="account-shell" tabindex="-1">
 			<a class="account-back" href="../index.html">חזרה לדף הבית</a>
+			<a class="account-brand" href="../index.html"><img src="../assets/images/optimized/course-icon.webp" srcset="../assets/images/optimized/course-icon.webp 42w, ../assets/images/optimized/course-icon-84.webp 84w" sizes="42px" width="42" height="42" alt="" /><span class="account-brand-copy"><strong>נהיגה נכונה</strong><small>עם אורן בכור</small></span></a>
 			<section class="account-card" aria-labelledby="account-heading">
 				<h1 id="account-heading">החשבון שלכם</h1>
 				<p class="account-intro">כאן אפשר לראות את פרטי ההתחברות ולחזור לנושאי הלימוד.</p>
 				<noscript><p class="account-feedback">כדי להתחבר לחשבון יש להפעיל JavaScript בדפדפן.</p></noscript>
+				<div class="account-feedback-space">
 				<p class="account-feedback" role="alert" tabindex="-1" hidden></p>
 				<p class="account-feedback" role="status" aria-live="polite" hidden></p>
-				<button class="account-action account-action-secondary account-retry" type="button" data-retry hidden>ניסיון נוסף</button>
+				<p class="account-hint" data-startup role="status" hidden>בודקים את החיבור לשירות...</p>
+				</div>
+				<p class="account-links" data-unavailable-library hidden><a href="../course/">לנושאי הלימוד ולתרגול החינמי</a></p>
+				<button class="account-action btn btn-secondary account-action-secondary account-retry" type="button" data-retry hidden>ניסיון נוסף</button>
 				<div data-account-details hidden>
 					<div class="account-detail"><p class="account-hint">כתובת האימייל</p><p class="account-email" data-email dir="ltr"></p></div>
-					<a class="account-action" href="../course/">לנושאי הקורס</a>
-					<p class="account-links"><a href="learning.html">ללמידה ולתרגול</a></p>
-					<p class="account-links"><button class="account-action account-action-secondary" type="button" data-logout disabled>יציאה מהחשבון</button></p>
+					<a class="account-action btn btn-primary" href="learning.html">ללמידה ולתרגול</a>
+					<p class="account-links"><a href="../course/">לנושאי הלימוד ולתרגול החינמי</a></p>
+					<p class="account-links"><button class="account-text-action" type="button" data-logout disabled>יציאה מהחשבון</button></p>
 				</div>
 			</section>
 			<p class="account-footer">נהיגה נכונה עם אורן בכור</p>

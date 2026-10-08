@@ -191,7 +191,7 @@ test("numbered photos extend beyond the car count and repeat in numeric order", 
 	);
 	assert.ok(
 		photos.every(
-			(i) => !i.draggable && i.alt && i.width === 640 && i.height === 480,
+			(i) => !i.draggable && i.alt === "" && i.getAttribute("aria-hidden") === "true" && i.width === 640 && i.height === 480,
 		),
 	);
 	assert.equal(groups[1].innerHTML, groups[0].innerHTML);

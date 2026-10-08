@@ -1,10 +1,10 @@
 import { createLearnerAccounts } from "./learner-accounts.mjs";
-import { registrationPasswordChecks } from "../account/password-policy.js";
+import { inspectPassword } from "../account/password-policy.js";
 
 const fail = (status, code) => { throw Object.assign(new Error(code), { status, code }); };
 const fields = {
 	login: ["email", "password"], register: ["email", "password"], recover: ["email"],
-	reset: ["password"], google: [], logout: [],
+	reset: ["password"], google: [], logout: [], resend: [],
 	position: ["contentVersionId", "position", "expectedRevision"],
 	quizSave: ["answers", "expectedRevision"], quizSubmit: ["expectedRevision"], empty: [],
 };
@@ -29,10 +29,7 @@ async function input(req, route) {
 	}
 	if (fields[route].includes("password")) {
 		if (typeof body.password !== "string") fail(400, "invalid_password");
-		const valid = route === "register"
-			? Object.values(registrationPasswordChecks(body.password)).every(Boolean)
-			: body.password.length >= (route === "login" ? 1 : 12) && body.password.length <= 128;
-		if (!valid) fail(400, "invalid_password");
+		if (inspectPassword(body.password, { existing: route === "login" }).error) fail(400, "invalid_password");
 	}
 	if (route === "position" && (typeof body.contentVersionId !== "string" || !uuid.test(body.contentVersionId)
 		|| !Number.isInteger(body.position) || body.position < 0 || body.position > 10000
@@ -60,6 +57,12 @@ export function createGateway({ origin, provider = null, media = null, googleEna
 		if (result.cookie) setCookie(res, result.cookie.token, result.cookie.maxAge);
 		return result.redirect ? redirect(res, result.redirect) : json(res, result.data, result.status);
 	}
+	async function readMutation(req, token, bodyType, limiter) {
+		if (req.headers.origin !== origin || req.headers["content-type"]?.split(";")[0].trim() !== "application/json"
+			|| !await accounts.acceptsRequest(token, req.headers["x-csrf-token"])) fail(403, "request_rejected");
+		if (limiter && !await limiter(req.socket.remoteAddress)) fail(429, "rate_limited");
+		return input(req, bodyType);
+	}
 	return async function handle(req, res) {
 		res.setHeader("Cache-Control", "private, no-store");
 		res.setHeader("Pragma", "no-cache");
@@ -83,8 +86,7 @@ export function createGateway({ origin, provider = null, media = null, googleEna
 				const [, sectionId, accessLevel, position] = match;
 				if (position) {
 					if (req.method !== "POST") fail(405, "method_not_allowed");
-					if (req.headers.origin !== origin || req.headers["content-type"]?.split(";")[0].trim() !== "application/json" || !await accounts.acceptsRequest(token, req.headers["x-csrf-token"])) fail(403, "request_rejected");
-					return respond(res, await accounts.saveSectionPosition(token, sectionId, accessLevel, await input(req, "position")));
+					return respond(res, await accounts.saveSectionPosition(token, sectionId, accessLevel, await readMutation(req, token, "position")));
 				}
 				if (req.method !== "GET") fail(405, "method_not_allowed");
 				const result = await accounts.readSection(token, sectionId, accessLevel);
@@ -126,8 +128,7 @@ export function createGateway({ origin, provider = null, media = null, googleEna
 				if (url.search && (operation !== "quizHistory" || [...url.searchParams.keys()].some(key => key !== "before") || url.searchParams.getAll("before").length !== 1)) fail(400, "invalid_input");
 				if (req.method !== (bodyType ? "POST" : "GET")) fail(405, "method_not_allowed");
 				if (bodyType) {
-					if (req.headers.origin !== origin || req.headers["content-type"]?.split(";")[0].trim() !== "application/json" || !await accounts.acceptsRequest(token, req.headers["x-csrf-token"])) fail(403, "request_rejected");
-					const body = await input(req, bodyType);
+					const body = await readMutation(req, token, bodyType);
 					if (bodyType !== "empty") args.push(body);
 				}
 				return respond(res, await accounts.learning(token, operation, ...args));
@@ -139,11 +140,9 @@ export function createGateway({ origin, provider = null, media = null, googleEna
 			if (route === "callback" && req.method === "GET") return respond(res, await accounts.completeCallback(token, {
 				state: url.searchParams.get("state"), code: url.searchParams.get("code"), error: url.searchParams.has("error"),
 			}));
-			if (!["login", "register", "recover", "reset", "google", "logout"].includes(route)) fail(404, "not_found");
+			if (!["login", "register", "recover", "reset", "google", "logout", "resend"].includes(route)) fail(404, "not_found");
 			if (req.method !== "POST") fail(405, "method_not_allowed");
-			if (req.headers.origin !== origin || req.headers["content-type"]?.split(";")[0].trim() !== "application/json" || !await accounts.acceptsRequest(token, req.headers["x-csrf-token"])) fail(403, "request_rejected");
-			if (!await mutationLimit(req.socket.remoteAddress)) fail(429, "rate_limited");
-			const body = await input(req, route);
+			const body = await readMutation(req, token, route, mutationLimit);
 			return respond(res, await accounts.perform(token, route, body));
 		} catch (error) {
 			if (res.writableEnded || res.destroyed) return;

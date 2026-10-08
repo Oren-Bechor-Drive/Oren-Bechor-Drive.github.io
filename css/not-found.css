@@ -17,7 +17,7 @@ body {
 	flex-direction: column;
 	align-items: center;
 	text-align: center;
-	animation: error-message-enter 280ms var(--ease-out) both;
+	animation: error-message-enter var(--duration-reveal) var(--ease-out) both;
 }
 
 .error-message:focus-within {
@@ -47,9 +47,9 @@ body {
 	border-radius: 50%;
 	color: var(--primary);
 	direction: ltr;
-	font-size: clamp(76px, 8vw, 104px);
+	font-size: clamp(3.5rem, 5vw, 4.75rem);
 	font-variant-numeric: tabular-nums;
-	font-weight: 700;
+	font-weight: 600;
 	letter-spacing: -0.03em;
 	line-height: 1;
 }
@@ -57,13 +57,13 @@ body {
 .error-kicker {
 	margin: 28px 0 8px;
 	color: var(--secondary);
-	font-size: 15px;
-	font-weight: 700;
+	font-size: var(--font-label);
+	font-weight: 600;
 }
 
 .error-message h1 {
 	margin: 0;
-	font-size: clamp(36px, 5vw, 56px);
+	font-size: clamp(2.25rem, 5vw, 3.5rem);
 	letter-spacing: -0.025em;
 	line-height: 1.14;
 }
@@ -72,7 +72,7 @@ body {
 	max-width: 52ch;
 	margin: 16px 0 0;
 	color: var(--text-soft);
-	font-size: 18px;
+	font-size: 1.125rem;
 	line-height: 1.7;
 }
 
@@ -85,16 +85,7 @@ body {
 }
 
 .recovery-actions a {
-	display: inline-flex;
-	min-height: 48px;
-	align-items: center;
-	justify-content: center;
-	padding: 11px 22px;
-	border-radius: var(--radius-control);
-	font-weight: 700;
-	line-height: 1.25;
-	text-decoration: none;
-	transition: transform 140ms var(--ease-out);
+	transition: transform var(--duration-fast) var(--ease-out);
 }
 
 .recovery-actions a:active:not(:focus-visible) {
@@ -107,7 +98,7 @@ body {
 
 .recovery-primary {
 	background: var(--primary);
-	box-shadow: 0 8px 24px rgb(38 71 150 / 0.13);
+	box-shadow: var(--shadow-action);
 	color: var(--on-primary);
 }
 
@@ -135,11 +126,11 @@ body {
 	.error-code {
 		width: clamp(176px, 56vw, 208px);
 		border-width: 22px;
-		font-size: clamp(76px, 24vw, 88px);
+		font-size: clamp(3.5rem, 17vw, 4rem);
 	}
 
 	.error-explanation {
-		font-size: 16px;
+		font-size: var(--font-body);
 	}
 
 	.recovery-actions {
@@ -185,5 +176,11 @@ body {
 
 	to {
 		opacity: 1;
+	}
+}
+
+@media (forced-colors: active) {
+	.recovery-actions a {
+		border: 1px solid transparent;
 	}
 }

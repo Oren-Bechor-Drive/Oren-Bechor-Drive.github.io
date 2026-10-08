@@ -3,16 +3,17 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#f2f5fc" />
 		<meta
 			http-equiv="Content-Security-Policy"
 			content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
 		/>
 		<meta name="referrer" content="strict-origin-when-cross-origin" />
 		<meta name="robots" content="noindex" />
-		<title>נושאי הלימוד - קורס נהיגה נכונה עם אורן בכור</title>
+		<title>נושאי הלימוד - נהיגה נכונה עם אורן בכור</title>
 		<meta
 			name="description"
-			content="תצוגה מקדימה של ספריית נושאי הקורס של אורן בכור. בוחרים נושא, מעיינים בתכנים המתוכננים וחוזרים לכל נושא בכל זמן."
+			content="נושאי הלימוד בקורס נהיגה נכונה עם אורן בכור. בוחרים נושא, קוראים ומתרגלים בשאלון פתוח, וחוזרים לכל נושא בכל זמן."
 		/>
 		<link
 			rel="icon"
@@ -21,25 +22,25 @@
 		/>
 		<link
 			rel="preload"
-			href="../assets/fonts/varela-round-v21-hebrew.woff2"
+			href="../assets/fonts/fredoka-v17-hebrew.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
 		/>
 		<link
 			rel="preload"
-			href="../assets/fonts/varela-round-v21-latin.woff2"
+			href="../assets/fonts/fredoka-v17-latin.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
 		/>
-		<link rel="stylesheet" href="../css/base.css" />
+		<link rel="stylesheet" href="../css/base.css?v=3" />
 		<link rel="stylesheet" href="css/course.css" />
 		<script type="module" src="js/course-library.js"></script>
 		<script type="module" src="js/account-link.js"></script>
 	</head>
 	<body>
-		<a class="skip-link" href="#main">דילוג לנושאי הלימוד</a>
+		<a class="skip-link" href="#main">דילוג לתוכן הראשי</a>
 		<header class="course-header">
 			<div class="course-shell course-header-inner">
 				<a
@@ -60,6 +61,11 @@
 					/>
 					<span><strong>נהיגה נכונה</strong><small>עם אורן בכור</small></span>
 				</a>
+				<nav class="course-header-nav" aria-label="ניווט ראשי">
+					<a class="course-library-link" href="./" aria-current="page"
+						>נושאי הלימוד</a
+					>
+				</nav>
 				<button
 					class="course-profile"
 					type="button"
@@ -74,16 +80,20 @@
 		<main id="main" class="course-shell" tabindex="-1">
 			<div class="library-intro">
 				<h1>מה תרצו ללמוד היום?</h1>
-				<p>בוחרים את מה שמעניין אתכם. כל נושא, בכל זמן ובקצב שלכם.</p>
+				<p>אפשר ללמוד בכל סדר ולחזור לנושא לפני השיעור הבא.</p>
+				<p class="library-start">
+					לא בטוחים מאיפה להתחיל?
+					<a href="learning-foundations/">התחילו ב'יסודות הנהיגה והלמידה'.</a>
+				</p>
 			</div>
 			<form class="library-search" role="search" hidden>
-				<label for="topic-search">חיפוש בנושא או בתוכן שלו</label>
+				<label for="topic-search">חיפוש נושא</label>
 				<div class="search-field">
 					<span class="search-icon" aria-hidden="true"></span>
 					<input
 						id="topic-search"
 						type="search"
-						placeholder="למשל: מעגל תנועה, פנייה שמאלה, תמרורים"
+						placeholder="למשל: מעגל תנועה"
 						autocomplete="off"
 						spellcheck="false"
 					/>
@@ -127,7 +137,7 @@
 						class="subject"
 						name="course-topics"
 						id="learning-foundations"
-						data-keywords="מבוא הגדרות תאוריה תיאוריה פרקטיקה סיכום מסקנות"
+						data-keywords="מבוא הגדרות תאוריה תיאוריה מבחן תאוריה פרקטיקה סיכום מסקנות"
 					>
 						<summary>
 							<h3>יסודות הנהיגה והלמידה</h3>
@@ -141,16 +151,17 @@
 							></span>
 						</summary>
 						<div class="subject-outline">
-							<h4>מה נלמד בנושא?</h4>
-							<ul>
-								<li>הגדרות ומושגי יסוד בנהיגה</li>
-								<li>תיאוריה מול פרקטיקה ותרבות נהיגה נכונה</li>
-								<li>למידה מטעויות ומסרטונים של מצבי נהיגה אמיתיים</li>
-								<li>חזרה על הנלמד בין שיעורי הנהיגה והכנת שאלות למורה</li>
-								<li>סיכום ומסקנות מהקורס</li>
-							</ul>
+							<p
+								class="subject-meta"
+								data-section-count="3"
+								data-reading-minutes="5"
+							>
+								<span>3 פרקי קריאה</span> /
+								<span data-topic-question-count="">9 שאלות לתרגול</span> /
+								<span>כ-5 דקות קריאה</span>
+							</p>
 							<a
-								class="course-button subject-learn"
+								class="btn btn-primary course-button subject-learn"
 								href="learning-foundations/"
 								aria-label="ללמידה: יסודות הנהיגה והלמידה"
 								>ללמידה
@@ -159,8 +170,18 @@
 									aria-hidden="true"
 								></span
 							></a>
-							<p>
-								מושגי היסוד, הפרק על תיאוריה ופרקטיקה והסיכום זמינים לקריאה.
+
+							<h4>מה נלמד בנושא?</h4>
+							<ul>
+								<li>הגדרות ומושגי יסוד בנהיגה</li>
+								<li>תיאוריה מול פרקטיקה ותרבות נהיגה נכונה</li>
+								<li>למידה מטעויות ומסרטונים של מצבי נהיגה אמיתיים</li>
+								<li>חזרה על הנלמד בין שיעורי הנהיגה והכנת שאלות למורה</li>
+								<li>סיכום ומסקנות מהקורס</li>
+							</ul>
+
+							<p class="subject-availability">
+								אפשר לקרוא ולתרגל. סרטונים ותרשימים יתווספו בהמשך.
 							</p>
 						</div>
 					</details>
@@ -182,6 +203,26 @@
 							></span>
 						</summary>
 						<div class="subject-outline">
+							<p
+								class="subject-meta"
+								data-section-count="2"
+								data-reading-minutes="3"
+							>
+								<span>2 פרקי קריאה</span> /
+								<span data-topic-question-count="">14 שאלות לתרגול</span> /
+								<span>כ-3 דקות קריאה</span>
+							</p>
+							<a
+								class="btn btn-primary course-button subject-learn"
+								href="signs-and-speed/"
+								aria-label="ללמידה: תמרורים ומהירויות"
+								>ללמידה
+								<span
+									class="direction-icon icon-arrow-left-long"
+									aria-hidden="true"
+								></span
+							></a>
+
 							<h4>מה נלמד בנושא?</h4>
 							<ul>
 								<li>
@@ -204,17 +245,10 @@
 									תמרור המוצב על רמזור ומקרים של אי-ציות לתמרור או מהירות מופרזת
 								</li>
 							</ul>
-							<a
-								class="course-button subject-learn"
-								href="signs-and-speed/"
-								aria-label="ללמידה: תמרורים ומהירויות"
-								>ללמידה
-								<span
-									class="direction-icon icon-arrow-left-long"
-									aria-hidden="true"
-								></span
-							></a>
-							<p>ההסברים זמינים לקריאה. הסרטונים וההמחשות יתווספו בהמשך.</p>
+
+							<p class="subject-availability">
+								אפשר לקרוא ולתרגל. סרטונים ותרשימים יתווספו בהמשך.
+							</p>
 						</div>
 					</details>
 					<details
@@ -235,6 +269,26 @@
 							></span>
 						</summary>
 						<div class="subject-outline">
+							<p
+								class="subject-meta"
+								data-section-count="2"
+								data-reading-minutes="2"
+							>
+								<span>2 פרקי קריאה</span> /
+								<span data-topic-question-count="">15 שאלות לתרגול</span> /
+								<span>כ-2 דקות קריאה</span>
+							</p>
+							<a
+								class="btn btn-primary course-button subject-learn"
+								href="roads-and-lanes/"
+								aria-label="ללמידה: זיהוי כבישים ונתיבים"
+								>ללמידה
+								<span
+									class="direction-icon icon-arrow-left-long"
+									aria-hidden="true"
+								></span
+							></a>
+
 							<h4>מה נלמד בנושא?</h4>
 							<ul>
 								<li>זיהוי כביש חד-סטרי ודו-סטרי לפי תמרורים ומבנה הדרך</li>
@@ -245,17 +299,10 @@
 								<li>נתיב לפנייה ימינה או שמאלה בלבד</li>
 								<li>בדיקת הנתיב הסמוך לפני השתלבות ומעבר נתיב</li>
 							</ul>
-							<a
-								class="course-button subject-learn"
-								href="roads-and-lanes/"
-								aria-label="ללמידה: זיהוי כבישים ונתיבים"
-								>ללמידה
-								<span
-									class="direction-icon icon-arrow-left-long"
-									aria-hidden="true"
-								></span
-							></a>
-							<p>ההסברים זמינים לקריאה. התמונות והתרשימים יתווספו בהמשך.</p>
+
+							<p class="subject-availability">
+								אפשר לקרוא ולתרגל. סרטונים ותרשימים יתווספו בהמשך.
+							</p>
 						</div>
 					</details>
 					<details
@@ -276,6 +323,26 @@
 							></span>
 						</summary>
 						<div class="subject-outline">
+							<p
+								class="subject-meta"
+								data-section-count="4"
+								data-reading-minutes="7"
+							>
+								<span>4 פרקי קריאה</span> /
+								<span data-topic-question-count="">16 שאלות לתרגול</span> /
+								<span>כ-7 דקות קריאה</span>
+							</p>
+							<a
+								class="btn btn-primary course-button subject-learn"
+								href="right-of-way/"
+								aria-label="ללמידה: זכויות קדימה ופניות"
+								>ללמידה
+								<span
+									class="direction-icon icon-arrow-left-long"
+									aria-hidden="true"
+								></span
+							></a>
+
 							<h4>מה נלמד בנושא?</h4>
 							<ul>
 								<li>
@@ -310,18 +377,9 @@
 									פרסה
 								</li>
 							</ul>
-							<a
-								class="course-button subject-learn"
-								href="right-of-way/"
-								aria-label="ללמידה: זכויות קדימה ופניות"
-								>ללמידה
-								<span
-									class="direction-icon icon-arrow-left-long"
-									aria-hidden="true"
-								></span
-							></a>
-							<p>
-								הסברים ושאלון תרגול זמינים. הסרטונים יתווספו בהמשך.
+
+							<p class="subject-availability">
+								אפשר לקרוא ולתרגל. סרטונים ותרשימים יתווספו בהמשך.
 							</p>
 						</div>
 					</details>
@@ -343,16 +401,17 @@
 							></span>
 						</summary>
 						<div class="subject-outline">
-							<h4>מה נלמד בנושא?</h4>
-							<ul>
-								<li>הוראת שוטר שמכוון את התנועה</li>
-								<li>רמזור תקין ותמרור שמוצב לידו</li>
-								<li>רמזור כבוי או צהוב מהבהב</li>
-								<li>תמרורי זכות קדימה וכללי התנועה בצומת</li>
-								<li>בדיקת הולכי רגל ותנועה גם כאשר מותר להתקדם</li>
-							</ul>
+							<p
+								class="subject-meta"
+								data-section-count="1"
+								data-reading-minutes="2"
+							>
+								<span>פרק קריאה אחד</span> /
+								<span data-topic-question-count="">15 שאלות לתרגול</span> /
+								<span>כ-2 דקות קריאה</span>
+							</p>
 							<a
-								class="course-button subject-learn"
+								class="btn btn-primary course-button subject-learn"
 								href="priority-hierarchy/"
 								aria-label="ללמידה: מדרג הציות"
 								>ללמידה
@@ -361,7 +420,19 @@
 									aria-hidden="true"
 								></span
 							></a>
-							<p>ההסבר ושאלון התרגול זמינים בתצוגה מקדימה.</p>
+
+							<h4>מה נלמד בנושא?</h4>
+							<ul>
+								<li>הוראת שוטר שמכוון את התנועה</li>
+								<li>רמזור תקין ותמרור שמוצב לידו</li>
+								<li>רמזור כבוי או צהוב מהבהב</li>
+								<li>תמרורי זכות קדימה וכללי התנועה בצומת</li>
+								<li>בדיקת הולכי רגל ותנועה גם כאשר מותר להתקדם</li>
+							</ul>
+
+							<p class="subject-availability">
+								אפשר לקרוא ולתרגל. סרטונים ותרשימים יתווספו בהמשך.
+							</p>
 						</div>
 					</details>
 					<details
@@ -382,6 +453,26 @@
 							></span>
 						</summary>
 						<div class="subject-outline">
+							<p
+								class="subject-meta"
+								data-section-count="3"
+								data-reading-minutes="3"
+							>
+								<span>3 פרקי קריאה</span> /
+								<span data-topic-question-count="">12 שאלות לתרגול</span> /
+								<span>כ-3 דקות קריאה</span>
+							</p>
+							<a
+								class="btn btn-primary course-button subject-learn"
+								href="roundabouts/"
+								aria-label="ללמידה: מעגלי תנועה וצמתים"
+								>ללמידה
+								<span
+									class="direction-icon icon-arrow-left-long"
+									aria-hidden="true"
+								></span
+							></a>
+
 							<h4>מה נלמד בנושא?</h4>
 							<ul>
 								<li>התקרבות למעגל תנועה חד-נתיבי ומעבר בו</li>
@@ -402,17 +493,10 @@
 									המרחק מהצומת
 								</li>
 							</ul>
-							<a
-								class="course-button subject-learn"
-								href="roundabouts/"
-								aria-label="ללמידה: מעגלי תנועה וצמתים"
-								>ללמידה
-								<span
-									class="direction-icon icon-arrow-left-long"
-									aria-hidden="true"
-								></span
-							></a>
-							<p>ההסברים זמינים לקריאה. הסרטונים יתווספו בהמשך.</p>
+
+							<p class="subject-availability">
+								אפשר לקרוא ולתרגל. סרטונים ותרשימים יתווספו בהמשך.
+							</p>
 						</div>
 					</details>
 					<details
@@ -433,15 +517,17 @@
 							></span>
 						</summary>
 						<div class="subject-outline">
-							<h4>מה נלמד בנושא?</h4>
-							<ul>
-								<li>איסורי עקיפה וסימון קו הפרדה רצוף</li>
-								<li>עקיפה כששדה הראייה מוגבל</li>
-								<li>רכב שעצר לפני מעבר חצייה</li>
-								<li>זיהוי תמרור האוסר עקיפה</li>
-							</ul>
+							<p
+								class="subject-meta"
+								data-section-count="1"
+								data-reading-minutes="2"
+							>
+								<span>פרק קריאה אחד</span> /
+								<span data-topic-question-count="">17 שאלות לתרגול</span> /
+								<span>כ-2 דקות קריאה</span>
+							</p>
 							<a
-								class="course-button subject-learn"
+								class="btn btn-primary course-button subject-learn"
 								href="overtaking/"
 								aria-label="ללמידה: עקיפה ואיסורי עקיפה"
 								>ללמידה
@@ -450,7 +536,18 @@
 									aria-hidden="true"
 								></span
 							></a>
-							<p>ההסברים זמינים לקריאה. התמונות והתרשימים יתווספו בהמשך.</p>
+
+							<h4>מה נלמד בנושא?</h4>
+							<ul>
+								<li>איסורי עקיפה וסימון קו הפרדה רצוף</li>
+								<li>עקיפה כששדה הראייה מוגבל</li>
+								<li>רכב שעצר לפני מעבר חצייה</li>
+								<li>זיהוי תמרור האוסר עקיפה</li>
+							</ul>
+
+							<p class="subject-availability">
+								אפשר לקרוא ולתרגל. סרטונים ותרשימים יתווספו בהמשך.
+							</p>
 						</div>
 					</details>
 					<details
@@ -471,6 +568,26 @@
 							></span>
 						</summary>
 						<div class="subject-outline">
+							<p
+								class="subject-meta"
+								data-section-count="3"
+								data-reading-minutes="2"
+							>
+								<span>3 פרקי קריאה</span> /
+								<span data-topic-question-count="">11 שאלות לתרגול</span> /
+								<span>כ-2 דקות קריאה</span>
+							</p>
+							<a
+								class="btn btn-primary course-button subject-learn"
+								href="trip-planning/"
+								aria-label="ללמידה: תכנון נסיעה"
+								>ללמידה
+								<span
+									class="direction-icon icon-arrow-left-long"
+									aria-hidden="true"
+								></span
+							></a>
+
 							<h4>מה נלמד בנושא?</h4>
 							<ul>
 								<li>
@@ -484,17 +601,10 @@
 								<li>תכנון נסיעה בנתיב השתלבות ובדיקת הנתיב הסמוך</li>
 								<li>תכנון המשך הדרך מנתיב המיועד לפנייה ימינה או שמאלה בלבד</li>
 							</ul>
-							<a
-								class="course-button subject-learn"
-								href="trip-planning/"
-								aria-label="ללמידה: תכנון נסיעה"
-								>ללמידה
-								<span
-									class="direction-icon icon-arrow-left-long"
-									aria-hidden="true"
-								></span
-							></a>
-							<p>ההסברים זמינים לקריאה. הסרטונים וההמחשות יתווספו בהמשך.</p>
+
+							<p class="subject-availability">
+								אפשר לקרוא ולתרגל. סרטונים ותרשימים יתווספו בהמשך.
+							</p>
 						</div>
 					</details>
 					<details
@@ -504,7 +614,7 @@
 						data-keywords="מבחן הכנה לטסט מראות חניה חנייה מעבר נתיבים טעויות"
 					>
 						<summary>
-							<h3>טעויות נפוצות בטסט</h3>
+							<h3>טעויות נפוצות בטסט המעשי</h3>
 							<p>
 								להכיר את המצבים שבהם תלמידים נכשלים ולתרגל הסתכלות, מיקום וקבלת
 								החלטות לפני המבחן.
@@ -515,6 +625,26 @@
 							></span>
 						</summary>
 						<div class="subject-outline">
+							<p
+								class="subject-meta"
+								data-section-count="3"
+								data-reading-minutes="3"
+							>
+								<span>3 פרקי קריאה</span> /
+								<span data-topic-question-count="">14 שאלות לתרגול</span> /
+								<span>כ-3 דקות קריאה</span>
+							</p>
+							<a
+								class="btn btn-primary course-button subject-learn"
+								href="driving-test/"
+								aria-label="ללמידה: טעויות נפוצות בטסט המעשי"
+								>ללמידה
+								<span
+									class="direction-icon icon-arrow-left-long"
+									aria-hidden="true"
+								></span
+							></a>
+
 							<h4>מה נלמד בנושא?</h4>
 							<ul>
 								<li>
@@ -533,17 +663,10 @@
 								<li>יציאה מחנייה, נסיעה לאחור ומניעת פגיעה ברכב שלפנים</li>
 								<li>התחלת נסיעה ברכב ידני בהילוך המתאים ומניעת כיבוי המנוע</li>
 							</ul>
-							<a
-								class="course-button subject-learn"
-								href="driving-test/"
-								aria-label="ללמידה: טעויות נפוצות בטסט"
-								>ללמידה
-								<span
-									class="direction-icon icon-arrow-left-long"
-									aria-hidden="true"
-								></span
-							></a>
-							<p>ההסברים זמינים לקריאה. הסרטונים יתווספו בהמשך.</p>
+
+							<p class="subject-availability">
+								אפשר לקרוא ולתרגל. סרטונים ותרשימים יתווספו בהמשך.
+							</p>
 						</div>
 					</details>
 					<details
@@ -564,6 +687,26 @@
 							></span>
 						</summary>
 						<div class="subject-outline">
+							<p
+								class="subject-meta"
+								data-section-count="3"
+								data-reading-minutes="4"
+							>
+								<span>3 פרקי קריאה</span> /
+								<span data-topic-question-count="">17 שאלות לתרגול</span> /
+								<span>כ-4 דקות קריאה</span>
+							</p>
+							<a
+								class="btn btn-primary course-button subject-learn"
+								href="licensing-and-points/"
+								aria-label="ללמידה: נהג חדש, רישוי ושיטת הניקוד"
+								>ללמידה
+								<span
+									class="direction-icon icon-arrow-left-long"
+									aria-hidden="true"
+								></span
+							></a>
+
 							<h4>מה נלמד בנושא?</h4>
 							<ul>
 								<li>שיטת הניקוד לעבירות תנועה וטבלת הניקוד</li>
@@ -574,8 +717,8 @@
 								</li>
 								<li>הפעלת אורות כנדרש והפרעה או עיכוב של התנועה</li>
 								<li>
-									אי-ציות לתמרור עצור, מעבר מצדו הנכון של תמרור וזכות קדימה
-									במעגל תנועה
+									אי-ציות לתמרור עצור, מעבר משמאל לאי המרכזי במעגל תנועה או
+									אי-מתן זכות קדימה לתנועה במעגל
 								</li>
 								<li>שימוש בטלפון בזמן נהיגה</li>
 								<li>נהג חדש ונהג חדש צעיר, מלווה וחובת הליווי</li>
@@ -587,19 +730,9 @@
 									תמרורים, רישוי וניקוד
 								</li>
 							</ul>
-							<a
-								class="course-button subject-learn"
-								href="licensing-and-points/"
-								aria-label="ללמידה: נהג חדש, רישוי ושיטת הניקוד"
-								>ללמידה
-								<span
-									class="direction-icon icon-arrow-left-long"
-									aria-hidden="true"
-								></span
-							></a>
-							<p>
-								סקירת הנושאים ומקורות המידע הרשמיים זמינים לקריאה. פרטים משתנים
-								נבדקים תמיד מול משרד התחבורה.
+
+							<p class="subject-availability">
+								אפשר לקרוא ולתרגל. סרטונים ותרשימים יתווספו בהמשך.
 							</p>
 						</div>
 					</details>
@@ -607,7 +740,11 @@
 				<div class="search-empty" hidden>
 					<h3>לא נמצאו נושאים מתאימים</h3>
 					<p>אפשר לנסות מילה אחרת, כמו "צומת" או "נתיב".</p>
-					<button class="course-button" type="button" data-show-all>
+					<button
+						class="btn btn-primary course-button"
+						type="button"
+						data-show-all
+					>
 						הצגת כל הנושאים
 					</button>
 				</div>
@@ -615,14 +752,17 @@
 			<aside class="course-preview-note">
 				<strong>הקורס בהכנה</strong>
 				<p>
-					ההסברים זמינים לקריאה, ולכל נושא יש שאלון תרגול עם ציון והסברים לתשובות.
-					הסרטונים וההמחשות עדיין אינם זמינים.
+					ההסברים זמינים לקריאה, ולכל נושא יש שאלון תרגול עם ציון והסברים
+					לתשובות. הסרטונים וההמחשות עדיין אינם זמינים.
 				</p>
 			</aside>
 		</main>
 		<footer class="course-shell course-footer">
-			<p>הקורס משלים את התרגול בשיעורי הנהיגה ואינו מחליף את מורה הנהיגה.</p>
-			<a href="../index.html">חזרה לדף הבית</a>
+			<p>נהיגה נכונה עם אורן בכור</p>
+			<nav aria-label="קישורי האתר">
+				<a href="../index.html">לדף הבית</a
+				><a href="./" aria-current="page">לנושאי הלימוד</a>
+			</nav>
 		</footer>
 	</body>
 </html>

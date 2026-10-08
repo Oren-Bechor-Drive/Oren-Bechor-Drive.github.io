@@ -57,6 +57,119 @@ async function position(f) {
 	return {section,versions};
 }
 
+test("learning overview excludes paid-access history for a never-paid learner", async () => {
+	const f=await fixture({paid:false});
+	const overview=await actor(f,db=>rpc(db,"my_learning"));
+	assert.equal(overview.paidAccess,false);
+	assert.equal(overview.hadPaidAccess,false);
+	assert.equal(overview.topics.find(t=>t.key===f.topic).completedAt,null);
+});
+
+test("learning overview includes current paid access in its history flag", async () => {
+	const f=await fixture();
+	const overview=await actor(f,db=>rpc(db,"my_learning"));
+	assert.equal(overview.paidAccess,true);
+	assert.equal(overview.hadPaidAccess,true);
+});
+
+test("learning overview preserves expired paid-access history without restoring access", async () => {
+	const f=await fixture();
+	await start(f);
+	await expire(f);
+	const overview=await actor(f,db=>rpc(db,"my_learning"));
+	assert.equal(overview.paidAccess,false);
+	assert.equal(overview.hadPaidAccess,true);
+	assert.equal((await database.admin.query("select * from public.quiz_attempts where learner_id=$1",[f.learner])).rowCount,0);
+	await rejected(f,"start_my_quiz",[f.topic]);
+});
+
+test("learning overview isolates paid-access history between learners", async () => {
+	const paid=await fixture(), neverPaid=await fixture({paid:false});
+	await database.admin.query("update public.entitlements set revoked_at=now() where id=$1",[paid.entitlement]);
+	const own=await actor(paid,db=>rpc(db,"my_learning"));
+	const other=await actor(neverPaid,db=>rpc(db,"my_learning"));
+	assert.equal(own.paidAccess,false);
+	assert.equal(own.hadPaidAccess,true);
+	assert.equal(other.paidAccess,false);
+	assert.equal(other.hadPaidAccess,false);
+});
+
+test("learning overview ignores future and never-effective paid periods", async () => {
+	const f=await fixture({paid:false});
+	await database.admin.query("insert into public.entitlements(id,learner_id,starts_at,ends_at,source_reference) values ($1,$2,now()+interval '1 day',now()+interval '2 days',$3)",[f.entitlement,f.learner,f.entitlement]);
+	let overview=await actor(f,db=>rpc(db,"my_learning"));
+	assert.equal(overview.paidAccess,false);
+	assert.equal(overview.hadPaidAccess,false);
+	await database.admin.query("update public.entitlements set starts_at=now()-interval '1 day',revoked_at=now()-interval '2 days' where id=$1",[f.entitlement]);
+	overview=await actor(f,db=>rpc(db,"my_learning"));
+	assert.equal(overview.paidAccess,false);
+	assert.equal(overview.hadPaidAccess,false);
+});
+
+test("learning overview summarizes each learner's latest submitted attempt using its immutable version and history ordering", async () => {
+	const own = await fixture({ count: 3 }), other = await fixture({ count: 4 });
+	const first = await submit(own, 2, 3);
+	const secondTopic = await submit({ ...own, topic: other.topic }, 4, 4);
+	const otherLearner = await submit({ ...other, topic: own.topic }, 3, 3);
+	const overview = () => actor(own, db => rpc(db, "my_learning"));
+	const summary = (data, key) => data.topics.find(topic => topic.key === key).latestAttempt;
+	let data = await overview();
+	assert.equal(summary(data, own.topic).id, first.id);
+	assert.equal(summary(data, own.topic).score, 2);
+	assert.equal(summary(data, own.topic).questionCount, 3);
+	assert.equal(summary(data, other.topic).id, secondTopic.id);
+	assert.equal(summary(data, other.topic).questionCount, 4);
+	const otherData = await actor(other, db => rpc(db, "my_learning"));
+	assert.equal(summary(otherData, own.topic).id, otherLearner.id);
+	assert.equal(summary(otherData, other.topic), null);
+	await database.admin.query("select public.publish_quiz($1,'מהדורה לבדיקה',$2,'synthetic-only')", [own.topic, JSON.stringify(quizQuestions(4))]);
+	const latest = await submit(own, 4, 4);
+	await database.admin.query("select public.publish_quiz($1,'מהדורה חדשה לבדיקה',$2,'synthetic-only')", [own.topic, JSON.stringify(quizQuestions(6))]);
+	const draft = await start(own);
+	assert.equal(draft.questions.length, 6);
+	data = await overview();
+	assert.equal(summary(data, own.topic).id, latest.id, "newer unfinished attempts do not replace submitted results");
+	assert.equal(summary(data, own.topic).questionCount, 4, "current publication does not change the historical denominator");
+	assert.equal(summary(data, own.topic).score, 4);
+	// Equal timestamps must use the same UUID tie-break as the history module.
+	await database.admin.query("update public.quiz_attempts set submitted_at=statement_timestamp() where id=any($1::uuid[])", [[first.id, latest.id]]);
+	const history = await actor(own, db => rpc(db, "my_quiz_history", [own.topic]));
+	data = await overview();
+	const { id, submittedAt, score, questionCount } = history.attempts[0];
+	assert.deepEqual(summary(data, own.topic), { id, submittedAt, score, questionCount });
+	assert.equal(id, [first.id, latest.id].sort().at(-1));
+	assert.equal(summary(data, other.topic).id, secondTopic.id, "topic ordering cannot mix attempts between topics");
+});
+
+test("latest attempt summaries require current paid access and respect retained completion and cleanup", async () => {
+	const f = await fixture({ count: 3 });
+	const submitted = await submit(f, 3, 3);
+	const completion = await actor(f, db => rpc(db, "complete_my_topic", [f.topic]));
+	const overview = () => actor(f, db => rpc(db, "my_learning"));
+	const topic = data => data.topics.find(item => item.key === f.topic);
+	const active = topic(await overview()).latestAttempt;
+	assert.equal(active.id, submitted.id);
+	await expire(f, 0);
+	let data = await overview();
+	assert.equal(data.paidAccess, false);
+	assert.equal(topic(data).latestAttempt, null);
+	assert.equal(topic(data).completedAt, completion.completedAt);
+	assert.equal((await database.admin.query("select * from public.quiz_attempts where learner_id=$1", [f.learner])).rowCount, 1, "summaries stay hidden even inside the retention window");
+	await database.admin.query("update public.entitlements set ends_at=now()+interval '1 day' where id=$1", [f.entitlement]);
+	assert.deepEqual(topic(await overview()).latestAttempt, active, "renewal before the deadline makes retained results available");
+	await expire(f, 11);
+	data = await overview();
+	assert.equal(topic(data).latestAttempt, null);
+	assert.equal(topic(data).completedAt, completion.completedAt);
+	assert.equal((await database.admin.query("select * from public.quiz_attempts where learner_id=$1", [f.learner])).rowCount, 0);
+	await database.admin.query("update public.entitlements set ends_at=now()+interval '1 day' where id=$1", [f.entitlement]);
+	data = await overview();
+	assert.equal(data.paidAccess, true);
+	assert.equal(topic(data).latestAttempt, null, "late renewal cannot restore cleared results");
+	const free = await fixture({ paid: false });
+	assert.ok((await actor(free, db => rpc(db, "my_learning"))).topics.every(item => item.latestAttempt === null));
+});
+
 test("publication validates all question shapes and approval, and only service may publish", async () => {
 	const f = await fixture();
 	await rejected(f,"publish_quiz",[f.topic,"בדיקה",JSON.stringify(quizQuestions()),"approval"]);

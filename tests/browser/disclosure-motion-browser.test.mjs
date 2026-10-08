@@ -24,11 +24,10 @@ test("mobile disclosures animate pointer input without delaying keyboard or focu
 	});
 	await page.route("**/*", serveRoadMedia);
 	await page.goto("http://gallery.test/");
-	await page.locator(".topic-select").waitFor({ state: "attached" });
+	assert.equal(await page.locator("[data-topic-summaries] h3 a:visible").count(), 10);
 
 	for (const [triggerSelector, surfaceSelector] of [
 		[".menu-toggle", ".site-menu"],
-		[".topic-select", ".topic-options"],
 	]) {
 		await t.test(surfaceSelector, async () => {
 			const trigger = page.locator(triggerSelector);
@@ -126,28 +125,28 @@ test("mobile disclosures animate pointer input without delaying keyboard or focu
 	}
 
 	await page.emulateMedia({ reducedMotion: "reduce" });
-	await page.locator(".topic-select").click();
+	await page.locator(".menu-toggle").click();
 	assert.equal(
 		await page
-			.locator(".topic-options")
+			.locator(".site-menu")
 			.evaluate((element) => getComputedStyle(element).transform),
 		"none",
 	);
 	assert.equal(
 		await page
-			.locator(".topic-options")
+			.locator(".site-menu")
 			.evaluate((element) =>
 				getComputedStyle(element)
 					.transitionDuration.split(",")[0]
 					.trim(),
 			),
-		"0.08s",
+		"0.18s",
 	);
 	await page.keyboard.press("Escape");
-	await page.locator(".topic-select").hover();
+	await page.locator(".menu-toggle").hover();
 	await page.mouse.down();
 	const reducedPress = await page
-		.locator(".topic-select")
+		.locator(".menu-toggle")
 		.evaluate((element) => {
 			element.getAnimations().forEach((animation) => animation.finish());
 			return {
@@ -160,7 +159,6 @@ test("mobile disclosures animate pointer input without delaying keyboard or focu
 	await page.keyboard.press("Escape");
 	for (const [triggerSelector, surfaceSelector] of [
 		[".menu-toggle", ".site-menu"],
-		[".topic-select", ".topic-options"],
 	]) {
 		await page.locator(triggerSelector).click();
 		await page.locator(surfaceSelector).evaluate(async (element) => {
@@ -204,46 +202,23 @@ test("mobile disclosures animate pointer input without delaying keyboard or focu
 		() => document.querySelector(".site-menu").inert,
 	);
 	assert.equal(await page.locator(".site-menu").isVisible(), false);
-	assert.equal(await page.locator(".topic-options").isVisible(), false);
+	assert.equal(await page.locator(".site-menu").isVisible(), false);
 });
 
-test("touch selection closes the list immediately and canceled presses release feedback", async (t) => {
-	const browser = await chromium.launch();
-	t.after(() => browser.close());
-	const page = await browser.newPage({
-		viewport: { width: 390, height: 844 },
-		hasTouch: true,
-		isMobile: true,
-	});
-	await page.route("**/*", serveRoadMedia);
-	await page.goto("http://gallery.test/");
-	const trigger = page.locator(".topic-select");
-	await trigger.tap();
-	await page.locator(".topic-option").nth(1).tap();
-	assert.equal(await trigger.getAttribute("aria-expanded"), "false");
-	assert.equal(
-		await page
-			.locator(".topic-options")
-			.evaluate((element) => element.inert),
-		true,
-	);
-	assert.equal(
-		await trigger.textContent(),
-		await page
-			.locator(".topic-card")
-			.nth(1)
-			.textContent()
-			.then((text) => text.trim()),
-	);
-	assert.equal(
-		await trigger.evaluate((element) => element === document.activeElement),
-		true,
-	);
-	await trigger.dispatchEvent("pointerdown", {
-		isPrimary: true,
-		button: 0,
-		pointerType: "touch",
-	});
-	await trigger.dispatchEvent("pointercancel", { pointerType: "touch" });
-	assert.equal(await trigger.getAttribute("data-pressed"), null);
+test("touch menu cancellation releases feedback and mobile topics use native links", async t => {
+ const browser = await chromium.launch();
+ t.after(() => browser.close());
+ const page = await browser.newPage({viewport:{width:390,height:844},hasTouch:true,isMobile:true,reducedMotion:"reduce"});
+ await page.route("**/*",serveRoadMedia);
+ await page.goto("http://gallery.test/");
+ const trigger = page.locator(".menu-toggle");
+ await trigger.dispatchEvent("pointerdown",{isPrimary:true,button:0,pointerType:"touch"});
+ await trigger.dispatchEvent("pointercancel",{pointerType:"touch"});
+ assert.equal(await trigger.getAttribute("data-pressed"),null);
+ assert.equal(await page.locator(".topic-select, .topic-options").count(),0);
+ const topic = page.locator("[data-topic-summaries] h3 a").first();
+ const destination = await topic.getAttribute("href");
+ await topic.tap();
+ await page.waitForURL("**/course/learning-foundations/");
+ assert.equal(new URL(page.url()).pathname, new URL(destination,"http://gallery.test/").pathname);
 });

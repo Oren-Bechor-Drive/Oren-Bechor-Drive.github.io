@@ -29,6 +29,8 @@ function prose(depth, text) {
 }
 function renderQuestion(question, index, images) {
 	const id = `question-${question.officialId}`;
+	const lessonTopicId = question.lessonTopicId ?? question.topicId;
+	const lessonHref = lessonTopicId === question.topicId ? "../" : `../../${lessonTopicId}/`;
 	const lines = [
 		indent(5, "<fieldset"), indent(6, 'class="quiz-question"'),
 		indent(6, `id="${id}"`), indent(6, `aria-describedby="${id}-prompt"`),
@@ -54,8 +56,9 @@ function renderQuestion(question, index, images) {
 		indent(7, "<summary>בדיקת התשובה</summary>"), indent(7, "<p>"),
 		prose(8, `התשובה הנכונה: ${question.options[question.correctOptionIndex]}`), indent(7, "</p>"),
 		indent(7, "<p data-quiz-explanation>"), prose(8, question.explanation), indent(7, "</p>"),
+		indent(7, `<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="${escape(lessonHref)}#${escape(question.lessonSectionId)}">חזרה להסבר בנושא</a></p>`),
 		indent(6, "</details>"), indent(6, '<p class="quiz-source">'),
-		prose(7, `${question.adaptation?.label ?? "שאלת מקור"} ${question.officialId} ממאגר משרד התחבורה.`),
+		prose(7, `מקור: שאלה ${question.officialId}${question.adaptation ? " (נוסח מעודכן)" : ""}.`),
 		indent(6, "</p>"), indent(5, "</fieldset>"));
 	return lines.join("\n");
 }
@@ -76,10 +79,16 @@ async function validateSource(rootDir, bank, images) {
 	if (bank.source.licenseId !== "cc-by") invalid("unsupported source attribution license");
 	if (!Array.isArray(bank.topics) || !bank.topics.length) invalid("topics must be a nonempty list");
 	const topicIds = new Set();
+	const lessonAnchors = new Map();
 	for (const topic of bank.topics) {
 		if (!topic || typeof topic.id !== "string" || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(topic.id) || !text(topic.title) || topicIds.has(topic.id))
 			invalid(`invalid or duplicate topic ${topic?.id}`);
 		topicIds.add(topic.id);
+		const lessonFile = `course/${topic.id}/index.html`;
+		const dom = new JSDOM(await readFile(path.join(rootDir, lessonFile), "utf8"));
+		try {
+			lessonAnchors.set(topic.id, new Set([...dom.window.document.querySelectorAll(".lesson-section[id]")].map(section => section.id)));
+		} finally { dom.window.close(); }
 	}
 	if (!Array.isArray(bank.questions) || !bank.questions.length) invalid("questions must be a nonempty list");
 	const ids = new Set();
@@ -89,6 +98,10 @@ async function validateSource(rootDir, bank, images) {
 			invalid(`invalid or duplicate question ${id}`);
 		ids.add(id);
 		if (!topicIds.has(question.topicId)) invalid(`${id}: unknown topic ${question.topicId}`);
+		const lessonTopicId = question.lessonTopicId === undefined ? question.topicId : question.lessonTopicId;
+		if (!topicIds.has(lessonTopicId)) invalid(`${id}: unknown lessonTopicId ${lessonTopicId}`);
+		if (!text(question.lessonSectionId) || !lessonAnchors.get(lessonTopicId).has(question.lessonSectionId))
+			invalid(`${id}: lessonSectionId must identify a section in lesson topic ${lessonTopicId}`);
 		if (!answer(question) || !text(question.explanation)) invalid(`${id}: invalid question, choices, answer or explanation`);
 		if (!references(question.sourceIds) || !question.sourceIds.includes("bank") ||
 			question.explanationSource !== "course-authored") invalid(`${id}: missing or unknown source references`);
@@ -183,10 +196,10 @@ function prepareQuiz(html, file, topic, questions, images) {
 	const intro = `\t\t\t<div class="lesson-intro">
 \t\t\t\t<h1 data-quiz-title>שאלון: ${escape(topic.title)}</h1>
 \t\t\t\t<p>
-${prose(5, `${questions.length} שאלות בנושא. אפשר לעבור בין השאלות ולשנות תשובות לפני ההגשה. כדי לקבל ציון יש לענות על כולן.`)}
+${prose(5, `${questions.length} שאלות בנושא. זמן משוער: ${questions.length}-${Math.ceil(questions.length * 1.5)} דקות. ענו על השאלות וחזרו להסברים כדי להבין את הבחירות.`)}
 \t\t\t\t</p>
 \t\t\t\t<p class="quiz-note">
-${prose(5, 'תרגול על בסיס מאגר התאוריה של משרד התחבורה. בסיום מוצגים הציון, התשובות הנכונות והסברי הקורס.')}
+${prose(5, 'תרגול על בסיס מאגר התאוריה של משרד התחבורה. בחישוב הציון נדרשת תשובה לכל שאלה. לפני הבדיקה אפשר לשנות תשובות.')}
 \t\t\t\t</p>
 \t\t\t</div>
 `;
@@ -197,12 +210,13 @@ ${prose(5, 'תרגול על בסיס מאגר התאוריה של משרד הת�
 \t\t\t\thidden
 \t\t\t>
 \t\t\t\t<h2 id="quiz-result-title" tabindex="-1">תוצאות השאלון</h2>
+\t\t\t\t<p class="quiz-score" data-quiz-score aria-hidden="true"></p>
 \t\t\t\t<p data-quiz-count></p>
-\t\t\t\t<p>אפשר לעבור על התשובות וההסברים או להתחיל ניסיון חדש.</p>
-\t\t\t\t<p>זהו תרגול עצמי, ולא מבחן תאוריה רשמי. התוצאה אינה נשמרת בחשבון.</p>
+\t\t\t\t<p data-quiz-threshold></p>
+\t\t\t\t<p class="quiz-result-note">זהו תרגול עצמי, ולא מבחן תאוריה רשמי. התוצאה אינה נשמרת בחשבון.</p>
 \t\t\t\t<div class="quiz-result-actions">
-\t\t\t\t\t<button class="course-button" type="button" data-quiz-review>חזרה לשאלות</button>
-\t\t\t\t\t<button class="quiz-previous" type="button" data-quiz-retry>ניסיון חדש</button>
+\t\t\t\t\t<button class="course-button btn btn-primary" type="button" data-quiz-review>חזרה לשאלות</button>
+\t\t\t\t\t<button class="quiz-previous btn btn-secondary" type="button" data-quiz-retry>ניסיון חדש</button>
 \t\t\t\t\t<a data-lesson-link href="../#topic">חזרה לנושא הלימוד</a>
 \t\t\t\t</div>
 \t\t\t</section>`;
@@ -213,7 +227,7 @@ ${prose(5, 'תרגול על בסיס מאגר התאוריה של משרד הת�
 \t\t\t\t\tברישיון <a href="https://opendefinition.org/licenses/cc-by/">Creative Commons Attribution</a>.
 \t\t\t\t</p>
 \t\t\t\t<p>
-${prose(5, 'הותאמו העיצוב וסימני הפיסוק. שאלות שנוסחן עודכן מסומנות כעיבוד לשאלת המקור. השיוך לנושאים וההסברים הם של הקורס, ואינם מטעם משרד התחבורה.')}
+${prose(5, 'העיצוב והפיסוק הותאמו לאתר. שאלות שנוסחן עודכן מסומנות כך. השיוך לנושאים וההסברים הם של הקורס, ואינם מטעם משרד התחבורה.')}
 \t\t\t\t</p>
 \t\t\t</aside>
 `;
@@ -247,13 +261,11 @@ ${prose(5, 'הותאמו העיצוב וסימני הפיסוק. שאלות שנ
 	});
 }
 
-async function validatePrepared(rootDir, prepared) {
+async function validatePrepared(prepared) {
 	// Use the existing learning interpreter on prepared files, before publishing any.
 	const staging = await mkdtemp(path.join(os.tmpdir(), "theory-publication-"));
 	try {
-		const pages = [...prepared, { file: "course/index.html",
-			html: await readFile(path.join(rootDir, "course/index.html"), "utf8") }];
-		for (const { file, html } of pages) {
+		for (const { file, html } of prepared) {
 			await mkdir(path.dirname(path.join(staging, file)), { recursive: true });
 			await writeFile(path.join(staging, file), html);
 		}
@@ -291,7 +303,14 @@ export async function publishTheoryQuizzes(rootDir, { check = false } = {}) {
 		prepared.push({ file: lessonFile, before: lesson, html });
 		topics.push({ id: topic.id, questionCount: questions.length });
 	}
-	await validatePrepared(rootDir, prepared);
+	const libraryFile = "course/index.html";
+	const library = await readFile(path.join(rootDir, libraryFile), "utf8");
+	const libraryHtml = editShell(library, libraryFile, ({ one, replace }) => {
+		for (const topic of topics)
+			replace(one(`.subject#${topic.id} [data-topic-question-count]`), `${topic.questionCount} שאלות לתרגול`, true);
+	});
+	prepared.push({ file: libraryFile, before: library, html: libraryHtml });
+	await validatePrepared(prepared);
 	const changed = prepared.filter(page => page.before !== page.html);
 	if (check && changed.length)
 		throw new Error(`Outdated authored quiz: ${changed.map(page => page.file).join(", ")}`);

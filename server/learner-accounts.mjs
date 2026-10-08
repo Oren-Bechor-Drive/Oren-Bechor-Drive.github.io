@@ -20,8 +20,21 @@ export function createLearnerAccounts({ origin, provider = null, googleEnabled =
 		const issued = await sessions.rotate(old, mode, tokens, user, learner);
 		return { record: issued.record, cookie: { token: issued.token, maxAge: Math.floor((issued.record.expires - now()) / 1000) } };
 	}
+	function signupFlow(record) {
+		if (record.flow?.expires <= now()) record.flow = null;
+		return record.flow?.kind === "signup" && typeof record.flow.email === "string" ? record.flow : null;
+	}
+	function verification(record) {
+		const flow = signupFlow(record);
+		if (!flow) return null;
+		const [local, domain] = flow.email.split("@");
+		return { maskedEmail: `${[...local][0]}***@${domain}`,
+			resendAfter: Math.max(0, Math.ceil((flow.nextResendAt - now()) / 1000)),
+			expiresAfter: Math.max(0, Math.ceil((Math.min(flow.expires, record.expires) - now()) / 1000)) };
+	}
 	const summary = record => ({ csrf: record.csrf, available: Boolean(provider), google: Boolean(provider && googleEnabled),
-		recovery: record.mode === "recovery", user: record.mode === "authenticated" ? { email: record.user.email, displayName: record.learner.display_name } : null });
+		recovery: record.mode === "recovery", verification: verification(record),
+		user: record.mode === "authenticated" ? { email: record.user.email, displayName: record.learner.display_name } : null });
 	async function canIssue(record, generation) {
 		if (!await sessions.live(record) || generation !== await sessions.generation()) fail(401, "session_expired");
 	}
@@ -77,6 +90,7 @@ export function createLearnerAccounts({ origin, provider = null, googleEnabled =
 		return sessions.run(record, async () => {
 			const generation = await sessions.generation();
 			const flow = record.flow;
+			if (flow?.expires <= now()) record.flow = null;
 			if (!flow || flow.expires <= now() || !matches(flow.state, state)) return destination("/account/login.html?status=link-expired");
 			record.flow = null;
 			if (!code || code.length > 2048 || error) return destination("/account/login.html?status=link-expired");
@@ -127,8 +141,9 @@ export function createLearnerAccounts({ origin, provider = null, googleEnabled =
 				} catch (error) { await provider.logout(tokens.access_token).catch(() => {}); throw error; }
 			}
 			if (route === "register" || route === "recover") {
-				if (!await admit(body.email)) return { data: { ok: true } };
 				const flow = startFlow(record, route === "recover" ? "recovery" : "signup");
+				if (route === "register") { flow.email = body.email; flow.nextResendAt = now() + 60_000; }
+				if (!await admit(body.email)) return { data: { ok: true } };
 				try {
 					if (route === "register") {
 						const result = await provider.signup(body.email, body.password, flow);
@@ -139,6 +154,21 @@ export function createLearnerAccounts({ origin, provider = null, googleEnabled =
 					if (!["user_already_exists", "email_exists", "user_not_found"].includes(error.code)) throw error;
 				}
 				return { data: { ok: true } };
+			}
+			if (route === "resend") {
+				const flow = signupFlow(record);
+				if (!flow) return { data: { ok: true, verification: null } };
+				if (flow.nextResendAt > now()) fail(429, "rate_limited");
+				flow.nextResendAt = now() + 60_000;
+				if (await admit(flow.email)) {
+					try { await provider.resend(flow.email, flow); }
+					catch (error) {
+						// A conditional acknowledgement cannot identify an existing account or prove delivery.
+						if (!Number.isInteger(error.status) || error.status < 400 || error.status > 599) throw error;
+					}
+				}
+				if (!await sessions.live(record)) fail(401, "session_expired");
+				return { data: { ok: true, verification: verification(record) } };
 			}
 			if (route === "google") {
 				if (!googleEnabled) fail(503, "google_unavailable");

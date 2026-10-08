@@ -3,13 +3,14 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#f2f5fc" />
 		<meta
 			http-equiv="Content-Security-Policy"
 			content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
 		/>
 		<meta name="referrer" content="strict-origin-when-cross-origin" />
 		<meta name="robots" content="noindex" />
-		<title>זכויות קדימה ופניות - קורס נהיגה נכונה עם אורן בכור</title>
+		<title>זכויות קדימה ופניות - נהיגה נכונה עם אורן בכור</title>
 		<meta
 			name="description"
 			content="למידה ותרגול על פנייה שמאלה, פנייה ימינה ופניית פרסה: תכנון, זכויות קדימה, סכנות ושליטה ברכב."
@@ -21,25 +22,25 @@
 		/>
 		<link
 			rel="preload"
-			href="../../assets/fonts/varela-round-v21-hebrew.woff2"
+			href="../../assets/fonts/fredoka-v17-hebrew.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
 		/>
 		<link
 			rel="preload"
-			href="../../assets/fonts/varela-round-v21-latin.woff2"
+			href="../../assets/fonts/fredoka-v17-latin.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
 		/>
-		<link rel="stylesheet" href="../../css/base.css" />
+		<link rel="stylesheet" href="../../css/base.css?v=3" />
 		<link rel="stylesheet" href="../css/course.css" />
 		<link rel="stylesheet" href="../css/lesson.css" />
 		<script type="module" src="../js/account-link.js"></script>
 	</head>
 	<body>
-		<a class="skip-link" href="#main">דילוג לתוכן הלמידה</a>
+		<a class="skip-link" href="#main">דילוג לתוכן הראשי</a>
 		<header class="course-header">
 			<div class="course-shell course-header-inner">
 				<a
@@ -60,6 +61,9 @@
 					/>
 					<span><strong>נהיגה נכונה</strong><small>עם אורן בכור</small></span>
 				</a>
+				<nav class="course-header-nav" aria-label="ניווט ראשי">
+					<a class="course-library-link" href="../">נושאי הלימוד</a>
+				</nav>
 				<button
 					class="course-profile"
 					type="button"
@@ -85,14 +89,21 @@
 					מבינים למי נותנים זכות קדימה, מזהים את הסכנות ומתכננים את הפנייה לפני
 					שמתחילים אותה.
 				</p>
+				<p class="lesson-meta" data-reading-minutes="7">
+					זמן קריאה משוער: 7 דקות.
+				</p>
 				<p class="lesson-draft">
-					ההסברים ושאלון התרגול זמינים. הסרטונים יתווספו בהמשך.
+					אפשר לקרוא ולתרגל. סרטונים ותרשימים יתווספו בהמשך.
 				</p>
 			</div>
 			<div class="lesson-layout">
-				<nav class="lesson-contents" aria-labelledby="contents-title">
+				<nav
+					class="lesson-contents"
+					aria-labelledby="contents-title"
+					id="contents"
+				>
 					<h2 id="contents-title">מה לומדים כאן?</h2>
-					<p>אפשר להתחיל בכל חלק.</p>
+
 					<ul>
 						<li><a href="#left-turn">פנייה שמאלה</a></li>
 						<li><a href="#right-turn">פנייה ימינה</a></li>
@@ -104,7 +115,6 @@
 					class="lesson-content"
 					id="topic"
 					aria-labelledby="topic-title"
-					aria-label="הסברים על זכויות קדימה ופניות"
 				>
 					<section
 						class="lesson-section"
@@ -124,37 +134,14 @@
 						</p>
 						<h3>לפני הפנייה</h3>
 						<ul>
-							<li>
-								מזהים את מבנה הצומת ואת ההוראות החלות בו.
-								<div
-									class="image-placeholder"
-									role="img"
-									aria-label="מקום לתמונה או לתרשים: מבני צמתים וההוראות החלות בכל זרוע"
-								>
-									<span>תמונה או תרשים: מבני צמתים וההוראות החלות בכל זרוע</span>
-								</div>
-							</li>
+							<li>מזהים את מבנה הצומת ואת ההוראות החלות בו.</li>
 							<li>
 								בודקים את התנועה שמגיעה ממול ומימין וקובעים למי יש לתת זכות
 								קדימה בהתאם להסדר בצומת.
-								<div
-									class="video-placeholder"
-									role="img"
-									aria-label="מקום לסרטון הסבר: בדיקת זכות קדימה בפנייה שמאלה"
-								>
-									<span>סרטון הסבר: בדיקת זכות קדימה בפנייה שמאלה</span>
-								</div>
 							</li>
 							<li>
 								בוחרים נתיב שממנו מותר לפנות שמאלה, ומתכננים גם את המשך הנסיעה
 								לאחר הפנייה.
-								<div
-									class="image-placeholder"
-									role="img"
-									aria-label="מקום לתמונה או לתרשים: נתיבי פנייה שמאלה והמשך המסלול אחרי הצומת"
-								>
-									<span>תמונה או תרשים: נתיבי פנייה שמאלה והמשך המסלול אחרי הצומת</span>
-								</div>
 							</li>
 						</ul>
 						<p>
@@ -181,13 +168,7 @@
 							זמן רב יותר מפנייה קצרה. מבט מוקדם אחד אינו מספיק: רכב, אופנוע,
 							אופניים או הולך רגל יכולים להופיע בשטח שהיה מוסתר בתחילת התמרון.
 						</p>
-						<div
-							class="video-placeholder"
-							role="img"
-							aria-label="מקום לסרטון הסבר: הסכנות בזמן פנייה שמאלה"
-						>
-							<span>סרטון הסבר: הסכנות בזמן פנייה שמאלה</span>
-						</div>
+
 						<aside class="lesson-takeaway">
 							<strong>לא מסתפקים במבט אחד</strong>
 							<p>
@@ -195,6 +176,30 @@
 								הנסיעה, את התנועה שסביב הרכב ואת הולכי הרגל.
 							</p>
 						</aside>
+						<aside
+							class="lesson-scenario"
+							aria-labelledby="left-turn-scenario-title"
+						>
+							<h3 id="left-turn-scenario-title">מצב מהכביש</h3>
+							<p>
+								אתם פונים שמאלה באור ירוק. לפני הכניסה מוודאים שהצומת פנוי,
+								ובהמשך הפנייה ממשיכים לבדוק את מעבר החצייה ואת התנועה שסביב
+								הרכב.
+							</p>
+						</aside>
+						<details class="lesson-self-check">
+							<summary>האם אפשר להסתפק במבט לפני תחילת הפנייה?</summary>
+							<p>
+								לא. ממשיכים לסרוק את הדרך גם בזמן הפנייה, משום שמשתמש דרך יכול
+								להופיע בשטח שהיה מוסתר.
+							</p>
+						</details>
+						<p class="video-placeholder" role="note">
+							סרטון והמחשות יתווספו בהמשך: בדיקות וסכנות בפנייה שמאלה.
+						</p>
+						<a class="lesson-return-contents" href="#contents"
+							>חזרה לתוכן העניינים</a
+						>
 					</section>
 					<section
 						class="lesson-section"
@@ -218,37 +223,13 @@
 								מתאימים את המהירות לפנייה ומתכננים את מסלול הרכב בתוך הנתיב
 								המתאים.
 							</li>
-							<li>
-								בודקים במראה הימנית אם יש רכב דו-גלגלי לצד הרכב.
-								<div
-									class="image-placeholder"
-									role="img"
-									aria-label="מקום לתמונה או לתרשים: המראה הימנית והשטח המת לצד הרכב"
-								>
-									<span>תמונה או תרשים: המראה הימנית והשטח המת לצד הרכב</span>
-								</div>
-							</li>
-							<li>
-								בודקים את מעבר החצייה ונותנים להולכי הרגל לחצות בבטחה.
-								<div
-									class="video-placeholder"
-									role="img"
-									aria-label="מקום לסרטון הסבר: הולכי רגל במעבר החצייה"
-								>
-									<span>סרטון הסבר: הולכי רגל במעבר החצייה</span>
-								</div>
-							</li>
+							<li>בודקים במראה הימנית אם יש רכב דו-גלגלי לצד הרכב.</li>
+							<li>בודקים את מעבר החצייה ונותנים להולכי הרגל לחצות בבטחה.</li>
 							<li>
 								שומרים מרחק מהמדרכה ומיישרים את ההגה בהדרגה עם השלמת הפנייה.
 							</li>
 						</ul>
-						<div
-							class="video-placeholder"
-							role="img"
-							aria-label="מקום לסרטון הסבר: פנייה ימינה מתחילתה ועד סופה: הסתכלות, מהירות והשלמת הפנייה"
-						>
-							<span>סרטון הסבר: פנייה ימינה מתחילתה ועד סופה: הסתכלות, מהירות והשלמת הפנייה</span>
-						</div>
+
 						<h3>יציאה מחנייה או מחצר</h3>
 						<p>
 							כאשר יוצאים מחנייה, מחצר או מתחנת דלק, משתלבים בתנועה שכבר נמצאת
@@ -267,13 +248,7 @@
 							הדרך. סדר הפעולות הזה מצמצם סיכון לעלייה על המדרכה או לגלישה לנתיב
 							הנגדי.
 						</p>
-						<div
-							class="video-placeholder"
-							role="img"
-							aria-label="מקום לסרטון הסבר: השתלבות בתנועה ביציאה מחנייה"
-						>
-							<span>סרטון הסבר: השתלבות בתנועה ביציאה מחנייה</span>
-						</div>
+
 						<aside class="lesson-takeaway">
 							<strong>מסתכלים גם לצד הרכב</strong>
 							<p>
@@ -281,6 +256,29 @@
 								להימצא בסמוך למסלול הפנייה.
 							</p>
 						</aside>
+						<aside
+							class="lesson-scenario"
+							aria-labelledby="right-turn-scenario-title"
+						>
+							<h3 id="right-turn-scenario-title">מצב מהכביש</h3>
+							<p>
+								לפני פנייה ימינה אתם בודקים את המראה הימנית ואת מעבר החצייה. רכב
+								דו-גלגלי לצד הרכב עלול להיפגש עם מסלול הפנייה.
+							</p>
+						</aside>
+						<details class="lesson-self-check">
+							<summary>מה חסר אם מסתכלים רק קדימה בפנייה ימינה?</summary>
+							<p>
+								הבדיקה לצד הרכב, ובפרט רכב דו-גלגלי והולכי רגל הסמוכים למסלול
+								הפנייה.
+							</p>
+						</details>
+						<p class="video-placeholder" role="note">
+							סרטון והמחשות יתווספו בהמשך: פנייה ימינה מתחילתה ועד סופה.
+						</p>
+						<a class="lesson-return-contents" href="#contents"
+							>חזרה לתוכן העניינים</a
+						>
 					</section>
 					<section
 						class="lesson-section"
@@ -304,24 +302,10 @@
 							<li>
 								בודקים את התמרורים ואת מגבלות המקום. אין לבצע פנייה במקום שבו
 								היא אסורה, מסכנת או מפריעה לתנועה.
-								<div
-									class="image-placeholder"
-									role="img"
-									aria-label="מקום לתמונה או לתרשים: תמרורים וסימוני דרך המגבילים פניית פרסה"
-								>
-									<span>תמונה או תרשים: תמרורים וסימוני דרך המגבילים פניית פרסה</span>
-								</div>
 							</li>
 							<li>
 								מוודאים ששדה הראייה מאפשר לראות את התנועה ושהרכב נראה למשתמשי
 								הדרך האחרים.
-								<div
-									class="image-placeholder"
-									role="img"
-									aria-label="מקום לתמונה או לתרשים: שדה ראייה ושטחים מוסתרים ליד עקומה ופסגה"
-								>
-									<span>תמונה או תרשים: שדה ראייה ושטחים מוסתרים ליד עקומה ופסגה</span>
-								</div>
 							</li>
 							<li>
 								בודקים את התנועה ממול, את המראות ואת הולכי הרגל באזור שבו תסתיים
@@ -329,13 +313,6 @@
 							</li>
 							<li>
 								מביאים בחשבון את מידות הרכב ואת המקום הנדרש להשלמת הפנייה.
-								<div
-									class="image-placeholder"
-									role="img"
-									aria-label="מקום לתמונה או לתרשים: מסלולי פניית פרסה לפי מידות הרכב והמרחב הדרוש"
-								>
-									<span>תמונה או תרשים: מסלולי פניית פרסה לפי מידות הרכב והמרחב הדרוש</span>
-								</div>
 							</li>
 						</ul>
 						<p>
@@ -357,13 +334,7 @@
 							לבדוק תנועה ממול, מראות והולכי רגל באזור סיום הפנייה. לפני עקומה,
 							סמוך לפסגה או בכל מקום שבו הרכב אינו נראה בזמן, מוותרים על הפרסה.
 						</p>
-						<div
-							class="video-placeholder"
-							role="img"
-							aria-label="מקום לסרטון הסבר: פניית פרסה מתחילתה ועד סופה: בדיקת הסביבה והסכנות במהלך הפנייה"
-						>
-							<span>סרטון הסבר: פניית פרסה מתחילתה ועד סופה: בדיקת הסביבה והסכנות במהלך הפנייה</span>
-						</div>
+
 						<aside class="lesson-takeaway">
 							<strong>יש ספק? מוותרים על הפנייה</strong>
 							<p>
@@ -371,6 +342,29 @@
 								באותו מקום.
 							</p>
 						</aside>
+						<aside
+							class="lesson-scenario"
+							aria-labelledby="u-turn-scenario-title"
+						>
+							<h3 id="u-turn-scenario-title">מצב מהכביש</h3>
+							<p>
+								לפני פרסה אתם מזהים שטח מוסתר ליד פסגה. אם אי אפשר לראות את
+								התנועה ולהיראות בזמן, מוותרים על הפרסה באותו מקום.
+							</p>
+						</aside>
+						<details class="lesson-self-check">
+							<summary>האם מספיק שיש מקום לסיבוב?</summary>
+							<p>
+								לא. צריך גם שדה ראייה, הוראות שמתירות את הפעולה ואפשרות להשלים
+								אותה בלי לסכן או להפריע.
+							</p>
+						</details>
+						<p class="video-placeholder" role="note">
+							סרטון והמחשות יתווספו בהמשך: בדיקות, מסלול וסכנות בפניית פרסה.
+						</p>
+						<a class="lesson-return-contents" href="#contents"
+							>חזרה לתוכן העניינים</a
+						>
 					</section>
 					<section
 						class="lesson-section"
@@ -380,50 +374,78 @@
 						<h2 id="uphill-downhill-title">מפגש בדרך צרה ובשיפוע</h2>
 						<h3>כששני כלי רכב באים זה מול זה</h3>
 						<p>
-							בכביש צר מאטים ונצמדים ככל האפשר לצד ימין כדי לאפשר מעבר בטוח. בודקים את
-							רוחב הדרך,
-							את שפת הכביש ואת המרווח לצד הרכב. לא יורדים לשול מסוכן כדי להידחק דרך
-							מרווח שאינו מספיק.
+							בכביש צר מאטים ונצמדים ככל האפשר לצד ימין כדי לאפשר מעבר בטוח.
+							בודקים את רוחב הדרך, את שפת הכביש ואת המרווח לצד הרכב. לא יורדים
+							לשול מסוכן כדי להידחק דרך מרווח שאינו מספיק.
 						</p>
 						<h3>מתי הרכב היורד נותן זכות קדימה?</h3>
 						<p>
-							בדרך צרה ותלולה, כאשר שני כלי הרכב אינם יכולים לעבור יחד בבטחה, הנהג
-							היורד חייב לתת זכות קדימה לרכב העולה.
-							אם הנסיבות מחייבות שאחד מכלי הרכב יעצור, הנהג היורד חייב לעצור.
-							זהו כלל למפגש כזה, ולא זכות קדימה גורפת לכל רכב שנוסע בעלייה. הוראת שוטר
-							או תמרור המסדירים את המעבר מחייבים לפי העניין.
+							בדרך צרה ותלולה, כאשר שני כלי הרכב אינם יכולים לעבור יחד בבטחה,
+							הנהג היורד חייב לתת זכות קדימה לרכב העולה. אם הנסיבות מחייבות שאחד
+							מכלי הרכב יעצור, הנהג היורד חייב לעצור. זהו כלל למפגש כזה, ולא
+							זכות קדימה גורפת לכל רכב שנוסע בעלייה. הוראת שוטר או תמרור
+							המסדירים את המעבר מחייבים לפי העניין.
 						</p>
 						<p>
-							למשל, בדרך תלולה שמצטמצמת למעבר לרכב אחד, הנהג היורד מבחין ברכב שעולה
-							וממתין במקום שמאפשר לו לעבור.
-							גם הנהג העולה מאט ובודק שהמעבר אכן פנוי. לא מניחים שהנהג השני ראה אותנו
-							או שכבר עצר.
+							למשל, בדרך תלולה שמצטמצמת למעבר לרכב אחד, הנהג היורד מבחין ברכב
+							שעולה וממתין במקום שמאפשר לו לעבור. גם הנהג העולה מאט ובודק שהמעבר
+							אכן פנוי. לא מניחים שהנהג השני ראה אותנו או שכבר עצר.
 						</p>
 						<aside class="lesson-takeaway">
 							<strong>מזהים את הצמצום לפני שנפגשים</strong>
 							<p>
-								מאטים מראש ומשאירים מקום למעבר. אם נדרשת נסיעה לאחור, מבצעים אותה רק
-								כשיש צורך ולאחר בדיקה שאפשר לעשות זאת בלי לסכן, לפגוע או להפריע.
+								מאטים מראש ומשאירים מקום למעבר. אם נדרשת נסיעה לאחור, מבצעים
+								אותה רק כשיש צורך ולאחר בדיקה שאפשר לעשות זאת בלי לסכן, לפגוע או
+								להפריע.
 							</p>
 						</aside>
+						<aside
+							class="lesson-scenario"
+							aria-labelledby="uphill-downhill-scenario-title"
+						>
+							<h3 id="uphill-downhill-scenario-title">מצב מהכביש</h3>
+							<p>
+								אתם יורדים בדרך צרה ותלולה ורכב עולה לקראתכם. כשאי אפשר לעבור
+								יחד בבטחה, נותנים לו זכות קדימה וממתינים במקום שמאפשר מעבר.
+							</p>
+						</aside>
+						<details class="lesson-self-check">
+							<summary>מי נותן זכות קדימה במפגש המתואר?</summary>
+							<p>
+								הרכב היורד נותן זכות קדימה לרכב העולה; אם הנסיבות מחייבות עצירה,
+								הרכב היורד עוצר.
+							</p>
+						</details>
+						<a class="lesson-return-contents" href="#contents"
+							>חזרה לתוכן העניינים</a
+						>
 					</section>
 					<div class="lesson-quiz">
 						<p>תרגול בנושא זכויות קדימה ופניות</p>
-						<a class="course-button lesson-quiz-link" href="quiz/">לשאלון התרגול</a>
+						<a
+							class="btn btn-primary course-button lesson-quiz-link"
+							href="quiz/"
+							>לשאלון התרגול</a
+						>
 						<small>16 שאלות בנושא, עם ציון והסברים לתשובות.</small>
 					</div>
 					<footer class="lesson-end">
-						<p>אפשר לחזור לכל חלק או לבחור נושא אחר. אין סדר למידה מחייב.</p>
-						<a class="course-button" href="../#right-of-way"
-							>חזרה לנושאי הלימוד</a
-						>
+						<a class="lesson-next" href="../priority-hierarchy/"
+							>הנושא הבא: מדרג הציות<span
+								class="direction-icon icon-arrow-left-long"
+								aria-hidden="true"
+							></span
+						></a>
+						<a href="../#right-of-way">לכל הנושאים</a>
 					</footer>
 				</article>
 			</div>
 		</main>
 		<footer class="course-shell course-footer">
-			<p>הקורס משלים את התרגול בשיעורי הנהיגה ואינו מחליף את מורה הנהיגה.</p>
-			<a href="../../index.html">חזרה לדף הבית</a>
+			<p>נהיגה נכונה עם אורן בכור</p>
+			<nav aria-label="קישורי האתר">
+				<a href="../../index.html">לדף הבית</a><a href="../">לנושאי הלימוד</a>
+			</nav>
 		</footer>
 	</body>
 </html>

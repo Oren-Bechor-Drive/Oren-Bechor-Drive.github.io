@@ -34,13 +34,15 @@ test("search and share metadata agree on the public page and Hebrew description"
 	assert.match(meta("description"), /\p{Script=Hebrew}/u);
 });
 
-test("share image URLs resolve to a supplied image with accurate dimensions and MIME type", async () => {
+test("share image URLs resolve to the authored sharing graphic with accurate dimensions and MIME type", async () => {
 	const imageUrl = new URL(meta("og:image"));
 	assert.equal(imageUrl.origin, new URL(siteUrl).origin);
 	assert.equal(meta("twitter:image"), imageUrl.href);
 	assert.equal(meta("twitter:image:alt"), meta("og:image:alt"));
 	assert.match(meta("og:image:alt"), /\p{Script=Hebrew}/u);
-	assert.equal(meta("twitter:card"), "summary");
+	assert.equal(meta("twitter:card"), "summary_large_image");
+	assert.equal(Number(meta("og:image:width")), 1200);
+	assert.equal(Number(meta("og:image:height")), 630);
 	const bytes = await readFile(
 		new URL(`../..${imageUrl.pathname}`, import.meta.url),
 	);
@@ -91,7 +93,7 @@ test("structured data links the page, website, course and visible instructor", (
 	assert.equal(entities.get(page.isPartOf["@id"]), site);
 	assert.equal(entities.get(page.mainEntity["@id"]), course);
 	assert.equal(entities.get(course.provider["@id"]), person);
-	assert.equal(person.image, meta("og:image"));
+	assert.equal(person.image, `${siteUrl}assets/images/oren.jpg`);
 	assert.ok(
 		document.querySelector("#instructor").textContent.includes(person.name),
 	);
