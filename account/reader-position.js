@@ -6,7 +6,9 @@ export function createReaderPosition({ send }) {
 		const same = old && old.contentVersionId === input.contentVersionId && old.csrf === input.csrf;
 		const dirty = same && old.latest !== old.saved;
 		const unchanged = same && old.revision === input.revision && old.saved === input.position;
-		const observedWrite = same && inFlight?.owner === old
+		const observedWrite = same && inFlight
+			&& old.contentVersionId === inFlight.input.contentVersionId && old.csrf === inFlight.input.csrf
+			&& old.revision === inFlight.input.expectedRevision
 			&& input.revision === inFlight.input.expectedRevision + 1 && input.position === inFlight.input.position;
 		state = { ...input, saved: input.position, latest: dirty ? old.latest : input.position };
 		if (dirty && (!unchanged && !observedWrite || old.error)) {

@@ -68,6 +68,45 @@ test("an obsolete save failure does not poison a freshly authorized view", async
 	await saver.flush();
 });
 
+test("repeated restores recognize the same pending acknowledgement and preserve the newest position", async () => {
+	const first = deferred(), requests = [];
+	const saver = createReaderPosition({ send: async input => {
+		requests.push(input);
+		if (requests.length === 1) await first.promise;
+		return { position: { contentVersionId: input.contentVersionId, position: input.position, revision: input.expectedRevision + 1 } };
+	} });
+	saver.hydrate(snapshot());
+	saver.update(7500);
+	const pending = saver.flush();
+	assert.equal(saver.hydrate(snapshot()), 7500);
+	saver.update(8000);
+	assert.equal(saver.hydrate(snapshot()), 8000);
+	assert.equal(saver.hydrate(snapshot({ position: 7500, revision: 2 })), 8000);
+	first.resolve();
+	await pending;
+	assert.deepEqual(requests.map(({ position, expectedRevision }) => [position, expectedRevision]), [[7500, 1], [8000, 2]]);
+	assert.equal(saver.hydrate(snapshot({ position: 8000, revision: 3 })), 8000);
+});
+
+test("repeated restoration still rejects a different position or revision from another writer", async () => {
+	for (const changed of [{ position: 6000, revision: 2 }, { position: 7500, revision: 3 }]) {
+		const first = deferred();
+		const saver = createReaderPosition({ send: async input => {
+			await first.promise;
+			return { position: { contentVersionId: input.contentVersionId, position: input.position, revision: input.expectedRevision + 1 } };
+		} });
+		saver.hydrate(snapshot());
+		saver.update(7500);
+		const pending = saver.flush();
+		assert.equal(saver.hydrate(snapshot()), 7500);
+		saver.update(8000);
+		assert.throws(() => saver.hydrate(snapshot(changed)), { status: 409 });
+		const rejected = assert.rejects(pending, { status: 409 });
+		first.resolve();
+		await rejected;
+	}
+});
+
 test("changed content and explicit clearing discard pending local position", async () => {
 	const requests = [];
 	const saver = createReaderPosition({ send: async input => { requests.push(input); return { position: { ...input, revision: input.expectedRevision + 1 } }; } });
