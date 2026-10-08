@@ -22,6 +22,10 @@
 	}
 }
 
+.start .start-action:focus-visible {
+	transform: none;
+}
+
 @media (prefers-reduced-motion: no-preference) {
 	.hero-road[data-ready="true"] .road-carousel-track {
 		animation: road-scroll var(--road-loop-duration) linear infinite;
@@ -126,7 +130,7 @@
 		--header-height: 66px;
 	}
 
-	html:not([data-menu-enhanced]) {
+	html:not([data-menu-enhanced]):not([data-menu-pending]) {
 		scroll-padding-top: 0;
 	}
 
@@ -140,18 +144,18 @@
 		position: relative;
 	}
 
-	html:not([data-menu-enhanced]) .site-header {
+	html:not([data-menu-enhanced]):not([data-menu-pending]) .site-header {
 		position: static;
 		height: auto;
 	}
 
-	html:not([data-menu-enhanced]) .nav-shell {
+	html:not([data-menu-enhanced]):not([data-menu-pending]) .nav-shell {
 		flex-wrap: wrap;
 		gap: 8px;
 		padding-block: 8px;
 	}
 
-	html:not([data-menu-enhanced]) .site-menu {
+	html:not([data-menu-enhanced]):not([data-menu-pending]) .site-menu {
 		width: 100%;
 		flex-wrap: wrap;
 	}
@@ -165,7 +169,7 @@
 		place-items: center;
 	}
 
-	[data-menu-enhanced] .site-menu {
+	:is([data-menu-enhanced], [data-menu-pending]) .site-menu {
 		position: absolute;
 		inset-block-start: calc(100% + 10px);
 		inset-inline: 0;
@@ -408,6 +412,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+	.start .start-action:hover,
+	.start .start-action:active {
+		transform: none;
+	}
+
 	.topic-panel[data-updating] > div {
 		opacity: 1;
 		transform: none;
@@ -481,18 +490,19 @@
 }
 
 @media (max-width: 768px) {
-	.hero { min-height: min(calc(100svh - var(--header-height)), 640px); }
+	.hero {
+		min-height: calc(100svh - var(--header-height));
+		min-height: calc(100dvh - var(--header-height));
+	}
 	.hero-shell { align-content: center; padding-block: 24px; }
 	.hero-copy > p:not(.preview-status) { max-width: 36ch; justify-self: center; }
 	.hero-copy .preview-status { grid-area: 5 / 1; font-size: .875rem; margin: 0; }
-	.hero-road-car { display: none; }
 	.hero-visual { animation-delay: 0ms; }
 	.instructor-description { grid-row: 3; }
 	.instructor-layout { grid-template-rows: auto minmax(160px, 1fr) auto; }
 	.instructor[data-scroll-state="pending"] .scroll-reveal-target { transform: none; }
 }
 @media (max-height: 500px) {
-	.hero { min-height: 0; }
 	.hero-shell { grid-template-columns: minmax(0, 1fr) 120px; gap: 16px; padding-block: 24px; }
 	.hero-copy { display: flex; text-align: start; }
 	.hero-copy h1 { font-size: 2rem; margin-block-end: 12px; }

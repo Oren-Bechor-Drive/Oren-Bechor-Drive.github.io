@@ -31,7 +31,7 @@
     "notify:indexnow": "node scripts/search-production.mjs --notify"
   },
   "devDependencies": {
-    "embedded-postgres": "17.6.0-beta.15",
+    "embedded-postgres": "17.10.0-beta.17",
     "html-minifier-terser": "^7.2.0",
     "image-size": "^2.0.4",
     "jsdom": "30.0.1",
@@ -41,7 +41,7 @@
     "wrangler": "4.143.1"
   },
   "allowScripts": {
-    "@embedded-postgres/linux-x64@17.6.0-beta.15": true
+    "@embedded-postgres/linux-x64@17.10.0-beta.17": true
   },
   "overrides": {
     "sharp": "$sharp"

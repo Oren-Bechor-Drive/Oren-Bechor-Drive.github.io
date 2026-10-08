@@ -31,11 +31,13 @@ document.querySelector(".hero-actions")?.addEventListener("focusin", () => {
 		});
 });
 
+const enhanceMenu = menuToggle && menu && document.documentElement.dataset.menuFallback !== "true";
 const setMenu =
-	menuToggle && menu
+	enhanceMenu
 		? initDisclosureMotion(menuToggle, menu, "(max-width: 768px)", true)
 		: () => {};
-if (menuToggle && menu) document.documentElement.dataset.menuEnhanced = "true";
+if (enhanceMenu) document.documentElement.dataset.menuEnhanced = "true";
+delete document.documentElement.dataset.menuPending;
 
 function closeMenu({ returnFocus = false } = {}) {
 	setMenu(false);

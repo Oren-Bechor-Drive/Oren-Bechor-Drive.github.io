@@ -64,6 +64,8 @@ export function initHeroRoadCar(hero) {
 			car.style.opacity = "1";
 			return;
 		}
+		car.style.removeProperty("transform");
+		car.style.removeProperty("opacity");
 		frames.at(-1).opacity = 0;
 		frames.push({ ...frames.at(-1), offset: 1 });
 		animation = car.animate(frames, {

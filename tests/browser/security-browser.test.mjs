@@ -59,8 +59,8 @@ test(
 			);
 			await page.locator("footer").scrollIntoViewIfNeeded();
 			assert.deepEqual(
-				await page.locator(".site-footer nav a").evaluateAll(links => links.map(link => link.getAttribute("href"))),
-				["./", "course/"],
+				await page.locator(".footer-social img").evaluateAll(images => images.map(image => image.getAttribute("src"))),
+				["assets/icons/social/instagram.svg", "assets/icons/social/tiktok.svg", "assets/icons/social/youtube.svg", "assets/icons/social/whatsapp.svg"],
 			);
 			assert.deepEqual(
 				await page.evaluate(() => window.policyViolations),

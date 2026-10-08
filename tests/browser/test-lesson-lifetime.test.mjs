@@ -139,6 +139,37 @@ for (const width of [1440, 390]) {
 		await restoredNear(r.page, 0.60);
 	});
 
+	test(`restored reader retains a scroll reverted during a pending save at ${width}px`, async t => {
+		const r = await reader(t, width);
+		const savePosition = r.provider.savePosition;
+		let writes = 0;
+		r.provider.savePosition = async (...args) => {
+			if (++writes === 3) await new Promise(resolve => setTimeout(resolve, 250));
+			return savePosition(...args);
+		};
+		await r.page.emulateMedia({ reducedMotion: "reduce" });
+		await r.open();
+		await r.reading.waitFor({ state: "visible" });
+		await scrollToFraction(r.page, 0.20);
+		await r.save.evaluate(button => button.click());
+		await r.status.filter({ hasText: "מיקום הקריאה נשמר" }).waitFor();
+		await hold(r.page, "save");
+		await scrollToFraction(r.page, 0.60);
+		await r.save.evaluate(button => button.click());
+		await held(r.page);
+		await scrollToFraction(r.page, 0.20);
+		await hide(r.page);
+		await cleared(r);
+		await restore(r.page);
+		await restoredNear(r.page, 0.20);
+		const compensatingSave = r.page.waitForResponse(response => response.url().endsWith("/position")
+			&& response.request().method() === "POST" && Math.abs(response.request().postDataJSON().position - 2000) < 120);
+		await release(r.page);
+		assert.equal((await compensatingSave).status(), 200);
+		assert.ok(Math.abs(r.position.position - 2000) < 120);
+		assert.equal(r.position.revision, 3);
+	});
+
 
 	test(`restored reader ignores an already received old load failure at ${width}px`, async t => {
 		const r = await reader(t, width);
@@ -158,7 +189,7 @@ for (const width of [1440, 390]) {
 		assert.doesNotMatch(await r.page.locator("[data-reader-status]").textContent(), /לא הושלמו/);
 	});
 
-	test(`restored reader ignores an already received old save failure at ${width}px`, async t => {
+	test(`restored reader offers explicit retry for an unacknowledged late save failure at ${width}px`, async t => {
 		const r = await reader(t, width);
 		await r.open();
 		await r.reading.waitFor({ state: "visible" });
@@ -172,9 +203,15 @@ for (const width of [1440, 390]) {
 		await r.page.unroute(`**${endpoint()}/position`);
 		await restore(r.page);
 		await r.reading.waitFor({ state: "visible" });
+		await restoredNear(r.page, 0.60);
 		await release(r.page);
 		assert.equal(await r.save.isEnabled(), true);
-		assert.equal(await r.status.textContent(), "קטע הלימוד נטען.");
+		assert.match(await r.status.textContent(), /לא הושלמו/);
+		assert.equal(await r.save.isVisible(), true);
+		assert.equal(r.position, null, "a new authorization read does not acknowledge the failed write");
+		await r.save.evaluate(button => button.click());
+		await r.status.filter({ hasText: "מיקום הקריאה נשמר" }).waitFor();
+		assert.ok(Math.abs(r.position.position - 6000) < 400, `Retried position ${r.position.position}`);
 	});
 
 	test(`superseded conflict reload does not steal focus at ${width}px`, async t => {

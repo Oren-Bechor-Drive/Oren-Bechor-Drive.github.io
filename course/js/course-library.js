@@ -240,8 +240,6 @@ function initTopicDisclosures() {
 	desktop.addEventListener("change", () => {
 		cancelPositionTracking();
 		motion.settle();
-		if (!desktop.matches && !selectedSubject.hidden)
-			openExclusively(selectedSubject);
 	});
 
 	document.addEventListener("pointerdown", cancelPositionTracking, true);
@@ -284,11 +282,16 @@ topicList.addEventListener("keydown", (event) => {
 });
 
 desktop.addEventListener("change", () => {
-	const focused =
-		browser.contains(document.activeElement) ||
-		subjectList.contains(document.activeElement);
+	const active = document.activeElement;
+	const focusedControl = active.closest(".subject, .topic-tab");
+	const focusedSubject = subjectsById.get(
+		focusedControl?.dataset.topic ?? focusedControl?.id,
+	) ?? (reader.contains(active) ? selectedSubject : null);
+	if (focusedSubject && !focusedSubject.hidden) renderSubject(focusedSubject);
+	if (!desktop.matches && !selectedSubject.hidden)
+		topicDisclosures.open(selectedSubject);
 	updatePresentation();
-	if (focused && !selectedSubject.hidden) {
+	if (focusedSubject && !focusedSubject.hidden) {
 		const control = desktop.matches
 			? tabs.get(selectedSubject.id)
 			: selectedSubject.querySelector("summary");

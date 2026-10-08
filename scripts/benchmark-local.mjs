@@ -14,6 +14,7 @@ import { createPrivateMedia } from "../server/private-media.mjs";
 const execute = promisify(execFile);
 const root = fileURLToPath(new URL("../", import.meta.url));
 const network = { offline: false, latency: 20, downloadThroughput: 2_500_000, uploadThroughput: 1_000_000 };
+const deliberateRateLimit = "gateway/deliberate-rate-limit";
 const profiles = [
 	{ name: "desktop", viewport: { width: 1440, height: 900 }, cpuSlowdown: 1, isMobile: false },
 	{ name: "mobile", viewport: { width: 390, height: 844 }, cpuSlowdown: 4, isMobile: true },
@@ -312,20 +313,24 @@ export async function runLocalBenchmark(options = {}) {
 				const start = performance.now();
 				const response = await nodeRequest(clients[0], "/api/learning");
 				requireStatus(response.status, 429);
-				record("gateway/deliberate-rate-limit", true, performance.now() - start, response.bytes, response.status);
+				record(deliberateRateLimit, true, performance.now() - start, response.bytes, response.status);
 			}
 		} finally { deliberatelyLimited = false; }
 		const cpu = process.cpuUsage(cpuStart);
 		const memory = process.memoryUsage();
 		const revision = (await execute("git", ["rev-parse", "HEAD"], { cwd: checkout })).stdout.trim();
 		const dirty = Boolean((await execute("git", ["status", "--porcelain"], { cwd: checkout })).stdout.trim());
-		return { scope: "local", checkout, revision, workingTreeDirty: dirty, startedAt, iterations,
+		const results = [...scenarios.values()].map(({ samples, ...scenario }) => ({ ...scenario, ...summarizeSamples(samples),
+			attemptedCount: samples.length + scenario.errorCount + scenario.rateLimitedCount,
+			...(scenario.elapsedMs ? { requestsPerSecond: Math.round(samples.length / (scenario.elapsedMs / 1000) * 100) / 100 } : {}) }));
+		const passed = results.every(scenario => scenario.errorCount === 0 && (scenario.name === deliberateRateLimit
+			? scenario.count === 0 && scenario.rateLimitedCount === iterations
+			: scenario.count > 0 && scenario.rateLimitedCount === 0));
+		return { scope: "local", passed, checkout, revision, workingTreeDirty: dirty, startedAt, iterations,
 			environment: { node: process.version, browser: "Chromium " + browser.version(), viewport: profiles[0].viewport,
 				network: "CDP loopback: 20 ms latency, 20 Mbps download, 8 Mbps upload", cpuSlowdown: profiles[0].cpuSlowdown,
 				profiles: profiles.map(({ name, viewport, cpuSlowdown }) => ({ name, viewport, cpuSlowdown })), deviceScaleFactor: 1, reducedMotion: "reduce" },
-			scenarios: [...scenarios.values()].map(({ samples, ...scenario }) => ({ ...scenario, ...summarizeSamples(samples),
-				attemptedCount: samples.length + scenario.errorCount + scenario.rateLimitedCount,
-				...(scenario.elapsedMs ? { requestsPerSecond: Math.round(samples.length / (scenario.elapsedMs / 1000) * 100) / 100 } : {}) })),
+			scenarios: results,
 			resources: { platform: platform(), architecture: arch(), logicalCPUs: cpus().length, totalMemoryBytes: totalmem(),
 				nodeRssBytes: memory.rss, nodeHeapUsedBytes: memory.heapUsed, nodeMaxRssKiB: process.resourceUsage().maxRSS,
 				nodeUserCpuMs: cpu.user / 1000, nodeSystemCpuMs: cpu.system / 1000, totalElapsedMs: Math.round(performance.now() - began),
@@ -351,7 +356,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.ar
 		const report = await runLocalBenchmark(args.length ? { iterations: Number(args[1]) } : {});
 		await new Promise(resolve => process.stdout.write(JSON.stringify(report, null, 2) + "\n", resolve));
 		// Embedded PostgreSQL's exit hook otherwise forces natural beforeExit to 0.
-		process.exit(report.scenarios.some(scenario => scenario.errorCount) ? 1 : 0);
+		process.exit(report.passed ? 0 : 1);
 	} catch {
 		await new Promise(resolve => process.stderr.write("Local benchmark failed. Accepts only --iterations from 1 to 20; check local PostgreSQL/Chromium dependencies.\n", resolve));
 		process.exit(1);

@@ -3,6 +3,52 @@ import test from "node:test";
 import { chromium } from "playwright";
 import { serveRoadMedia } from "../helpers/road-media.mjs";
 
+test("hero keeps its two sentences and yellow word underlines", async t => {
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	const page = await browser.newPage({ reducedMotion: "reduce" });
+	await page.route("**/*", serveRoadMedia);
+	await page.goto("http://gallery.test/");
+	assert.deepEqual(await page.locator(".hero-sentence").allTextContents(), ["להבין את הכביש.", "לקבל החלטות."]);
+	assert.deepEqual(await page.locator(".hero-underline").evaluateAll(elements => elements.map(element => ({
+		word: element.textContent,
+		line: getComputedStyle(element).textDecorationLine,
+		color: getComputedStyle(element).textDecorationColor,
+	}))), [
+		{ word: "להבין", line: "underline", color: "rgb(246, 219, 120)" },
+		{ word: "לקבל", line: "underline", color: "rgb(246, 219, 120)" },
+	]);
+});
+
+test("phone hero fills the viewport below the header and grows for larger text", async t => {
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	const page = await browser.newPage({ reducedMotion: "reduce" });
+	await page.route("**/*", serveRoadMedia);
+	for (const viewport of [{ width: 320, height: 667 }, { width: 390, height: 844 }, { width: 412, height: 932 }, { width: 768, height: 390 }]) {
+		await page.setViewportSize(viewport);
+		await page.goto("http://gallery.test/");
+		const layout = await page.evaluate(() => {
+			const hero = document.querySelector(".hero").getBoundingClientRect();
+			const header = document.querySelector(".site-header").getBoundingClientRect();
+			return { top: hero.top, height: hero.height, headerBottom: header.bottom, available: innerHeight - header.bottom };
+		});
+		assert.equal(layout.top, layout.headerBottom);
+		assert.ok(layout.height >= layout.available - 1, `${viewport.width}x${viewport.height}: hero fills the available viewport`);
+		if (viewport.height > 500) assert.ok(Math.abs(layout.height - layout.available) <= 1, "portrait hero ends at the viewport bottom");
+	}
+	await page.setViewportSize({ width: 320, height: 667 });
+	await page.evaluate(() => { document.documentElement.style.fontSize = "200%"; });
+	const enlarged = await page.evaluate(() => {
+		const hero = document.querySelector(".hero");
+		const content = [...hero.querySelectorAll("h1, p, .hero-actions, .hero-visual")].map(element => element.getBoundingClientRect());
+		const bounds = hero.getBoundingClientRect();
+		return { height: bounds.height, available: innerHeight - bounds.top, contentInside: content.every(rect => rect.top >= bounds.top && rect.bottom <= bounds.bottom) };
+	});
+	assert.ok(enlarged.height > enlarged.available, "enlarged content can extend past one viewport");
+	assert.equal(enlarged.contentInside, true, "larger text stays inside the naturally growing hero");
+});
+
 for (const width of [1366, 390]) {
 	test(`hero entrance stays within reach, settles on focus and runs once per session at ${width}px`, async t => {
 		const browser = await chromium.launch();

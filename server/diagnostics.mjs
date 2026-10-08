@@ -15,7 +15,7 @@ export function createDiagnostics({ write, now = Date.now }) {
 					if (fields.has(input.field)) event.field = input.field;
 					if (["missing", "invalid"].includes(input.reason)) event.reason = input.reason;
 				}
-				const key = JSON.stringify([event.category, event.operation, event.field, event.reason]);
+				const key = JSON.stringify([event.category, event.operation, event.status, event.field, event.reason]);
 				const time = now(), previous = recent.get(key);
 				if (!Number.isFinite(time)) return;
 				if (previous && time - previous.at < 60_000 && time >= previous.at) {

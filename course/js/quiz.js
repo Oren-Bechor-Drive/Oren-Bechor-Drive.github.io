@@ -2,6 +2,17 @@ import { initDisclosureMotion } from "../../js/disclosure-motion.js";
 import "../../js/input-mode.js";
 
 const questions = [...document.querySelectorAll(".quiz-question")];
+// Native label associations own both wrapped choices and explicit for/id labels.
+// Keep authored text before review adds its result annotations.
+const choices = new Map(questions.flatMap(question =>
+	[...question.querySelectorAll('input[type="radio"]')].map(input => {
+		const labels = [...input.labels];
+		return [input, {
+			labels,
+			text: labels.map(label => label.textContent).join(" ").replace(/\s+/g, " ").trim(),
+		}];
+	}),
+));
 const form = document.querySelector(".quiz-form");
 const session = document.querySelector("[data-quiz-session]");
 const result = document.querySelector("[data-quiz-result]");
@@ -91,7 +102,7 @@ function prepareSubmission() {
 		const item = document.createElement("li");
 		const button = document.createElement("button");
 		button.type = "button";
-		button.textContent = `${question.querySelector("legend").textContent.trim()}: ${question.querySelector("input:checked").closest("label").querySelector("span").textContent.trim()}`;
+		button.textContent = `${question.querySelector("legend").textContent.trim()}: ${choices.get(question.querySelector("input:checked")).text}`;
 		button.addEventListener("click", () => showQuestion(index));
 		item.append(button);
 		list.append(item);
@@ -316,21 +327,22 @@ function finish() {
 				matches ? "תשובה נכונה" : "תשובה שגויה";
 			const choice = document.createElement("p");
 			choice.setAttribute("data-quiz-choice", "");
-			choice.textContent = `התשובה שלכם: ${question.querySelector("input:checked").closest("label").querySelector("span").textContent.trim()}`;
+			choice.textContent = `התשובה שלכם: ${choices.get(question.querySelector("input:checked")).text}`;
 			feedback.querySelector("summary").after(choice);
-			for (const input of question.querySelectorAll("input")) {
+			for (const input of question.querySelectorAll('input[type="radio"]')) {
 				input.disabled = true;
 				const correctAnswer = input.value === question.dataset.correctAnswer;
 				if (!correctAnswer && !input.checked) continue;
-				const label = input.closest("label");
-				label.dataset.answerResult = correctAnswer ? "correct" : "incorrect";
-				if (label.querySelector(".quiz-answer-state")) continue;
-				const state = document.createElement("span");
-				state.className = "quiz-answer-state";
-				state.textContent = correctAnswer
-					? (input.checked ? "התשובה שבחרתם - נכונה" : "התשובה הנכונה")
-					: "התשובה שבחרתם - שגויה";
-				label.append(state);
+				for (const label of choices.get(input).labels) {
+					label.dataset.answerResult = correctAnswer ? "correct" : "incorrect";
+					if (label.querySelector(".quiz-answer-state")) continue;
+					const state = document.createElement("span");
+					state.className = "quiz-answer-state";
+					state.textContent = correctAnswer
+						? (input.checked ? "התשובה שבחרתם - נכונה" : "התשובה הנכונה")
+						: "התשובה שבחרתם - שגויה";
+					label.append(state);
+				}
 			}
 		}
 		submitted = true;
@@ -382,17 +394,18 @@ function resetAttempt() {
 	document.querySelector("[data-quiz-threshold]").textContent = "";
 	for (const question of questions) {
 		delete question.dataset.result;
-		for (const label of question.querySelectorAll("[data-answer-result]")) {
-			delete label.dataset.answerResult;
-			label.querySelector(".quiz-answer-state")?.remove();
+		for (const input of question.querySelectorAll('input[type="radio"]')) {
+			input.disabled = false;
+			for (const label of choices.get(input).labels) {
+				delete label.dataset.answerResult;
+				label.querySelector(".quiz-answer-state")?.remove();
+			}
 		}
 		const feedback = question.querySelector("[data-quiz-feedback]");
 		feedback.querySelector("[data-quiz-choice]")?.remove();
 		feedback.hidden = true;
 		feedback.open = false;
 		feedback.querySelector("summary").textContent = "בדיקת התשובה";
-		for (const input of question.querySelectorAll("input"))
-			input.disabled = false;
 	}
 	showQuestion(0);
 }

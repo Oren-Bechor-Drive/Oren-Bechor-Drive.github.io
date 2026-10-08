@@ -43,6 +43,21 @@ test("duplicate suppression reports only internally counted events after the win
 	assert.doesNotThrow(() => createDiagnostics({ write: () => { throw new Error("secret"); } }).emit(event));
 });
 
+test("distinct response statuses have separate suppression counts", () => {
+	let time = 0;
+	const lines = [];
+	const diagnostics = createDiagnostics({ write: line => lines.push(JSON.parse(line)), now: () => time });
+	const event = { category: "dependency", operation: "account" };
+	diagnostics.emit({ ...event, status: 500 });
+	diagnostics.emit({ ...event, status: 503 });
+	diagnostics.emit({ ...event, status: 500 });
+	assert.deepEqual(lines, [{ ...event, status: 500 }, { ...event, status: 503 }]);
+	time = 60_000;
+	diagnostics.emit({ ...event, status: 503 });
+	diagnostics.emit({ ...event, status: 500 });
+	assert.deepEqual(lines.slice(2), [{ ...event, status: 503 }, { ...event, status: 500, count: 2 }]);
+});
+
 test("local startup failure reports safe configuration without values or stacks", async () => {
 	const run = promisify(execFile);
 	await assert.rejects(run(process.execPath, ["server/start.mjs"], { env: { PATH: process.env.PATH, APP_ORIGIN: "private invalid origin", SUPABASE_URL: "https://project.supabase.co", SUPABASE_PUBLISHABLE_KEY: "sb_publishable_synthetic", SUPABASE_SECRET_KEY: "sb_secret_synthetic" } }), error => {

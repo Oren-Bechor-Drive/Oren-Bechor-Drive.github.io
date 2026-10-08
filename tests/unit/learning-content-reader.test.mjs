@@ -395,6 +395,20 @@ test("graded content exposes the authored answer and source identity for publica
 	]);
 });
 
+test("graded choices retain native labels associated by for/id", async t => {
+	const content = await readLearningContent(await fixture(t, {
+		"practice.html": gradedQuiz.replace(
+			'<label><input type="radio" name="turn-choice" value="wait">ממתינים</label>',
+			'<input type="radio" id="wait-choice" name="turn-choice" value="wait"><label for="wait-choice">ממתינים</label>',
+		),
+	}));
+	assert.deepEqual(content.issues, []);
+	assert.deepEqual(content.quizzes[0].questions[0].choices, [
+		{ value: "stop", text: "עוצרים" },
+		{ value: "wait", text: "ממתינים" },
+	]);
+});
+
 for (const [name, authored, expected] of [
 	[
 		"missing answer",
