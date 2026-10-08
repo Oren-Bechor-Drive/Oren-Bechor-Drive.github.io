@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import { randomUUID } from "node:crypto";
-import { access } from "node:fs/promises";
+import { access, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { after, before, test } from "node:test";
 import { startDatabase } from "../support/database.mjs";
@@ -19,6 +22,7 @@ before(async () => {
 after(async () => source?.close());
 const unpack = bytes => JSON.parse(new TextDecoder().decode(bytes));
 const pack = archive => new TextEncoder().encode(JSON.stringify(archive));
+const execute = promisify(execFile);
 async function target(t) {
 	const database = await startDatabase();
 	t.after(() => database.close());
@@ -162,4 +166,45 @@ test("the local rehearsal proves learner state, session behavior and separate me
 		assert.ok(report.checks.some(check => check.name === name), name);
 	}
 	assert.doesNotMatch(JSON.stringify(report), /payload|ciphertext|secret|token|password|postgres:\/\//);
+});
+
+test("recovery CLI rejects external targets with a nonzero exit and no supplied values", async () => {
+	await assert.rejects(execute(process.execPath,["scripts/rehearse-local-recovery.mjs","--url","postgres://private-credential@example.test/database"],{ timeout:5000 }),error => {
+		assert.equal(error.code,1);
+		assert.equal(error.stdout,"");
+		assert.match(error.stderr,/Local recovery rehearsal failed/);
+		assert.doesNotMatch(error.stderr,/private-credential|example\.test|postgres:/);
+		return true;
+	});
+});
+
+test("recovery CLI closes allocated fixtures before its failure exit", { timeout:60000 }, async t => {
+	const directory = await mkdtemp(path.join(tmpdir(),"oren-recovery-cli-failure-"));
+	t.after(() => rm(directory,{ recursive:true,force:true }));
+	const preload = path.join(directory,"failure.mjs"), captured = path.join(directory,"captured.json");
+	await writeFile(preload,`import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import { syncBuiltinESMExports } from 'node:module';
+const original = fs.mkdtemp, directories = [];
+fs.mkdtemp = async (...args) => {
+ const directory = await original(...args);
+ if (directory.includes('oren-database-test-')) {
+  directories.push(directory);
+  await fs.writeFile(${JSON.stringify(captured)},JSON.stringify(directories));
+ }
+ return directory;
+};
+syncBuiltinESMExports();
+assert.deepEqual = () => { throw new Error('private synthetic assertion details'); };
+`);
+	await assert.rejects(execute(process.execPath,["--import",preload,"scripts/rehearse-local-recovery.mjs"],{ timeout:60000 }),error => {
+		assert.equal(error.code,1);
+		assert.equal(error.stdout,"");
+		assert.match(error.stderr,/Local recovery rehearsal failed/);
+		assert.doesNotMatch(error.stderr,/private synthetic assertion details/);
+		return true;
+	});
+	const fixtures = JSON.parse(await readFile(captured,"utf8"));
+	assert.equal(fixtures.length,2,"the synthetic assertion follows allocation of both actual databases");
+	for (const fixture of fixtures) await assert.rejects(access(fixture),{ code:"ENOENT" });
 });

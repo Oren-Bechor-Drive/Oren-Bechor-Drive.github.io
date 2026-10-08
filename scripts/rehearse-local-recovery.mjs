@@ -221,11 +221,16 @@ export async function rehearseLocalRecovery() {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+	const write = (stream, value) => new Promise((resolve, reject) => stream.write(value+"\n", error => error ? reject(error) : resolve()));
+	let exitCode = 0;
 	try {
 		if (process.argv.length !== 2) throw new Error("Local recovery rehearsal accepts no CLI arguments");
-		console.log(JSON.stringify(await rehearseLocalRecovery(),null,2));
+		await write(process.stdout,JSON.stringify(await rehearseLocalRecovery(),null,2));
 	} catch {
-		console.error("Local recovery rehearsal failed. Run the recovery tests for fixture diagnostics.");
-		process.exitCode = 1;
+		await write(process.stderr,"Local recovery rehearsal failed. Run the recovery tests for fixture diagnostics.");
+		exitCode = 1;
 	}
+	// The embedded database's natural-exit hook forces exitCode to zero. Cleanup
+	// has finished and output is flushed before this explicit command exit.
+	process.exit(exitCode);
 }
