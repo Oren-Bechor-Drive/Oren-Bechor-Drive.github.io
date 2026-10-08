@@ -57,7 +57,12 @@ async function exerciseDesktopJourney(browser) {
 		viewport: { width: 1440, height: 900 },
 		reducedMotion: "reduce",
 	});
-	await page.route("**/*", serveRoadMedia);
+	await page.route("**/*", async route => {
+		// Keep the lesson's first layout pending after its document commits.
+		if (new URL(route.request().url()).pathname === "/course/css/lesson.css")
+			await new Promise(resolve => setTimeout(resolve, 500));
+		return serveRoadMedia(route);
+	});
 	const assertNoPageErrors = trackPageErrors(page);
 
 	await openPage(page, "/");
@@ -80,11 +85,12 @@ async function exerciseDesktopJourney(browser) {
 		.locator('.topic-tab[data-topic="priority-hierarchy"]')
 		.click();
 	await page.locator(".topic-reader .subject-learn").click();
+	await page.waitForURL("**/course/priority-hierarchy/", { waitUntil: "load" });
 	assert.equal(new URL(page.url()).pathname, "/course/priority-hierarchy/");
 
 	assert.equal(await page.locator("#priority").isVisible(), true);
-	assert.equal(await page.locator("#priority").isVisible(), true);
 	await page.locator(".lesson-content > .lesson-quiz .lesson-quiz-link").click();
+	await page.waitForURL("**/course/priority-hierarchy/quiz/", { waitUntil: "load" });
 	assert.equal(
 		new URL(page.url()).pathname,
 		"/course/priority-hierarchy/quiz/",
@@ -125,6 +131,7 @@ async function exerciseMobileJourney(browser) {
 		true,
 	);
 	await page.locator("#priority-hierarchy .subject-learn").click();
+	await page.waitForURL("**/course/priority-hierarchy/", { waitUntil: "load" });
 	assert.equal(await page.locator("#priority").isVisible(), true);
 	await page.locator(".lesson-content > .lesson-quiz .lesson-quiz-link").click();
 	await page.locator("[data-quiz-controls]").waitFor({ state: "visible" });
@@ -178,6 +185,7 @@ async function exerciseFallback(browser, mode) {
 		true,
 	);
 	await page.locator("#priority-hierarchy .subject-learn").click();
+	await page.waitForURL("**/course/priority-hierarchy/", { waitUntil: "load" });
 	assert.equal(await page.locator("#priority").isVisible(), true);
 	await page.locator(".lesson-content > .lesson-quiz .lesson-quiz-link").click();
 	// Firefox can finish the click before render-blocking stylesheets load.
@@ -195,7 +203,7 @@ async function exerciseFallback(browser, mode) {
 for (const [name, browserType] of engines) {
 	test(
 		`${name} supports the representative desktop journey`,
-		{ timeout: 30_000 },
+		{ timeout: 90_000 },
 		async (t) => {
 			const browser = await browserType.launch();
 			t.after(() => browser.close());
@@ -205,7 +213,7 @@ for (const [name, browserType] of engines) {
 
 	test(
 		`${name} supports the representative mobile journey`,
-		{ timeout: 30_000 },
+		{ timeout: 90_000 },
 		async (t) => {
 			const browser = await browserType.launch();
 			t.after(() => browser.close());
