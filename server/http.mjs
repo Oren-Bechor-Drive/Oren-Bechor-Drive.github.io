@@ -1,16 +1,14 @@
 import { readFile, realpath, stat } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { publicTypes as types, publicTopFiles, publicDirectories } from "./public-files.mjs";
+import { publicTypes as types, publicTopFiles, publicDirectories, publicSecurityHeaders } from "./public-files.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const topFiles = new Set(publicTopFiles);
 const directories = new Set(publicDirectories);
 
 export async function servePublicFile(req, res) {
-	res.setHeader("X-Content-Type-Options", "nosniff");
-	res.setHeader("Referrer-Policy", "no-referrer");
-	res.setHeader("Content-Security-Policy", "frame-ancestors 'none'");
+	for (const [name, value] of Object.entries(publicSecurityHeaders)) res.setHeader(name, value);
 	try {
 		if (!["GET", "HEAD"].includes(req.method)) { res.writeHead(405); return res.end(); }
 		const pathname = decodeURIComponent(new URL(req.url, "http://local.test").pathname);

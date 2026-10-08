@@ -10,25 +10,15 @@ const menu = document.querySelector("[data-menu]");
 const topicExplorer = document.querySelector("[data-topic-explorer]");
 const courseSection = document.querySelector("#topics");
 
-try {
-	const visited = sessionStorage.getItem("hero-seen") === "true";
-	document.documentElement.dataset.heroEntrance = String(!visited);
-	sessionStorage.setItem("hero-seen", "true");
-} catch {
-	document.documentElement.dataset.heroEntrance = "true";
-}
+document.documentElement.dataset.heroEntrance = "true";
 
 initScrollReveals(document);
 initHeroRoadCar(document.querySelector(".hero"));
 initFaqDisclosures(document.querySelector("#faq"));
 
 // Settle off-screen controls before the browser scrolls the focused button into view.
-document.querySelector(".hero-actions")?.addEventListener("focusin", () => {
-	document
-		.querySelectorAll(".hero-copy > p, .hero-actions")
-		.forEach((element) => {
-			element.getAnimations().forEach((animation) => animation.finish());
-		});
+document.querySelector(".hero")?.addEventListener("focusin", () => {
+	document.documentElement.dataset.heroEntrance = "false";
 });
 
 const enhanceMenu = menuToggle && menu && document.documentElement.dataset.menuFallback !== "true";

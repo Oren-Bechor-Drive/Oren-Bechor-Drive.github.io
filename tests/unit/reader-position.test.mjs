@@ -94,6 +94,47 @@ test("an idempotent acknowledgement ahead of the base revision drains newer queu
 	assert.equal(requests.length, 2);
 });
 
+test("an idempotent acknowledgement advances an already restored matching revision", async () => {
+	const first = deferred(), requests = [];
+	const saver = createReaderPosition({ send: async input => {
+		requests.push(input);
+		if (requests.length === 1) return first.promise;
+		return { position: positionRow({ position: input.position, revision: 5 }) };
+	} });
+	saver.hydrate(snapshot());
+	saver.update(3000);
+	const pending = saver.flush();
+	saver.update(7500);
+	assert.deepEqual(saver.hydrate(snapshot({ savedPosition: positionRow({ position: 3000, revision: 2 }) })),
+		{ position: 7500, contentChanged: false });
+	first.resolve({ position: positionRow({ position: 3000, revision: 4 }) });
+	await pending;
+	assert.deepEqual(requests.map(({ position, expectedRevision }) => [position, expectedRevision]), [[3000, 1], [7500, 4]]);
+	await saver.flush();
+	assert.equal(requests.length, 2);
+});
+
+test("an older acknowledgement cannot regress a newer restored matching revision", async () => {
+	const first = deferred(), requests = [];
+	const saver = createReaderPosition({ send: async input => {
+		requests.push(input);
+		if (requests.length === 1) return first.promise;
+		return { position: positionRow({ position: input.position, revision: 5 }) };
+	} });
+	saver.hydrate(snapshot());
+	saver.update(3000);
+	const pending = saver.flush();
+	assert.deepEqual(saver.hydrate(snapshot({ savedPosition: positionRow({ position: 3000, revision: 2 }) })),
+		{ position: 3000, contentChanged: false });
+	assert.deepEqual(saver.hydrate(snapshot({ savedPosition: positionRow({ position: 3000, revision: 4 }) })),
+		{ position: 3000, contentChanged: false });
+	first.resolve({ position: positionRow({ position: 3000, revision: 2 }) });
+	await pending;
+	saver.update(7500);
+	await saver.flush();
+	assert.deepEqual(requests.map(({ position, expectedRevision }) => [position, expectedRevision]), [[3000, 1], [7500, 4]]);
+});
+
 test("unrelated or invalid acknowledgements cannot advance the saved revision", async () => {
 	for (const changed of [{ revision: -1 }, { revision: 0 }, { revision: 1 }, { revision: 2.5 },
 		{ revision: Number.MAX_SAFE_INTEGER + 1 }, { revision: "3" },

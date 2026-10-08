@@ -42,10 +42,10 @@ export function createReaderPosition({ send }) {
 					|| !Number.isSafeInteger(position.revision) || position.revision < 1 || position.revision < input.expectedRevision) {
 					throw Object.assign(new Error("unavailable"), { status: 503 });
 				}
-				// A fresh GET can acknowledge this write before its transport reply arrives.
+				// A reply can advance the matching revision already acknowledged by a fresh GET.
 				if (state && state.ownership === owner.ownership && !state.error
 					&& (state === owner || state.revision === input.expectedRevision
-						|| state.revision === position.revision && state.saved === position.position)) {
+						|| state.revision <= position.revision && state.saved === position.position)) {
 					state.saved = position.position;
 					state.revision = position.revision;
 					state.acknowledged = true;

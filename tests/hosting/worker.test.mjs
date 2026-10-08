@@ -34,6 +34,7 @@ test("Worker serves the static site with safe routing and private account respon
 		assert.equal(response.status, 200, pathname);
 		assert.match(response.headers.get("content-type"), /text\/html/);
 		assert.equal(response.headers.get("x-content-type-options"), "nosniff");
+		assert.equal(response.headers.get("referrer-policy"), "no-referrer");
 		assert.equal(response.headers.get("content-security-policy"), "frame-ancestors 'none'");
 		if (pathname.startsWith("/account")) assert.equal(response.headers.get("cache-control"), "private, no-store");
 	}
@@ -42,6 +43,8 @@ test("Worker serves the static site with safe routing and private account respon
 	assert.equal(asset.status, 200);
 	assert.equal(asset.headers.get("x-test-worker"), null);
 	assert.equal(asset.headers.get("x-content-type-options"), "nosniff");
+	assert.equal(asset.headers.get("referrer-policy"), "no-referrer");
+	assert.equal(asset.headers.get("content-security-policy"), "frame-ancestors 'none'");
 	assert.equal(asset.headers.get("cache-control"), "no-cache");
 	for (const pathname of ["/.env", "/server/gateway.mjs", "/docs/PRODUCT.md", "/package.json", "/assets/.secret.txt", "/assets/private.json", "/course/%2ehidden/file.html"]) {
 		assert.equal((await request(pathname)).status, 404, pathname);
@@ -49,6 +52,9 @@ test("Worker serves the static site with safe routing and private account respon
 	const api = await request("/api/not-found", { headers: { "sec-fetch-mode": "navigate" } });
 	assert.equal(api.status, 404);
 	assert.deepEqual(await api.json(), { error: "not_found" });
+	assert.equal(api.headers.get("x-content-type-options"), "nosniff");
+	assert.equal(api.headers.get("referrer-policy"), "no-referrer");
+	assert.equal(api.headers.get("content-security-policy"), "frame-ancestors 'none'");
 	assert.equal(api.headers.get("cache-control"), "private, no-store");
 	assert.equal((await request("/", { method: "POST" })).status, 405);
 	assert.equal(await (await request("/account/login.html", { method: "HEAD" })).text(), "");
@@ -93,6 +99,9 @@ test("production entry serves public files while missing configuration disables 
 	for (const pathname of ["/api/account/session", "/api/account/callback?code=secret", "/api/media/private"]) {
 		const response = await request(pathname);
 		assert.equal(response.status, 503);
+		assert.equal(response.headers.get("x-content-type-options"), "nosniff");
+		assert.equal(response.headers.get("referrer-policy"), "no-referrer");
+		assert.equal(response.headers.get("content-security-policy"), "frame-ancestors 'none'");
 		assert.equal(response.headers.get("cache-control"), "private, no-store");
 		assert.equal(response.headers.get("set-cookie"), null);
 		assert.deepEqual(await response.json(), { error: "unavailable" });
