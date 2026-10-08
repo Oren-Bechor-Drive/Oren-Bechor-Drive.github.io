@@ -116,6 +116,7 @@
         "licensing",
         "offense-catalogue"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "new-driver"
     },
     {
@@ -161,6 +162,7 @@
           "accompaniment"
         ]
       },
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "new-driver"
     },
     {
@@ -191,6 +193,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "definitions"
     },
     {
@@ -221,6 +224,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "definitions"
     },
     {
@@ -251,6 +255,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "road-direction"
     },
     {
@@ -281,6 +286,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "definitions"
     },
     {
@@ -311,6 +317,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "definitions"
     },
     {
@@ -342,6 +349,7 @@
         "bank",
         "definitions"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "definitions"
     },
     {
@@ -390,6 +398,7 @@
           "priority-definition"
         ]
       },
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "definitions",
       "lessonTopicId": "learning-foundations"
     },
@@ -441,6 +450,7 @@
           "points-reform"
         ]
       },
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "points"
     },
     {
@@ -468,6 +478,7 @@
         "bank",
         "road-safety-textbook"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "new-driver"
     },
     {
@@ -496,6 +507,7 @@
         "accompaniment",
         "new-driver-2026"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "new-driver"
     },
     {
@@ -526,6 +538,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "priority"
     },
     {
@@ -558,6 +571,7 @@
         "sign-chart",
         "road-safety-textbook"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "priority"
     },
     {
@@ -590,6 +604,7 @@
         "sign-chart",
         "road-safety-textbook"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "priority"
     },
     {
@@ -622,6 +637,7 @@
         "sign-chart",
         "road-safety-textbook"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "priority"
     },
     {
@@ -654,6 +670,7 @@
         "sign-chart",
         "road-safety-textbook"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "priority"
     },
     {
@@ -686,6 +703,7 @@
         "sign-chart",
         "road-safety-textbook"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "priority"
     },
     {
@@ -718,6 +736,7 @@
         "sign-chart",
         "road-safety-textbook"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "priority"
     },
     {
@@ -750,6 +769,7 @@
         "licensing",
         "offense-catalogue"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "new-driver"
     },
     {
@@ -780,6 +800,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "road-direction"
     },
     {
@@ -810,6 +831,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "right-turn"
     },
     {
@@ -841,6 +863,7 @@
         "bank",
         "road-safety-textbook"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "u-turn"
     },
     {
@@ -872,6 +895,7 @@
         "bank",
         "road-safety-textbook"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "u-turn"
     },
     {
@@ -904,6 +928,7 @@
         "points",
         "courses"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "points"
     },
     {
@@ -935,6 +960,7 @@
         "bank",
         "new-driver-2026"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "restrictions"
     },
     {
@@ -966,6 +992,7 @@
         "bank",
         "new-driver-2026"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "restrictions"
     },
     {
@@ -1015,6 +1042,7 @@
           "new-driver-2026"
         ]
       },
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "restrictions"
     },
     {
@@ -1046,6 +1074,7 @@
         "bank",
         "new-driver-2026"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "restrictions"
     },
     {
@@ -1076,6 +1105,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "lane-markings"
     },
     {
@@ -1107,6 +1137,7 @@
         "bank",
         "road-safety-textbook"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "left-turn"
     },
     {
@@ -1137,6 +1168,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "obstacle"
     },
     {
@@ -1168,6 +1200,7 @@
         "bank",
         "road-safety-textbook"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "obstacle"
     },
     {
@@ -1200,6 +1233,7 @@
         "points",
         "courses"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "points"
     },
     {
@@ -1229,6 +1263,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "control"
     },
     {
@@ -1258,6 +1293,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "control"
     },
     {
@@ -1296,6 +1332,7 @@
       "imagePath": "assets/images/theory/originals/TQ_PIC_3186.jpg",
       "imageWidth": 350,
       "imageHeight": 230,
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "priority"
     },
     {
@@ -1344,6 +1381,7 @@
           "renewal"
         ]
       },
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "new-driver"
     },
     {
@@ -1375,6 +1413,7 @@
         "bank",
         "new-driver-2026"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "restrictions"
     },
     {
@@ -1407,6 +1446,7 @@
         "speed",
         "new-driver-2026"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "restrictions"
     },
     {
@@ -1451,6 +1491,7 @@
           "accompaniment"
         ]
       },
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "new-driver"
     },
     {
@@ -1497,6 +1538,7 @@
           "new-driver-2026"
         ]
       },
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "new-driver"
     },
     {
@@ -1525,6 +1567,7 @@
         "accompaniment",
         "new-driver-2026"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "new-driver"
     },
     {
@@ -1553,6 +1596,7 @@
         "accompaniment",
         "new-driver-2026"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "new-driver"
     },
     {
@@ -1583,6 +1627,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "speed"
     },
     {
@@ -1630,6 +1675,7 @@
           "license-classes"
         ]
       },
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "new-driver"
     },
     {
@@ -1661,6 +1707,7 @@
         "bank",
         "medical"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "official-information"
     },
     {
@@ -1692,6 +1739,7 @@
         "bank",
         "courses"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "points"
     },
     {
@@ -1722,6 +1770,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "obstacle"
     },
     {
@@ -1759,6 +1808,7 @@
       "imagePath": "assets/images/theory/originals/TQ_PIC_3387.jpg",
       "imageWidth": 350,
       "imageHeight": 230,
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "single-lane"
     },
     {
@@ -1789,6 +1839,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "common-signs"
     },
     {
@@ -1826,6 +1877,7 @@
       "imagePath": "assets/images/theory/originals/TQ_PIC_3430.jpg",
       "imageWidth": 350,
       "imageHeight": 230,
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "single-lane"
     },
     {
@@ -1863,6 +1915,7 @@
       "imagePath": "assets/images/theory/originals/TQ_PIC_3430.jpg",
       "imageWidth": 350,
       "imageHeight": 230,
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "single-lane"
     },
     {
@@ -1894,6 +1947,7 @@
         "bank",
         "speed"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "speed"
     },
     {
@@ -1924,6 +1978,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "common-signs"
     },
     {
@@ -1955,6 +2010,7 @@
         "bank",
         "new-driver-2026"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "restrictions"
     },
     {
@@ -1992,6 +2048,7 @@
       "imagePath": "assets/images/theory/originals/TQ_PIC_3550.jpg",
       "imageWidth": 350,
       "imageHeight": 180,
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "single-lane"
     },
     {
@@ -2029,6 +2086,7 @@
       "imagePath": "assets/images/theory/originals/TQ_PIC_3550.jpg",
       "imageWidth": 350,
       "imageHeight": 180,
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "single-lane"
     },
     {
@@ -2059,6 +2117,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "common-signs"
     },
     {
@@ -2097,6 +2156,7 @@
       "imagePath": "assets/images/theory/originals/TQ_PIC_3667.jpg",
       "imageWidth": 350,
       "imageHeight": 226,
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "priority"
     },
     {
@@ -2135,6 +2195,7 @@
       "imagePath": "assets/images/theory/originals/TQ_PIC_3669.jpg",
       "imageWidth": 350,
       "imageHeight": 230,
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "priority"
     },
     {
@@ -2165,6 +2226,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "common-signs"
     },
     {
@@ -2202,6 +2264,7 @@
       "imagePath": "assets/images/theory/originals/TQ_PIC_3706.jpg",
       "imageWidth": 350,
       "imageHeight": 230,
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "single-lane"
     },
     {
@@ -2239,6 +2302,7 @@
       "imagePath": "assets/images/theory/originals/TQ_PIC_3721.jpg",
       "imageWidth": 350,
       "imageHeight": 230,
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "single-lane"
     },
     {
@@ -2269,6 +2333,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "merge"
     },
     {
@@ -2317,6 +2382,7 @@
           "road-safety-textbook"
         ]
       },
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "observation"
     },
     {
@@ -2344,6 +2410,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "control"
     },
     {
@@ -2371,6 +2438,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "control"
     },
     {
@@ -2419,6 +2487,7 @@
           "narrow-road"
         ]
       },
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "uphill-downhill"
     },
     {
@@ -2451,6 +2520,7 @@
         "sign-chart",
         "road-safety-textbook"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "priority"
     },
     {
@@ -2481,6 +2551,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "road-direction"
     },
     {
@@ -2511,6 +2582,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "restrictions",
       "lessonTopicId": "overtaking"
     },
@@ -2542,6 +2614,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "lane-markings"
     },
     {
@@ -2573,6 +2646,7 @@
         "bank",
         "definitions"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "definitions",
       "lessonTopicId": "learning-foundations"
     },
@@ -2604,6 +2678,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "lane-markings"
     },
     {
@@ -2634,6 +2709,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "lane-markings"
     },
     {
@@ -2664,6 +2740,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "lane-markings"
     },
     {
@@ -2694,6 +2771,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "road-direction",
       "lessonTopicId": "roads-and-lanes"
     },
@@ -2726,6 +2804,7 @@
         "bank",
         "new-driver-2026"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "summary",
       "lessonTopicId": "learning-foundations"
     },
@@ -2758,6 +2837,7 @@
         "bank",
         "new-driver-2026"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "restrictions"
     },
     {
@@ -2788,6 +2868,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "approach"
     },
     {
@@ -2819,6 +2900,7 @@
         "bank",
         "road-safety-textbook"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "approach"
     },
     {
@@ -2849,6 +2931,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "right-turn"
     },
     {
@@ -2874,6 +2957,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "lane-markings"
     },
     {
@@ -2905,6 +2989,7 @@
         "bank",
         "road-safety-textbook"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "approach"
     },
     {
@@ -2936,6 +3021,7 @@
         "bank",
         "definitions"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "definitions",
       "lessonTopicId": "learning-foundations"
     },
@@ -2967,6 +3053,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "left-turn",
       "lessonTopicId": "right-of-way"
     },
@@ -2999,6 +3086,7 @@
         "bank",
         "road-safety-textbook"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "u-turn"
     },
     {
@@ -3029,6 +3117,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "u-turn"
     },
     {
@@ -3059,6 +3148,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "u-turn"
     },
     {
@@ -3088,6 +3178,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "control"
     },
     {
@@ -3117,6 +3208,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "observation"
     },
     {
@@ -3146,6 +3238,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "control"
     },
     {
@@ -3177,6 +3270,7 @@
         "bank",
         "speed"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "speed"
     },
     {
@@ -3208,6 +3302,7 @@
         "bank",
         "speed"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "speed"
     },
     {
@@ -3237,6 +3332,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "speed"
     },
     {
@@ -3267,6 +3363,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "speed"
     },
     {
@@ -3297,6 +3394,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "speed"
     },
     {
@@ -3327,6 +3425,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "speed"
     },
     {
@@ -3357,6 +3456,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "speed"
     },
     {
@@ -3387,6 +3487,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "theory-and-practice"
     },
     {
@@ -3417,6 +3518,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "theory-and-practice"
     },
     {
@@ -3447,6 +3549,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "theory-and-practice"
     },
     {
@@ -3478,6 +3581,7 @@
         "bank",
         "new-driver-2026"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "restrictions"
     },
     {
@@ -3509,6 +3613,7 @@
         "bank",
         "new-driver-2026"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "restrictions"
     },
     {
@@ -3540,6 +3645,7 @@
         "bank",
         "new-driver-2026"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "restrictions"
     },
     {
@@ -3570,6 +3676,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "merge"
     },
     {
@@ -3600,6 +3707,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "merge"
     },
     {
@@ -3629,6 +3737,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "control"
     },
     {
@@ -3659,6 +3768,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "approach"
     },
     {
@@ -3689,6 +3799,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "right-turn"
     },
     {
@@ -3719,6 +3830,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "priority",
       "lessonTopicId": "priority-hierarchy"
     },
@@ -3748,6 +3860,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "control"
     },
     {
@@ -3778,6 +3891,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "obstacle"
     },
     {
@@ -3804,6 +3918,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "control"
     },
     {
@@ -3832,6 +3947,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "junction"
     },
     {
@@ -3860,6 +3976,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "junction"
     },
     {
@@ -3890,6 +4007,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "speed",
       "lessonTopicId": "signs-and-speed"
     },
@@ -3922,6 +4040,7 @@
         "speed",
         "new-driver-2026"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "restrictions"
     },
     {
@@ -3948,6 +4067,7 @@
         "bank",
         "speed"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "speed"
     },
     {
@@ -3978,6 +4098,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "junction"
     },
     {
@@ -4008,6 +4129,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "theory-and-practice"
     },
     {
@@ -4039,6 +4161,7 @@
         "bank",
         "new-driver-2026"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "restrictions"
     },
     {
@@ -4070,6 +4193,7 @@
         "bank",
         "new-driver-2026"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "restrictions"
     },
     {
@@ -4101,6 +4225,7 @@
         "bank",
         "road-safety-textbook"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "left-turn"
     },
     {
@@ -4131,6 +4256,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "restrictions",
       "lessonTopicId": "overtaking"
     },
@@ -4164,6 +4290,7 @@
         "licensing",
         "offense-catalogue"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "new-driver"
     },
     {
@@ -4195,6 +4322,7 @@
         "bank",
         "road-safety-textbook"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "left-turn"
     },
     {
@@ -4226,6 +4354,7 @@
         "bank",
         "road-safety-textbook"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "approach"
     },
     {
@@ -4274,6 +4403,7 @@
           "narrow-road"
         ]
       },
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "uphill-downhill"
     },
     {
@@ -4306,6 +4436,7 @@
         "sign-chart",
         "road-safety-textbook"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "priority"
     },
     {
@@ -4338,6 +4469,7 @@
         "sign-chart",
         "road-safety-textbook"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "priority"
     },
     {
@@ -4368,6 +4500,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "right-turn"
     },
     {
@@ -4394,6 +4527,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "control"
     },
     {
@@ -4426,6 +4560,7 @@
         "sign-chart",
         "road-safety-textbook"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "priority"
     },
     {
@@ -4456,6 +4591,7 @@
       "sourceIds": [
         "bank"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "road-direction"
     },
     {
@@ -4487,6 +4623,7 @@
         "bank",
         "road-safety-textbook"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "u-turn"
     },
     {
@@ -4518,6 +4655,7 @@
         "bank",
         "new-driver-2026"
       ],
+      "lessonReferenceKind": "explanation",
       "lessonSectionId": "restrictions"
     },
     {
@@ -4549,6 +4687,7 @@
         "bank",
         "new-driver-2026"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "restrictions"
     },
     {
@@ -4581,6 +4720,7 @@
         "sign-chart",
         "road-safety-textbook"
       ],
+      "lessonReferenceKind": "topic",
       "lessonSectionId": "priority"
     }
   ]

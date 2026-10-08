@@ -45,6 +45,27 @@ async function reviewPage(t, { width, mode = "enhanced" }) {
 	return page;
 }
 
+async function publishedReviewPage(t, { width, mode = "enhanced", topic = "trip-planning" }) {
+	const app = await startLocalApplication({ provider: null });
+	t.after(app.close);
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	const page = await browser.newPage({
+		javaScriptEnabled: mode !== "disabled",
+		viewport: { width, height: width === 320 ? 568 : 900 },
+		reducedMotion: "reduce",
+	});
+	page.setDefaultTimeout(5000);
+	const errors = [];
+	page.on("pageerror", error => errors.push(error.message));
+	if (mode === "blocked")
+		await page.route("**/course/js/quiz.js", route => route.abort());
+	await page.goto(`${app.origin}/course/${topic}/quiz/`);
+	t.after(() => assert.deepEqual(errors, [], "published quiz review must not throw browser errors"));
+	if (mode === "enhanced") await page.locator("[data-quiz-controls]").waitFor({ state: "visible" });
+	return page;
+}
+
 async function assertSelectorStates(page, states) {
 	for (const selector of ["#question-jump option", "#question-options [role=option]"]) {
 		const options = page.locator(selector);
@@ -200,7 +221,58 @@ for (const width of [1440, 320]) {
 		assert.match(await page.locator('#review-case-0 [data-quiz-choice]').innerText(), /התשובה שלכם: עצירה/);
 	});
 
+	test(`engine-braking mistake review returns to the learning topic with a neutral link at ${width}px`, async t => {
+		const page = await publishedReviewPage(t, { width });
+		const questions = await page.locator(".quiz-question").evaluateAll(fields => fields.map(field => ({
+			id: field.id, correct: field.dataset.correctAnswer,
+		})));
+		for (const question of questions) {
+			const answer = question.id === "question-0988" ? String((Number(question.correct) + 1) % 4) : question.correct;
+			await page.locator(`#${question.id} input[value="${answer}"]`).check();
+			await page.locator("[data-quiz-next]").click();
+		}
+		await page.locator("[data-quiz-submit]").click();
+		assert.equal(await page.locator("#quiz-mistakes [data-review-question]").count(), 1);
+		await page.locator("[data-quiz-errors]").click();
+		assert.equal(await page.locator(".quiz-question:visible").getAttribute("id"), "question-0988");
+		const link = page.locator("#question-0988 [data-quiz-lesson-link]");
+		assert.equal(await link.getAttribute("href"), "../#topic");
+		assert.equal(await link.innerText(), "חזרה לנושא הלימוד");
+		assert.equal(await link.isVisible(), true);
+		await link.focus();
+		await page.keyboard.press("Tab");
+		await page.keyboard.press("Shift+Tab");
+		assert.equal(await link.evaluate(element => element === document.activeElement), true);
+		assert.notEqual(await link.evaluate(element => getComputedStyle(element).outlineStyle), "none");
+		await page.keyboard.press("Enter");
+		await page.waitForURL("**/course/trip-planning/#topic");
+		assert.equal(await page.getByRole("heading", { level: 1, name: "תכנון נסיעה" }).isVisible(), true);
+		assert.equal(await page.locator("#topic").isVisible(), true);
+		assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+	});
+
 	for (const mode of ["disabled", "blocked"]) {
+		test(`published review links retain neutral topics and accurate explanations with JavaScript ${mode} at ${width}px`, async t => {
+			const page = await publishedReviewPage(t, { width, mode });
+			assert.equal(await page.locator(".quiz-question:visible").count(), 11);
+			await page.locator("#question-0988 summary").click();
+			assert.equal(await page.locator("#question-0988 details").getAttribute("open"), "");
+			const topicLink = page.locator("#question-0988 [data-quiz-lesson-link]");
+			assert.equal(await topicLink.innerText(), "חזרה לנושא הלימוד");
+			assert.equal(await topicLink.getAttribute("href"), "../#topic");
+			await topicLink.click();
+			await page.waitForURL("**/course/trip-planning/#topic");
+			await page.goto(new URL("../roads-and-lanes/quiz/", page.url()).href);
+			await page.locator("#question-0758 summary").click();
+			const explanationLink = page.locator("#question-0758 [data-quiz-lesson-link]");
+			assert.equal(await explanationLink.innerText(), "חזרה להסבר בנושא");
+			assert.equal(await explanationLink.getAttribute("href"), "../../learning-foundations/#definitions");
+			await explanationLink.click();
+			await page.waitForURL("**/course/learning-foundations/#definitions");
+			assert.equal(await page.locator("#definitions").isVisible(), true);
+			assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+		});
+
 		test(`quiz review enhancements preserve native self-checks with JavaScript ${mode} at ${width}px`, async t => {
 			const page = await reviewPage(t, { width, mode });
 			assert.equal(await page.locator(".quiz-question:visible").count(), 3);

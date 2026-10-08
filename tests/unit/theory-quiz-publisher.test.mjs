@@ -233,12 +233,38 @@ test("root-scoped publication preserves reviewed source fidelity, escaping, medi
 	assert.deepEqual(await f.snapshot(), after);
 });
 
+test("topic review links use neutral navigation while explanation links keep their reviewed destination", async t => {
+	const f = await fixture(t);
+	const question = f.bank.questions.find(question => question.officialId === "0988");
+	question.lessonReferenceKind = "topic";
+	const crossTopic = f.bank.questions.find(question => question.officialId === "0758");
+	crossTopic.lessonReferenceKind = "explanation";
+	await f.write(contentFile, JSON.stringify(f.bank, null, 2) + "\n");
+	const publish = await publisher();
+	await publish(f.root);
+	for (const [file, id, href, label] of [
+		["course/trip-planning/quiz/index.html", "0988", "../#topic", "חזרה לנושא הלימוד"],
+		["course/roads-and-lanes/quiz/index.html", "0758", "../../learning-foundations/#definitions", "חזרה להסבר בנושא"],
+	]) {
+		const dom = new JSDOM(await f.read(file));
+		try {
+			const link = dom.window.document.querySelector(`#question-${id} [data-quiz-lesson-link]`);
+			assert.equal(link.getAttribute("href"), href, id);
+			assert.equal(link.textContent, label, id);
+		} finally { dom.window.close(); }
+	}
+	const after = await f.snapshot();
+	assert.deepEqual((await publish(f.root)).changedFiles, []);
+	assert.deepEqual((await publish(f.root, { check: true })).changedFiles, []);
+	assert.deepEqual(await f.snapshot(), after);
+});
+
 test("review links can reach another authored topic without moving the question or changing its content", async t => {
 	const f = await fixture(t);
 	const publish = await publisher();
 	const before = await f.snapshot();
 	const originalQuiz = await f.read(lastQuiz);
-	const question = f.bank.questions.find(question => question.officialId === '0003');
+	const question = f.bank.questions.find(question => question.officialId === '0004');
 	question.lessonTopicId = 'learning-foundations';
 	question.lessonSectionId = 'definitions';
 	await f.write(contentFile, JSON.stringify(f.bank));
@@ -273,6 +299,9 @@ test("invalid reviewed input and media provenance are rejected before authored w
 		['duplicate topic', bank => bank.topics.push(bank.topics[0]), /topic/],
 		['unsafe topic path', bank => bank.topics[0].id = '../outside', /topic/],
 		['blank choice', bank => bank.questions[0].options[0] = ' ', /0003/],
+		['missing lesson reference kind', bank => delete bank.questions[0].lessonReferenceKind, /0003.*lessonReferenceKind/],
+		['unknown lesson reference kind', bank => bank.questions[0].lessonReferenceKind = 'nearest-section', /0003.*lessonReferenceKind/],
+		['null lesson reference kind', bank => bank.questions[0].lessonReferenceKind = null, /0003.*lessonReferenceKind/],
 		['invalid lesson section', bank => bank.questions[0].lessonSectionId = 'missing', /0003.*lessonSectionId/],
 		['unknown lesson topic', bank => bank.questions[0].lessonTopicId = 'missing', /0003.*lessonTopicId/],
 		['unsafe lesson topic', bank => bank.questions[0].lessonTopicId = '../outside', /0003.*lessonTopicId/],

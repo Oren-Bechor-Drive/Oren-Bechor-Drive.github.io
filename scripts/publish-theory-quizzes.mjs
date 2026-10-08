@@ -31,6 +31,9 @@ function renderQuestion(question, index, images) {
 	const id = `question-${question.officialId}`;
 	const lessonTopicId = question.lessonTopicId ?? question.topicId;
 	const lessonHref = lessonTopicId === question.topicId ? "../" : `../../${lessonTopicId}/`;
+	const topicReference = question.lessonReferenceKind === "topic";
+	const href = topicReference ? "../#topic" : `${lessonHref}#${question.lessonSectionId}`;
+	const label = topicReference ? "חזרה לנושא הלימוד" : "חזרה להסבר בנושא";
 	const lines = [
 		indent(5, "<fieldset"), indent(6, 'class="quiz-question"'),
 		indent(6, `id="${id}"`), indent(6, `aria-describedby="${id}-prompt"`),
@@ -56,7 +59,7 @@ function renderQuestion(question, index, images) {
 		indent(7, "<summary>בדיקת התשובה</summary>"), indent(7, "<p>"),
 		prose(8, `התשובה הנכונה: ${question.options[question.correctOptionIndex]}`), indent(7, "</p>"),
 		indent(7, "<p data-quiz-explanation>"), prose(8, question.explanation), indent(7, "</p>"),
-		indent(7, `<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="${escape(lessonHref)}#${escape(question.lessonSectionId)}">חזרה להסבר בנושא</a></p>`),
+		indent(7, `<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="${escape(href)}">${label}</a></p>`),
 		indent(6, "</details>"), indent(6, '<p class="quiz-source">'),
 		prose(7, `מקור: שאלה ${question.officialId}${question.adaptation ? " (נוסח מעודכן)" : ""}.`),
 		indent(6, "</p>"), indent(5, "</fieldset>"));
@@ -98,6 +101,8 @@ async function validateSource(rootDir, bank, images) {
 			invalid(`invalid or duplicate question ${id}`);
 		ids.add(id);
 		if (!topicIds.has(question.topicId)) invalid(`${id}: unknown topic ${question.topicId}`);
+		if (question.lessonReferenceKind !== "explanation" && question.lessonReferenceKind !== "topic")
+			invalid(`${id}: lessonReferenceKind must be explanation or topic`);
 		const lessonTopicId = question.lessonTopicId === undefined ? question.topicId : question.lessonTopicId;
 		if (!topicIds.has(lessonTopicId)) invalid(`${id}: unknown lessonTopicId ${lessonTopicId}`);
 		if (!text(question.lessonSectionId) || !lessonAnchors.get(lessonTopicId).has(question.lessonSectionId))
