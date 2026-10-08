@@ -72,3 +72,25 @@ test("protected-page baselines show guidance and a public library link without i
 		await page.close();
 	}
 });
+
+test("rate-limit guidance preserves credentials and uses known seconds or generic waiting", async t => {
+ const { app, browser } = await fixture(t);
+ for (const [header, wanted] of [["840", "אפשר לנסות שוב בעוד 840 שניות"], [null, "המתינו מעט ונסו שוב"], ["86401", "המתינו מעט ונסו שוב"]]) {
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  let mutations = 0;
+  await page.route("**/api/account/login", async route => {
+   mutations++;
+   await route.fulfill({ status: 429, headers: { "content-type": "application/json", ...(header ? { "Retry-After": header } : {}) }, body: JSON.stringify({ error: "rate_limited" }) });
+  });
+  await page.goto(app.origin + "/account/login.html");
+  await page.getByLabel("כתובת אימייל").fill("learner@example.test");
+  await page.getByLabel("סיסמה", { exact: true }).fill("correct-password");
+  await page.getByRole("button", { name: "כניסה לחשבון", exact: true }).click();
+  await page.getByRole("alert").filter({ hasText: wanted }).waitFor();
+  assert.equal(await page.getByLabel("כתובת אימייל").inputValue(), "learner@example.test");
+  assert.equal(await page.getByLabel("סיסמה", { exact: true }).inputValue(), "correct-password");
+  assert.equal(mutations, 1);
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+  await page.close();
+ }
+});

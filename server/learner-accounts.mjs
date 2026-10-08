@@ -160,7 +160,7 @@ export function createLearnerAccounts({ origin, provider = null, googleEnabled =
 			if (route === "resend") {
 				const flow = signupFlow(record);
 				if (!flow) return { data: { ok: true, verification: null } };
-				if (flow.nextResendAt > now()) fail(429, "rate_limited");
+				if (flow.nextResendAt > now()) throw Object.assign(new Error("rate_limited"), { status: 429, code: "rate_limited", retryAfterSeconds: Math.ceil((flow.nextResendAt - now()) / 1000) });
 				flow.nextResendAt = now() + 60_000;
 				if (await admit(flow.email)) {
 					try { await provider.resend(flow.email, flow); }

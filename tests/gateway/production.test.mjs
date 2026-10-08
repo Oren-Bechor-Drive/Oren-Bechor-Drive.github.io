@@ -23,8 +23,8 @@ test("production uses durable adapters and defaults to closed admission without 
    assert.match(body.p_data.payload, /^[A-Za-z0-9+/]+=*$/);
    return Response.json({ status: "ok" });
   }
-  assert.equal(url, "https://project.supabase.co/rest/v1/rpc/gateway_rate_limit");
-  return Response.json(true);
+  assert.equal(url, "https://project.supabase.co/rest/v1/rpc/gateway_rate_limit_decision");
+  return Response.json({ allowed: true, retryAfterSeconds: 0 });
  } });
  assert.equal(calls, 0);
  assert.equal(options.origin,env.APP_ORIGIN);
@@ -33,8 +33,8 @@ test("production uses durable adapters and defaults to closed admission without 
  assert.equal(options.media,null);
  const anonymous = await options.sessions.rotate(null, "anonymous");
  assert.match(anonymous.token, /^[A-Za-z0-9_-]{43}$/);
- assert.equal(await options.requestLimiter("192.0.2.1"),true);
- assert.equal(await options.mutationLimiter("192.0.2.1"),true);
+ assert.deepEqual(await options.requestLimiter("192.0.2.1"), { allowed: true, retryAfterSeconds: 0 });
+ assert.deepEqual(await options.mutationLimiter("192.0.2.1"), { allowed: true, retryAfterSeconds: 0 });
  assert.equal(calls,3);
  const pilot = createProductionGatewayOptions({ ...env, REGISTRATION_MODE:"pilot", PILOT_EMAILS:"owner@example.test" });
  assert.equal(pilot.admit("owner@example.test"),true);

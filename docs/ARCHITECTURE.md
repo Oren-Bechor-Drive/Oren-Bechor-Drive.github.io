@@ -73,6 +73,8 @@ These changes preserve separate static quiz content and the small runtime intera
 
 `account/return-destination.js` owns the protected return-path allowlist shared by password-login navigation and server-held Google flows. It admits only the account page, learning page or the exact reader section/access contract. `learner-accounts` stores the normalized Google destination with PKCE state and revalidates it after callback authentication; neither provider URLs nor callback parameters choose it.
 
+`account/retry-guidance.js` validates bounded integer `Retry-After` headers and formats Hebrew waiting guidance for account, learning and reader consumers. Local and database limiters return `{ allowed, retryAfterSeconds }`; the gateway emits a header only for a known valid denial. Persistent decision and compatibility RPCs share one transaction/counter. Provider throttling without known metadata remains generic. `createProtectedPage` exposes its rendering abort signal for bounded non-JSON media requests while guarding every completion effect.
+
 `server/start.mjs` reads provider credentials only from the server environment, refuses production startup because sessions are intentionally process-local, and connects process signals to application shutdown. It and the test gateway fixture both use `startLocalApplication` from `server/application.mjs` to serve the public site, `/api/account/*`, section routes, and quiz routes on loopback. The [account setup guide](local-accounts.md) owns runtime configuration and the [design](plans/session-gateway-design.md) records the account slice.
 
 | Module | Ownership |

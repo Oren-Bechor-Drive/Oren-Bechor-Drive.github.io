@@ -1,7 +1,7 @@
 import { createLearnerAccounts } from "./learner-accounts.mjs";
 import { inspectPassword } from "../account/password-policy.js";
 
-const fail = (status, code) => { throw Object.assign(new Error(code), { status, code }); };
+const fail = (status, code, retryAfterSeconds) => { throw Object.assign(new Error(code), { status, code, retryAfterSeconds }); };
 const fields = {
 	login: ["email", "password"], register: ["email", "password"], recover: ["email"],
 	reset: ["password"], google: ["returnTo"], logout: [], resend: [],
@@ -61,7 +61,7 @@ export function createGateway({ origin, provider = null, media = null, googleEna
 	async function readMutation(req, token, bodyType, limiter) {
 		if (req.headers.origin !== origin || req.headers["content-type"]?.split(";")[0].trim() !== "application/json"
 			|| !await accounts.acceptsRequest(token, req.headers["x-csrf-token"])) fail(403, "request_rejected");
-		if (limiter && !await limiter(req.socket.remoteAddress)) fail(429, "rate_limited");
+		if (limiter) await enforceLimit(limiter, req.socket.remoteAddress);
 		return input(req, bodyType);
 	}
 	return async function handle(req, res) {
@@ -71,7 +71,7 @@ export function createGateway({ origin, provider = null, media = null, googleEna
 		res.setHeader("X-Content-Type-Options", "nosniff");
 		let route;
 		try {
-			if (!await requestLimit(req.socket.remoteAddress)) fail(429, "rate_limited");
+			await enforceLimit(requestLimit, req.socket.remoteAddress);
 			const url = new URL(req.url, origin);
 			const cookies = (req.headers.cookie ?? "").split(";").map(part => part.trim()).filter(part => part.startsWith(`${cookieName}=`));
 			const token = cookies.length === 1 ? cookies[0].slice(cookieName.length + 1) : null;
@@ -154,7 +154,7 @@ export function createGateway({ origin, provider = null, media = null, googleEna
 			else if (status >= 500) { status = 503; code = "unavailable"; }
 			else if (status === 429) { code = "rate_limited"; }
 			else if (!["invalid_input", "invalid_email", "invalid_password", "request_rejected", "recovery_required", "session_expired", "too_large", "not_found", "lesson_unavailable", "learning_unavailable", "quiz_conflict", "method_not_allowed", "google_unavailable"].includes(code)) code = "request_failed";
-			if (status === 429) res.setHeader("Retry-After", "60");
+			if (status === 429 && Number.isInteger(error.retryAfterSeconds) && error.retryAfterSeconds >= 1 && error.retryAfterSeconds <= 86400) res.setHeader("Retry-After", String(error.retryAfterSeconds));
 			json(res, { error: code }, status);
 		}
 	};
@@ -163,13 +163,23 @@ export function createGateway({ origin, provider = null, media = null, googleEna
 function createRateLimit({ now = Date.now, limit = 20, windowMs = 900_000, capacity = 2000 } = {}) {
 	const buckets = new Map();
 	return address => {
-		for (const [key, value] of buckets) if (value.until <= now()) buckets.delete(key);
+		const time = now();
+		for (const [key, value] of buckets) if (value.until <= time) buckets.delete(key);
 		let value = buckets.get(address);
 		if (!value) {
-			if (buckets.size >= capacity) return false;
-			value = { count: 0, until: now() + windowMs };
+			if (buckets.size >= capacity) return { allowed: false, retryAfterSeconds: Math.max(1, Math.ceil((Math.min(...Array.from(buckets.values(), item => item.until)) - time) / 1000)) };
+			value = { count: 0, until: time + windowMs };
 			buckets.set(address, value);
 		}
-		return ++value.count <= limit;
+		if (value.count >= limit) return { allowed: false, retryAfterSeconds: Math.max(1, Math.ceil((value.until - time) / 1000)) };
+		value.count++;
+		return { allowed: true, retryAfterSeconds: 0 };
 	};
+}
+
+async function enforceLimit(limiter, address) {
+	const decision = await limiter(address);
+	if (!decision || typeof decision.allowed !== "boolean" || !Number.isInteger(decision.retryAfterSeconds)
+		|| (decision.allowed ? decision.retryAfterSeconds !== 0 : decision.retryAfterSeconds < 1 || decision.retryAfterSeconds > 86400)) fail(503, "unavailable");
+	if (!decision.allowed) fail(429, "rate_limited", decision.retryAfterSeconds);
 }

@@ -14,7 +14,7 @@ test("account, reading-position and quiz mutations share admission while preserv
 		return { ok: true };
 	};
 	let limitCalls = 0, allow = true;
-	const app = await startAccountGateway({ provider, mutationLimiter: async () => { limitCalls++; return allow; } });
+	const app = await startAccountGateway({ provider, mutationLimiter: async () => { limitCalls++; return { allowed: allow, retryAfterSeconds: allow ? 0 : 840 }; } });
 	t.after(app.close);
 	const client = browserClient(app.origin);
 	await client.request();

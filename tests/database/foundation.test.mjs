@@ -292,6 +292,7 @@ test("effective function privileges and search paths restrict every administrati
 				.flatMap(name => [`private.${name}`, `public.${name}`]),
 		],
 		service_role: ["private.gateway_session", "public.gateway_session", "private.gateway_rate_limit", "public.gateway_rate_limit",
+			"private.gateway_rate_limit_decision", "public.gateway_rate_limit_decision",
 			"private.sweep_gateway_rate_limits", "public.sweep_gateway_rate_limits", "private.provision_learner", "public.provision_learner", "public.publish_section",
 			"public.publish_learning_section", "private.publish_quiz", "public.publish_quiz", "private.sweep_expired_learning", "public.sweep_expired_learning"],
 	};

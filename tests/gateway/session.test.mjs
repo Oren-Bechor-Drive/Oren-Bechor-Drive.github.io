@@ -236,15 +236,20 @@ test("login keeps existing short passwords and its 128 Unicode character maximum
 });
 
 test("account rate limits reject excess requests before reaching the provider", async t => {
-	const { client, provider } = await setup(t, { authLimit: 2 });
+	let now = 0;
+	const { client, provider } = await setup(t, { authLimit: 2, now: () => now });
 	await client.request();
 	await client.request("login", credentials);
 	await client.request("logout", {});
 	await client.request();
 	const result = await client.request("login", credentials);
 	assert.equal(result.response.status, 429);
-	assert.ok(result.response.headers.get("retry-after"));
-	assert.equal(provider.calls.filter(call => call[0] === "password").length, 1);
+	assert.equal(result.response.headers.get("retry-after"), "900");
+	now += 60_000;
+	assert.equal((await client.request("login", credentials)).response.headers.get("retry-after"), "840");
+	now += 840_000;
+	assert.equal((await client.request("login", credentials)).response.status, 200);
+	assert.equal(provider.calls.filter(call => call[0] === "password").length, 2);
 });
 
 test("static service exposes only public files", async t => {

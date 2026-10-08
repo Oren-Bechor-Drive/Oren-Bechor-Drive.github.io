@@ -5,11 +5,11 @@ const options = { url: "https://project.supabase.co", serviceKey: "sb_secret_pri
 
 test("persistent limits hash addresses and share keys across independent instances", async () => {
  const requests = [];
- const fetchImpl = async (url, init) => { requests.push({ url, ...init }); return Response.json(true); };
+ const fetchImpl = async (url, init) => { requests.push({ url, ...init }); return Response.json({ allowed: true, retryAfterSeconds: 0 }); };
  const first = createDatabaseRateLimit({ ...options, fetchImpl });
  const second = createDatabaseRateLimit({ ...options, fetchImpl });
- assert.equal(await first("192.0.2.1"), true);
- assert.equal(await second("192.0.2.1"), true);
+ assert.deepEqual(await first("192.0.2.1"), { allowed: true, retryAfterSeconds: 0 });
+ assert.deepEqual(await second("192.0.2.1"), { allowed: true, retryAfterSeconds: 0 });
  await createDatabaseRateLimit({ ...options, scope: "mutations", fetchImpl })("192.0.2.1");
  const bodies = requests.map(request => JSON.parse(request.body));
  assert.match(bodies[0].p_bucket_key, /^[0-9a-f]{64}$/);
@@ -21,12 +21,12 @@ test("persistent limits hash addresses and share keys across independent instanc
  assert.equal(requests[0].redirect,"error");
  assert.equal(requests[0].headers.apikey,options.serviceKey);
  assert.equal(requests[0].headers.Authorization,undefined);
- assert.equal(await first(undefined),false);
+ await assert.rejects(first(undefined), error => error.status === 400);
 });
 
 test("quota denial and provider failure never fall back to process-local counters", async () => {
- assert.equal(await createDatabaseRateLimit({ ...options, fetchImpl: async () => Response.json(false) })("::1"),false);
- for (const fetchImpl of [async () => Response.json({ allowed:true }),async () => new Response("private provider details",{status:500}),async () => { throw new Error("private token"); }]) {
+ assert.deepEqual(await createDatabaseRateLimit({ ...options, fetchImpl: async () => Response.json({ allowed: false, retryAfterSeconds: 840 }) })("::1"), { allowed: false, retryAfterSeconds: 840 });
+ for (const fetchImpl of [...[true, false, { allowed:true }, { allowed:true, retryAfterSeconds:1 }, { allowed:false, retryAfterSeconds:0 }, { allowed:false, retryAfterSeconds:86401 }, { allowed:false, retryAfterSeconds:37, secret:"private" }].map(data => async () => Response.json(data)),async () => new Response("private provider details",{status:500}),async () => { throw new Error("private token"); }]) {
   await assert.rejects(createDatabaseRateLimit({ ...options, fetchImpl })("::1"), error => error.status === 503 && error.message === "unavailable");
  }
  assert.throws(() => createDatabaseRateLimit({ ...options, secret:"bad" }));
@@ -37,15 +37,33 @@ test("HTTP gateway awaits shared limits before creating sessions or calling Auth
  const { startAccountGateway, browserClient } = await import("../helpers/account-gateway.mjs");
  let generalAllowed = false, mutationAllowed = false;
  const app = await startAccountGateway({
-  requestLimiter:async () => { await Promise.resolve(); return generalAllowed; },
-  mutationLimiter:async () => { await Promise.resolve(); return mutationAllowed; },
+  requestLimiter:async () => { await Promise.resolve(); return { allowed: generalAllowed, retryAfterSeconds: generalAllowed ? 0 : 57 }; },
+  mutationLimiter:async () => { await Promise.resolve(); return { allowed: mutationAllowed, retryAfterSeconds: mutationAllowed ? 0 : 840 }; },
  });
  t.after(() => app.close());
  const browser = browserClient(app.origin);
- assert.equal((await browser.request("session")).response.status,429);
+ const generalDenied = await browser.request("session");
+ assert.equal(generalDenied.response.status,429);
+ assert.equal(generalDenied.response.headers.get("retry-after"),"57");
  generalAllowed = true;
  assert.equal((await browser.request("session")).response.status,200);
- assert.equal((await browser.request("login",{email:"learner@example.test",password:"correct-password"})).response.status,429);
+ const mutationDenied = await browser.request("login",{email:"learner@example.test",password:"correct-password"});
+ assert.equal(mutationDenied.response.status,429);
+ assert.equal(mutationDenied.response.headers.get("retry-after"),"840");
  mutationAllowed = true;
  assert.equal((await browser.request("login",{email:"learner@example.test",password:"correct-password"})).response.status,200);
+});
+
+test("provider throttling without known metadata emits no fabricated retry window", async t => {
+ const { startAccountGateway, browserClient, accountProvider } = await import("../helpers/account-gateway.mjs");
+ const provider = accountProvider();
+ provider.password = async () => { throw Object.assign(new Error("private detail"), { status: 429 }); };
+ const app = await startAccountGateway({ provider });
+ t.after(app.close);
+ const client = browserClient(app.origin);
+ await client.request();
+ const result = await client.request("login", { email: "learner@example.test", password: "correct-password" });
+ assert.equal(result.response.status, 429);
+ assert.equal(result.response.headers.get("retry-after"), null);
+ assert.deepEqual(result.data, { error: "rate_limited" });
 });
