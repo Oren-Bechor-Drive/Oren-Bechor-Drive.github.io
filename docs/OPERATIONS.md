@@ -182,3 +182,24 @@ Do not claim that monitoring, a staff console, backups, reconciliation, or an in
 Locally simulate failed Auth, learner RPC, position, private-media and rate-store requests. Confirm a generic safe error with `private, no-store` and an approved category/operation/status event; no request values or provider details may appear. Repeat the same failure within 60 seconds to check suppression, then check the accumulated count after the window. A configuration error may name only its approved field and `missing`/`invalid` reason.
 
 For an incident, verify the public homepage separately from account session/login, an authorized learning read/save and private-media GET/HEAD/range behavior. Use owned synthetic fixtures locally. Hosted probes require an authorized tester and the owner's operational setup. Local stderr and Worker-emitted events are implemented; cloud collection remains disabled and alert destinations, retention and responder are unresolved. See [hosting diagnostics](hosting.md#safe-diagnostics).
+
+## Withdraw a protected quiz version
+
+This operation is locally implemented and verified. Applying its migration or operating on a hosted version requires an authorized hosted change. Do not run fixture Auth bootstrap or synthetic grants on that target.
+
+1. Identify the exact immutable quiz-version UUID from the trusted publication/review record. Confirm its topic and whether it is current; do not guess the UUID from a learner attempt or a public question ID. Record the incident/review reference and affected scope.
+2. Use the service-only operation with that exact UUID and a nonblank reason/review reference of at most 2000 characters:
+
+   ```sql
+   select public.withdraw_quiz_version(
+       '<exact-version-uuid>'::uuid,
+       '<incident-or-review-reference>'
+   );
+   ```
+
+   Replace both placeholders before executing. The result contains `versionId` and `withdrawnAt`. Repeating withdrawal is idempotent and retains the original reason/time. Withdrawal requires no teaching-approval claim.
+3. In an authorized owned test account, verify the affected unfinished attempt returns only its ID, topic, revision and withdrawn status. Save/submit must fail with `P4100` / HTTP 410 `quiz_withdrawn`; questions and preserved local answers must clear. Verify the current catalog omits the withdrawn version and unrelated drafts remain usable. Verify submitted history, original grades and completion remain unchanged.
+4. Review/correct the instruction, obtain approval for the exact replacement revision and publish through the existing trusted `publish_quiz` contract. An explicit learner start must create a new empty revision-zero draft; never migrate old answers automatically. Without a corrected current version, new affected starts remain unavailable.
+5. Keep the withdrawal record and original immutable content. A frontend rollback must not reactivate the withdrawn version or rewrite migration history. Disable affected entry points until compatible code is restored.
+
+Closing registration admission is a separate response: closed mode rejects existing gateway sessions on their next authorization check as well as new admission. It does not revoke provider tokens or independently block provisioned learners from direct authorized database/provider RPCs. Withdrawal enforces the version-specific stop at the database boundary. Decide any broader account/provider revocation through the owner's incident process; no such action is performed by this plan.

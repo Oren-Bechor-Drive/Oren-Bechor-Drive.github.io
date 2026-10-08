@@ -43,6 +43,16 @@ Only a trusted publisher can call these public SECURITY INVOKER RPCs; their priv
 
 The example describes the schema, not publishable course content. IDs are unique within their scope. Each question has 2-6 choices. Publication rejects missing explanations, invalid correct choices and malformed questions. No real questions or approvals are seeded. The existing ten topic slugs should be used for the real course. Oren's supplied content and the owner's approval records are still required before launch.
 
+## Withdraw an unsafe protected quiz version
+
+The service-only `public.withdraw_quiz_version(version_uuid, reason_reference)` records an immutable withdrawal without rewriting the quiz version. The reference must be nonblank and at most 2000 characters. Repeating the operation returns the original `{ versionId, withdrawnAt }` and preserves its original reason. No hosted version has been withdrawn by these local changes.
+
+An owned unfinished attempt against that version reads only `{ id, topicKey, revision, status: "withdrawn" }`. Save/submit returns SQLSTATE `P4100`, mapped at the account boundary to HTTP 410 `{ error: "quiz_withdrawn" }`. The browser clears questions, controls and preserved draft answers, then offers an explicit return to learning. Submitted attempts, grades, history and completion retain their original evidence. Withdrawal does not select a new retention policy.
+
+The active catalog omits a withdrawn current version. After an approved corrected version is published, an explicit start marks the learner's old unfinished record withdrawn and creates an empty revision-zero draft. Answers are never copied. Ordinary publication without withdrawal continues to resume an existing immutable-version draft. Learner operations hold their existing learner/attempt locks before shared version locks; withdrawal holds only the exclusive version lock. Concurrent submission either commits before withdrawal or observes it and fails.
+
+Follow the [operator withdrawal procedure](OPERATIONS.md#withdraw-a-protected-quiz-version) for exact version selection, review references, verification and rollback boundaries.
+
 ## Private media
 
 Media files must live outside the checked-in site and outside any directory containing the site. Set `PRIVATE_MEDIA_ROOT` and `PRIVATE_MEDIA_MANIFEST` together in the server environment. The manifest is an array of server-owned descriptors:
