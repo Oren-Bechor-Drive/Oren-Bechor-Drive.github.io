@@ -21,6 +21,8 @@ The local Worker serves the public site even without credentials; its account AP
 
 The [local recovery rehearsal](local-recovery.md) checks owned synthetic databases and private-media copies. It is separate from provider backup formats and does not establish a hosted recovery path.
 
+`npm run check:pilot:local` checks the closed/disabled defaults, actual public package and synthetic account, reading, quiz, withdrawal and media boundaries. It accepts only the fixed local mode, ignores environment-based targets, removes its owned fixtures and returns a nonzero exit status on failure. Its nine external gates remain explicit even when all local checks pass. The [local benchmark](local-performance.md) records latency, errors, transfer and bounded concurrency separately; it does not measure hosted capacity.
+
 ## Configuration
 
 Copy [.env.hosted.example](../.env.hosted.example) to ignored `.env.hosted.local`, fill the selected environment's values, then run `npm run check:hosting`. This validates structure locally and makes no network requests. It does not verify a provider plan or prove that authentication works.

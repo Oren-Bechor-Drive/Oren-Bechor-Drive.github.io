@@ -313,6 +313,16 @@ npm test
 git diff --check
 ```
 
+The separate local tools use owned synthetic fixtures and accept no hosted target:
+
+```bash
+npm run check:pilot:local
+npm run rehearse:recovery
+npm run benchmark:local
+```
+
+The pilot checker reports the checkout revision, migration list, nine local checks and unresolved external gates. The [recovery runbook](docs/local-recovery.md) describes its fixture archive and separate media/session-key checks. The [performance baseline](docs/local-performance.md) records reproducible desktop/mobile profiles, successful-request latency, errors, transfer and bounded concurrency. Run the benchmark without competing test workloads; its local results do not establish hosted capacity or approve opening accounts.
+
 `package.json` overrides transitive Sharp versions with the direct development dependency's patched range. This keeps Miniflare's image decoder on Sharp 0.35.5 or newer even while its upstream dependency pins 0.35.4. The lockfile also includes the patched `source-map-js` 1.2.2. Image optimization and local Worker tests exercise these development dependencies; the static website does not load them.
 
 `npm run check:links` discovers the same authored HTML pages as the media audit. It checks local `href` and `src` declarations, directory pages, query strings, and HTML fragments. It reports missing files, missing fragments, malformed local references, empty `src` values, unreadable HTML, and references outside a configured deployment prefix. It skips external and embedded URLs and makes no network requests. Responsive image candidates, CSS URLs, image metadata, MIME types, and rendered navigation stay with the media audit and browser tests. The CLI checks the current domain-root deployment; use `auditSiteLinks({ rootDir, deploymentPrefix })` in a focused test for a prefixed deployment.
@@ -368,6 +378,8 @@ See [database ownership](docs/ARCHITECTURE.md#accounts-and-access-development-da
 - [Operations](docs/OPERATIONS.md): current content review, publication, live checks, support intake and rollback procedures.
 - [Official source review](docs/reference/official-source-review-2026-09-22.md): dated official-resource audit, evidence and limits.
 - [Site quality review](docs/reviews/site-quality-2026-09-22.md): current responsive, accessibility and local resource audit with remaining manual checks.
+- [Local performance baseline](docs/local-performance.md): synthetic timing, transfer and bounded-concurrency evidence.
+- [Owner launch inputs](docs/launch-inputs.md): concrete supplied facts, missing decisions, data-policy dependencies and pilot inputs.
 - [AGENTS.md](AGENTS.md): contributor boundaries and required checks.
 - [Font sources and license](assets/fonts/README.md): the local font files and their delivery requirements.
 - [Supplied course brief](docs/reference/the-idea.pdf): original instructor and course material.

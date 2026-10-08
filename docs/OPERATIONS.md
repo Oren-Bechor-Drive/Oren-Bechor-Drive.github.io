@@ -162,6 +162,8 @@ Do not treat an automated `403` from a government page as proof that the visitor
 
 The following checklist is a readiness gate for a future service. It does not describe current capabilities.
 
+The independent local checkpoint uses `npm run check:pilot:local`, `npm run rehearse:recovery` and the [local performance baseline](local-performance.md). These commands own disposable synthetic resources, cannot select a hosted target and report failures with nonzero exit status. Passing them supplies local evidence; the [owner launch inputs](launch-inputs.md) still require actual approval, provider configuration, responders, recovery ownership and human/device verification before a hosted pilot.
+
 Before accepting payment or storing learner data:
 
 - document each provider, production and test environment, source of truth, state transition, credential owner, and authorized escalation route;

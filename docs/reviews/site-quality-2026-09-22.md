@@ -121,3 +121,13 @@ EOF
 - Recheck on physical iOS and Android devices for browser chrome, virtual keyboard, and safe-area behavior.
 - The current design intentionally hides the visual document scrollbar, and an existing browser test preserves that behavior. Reconsidering it needs a design decision and an update to that shared contract.
 - The performance figures do not include production compression, latency, cache reuse, CPU cost, Core Web Vitals, or assistive-technology overhead.
+
+## Protected-learning follow-up on 2026-10-08
+
+Local automated verification passed 44 focused browser tests. Firefox and WebKit exercise password sign-in with an allowed reader return, acknowledged position save/restore, private DOM clearing on hide, paid entitlement revocation, quiz withdrawal and replacement publication. Chromium checks native accessible roles and Hebrew names, RTL reading/radio order, disclosure and radio keyboard behavior, pointer/touch focus suppression, visible keyboard focus, forced-color control boundaries, 200% root-font sizing at 320px and reduced motion.
+
+```bash
+node --test tests/browser/cross-browser-smoke.test.mjs tests/browser/design-accessibility.test.mjs tests/browser/protected-accessibility.test.mjs tests/browser/private-media-accessibility.test.mjs
+```
+
+The final additional reduced-motion assertions passed all four protected-accessibility cases. Collaborative T3 browser checks covered the protected reader and quiz at 1440px and 320px. T3 could not emulate reduced motion, so that preference was verified in Playwright. These checks use deterministic Auth, disposable PostgreSQL and owned synthetic media; hosted providers, physical devices and assistive technology remain unverified. See the [human follow-up checklist](../manual-test-lessons.md#human-and-physical-device-follow-up-recorded-on-2026-10-08) and [local performance baseline](../local-performance.md) for their separate evidence boundaries.
