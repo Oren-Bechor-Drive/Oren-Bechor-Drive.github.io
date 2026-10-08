@@ -9,15 +9,15 @@ import { createFixtureRecovery } from "./database-recovery.mjs";
 const root = new URL("../../", import.meta.url);
 const ownedDatabases = new WeakMap();
 
-// Recovery receives a capability for this exact fixture, never connection settings.
+// Fixture adapters receive a capability for this exact database, never connection settings.
 export async function withOwnedDatabase(database, operation) {
 	const owned = ownedDatabases.get(database);
-	if (!owned) throw new Error("Recovery requires a startDatabase-owned fixture");
+	if (!owned) throw new Error("Database operation requires a startDatabase-owned fixture");
 	if (owned.closed()) throw new Error("Database fixture is closed");
 	const client = await owned.connect();
 	try {
 		const address = (await client.query("select host(inet_server_addr()) as address")).rows[0].address;
-		if (address !== "127.0.0.1") throw new Error("Recovery requires an owned loopback database");
+		if (address !== "127.0.0.1") throw new Error("Database operation requires an owned loopback database");
 		return await operation(client, structuredClone(owned.manifest));
 	} finally { await client.end(); }
 }
@@ -38,16 +38,8 @@ export async function startDatabase() {
 	if (arguments.length) throw new Error("startDatabase accepts no arguments or external configuration");
 	const directory = await mkdtemp(path.join(tmpdir(), "oren-database-test-"));
 	const logs = [];
-	const postgres = new EmbeddedPostgres({
-		databaseDir: path.join(directory, "data"),
-		user: "postgres", password: randomBytes(24).toString("hex"),
-		port: await availablePort(), persistent: false,
-		postgresFlags: ["-h", "127.0.0.1", "-k", directory],
-		onLog: (message) => logs.push(String(message)),
-		onError: (message) => logs.push(String(message)),
-	});
 	const connections = new Set();
-	let closed = false, closing;
+	let postgres, closed = false, closing;
 	async function connect() {
 		if (closed) throw new Error("Database fixture is closed");
 		const client = postgres.getPgClient("postgres", "127.0.0.1");
@@ -61,12 +53,20 @@ export async function startDatabase() {
 		closed = true;
 		closing = (async () => {
 			await Promise.allSettled([...connections].map((client) => client.end()));
-			try { await postgres.stop(); }
+			try { await postgres?.stop(); }
 			finally { await rm(directory, { recursive: true, force: true }); }
 		})();
 		return closing;
 	}
 	try {
+		postgres = new EmbeddedPostgres({
+			databaseDir: path.join(directory, "data"),
+			user: "postgres", password: randomBytes(24).toString("hex"),
+			port: await availablePort(), persistent: false,
+			postgresFlags: ["-h", "127.0.0.1", "-k", directory],
+			onLog: (message) => logs.push(String(message)),
+			onError: (message) => logs.push(String(message)),
+		});
 		await postgres.initialise();
 		await postgres.start();
 		const admin = await connect();

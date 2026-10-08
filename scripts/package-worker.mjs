@@ -20,6 +20,9 @@ export async function packageWorkerAssets({ root = siteRoot, output } = {}) {
 	const existing = await lstat(output).catch(error => { if (error.code !== "ENOENT") throw error; });
 	if (existing && (!existing.isDirectory() || existing.isSymbolicLink())) throw new Error("Worker output must be a directory without symlinks.");
 	const temporary = await mkdtemp(path.join(path.dirname(output), ".package-"));
+	const prepared = path.join(temporary, "prepared");
+	const previous = path.join(temporary, "previous");
+	let retainRecovery = false;
 	const files = [];
 	async function copy(relative) {
 		if (relative.split(path.sep).some(part => part.startsWith(".") || part.includes("\\"))) return;
@@ -31,19 +34,30 @@ export async function packageWorkerAssets({ root = siteRoot, output } = {}) {
 			for (const name of (await readdir(source)).sort()) await copy(path.join(relative, name));
 		} else if (entry.isFile() && publicTypes[path.extname(relative)]) {
 			if (entry.size > 25 * 1024 * 1024) throw new Error(`Public asset exceeds the Worker 25 MiB limit: ${relative}`);
-			await mkdir(path.dirname(path.join(temporary, relative)), { recursive: true });
-			await copyFile(source, path.join(temporary, relative));
+			await mkdir(path.dirname(path.join(prepared, relative)), { recursive: true });
+			await copyFile(source, path.join(prepared, relative));
 			files.push(relative.split(path.sep).join("/"));
 		}
 	}
 	try {
+		await mkdir(prepared);
 		for (const relative of [...publicTopFiles, ...publicDirectories]) await copy(relative);
 		if (!files.includes("index.html")) throw new Error("Public index.html is required.");
-		await writeFile(path.join(temporary, "_headers"), "/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n  Content-Security-Policy: frame-ancestors 'none'\n  Cache-Control: no-cache\n");
-		await rm(output, { recursive: true, force: true });
-		await rename(temporary, output);
+		await writeFile(path.join(prepared, "_headers"), "/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n  Content-Security-Policy: frame-ancestors 'none'\n  Cache-Control: no-cache\n");
+		if (existing) await rename(output, previous);
+		try { await rename(prepared, output); }
+		catch (installationError) {
+			if (existing) {
+				try { await rename(previous, output); }
+				catch (restorationError) {
+					retainRecovery = true;
+					throw Object.assign(new AggregateError([installationError, restorationError], `Worker package installation and restoration failed. Recover the previous package from ${previous}.`), { recoveryDirectory: temporary });
+				}
+			}
+			throw installationError;
+		}
 		return { output, files: files.sort() };
-	} finally { await rm(temporary, { recursive: true, force: true }); }
+	} finally { if (!retainRecovery) await rm(temporary, { recursive: true, force: true }); }
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {

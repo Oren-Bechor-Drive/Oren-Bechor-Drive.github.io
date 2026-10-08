@@ -169,10 +169,8 @@ async function load(preservePosition = false) {
 		if (!descriptor) throw Object.assign(new Error(), { status: 404 });
 		const data = await request(endpoint);
 		reading = data;
-		const sameVersion = !data.position || data.position.contentVersionId === data.lesson.id;
-		const resumed = positions.hydrate({ contentVersionId: data.lesson.id, csrf: data.csrf,
-			position: sameVersion ? (data.position?.position ?? 0) : 0, revision: data.position?.revision ?? 0,
-			acknowledged: sameVersion && Boolean(data.position) });
+		const { position: resumed, contentChanged } = positions.hydrate({
+			contentVersionId: data.lesson.id, csrf: data.csrf, savedPosition: data.position });
 		heading.textContent = descriptor.title;
 		body.textContent = data.lesson.body;
 		for (const item of data.media) {
@@ -191,7 +189,7 @@ async function load(preservePosition = false) {
 		saveButton.disabled = false;
 		status.textContent = "מיקום הקריאה נשמר אוטומטית בזמן הגלילה.";
 		progress.textContent = `מיקום הקריאה: ${Math.round(resumed / 100)}%.`;
-		positionStatus.textContent = sameVersion ? "קטע הלימוד נטען." : "קטע הלימוד עודכן מאז הקריאה האחרונה. הקריאה מתחילה מראש הקטע.";
+		positionStatus.textContent = contentChanged ? "קטע הלימוד עודכן מאז הקריאה האחרונה. הקריאה מתחילה מראש הקטע." : "קטע הלימוד נטען.";
 		restoring = true;
 		const fraction = resumed / 10000;
 		const top = fraction > 0

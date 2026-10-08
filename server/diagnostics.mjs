@@ -1,6 +1,6 @@
 const categories = new Set(["configuration", "dependency", "unexpected"]);
 const operations = new Set(["startup", "account", "learning", "position", "media", "rate_limit"]);
-const fields = new Set(["APP_ORIGIN", "SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY", "SUPABASE_SECRET_KEY", "SESSION_SECRET", "GOOGLE_AUTH_ENABLED", "PRIVATE_MEDIA_BUCKET", "PRIVATE_MEDIA_ENTRIES"]);
+const fields = new Set(["APP_ORIGIN", "SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY", "SUPABASE_SECRET_KEY", "SESSION_SECRET", "GOOGLE_AUTH_ENABLED", "REGISTRATION_MODE", "PILOT_EMAILS", "PRIVATE_MEDIA_BUCKET", "PRIVATE_MEDIA_ENTRIES"]);
 
 // Only this finite vocabulary can reach the reporter. Caller payloads never do.
 export function createDiagnostics({ write, now = Date.now }) {

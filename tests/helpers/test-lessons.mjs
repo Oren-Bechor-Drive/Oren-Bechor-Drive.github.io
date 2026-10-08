@@ -5,7 +5,10 @@ import { startDatabase, actAs } from "../support/database.mjs";
 import { quizQuestions } from "../fixtures/protected-quiz.mjs";
 
 // Owns deterministic Auth and its disposable PostgreSQL roles, RLS and learner RPCs.
-export async function startLessonGateway({ quiz = false, quizCount = 20, quizTopics = [], longLesson = false, ...gatewayOptions } = {}) {
+export async function startLessonGateway({ quiz = false, quizCount = 20, quizTopics = [], longLesson = false, mediaFactory, ...gatewayOptions } = {}) {
+	if (mediaFactory !== undefined && (typeof mediaFactory !== "function" || Object.hasOwn(gatewayOptions, "media"))) {
+		throw new Error("Supply one lesson media factory or a static media adapter");
+	}
 	const database = await startDatabase();
 	const identities = new Map();
 	const sessions = new Map();
@@ -94,6 +97,18 @@ export async function startLessonGateway({ quiz = false, quizCount = 20, quizTop
 			await client.query("select public.publish_learning_section($1,$2,1,$3,null,$4)",
 				["a524e32d-2640-4d94-a51c-000000000002", "development-test-paid", "שיעור לבדיקה", `תוכן בדיקה בתשלום. זהו טקסט לדוגמה בלבד, ללא חומר מהקורס. פתיחת הטקסט דורשת הרשאת בדיקה זמנית. לא בוצע חיוב.\n\n${paragraphs}`]);
 		});
+		if (mediaFactory) {
+			const versions = await connected(async client => (await client.query(`
+				select s.id as "sectionId", v.id as "contentVersionId", v.access_level as "accessLevel"
+				from public.learning_sections s join public.section_versions v
+				on v.section_id=s.id and v.revision=s.current_revision
+				where s.source_key in ('development-test-free','development-test-paid')
+				order by s.id,v.access_level`)).rows);
+			gatewayOptions.media = await mediaFactory(Object.freeze(versions.map(version => Object.freeze(version))));
+			if (!gatewayOptions.media || !["lookup", "forSection", "send"].every(name => typeof gatewayOptions.media[name] === "function")) {
+				throw new Error("Lesson media factory must return a complete media adapter");
+			}
+		}
 		app = await startAccountGateway({ provider, ...gatewayOptions });
 		return {
 			origin: app.origin,

@@ -16,6 +16,18 @@ test("diagnostics whitelist fields and ignore arbitrary private data and caller 
 	assert.equal(lines.length, 1);
 });
 
+test("registration configuration diagnostics name fields while discarding tester and mode values", () => {
+	const lines = [];
+	const diagnostics = createDiagnostics({ write: line => lines.push(JSON.parse(line)) });
+	for (const field of ["REGISTRATION_MODE", "PILOT_EMAILS"]) {
+		diagnostics.emit({ category: "configuration", operation: "startup", status: 503, field, reason: "invalid",
+			value: "private-tester@example.test", testers: ["private-tester@example.test"], message: "private invalid mode", stack: "private stack" });
+	}
+	assert.deepEqual(lines, ["REGISTRATION_MODE", "PILOT_EMAILS"].map(field =>
+		({ category: "configuration", operation: "startup", status: 503, field, reason: "invalid" })));
+	assert.doesNotMatch(JSON.stringify(lines), /private|@|testers|value|message|stack/);
+});
+
 test("duplicate suppression reports only internally counted events after the window", () => {
 	let time = 0;
 	const lines = [];

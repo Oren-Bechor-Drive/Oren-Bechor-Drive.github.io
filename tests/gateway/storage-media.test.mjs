@@ -8,6 +8,22 @@ import { accountProvider, browserClient, startAccountGateway } from "../helpers/
 const descriptor = { id: "video", sectionId: "a524e32d-2640-4d94-a51c-000000000001", contentVersionId: "a524e32d-2640-4d94-a51c-000000000002", file: "lessons/video.mp4", type: "video/mp4", title: "סרטון בדיקה" };
 const config = { url: "https://test-project.supabase.co", secretKey: "sb_secret_test", bucket: "private-lessons", entries: [descriptor] };
 
+test("Storage construction owns safe origin, key, bucket and descriptor validation", () => {
+	for (const [option, value, field] of [
+		["url", "https://private.example.test", "SUPABASE_URL"],
+		["secretKey", "private invalid key", "SUPABASE_SECRET_KEY"],
+		["bucket", "private invalid bucket", "PRIVATE_MEDIA_BUCKET"],
+		["entries", [{ ...descriptor, file: "../private.mp4" }], "PRIVATE_MEDIA_ENTRIES"],
+	]) {
+		assert.throws(() => createStorageMedia({ ...config, [option]: value }), error => {
+			assert.equal(error.configurationField, field);
+			assert.equal(error.configurationReason, "invalid");
+			assert.doesNotMatch(error.message, /private (invalid|tester|key|bucket)|private\.example\.test|private\.mp4| at /);
+			return true;
+		}, option);
+	}
+});
+
 async function fixture(t, handler, settings = {}) {
 	const requests = [];
 	const storage = createServer((req, res) => { requests.push({ method: req.method, url: req.url, headers: req.headers }); handler(req, res); });

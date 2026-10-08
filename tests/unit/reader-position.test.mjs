@@ -3,7 +3,8 @@ import test from "node:test";
 import { createReaderPosition } from "../../account/reader-position.js";
 
 const version = "11111111-1111-4111-8111-111111111111";
-const snapshot = (changes = {}) => ({ contentVersionId: version, position: 2000, revision: 1, csrf: "fixture-csrf", ...changes });
+const positionRow = (changes = {}) => ({ contentVersionId: version, position: 2000, revision: 1, ...changes });
+const snapshot = (changes = {}) => ({ contentVersionId: version, savedPosition: positionRow(), csrf: "fixture-csrf", ...changes });
 const deferred = () => { let resolve, reject; const promise = new Promise((yes, no) => { resolve = yes; reject = no; }); return { promise, resolve, reject }; };
 
 test("an explicit initial zero position is persisted only after the server acknowledges it", async () => {
@@ -12,12 +13,12 @@ test("an explicit initial zero position is persisted only after the server ackno
 		requests.push(input);
 		return { position: { contentVersionId: input.contentVersionId, position: input.position, revision: 1 } };
 	} });
-	const initial = snapshot({ position: 0, revision: 0 });
-	saver.hydrate(initial);
+	const initial = snapshot({ savedPosition: null });
+	assert.deepEqual(saver.hydrate(initial), { position: 0, contentChanged: false });
 	await saver.flush();
 	assert.equal(requests.length, 0, "loading a new section alone does not claim saved progress");
 	saver.update(0);
-	assert.equal(saver.hydrate(initial), 0, "restoration preserves the explicit pending save");
+	assert.deepEqual(saver.hydrate(initial), { position: 0, contentChanged: false }, "restoration preserves the explicit pending save");
 	await saver.flush();
 	assert.deepEqual(requests.map(({ position, expectedRevision }) => [position, expectedRevision]), [[0, 0]]);
 	await saver.flush();
@@ -28,7 +29,7 @@ test("a missing initial revision cannot masquerade as an acknowledged position",
 	const saver = createReaderPosition({ send: async input => ({ position: {
 		contentVersionId: input.contentVersionId, position: input.position, revision: 0,
 	} }) });
-	saver.hydrate(snapshot({ position: 0, revision: 0 }));
+	saver.hydrate(snapshot({ savedPosition: null }));
 	saver.update(0);
 	await assert.rejects(saver.flush(), { status: 503 });
 });
@@ -39,15 +40,15 @@ test("an explicit zero on a new content version retains the old row revision unt
 		requests.push(input);
 		return { position: { contentVersionId: input.contentVersionId, position: input.position, revision: input.expectedRevision + 1 } };
 	} });
-	const freshVersion = snapshot({ position: 0, revision: 3, acknowledged: false });
-	saver.hydrate(freshVersion);
+	const freshVersion = snapshot({ savedPosition: positionRow({ contentVersionId: "22222222-2222-4222-8222-222222222222", position: 4500, revision: 3 }) });
+	assert.deepEqual(saver.hydrate(freshVersion), { position: 0, contentChanged: true });
 	await saver.flush();
 	assert.equal(requests.length, 0);
 	saver.update(0);
-	assert.equal(saver.hydrate(freshVersion), 0);
+	assert.deepEqual(saver.hydrate(freshVersion), { position: 0, contentChanged: true });
 	await saver.flush();
 	assert.deepEqual(requests.map(({ position, expectedRevision }) => [position, expectedRevision]), [[0, 3]]);
-	saver.hydrate(snapshot({ position: 0, revision: 4, acknowledged: true }));
+	saver.hydrate(snapshot({ savedPosition: positionRow({ position: 0, revision: 4 }) }));
 	saver.update(0);
 	await saver.flush();
 	assert.equal(requests.length, 1);
@@ -72,16 +73,68 @@ test("flush drains a newer position after an in-flight save using its acknowledg
 	assert.equal(requests.length, 2);
 });
 
+test("an idempotent acknowledgement ahead of the base revision drains newer queued progress", async () => {
+	const first = deferred(), requests = [];
+	const saver = createReaderPosition({ send: async input => {
+		requests.push(input);
+		if (requests.length === 1) {
+			await first.promise;
+			return { position: { contentVersionId: input.contentVersionId, position: input.position, revision: 3 } };
+		}
+		return { position: { contentVersionId: input.contentVersionId, position: input.position, revision: input.expectedRevision + 1 } };
+	} });
+	saver.hydrate(snapshot());
+	saver.update(3000);
+	const pending = saver.flush();
+	saver.update(7500);
+	first.resolve();
+	await pending;
+	assert.deepEqual(requests.map(({ position, expectedRevision }) => [position, expectedRevision]), [[3000, 1], [7500, 3]]);
+	await saver.flush();
+	assert.equal(requests.length, 2);
+});
+
+test("unrelated or invalid acknowledgements cannot advance the saved revision", async () => {
+	for (const changed of [{ revision: -1 }, { revision: 0 }, { revision: 1 }, { revision: 2.5 },
+		{ revision: Number.MAX_SAFE_INTEGER + 1 }, { revision: "3" },
+		{ contentVersionId: "22222222-2222-4222-8222-222222222222" }, { position: 9000 }]) {
+		const requests = [];
+		const saver = createReaderPosition({ send: async input => {
+			requests.push(input);
+			return { position: positionRow({ position: input.position, revision: 3, ...changed }) };
+		} });
+		saver.hydrate(snapshot({ savedPosition: positionRow({ revision: 2 }) }));
+		saver.update(3000);
+		await assert.rejects(saver.flush(), { status: 503 });
+		await assert.rejects(saver.flush(), { status: 503 });
+		assert.deepEqual(requests.map(({ expectedRevision }) => expectedRevision), [2, 2]);
+	}
+});
+
+test("hydration selects opaque saved fields without retaining or forwarding the supplied row", async () => {
+	const row = positionRow({ body: "private lesson text", title: "private lesson title", csrf: "row-csrf" });
+	let request;
+	const saver = createReaderPosition({ send: async input => {
+		request = input;
+		return { position: positionRow({ position: input.position, revision: 2 }) };
+	} });
+	assert.deepEqual(saver.hydrate(snapshot({ savedPosition: row })), { position: 2000, contentChanged: false });
+	Object.assign(row, { contentVersionId: "different-version", position: 9000, revision: 99 });
+	saver.update(3000);
+	await saver.flush();
+	assert.deepEqual(request, { contentVersionId: version, position: 3000, expectedRevision: 1, csrf: "fixture-csrf" });
+});
+
 test("a fresh authorized snapshot preserves unsaved position only at a matching revision", async () => {
 	const requests = [];
 	const saver = createReaderPosition({ send: async input => { requests.push(input); return { position: { ...input, revision: input.expectedRevision + 1 } }; } });
 	saver.hydrate(snapshot());
 	saver.update(7500);
-	assert.equal(saver.hydrate(snapshot()), 7500);
+	assert.deepEqual(saver.hydrate(snapshot()), { position: 7500, contentChanged: false });
 	await saver.flush();
 	assert.equal(requests[0].csrf, "fixture-csrf");
 	saver.update(8000);
-	assert.throws(() => saver.hydrate(snapshot({ position: 4000, revision: 3 })), { status: 409 });
+	assert.throws(() => saver.hydrate(snapshot({ savedPosition: positionRow({ position: 4000, revision: 3 }) })), { status: 409 });
 	await assert.rejects(saver.flush(), { status: 409 });
 	assert.equal(requests.length, 1);
 });
@@ -97,7 +150,7 @@ test("restore recognizes an authorized snapshot of its in-flight write without l
 	saver.update(3000);
 	const pending = saver.flush();
 	saver.update(7500);
-	assert.equal(saver.hydrate(snapshot({ position: 3000, revision: 2 })), 7500);
+	assert.deepEqual(saver.hydrate(snapshot({ savedPosition: positionRow({ position: 3000, revision: 2 }) })), { position: 7500, contentChanged: false });
 	first.resolve();
 	await pending;
 	assert.deepEqual(requests.map(({ position, expectedRevision }) => [position, expectedRevision]), [[3000, 1], [7500, 2]]);
@@ -109,7 +162,7 @@ test("an obsolete save failure does not poison a freshly authorized view", async
 	saver.hydrate(snapshot());
 	saver.update(7500);
 	const pending = saver.flush();
-	saver.hydrate(snapshot({ position: 7500, revision: 2 }));
+	saver.hydrate(snapshot({ savedPosition: positionRow({ position: 7500, revision: 2 }) }));
 	old.reject(Object.assign(new Error(), { status: 503 }));
 	await pending;
 	await saver.flush();
@@ -125,14 +178,14 @@ test("repeated restores recognize the same pending acknowledgement and preserve 
 	saver.hydrate(snapshot());
 	saver.update(7500);
 	const pending = saver.flush();
-	assert.equal(saver.hydrate(snapshot()), 7500);
+	assert.deepEqual(saver.hydrate(snapshot()), { position: 7500, contentChanged: false });
 	saver.update(8000);
-	assert.equal(saver.hydrate(snapshot()), 8000);
-	assert.equal(saver.hydrate(snapshot({ position: 7500, revision: 2 })), 8000);
+	assert.deepEqual(saver.hydrate(snapshot()), { position: 8000, contentChanged: false });
+	assert.deepEqual(saver.hydrate(snapshot({ savedPosition: positionRow({ position: 7500, revision: 2 }) })), { position: 8000, contentChanged: false });
 	first.resolve();
 	await pending;
 	assert.deepEqual(requests.map(({ position, expectedRevision }) => [position, expectedRevision]), [[7500, 1], [8000, 2]]);
-	assert.equal(saver.hydrate(snapshot({ position: 8000, revision: 3 })), 8000);
+	assert.deepEqual(saver.hydrate(snapshot({ savedPosition: positionRow({ position: 8000, revision: 3 }) })), { position: 8000, contentChanged: false });
 });
 
 test("repeated restoration still rejects a different position or revision from another writer", async () => {
@@ -145,9 +198,9 @@ test("repeated restoration still rejects a different position or revision from a
 		saver.hydrate(snapshot());
 		saver.update(7500);
 		const pending = saver.flush();
-		assert.equal(saver.hydrate(snapshot()), 7500);
+		assert.deepEqual(saver.hydrate(snapshot()), { position: 7500, contentChanged: false });
 		saver.update(8000);
-		assert.throws(() => saver.hydrate(snapshot(changed)), { status: 409 });
+		assert.throws(() => saver.hydrate(snapshot({ savedPosition: positionRow(changed) })), { status: 409 });
 		const rejected = assert.rejects(pending, { status: 409 });
 		first.resolve();
 		await rejected;
@@ -159,7 +212,7 @@ test("changed content and explicit clearing discard pending local position", asy
 	const saver = createReaderPosition({ send: async input => { requests.push(input); return { position: { ...input, revision: input.expectedRevision + 1 } }; } });
 	saver.hydrate(snapshot());
 	saver.update(7500);
-	assert.equal(saver.hydrate(snapshot({ contentVersionId: "22222222-2222-4222-8222-222222222222", position: 0, revision: 0 })), 0);
+	assert.deepEqual(saver.hydrate(snapshot({ contentVersionId: "22222222-2222-4222-8222-222222222222" })), { position: 0, contentChanged: true });
 	await saver.flush();
 	assert.equal(requests.length, 0);
 	saver.update(4000);
@@ -173,7 +226,7 @@ test("a rotated session never replays the previous session's unsaved position", 
 	const saver = createReaderPosition({ send: async () => { requests++; } });
 	saver.hydrate(snapshot());
 	saver.update(7500);
-	assert.equal(saver.hydrate(snapshot({ csrf: "different-session" })), 2000);
+	assert.deepEqual(saver.hydrate(snapshot({ csrf: "different-session" })), { position: 2000, contentChanged: false });
 	await saver.flush();
 	assert.equal(requests, 0);
 });
@@ -187,6 +240,5 @@ for (const status of [401, 404, 409]) {
 		await assert.rejects(saver.flush(), { status });
 		await assert.rejects(saver.flush(), { status });
 		assert.equal(requests, 1);
-		await saver.settled();
 	});
 }

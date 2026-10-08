@@ -3,6 +3,7 @@ import test from "node:test";
 import { startLessonGateway } from "../helpers/test-lessons.mjs";
 import { browserClient } from "../helpers/account-gateway.mjs";
 import { testSectionPath } from "../fixtures/test-sections.mjs";
+import { createReaderPosition } from "../../account/reader-position.js";
 
 async function login(origin, email) {
 	const client = browserClient(origin);
@@ -51,6 +52,39 @@ test("saved positions survive new sessions, reject stale changes and isolate lea
 	assert.equal((await positionRequest(app.origin, other, "free", { ...input, learnerId: "reader@example.test" })).status, 400);
 	assert.equal((await positionRequest(app.origin, other, "free", { ...input, position: 0 })).status, 200);
 	assert.equal((await readingPosition(app.origin, first, "free")).position.position, 8000);
+});
+
+test("the reader accepts a matching position saved by another session and uses its current revision", async t => {
+	const app = await startLessonGateway();
+	t.after(app.close);
+	const first = await login(app.origin, "matching-reader@example.test");
+	const content = await lesson(app.origin, first, "free");
+	assert.equal((await positionRequest(app.origin, first, "free", { contentVersionId: content.id, position: 2000, expectedRevision: 0 })).status, 200);
+	const savedPosition = (await readingPosition(app.origin, first, "free")).position;
+	const requests = [];
+	const saver = createReaderPosition({ send: async ({ csrf, ...input }) => {
+		assert.equal(csrf, first.csrf);
+		requests.push(input);
+		const response = await positionRequest(app.origin, first, "free", input);
+		assert.equal(response.status, 200);
+		assert.equal(response.headers.get("cache-control"), "private, no-store");
+		return response.json();
+	} });
+	saver.hydrate({ contentVersionId: content.id, csrf: first.csrf, savedPosition });
+	const second = await login(app.origin, "matching-reader@example.test");
+	for (const [position, expectedRevision] of [[4000, 1], [3000, 2]]) {
+		const response = await positionRequest(app.origin, second, "free", { contentVersionId: content.id, position, expectedRevision });
+		assert.equal(response.status, 200);
+		assert.equal((await response.json()).position.revision, expectedRevision + 1);
+	}
+	saver.update(3000);
+	await saver.flush();
+	saver.update(7500);
+	await saver.flush();
+	assert.deepEqual(requests.map(({ position, expectedRevision }) => [position, expectedRevision]), [[3000, 1], [7500, 3]]);
+	assert.deepEqual(await readingPosition(app.origin, first, "free"), { position: { contentVersionId: content.id, position: 7500, revision: 4 } });
+	const conflict = await positionRequest(app.origin, second, "free", { contentVersionId: content.id, position: 8000, expectedRevision: 3 });
+	assert.equal(conflict.status, 409);
 });
 
 test("position writes require valid inputs, CSRF and current paid access without losing saved data", async t => {

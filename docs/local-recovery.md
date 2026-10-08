@@ -31,6 +31,8 @@ The rehearsal also restores withdrawal records and stopped drafts, verifies that
 
 A fixture-generated encryption key restores an authenticated session through the production encrypted-session adapter and service-only database RPC. A different key requires fresh sign-in, and explicit session invalidation removes restored authority. The key lives only in the rehearsal process. This check does not establish production key custody or hosted Auth token validity.
 
+The rehearsal and durable-session tests share [database-session-fetch.mjs](../tests/support/database-session-fetch.mjs). That transport accepts only a live owned loopback database, the fixed synthetic RPC origin/key and allowed session arguments. It refuses remote origins and bearer tokens. Each request uses its own service-role transaction and closes the connection after success or failure.
+
 Private media has its own synthetic file-copy and SHA-256 check outside the repository. Database backups contain Storage metadata, but not the object bytes stored through the Storage API. A real media recovery procedure must copy and verify those objects separately. See [Supabase Database Backups](https://supabase.com/docs/guides/platform/backups).
 
 ## Hosted work still required

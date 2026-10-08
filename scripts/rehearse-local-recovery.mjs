@@ -7,6 +7,7 @@ import { pathToFileURL } from "node:url";
 import { startDatabase, actAs } from "../tests/support/database.mjs";
 import { quizAnswers, quizQuestions } from "../tests/fixtures/protected-quiz.mjs";
 import { createSupabaseSessions } from "../server/session-store.mjs";
+import { createDatabaseSessionFetch, databaseSessionConfiguration } from "../tests/support/database-session-fetch.mjs";
 
 async function asLearner(database, learner, query, values = []) {
 	const client = await database.connect();
@@ -23,19 +24,7 @@ const rpc = async (database, learner, name, values = []) => (await asLearner(dat
 	`select to_jsonb(public.${name}(${values.map((_, index) => `$${index + 1}`).join(",")})) as value`, values)).rows[0].value;
 
 function sessionStore(database, secret) {
-	return createSupabaseSessions({ url: "http://127.0.0.1", serviceKey: "sb_secret_fixture", secret,
-		fetchImpl: async (url, options) => {
-			assert.equal(new URL(url).origin, "http://127.0.0.1");
-			assert.equal(new URL(url).pathname, "/rest/v1/rpc/gateway_session");
-			const client = await database.connect();
-			try {
-				await client.query("set role service_role");
-				const { p_action, p_key, p_lease, p_data } = JSON.parse(options.body);
-				const result = await client.query("select public.gateway_session($1,$2,$3,$4) as value", [p_action,p_key,p_lease,p_data]);
-				return Response.json(result.rows[0].value);
-			} finally { await client.end(); }
-		},
-	});
+	return createSupabaseSessions({ ...databaseSessionConfiguration, secret, fetchImpl: createDatabaseSessionFetch(database) });
 }
 
 async function signInSession(sessions, tokens, user, learner) {

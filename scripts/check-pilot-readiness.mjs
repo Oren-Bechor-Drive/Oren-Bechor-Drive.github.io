@@ -13,7 +13,7 @@ import { subscriptionOffer } from "../server/subscription-offer.mjs";
 import { packageWorkerAssets } from "./package-worker.mjs";
 import { startLessonGateway } from "../tests/helpers/test-lessons.mjs";
 import { browserClient } from "../tests/helpers/account-gateway.mjs";
-import { testSectionPath, testSections } from "../tests/fixtures/test-sections.mjs";
+import { testSectionPath } from "../tests/fixtures/test-sections.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const execute = promisify(execFile);
@@ -37,7 +37,7 @@ export async function checkLocalPilotReadiness() {
 		return passed;
 	}
 	const temporary = await mkdtemp(path.join(tmpdir(), "oren-pilot-readiness-"));
-	let app, media, owner, other, paidLesson;
+	let app, owner, other, paidLesson;
 	const email = "pilot-readiness@example.test", otherEmail = "pilot-readiness-other@example.test";
 	const captions = "WEBVTT\n\n00:00.000 --> 00:01.000\nכתוביות סינתטיות לבדיקה.\n";
 	const transcript = "תמלול סינתטי לבדיקה. אין כאן חומר הוראה מאושר.";
@@ -112,9 +112,15 @@ export async function checkLocalPilotReadiness() {
 			await writeFile(path.join(mediaRoot, "video.mp4"), "synthetic transport bytes");
 			await writeFile(path.join(mediaRoot, "captions.vtt"), captions);
 			await writeFile(path.join(mediaRoot, "transcript.txt"), transcript);
-			media = await createPrivateMedia({ root: mediaRoot, entries: [] });
-			app = await startLessonGateway({ quiz: true, quizCount: 3, googleEnabled: false, media: {
-				lookup: (...args) => media.lookup(...args), forSection: (...args) => media.forSection(...args), send: (...args) => media.send(...args),
+			app = await startLessonGateway({ quiz: true, quizCount: 3, googleEnabled: false, mediaFactory: async versions => {
+				const { sectionId, contentVersionId } = versions.find(version => version.accessLevel === "paid");
+				const common = { sectionId, contentVersionId };
+				return createPrivateMedia({ root: mediaRoot, entries: [
+					{ ...common, id: "video", file: "video.mp4", type: "video/mp4", title: "סרטון סינתטי לבדיקה",
+						captions: [{ id: "captions-he", language: "he", label: "עברית" }], transcript: { id: "transcript-he", language: "he", label: "תמלול בעברית" } },
+					{ ...common, id: "captions-he", file: "captions.vtt", type: "text/vtt", title: "כתוביות סינתטיות לבדיקה" },
+					{ ...common, id: "transcript-he", file: "transcript.txt", type: "text/plain; charset=utf-8", title: "תמלול סינתטי לבדיקה" },
+				] });
 			} });
 			assert.equal(new URL(app.origin).hostname, "127.0.0.1");
 		});
@@ -182,13 +188,6 @@ export async function checkLocalPilotReadiness() {
 			assert.equal(fresh.questions.length, 4);
 		});
 		await check("authorized Hebrew captions and transcripts, ranges and private cache controls", async () => {
-			const common = { sectionId: testSections.paid, contentVersionId: paidLesson.id };
-			media = await createPrivateMedia({ root: path.join(temporary, "private-media"), entries: [
-				{ ...common, id: "video", file: "video.mp4", type: "video/mp4", title: "סרטון סינתטי לבדיקה",
-					captions: [{ id: "captions-he", language: "he", label: "עברית" }], transcript: { id: "transcript-he", language: "he", label: "תמלול בעברית" } },
-				{ ...common, id: "captions-he", file: "captions.vtt", type: "text/vtt", title: "כתוביות סינתטיות לבדיקה" },
-				{ ...common, id: "transcript-he", file: "transcript.txt", type: "text/plain; charset=utf-8", title: "תמלול סינתטי לבדיקה" },
-			] });
 			const descriptor = (await json(owner, testSectionPath("paid"))).media[0];
 			assert.equal(descriptor.captions[0].language, "he");
 			assert.equal(descriptor.captions[0].url, "/api/media/captions-he");

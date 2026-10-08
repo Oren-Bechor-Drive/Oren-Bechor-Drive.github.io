@@ -29,11 +29,9 @@ export function createProductionGatewayOptions(env, { fetchImpl = fetch, diagnos
 	const secret = env.SESSION_SECRET, serviceKey = env.SUPABASE_SECRET_KEY;
 	const key = Buffer.from(secret, "base64");
 	if (key.length !== 32 || key.toString("base64") !== secret) throw configurationError("SESSION_SECRET", "invalid");
-	let admit;
-	try { admit = createAdmission(env); } catch { throw configurationError(undefined, "invalid"); }
+	const admit = createAdmission(env);
 	const bucket = env.PRIVATE_MEDIA_BUCKET, manifest = env.PRIVATE_MEDIA_ENTRIES;
 	if (Boolean(bucket) !== Boolean(manifest)) throw configurationError(bucket ? "PRIVATE_MEDIA_ENTRIES" : "PRIVATE_MEDIA_BUCKET", "missing");
-	if (bucket && (typeof bucket !== "string" || !/^[a-z0-9][a-z0-9_-]{0,99}$/.test(bucket))) throw configurationError("PRIVATE_MEDIA_BUCKET", "invalid");
 	let entries;
 	if (manifest) {
 		try {
@@ -43,11 +41,7 @@ export function createProductionGatewayOptions(env, { fetchImpl = fetch, diagnos
 	}
 	let media = null;
 	if (bucket) {
-		if (!/^[a-z0-9-]+\.supabase\.co$/.test(new URL(url).hostname) || new URL(url).port) throw configurationError("SUPABASE_URL", "invalid");
-		if (serviceKey.length > 4096 || !/^[A-Za-z0-9_.-]+$/.test(serviceKey)
-			|| !(/^sb_secret_[\w-]+$/.test(serviceKey) || /^[\w-]+\.[\w-]+\.[\w-]+$/.test(serviceKey))) throw configurationError("SUPABASE_SECRET_KEY", "invalid");
-		try { media = createStorageMedia({ url, secretKey: serviceKey, bucket, entries, fetcher: fetchImpl }); }
-		catch { throw configurationError("PRIVATE_MEDIA_ENTRIES", "invalid"); }
+		media = createStorageMedia({ url, secretKey: serviceKey, bucket, entries, fetcher: fetchImpl });
 	}
 	const rateOptions = { url, serviceKey, secret, fetchImpl };
 	return {

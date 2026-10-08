@@ -15,6 +15,8 @@ npm run dev:worker
 
 `package:worker` copies allowed public files into ignored `.worker/public`. A custom output must be outside the source tree or exactly its `.worker/public` directory; it cannot replace source, docs, tests or Git metadata. It excludes server source, docs, tests, configuration, credentials, hidden files and unsupported extensions, rejects symlinks and oversized assets, and preserves supplied media bytes. `dev:worker` is local. There is no deployment script. Checked-in `wrangler.jsonc` disables `workers.dev` and preview URLs and declares no public routes.
 
+Packaging prepares the complete replacement before moving the previous output to a sibling `.package-*` backup. A failed installation restores the previous output. If restoration also fails, the error reports the retained `previous` tree and exposes its parent as `recoveryDirectory`; the new tree remains under `prepared`. Stop other packaging processes, inspect both trees, and rename `previous` back to the original output once the filesystem problem is resolved. Remove the retained directory only after verifying restoration. These guarantees cover ordinary errors within one invocation, not concurrent packaging or a process crash. A successful retry removes obsolete public files.
+
 Images, CSS and JavaScript in the configured static exclusions bypass the Worker and receive generated security/cache headers. HTML, directory routes, account pages and API requests invoke the Worker and consume its dynamic request allowance. This preserves existing checked-in URLs.
 
 The local Worker serves the public site even without credentials; its account API returns unavailable. Runtime tests use synthetic identities. They do not authenticate against hosted Supabase or send emails.
@@ -121,5 +123,7 @@ Backups are still unresolved: no backup destination has been supplied. Durable s
 ## Safe diagnostics
 
 `server/diagnostics.mjs` emits only approved category/operation/status values and optional configuration field/reason. It never accepts arbitrary messages, stacks, URLs, learner IDs, cookies, request bodies, provider payloads or credentials. The first matching event is emitted; repeats are suppressed for 60 seconds, and the next event reports an internally accumulated count. Reporter failure cannot change a response. Local Node emits to stderr. Worker initialization emits one safe configuration event per environment and keeps its public-site/unavailable-API behavior.
+
+Admission and Storage constructors own their configuration validation. Safe diagnostics can identify `REGISTRATION_MODE` or `PILOT_EMAILS` alongside the existing origin, key and media field names; they never include tester addresses or any configuration value. Invalid admission still leaves the API unavailable rather than opening registration.
 
 Gateway dependency failures distinguish account, learning, position, media and rate-store operations; unexpected failures use the same safe generic learner response. `wrangler.jsonc` cloud observability remains disabled. Local emitted events are not hosted log collection, alert delivery or a response commitment. The owner must supply log retention, alert destinations and a responder before configuring those services.

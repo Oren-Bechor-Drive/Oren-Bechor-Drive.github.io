@@ -3,10 +3,71 @@ import test from "node:test";
 import { mkdtemp, writeFile, rm, symlink } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import fs from "node:fs/promises";
+import { syncBuiltinESMExports } from "node:module";
 import { createPrivateMedia } from "../../server/private-media.mjs";
 import { startLessonGateway } from "../helpers/test-lessons.mjs";
 import { browserClient } from "../helpers/account-gateway.mjs";
 import { testSectionPath, testSections } from "../fixtures/test-sections.mjs";
+
+test("lesson media is built from owned latest versions before serving sections", async t => {
+	const root = await mkdtemp(path.join(tmpdir(), "oren-media-factory-"));
+	t.after(() => rm(root, { recursive: true, force: true }));
+	await writeFile(path.join(root, "video.mp4"), "owned factory transport bytes");
+	let published;
+	const app = await startLessonGateway({ longLesson: true, mediaFactory: async versions => {
+		published = versions;
+		const { sectionId, contentVersionId } = versions.find(version => version.accessLevel === "paid");
+		return createPrivateMedia({ root, entries: [{ sectionId, contentVersionId, id: "factory-video", file: "video.mp4", type: "video/mp4", title: "סרטון בדיקה" }] });
+	} });
+	t.after(app.close);
+	assert.ok(published, "the factory receives published versions during startup");
+	assert.deepEqual(published.map(({ sectionId, accessLevel }) => ({ sectionId, accessLevel })), [
+		{ sectionId: testSections.free, accessLevel: "free" }, { sectionId: testSections.paid, accessLevel: "paid" },
+	]);
+	for (const version of published) {
+		assert.deepEqual(Object.keys(version).sort(), ["accessLevel", "contentVersionId", "sectionId"]);
+		assert.match(version.contentVersionId, /^[0-9a-f-]{36}$/);
+	}
+	const client = browserClient(app.origin);
+	await client.request();
+	await client.request("login", { email: "factory@example.test", password: "correct-password" });
+	await app.grant("factory@example.test");
+	const lesson = await (await fetch(app.origin + testSectionPath("paid"), { headers: { cookie: client.cookie } })).json();
+	assert.equal(lesson.lesson.id, published.find(version => version.accessLevel === "paid").contentVersionId);
+	assert.equal(lesson.media[0].url, "/api/media/factory-video");
+	assert.equal(await (await fetch(app.origin + lesson.media[0].url, { headers: { cookie: client.cookie } })).text(), "owned factory transport bytes");
+});
+
+test("lesson media factory rejection closes its allocated database", async t => {
+	const directories = [];
+	const allocate = fs.mkdtemp;
+	t.mock.method(fs, "mkdtemp", async (...args) => {
+		const directory = await allocate(...args);
+		if (directory.includes("oren-database-test-")) directories.push(directory);
+		return directory;
+	});
+	syncBuiltinESMExports();
+	let app;
+	try {
+		await assert.rejects(async () => { app = await startLessonGateway({ mediaFactory: async () => { throw new Error("Synthetic media factory failure"); } }); }, /Synthetic media factory failure/);
+		assert.equal(directories.length, 1);
+		for (const directory of directories) await assert.rejects(fs.access(directory), { code: "ENOENT" });
+	} finally {
+		t.mock.restoreAll();
+		syncBuiltinESMExports();
+		await app?.close();
+		await Promise.all(directories.map(directory => rm(directory, { recursive: true, force: true })));
+	}
+});
+
+test("lesson media factory refuses competing or invalid configuration", async () => {
+	for (const options of [{ media: {}, mediaFactory: async () => null }, { mediaFactory: null }, { mediaFactory: 1 }]) {
+		let app;
+		try { await assert.rejects(async () => { app = await startLessonGateway(options); }, /media/i); }
+		finally { await app?.close(); }
+	}
+});
 
 // Synthetic bytes test authenticated delivery, not video decoding.
 test("private media requires a live paid version, supports byte ranges and rejects path escapes", async t => {
@@ -15,13 +76,9 @@ test("private media requires a live paid version, supports byte ranges and rejec
 	await writeFile(path.join(root, "video.mp4"), "0123456789");
 	await symlink(path.join(root, "video.mp4"), path.join(root, "link.mp4"));
 	const sectionId = testSections.paid;
-	// Version is discovered from the owned fixture, never accepted from a request.
-	let media = await createPrivateMedia({ root, entries: [] });
-	// Forward the entire adapter while this fixture discovers its database-owned version.
-	const app = await startLessonGateway({ media: {
-		lookup: (...args) => media.lookup(...args),
-		forSection: (...args) => media.forSection(...args),
-		send: (...args) => media.send(...args),
+	const app = await startLessonGateway({ mediaFactory: versions => {
+		const { contentVersionId } = versions.find(version => version.sectionId === sectionId);
+		return createPrivateMedia({ root, entries: [{ id: "video", sectionId, contentVersionId, file: "video.mp4", type: "video/mp4", title: "סרטון בדיקה" }] });
 	} });
 	t.after(app.close);
 	const client = browserClient(app.origin);
@@ -29,8 +86,6 @@ test("private media requires a live paid version, supports byte ranges and rejec
 	await client.request("login", { email: "media@example.test", password: "correct-password" });
 	await app.grant("media@example.test");
 	const lesson = await (await fetch(app.origin + testSectionPath("paid"), { headers: { cookie: client.cookie } })).json();
-	// Use a new validated media registry, with server-owned immutable descriptors.
-	media = await createPrivateMedia({ root, entries: [{ id: "video", sectionId, contentVersionId: lesson.lesson.id, file: "video.mp4", type: "video/mp4", title: "סרטון בדיקה" }] });
 	const configuredLesson = await (await fetch(app.origin + testSectionPath("paid"), { headers: { cookie: client.cookie } })).json();
 	assert.deepEqual(configuredLesson.media, [{ id: "video", title: "סרטון בדיקה", type: "video/mp4", url: "/api/media/video" }]);
 	const fetchMedia = (headers = {}) => fetch(app.origin + "/api/media/video", { headers });
@@ -56,9 +111,15 @@ test("private captions and transcripts recheck learner, entitlement and exact pu
 	t.after(() => rm(root, { recursive: true, force: true }));
 	const bodies = { "video.webm": "synthetic video bytes", "captions.vtt": "WEBVTT\n\n00:00.000 --> 00:01.000\nכתוביות בדיקה.\n", "transcript.txt": "תמלול סינתטי לבדיקה." };
 	for (const [file, body] of Object.entries(bodies)) await writeFile(path.join(root, file), body);
-	let media = await createPrivateMedia({ root, entries: [] });
-	const app = await startLessonGateway({ media: {
-		lookup: (...args) => media.lookup(...args), forSection: (...args) => media.forSection(...args), send: (...args) => media.send(...args),
+	const references = { captions: [{ id: "captions-he", language: "he", label: "עברית" }], transcript: { id: "transcript-he", language: "he", label: "תמלול בעברית" } };
+	let entries;
+	const app = await startLessonGateway({ mediaFactory: versions => {
+		const { sectionId, contentVersionId } = versions.find(version => version.accessLevel === "paid");
+		const common = { sectionId, contentVersionId };
+		entries = [{ ...common, ...references, id: "video", file: "video.webm", type: "video/webm", title: "סרטון בדיקה" },
+			{ ...common, id: "captions-he", file: "captions.vtt", type: "text/vtt", title: "כתוביות בדיקה" },
+			{ ...common, id: "transcript-he", file: "transcript.txt", type: "text/plain; charset=utf-8", title: "תמלול בדיקה" }];
+		return createPrivateMedia({ root, entries });
 	} });
 	t.after(app.close);
 	async function learner(email, grant = true) {
@@ -71,13 +132,6 @@ test("private captions and transcripts recheck learner, entitlement and exact pu
 	const revoked = await learner("sidecars-revoked@example.test");
 	const expired = await learner("sidecars-expired@example.test");
 	const other = await learner("sidecars-other@example.test", false);
-	const lesson = await (await fetch(app.origin + testSectionPath("paid"), { headers: { cookie: revoked.cookie } })).json();
-	const common = { sectionId: testSections.paid, contentVersionId: lesson.lesson.id };
-	const references = { captions: [{ id: "captions-he", language: "he", label: "עברית" }], transcript: { id: "transcript-he", language: "he", label: "תמלול בעברית" } };
-	const entries = [{ ...common, ...references, id: "video", file: "video.webm", type: "video/webm", title: "סרטון בדיקה" },
-		{ ...common, id: "captions-he", file: "captions.vtt", type: "text/vtt", title: "כתוביות בדיקה" },
-		{ ...common, id: "transcript-he", file: "transcript.txt", type: "text/plain; charset=utf-8", title: "תמלול בדיקה" }];
-	media = await createPrivateMedia({ root, entries });
 	const configured = await (await fetch(app.origin + testSectionPath("paid"), { headers: { cookie: revoked.cookie } })).json();
 	assert.deepEqual(configured.media, [{ id: "video", type: "video/webm", title: "סרטון בדיקה", url: "/api/media/video",
 		captions: [{ ...references.captions[0], url: "/api/media/captions-he" }], transcript: { ...references.transcript, url: "/api/media/transcript-he" } }]);
@@ -104,7 +158,7 @@ test("private captions and transcripts recheck learner, entitlement and exact pu
 	await app.expire("sidecars-expired@example.test");
 	await denied(expired, 404);
 	const current = await learner("sidecars-current@example.test");
-	media = await createPrivateMedia({ root, entries: entries.map(entry => ({ ...entry, contentVersionId: "a524e32d-2640-4d94-a51c-000000000099" })) });
+	await app.republishSection(testSections.paid);
 	await denied(current, 404);
 	await current.request("logout", {});
 	await denied(current, 401);

@@ -4,7 +4,7 @@ import path from "node:path";
 import { chromium } from "playwright";
 import { createPrivateMedia } from "../../server/private-media.mjs";
 import { startLessonGateway } from "./test-lessons.mjs";
-import { testSectionPath, testSections } from "../fixtures/test-sections.mjs";
+import { testSections } from "../fixtures/test-sections.mjs";
 
 export const syntheticTranscript = 'תמלול סינתטי לבדיקה.\n<script>window.privateTranscriptRan = true</script>\n<img src="x" onerror="window.privateTranscriptRan = true">';
 
@@ -40,9 +40,15 @@ export async function privateMediaReader(t, { width = 390, reducedMotion = "redu
 	await writeFile(path.join(root, "video.webm"), Buffer.from(recording));
 	await writeFile(path.join(root, "captions.vtt"), "WEBVTT\n\n00:00.000 --> 00:01.000\nכתוביות סינתטיות לבדיקה.\n");
 	await writeFile(path.join(root, "transcript.txt"), transcript);
-	let media = await createPrivateMedia({ root, entries: [] });
-	const app = await startLessonGateway({ quiz, quizCount, media: {
-		lookup: (...args) => media.lookup(...args), forSection: (...args) => media.forSection(...args), send: (...args) => media.send(...args),
+	const app = await startLessonGateway({ quiz, quizCount, mediaFactory: async versions => {
+		const { sectionId, contentVersionId } = versions.find(version => version.accessLevel === "paid");
+		const common = { sectionId, contentVersionId };
+		return createPrivateMedia({ root, entries: [
+			{ ...common, id: "video", file: "video.webm", type: "video/webm", title: "סרטון סינתטי לבדיקה",
+				captions: [{ id: "captions-he", language: "he", label: "עברית" }], transcript: { id: "transcript-he", language: "he", label: "תמלול בעברית" } },
+			{ ...common, id: "captions-he", file: "captions.vtt", type: "text/vtt", title: "כתוביות לבדיקה" },
+			{ ...common, id: "transcript-he", file: "transcript.txt", type: "text/plain; charset=utf-8", title: "תמלול לבדיקה" },
+		] });
 	} });
 	t.after(app.close);
 	const email = `private-media-${width}@example.test`;
@@ -52,14 +58,6 @@ export async function privateMediaReader(t, { width = 390, reducedMotion = "redu
 	await page.getByRole("button", { name: "כניסה לחשבון", exact: true }).click();
 	await page.waitForURL(app.origin + "/account/");
 	await app.grant(email);
-	const data = await (await page.request.get(app.origin + testSectionPath("paid"))).json();
-	const common = { sectionId: testSections.paid, contentVersionId: data.lesson.id };
-	media = await createPrivateMedia({ root, entries: [
-		{ ...common, id: "video", file: "video.webm", type: "video/webm", title: "סרטון סינתטי לבדיקה",
-			captions: [{ id: "captions-he", language: "he", label: "עברית" }], transcript: { id: "transcript-he", language: "he", label: "תמלול בעברית" } },
-		{ ...common, id: "captions-he", file: "captions.vtt", type: "text/vtt", title: "כתוביות לבדיקה" },
-		{ ...common, id: "transcript-he", file: "transcript.txt", type: "text/plain; charset=utf-8", title: "תמלול לבדיקה" },
-	] });
 	const open = async () => {
 		await page.goto(`${app.origin}/account/reader.html?section=${testSections.paid}&access=paid`);
 		await page.locator("[data-reading]").waitFor();

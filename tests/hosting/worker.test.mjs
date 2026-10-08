@@ -8,13 +8,13 @@ import { unstable_startWorker } from "wrangler";
 import { packageWorkerAssets } from "../../scripts/package-worker.mjs";
 const root = fileURLToPath(new URL("../../", import.meta.url));
 
-async function start(t, main = "tests/fixtures/hosting/worker.mjs") {
+async function start(t, main = "tests/fixtures/hosting/worker.mjs", vars = {}) {
 	const directory = await mkdtemp(path.join(tmpdir(), "oren-worker-"));
 	t.after(() => rm(directory, { recursive: true, force: true }));
 	const assets = path.join(directory, "public");
 	await packageWorkerAssets({ root, output: assets });
 	const config = path.join(directory, "wrangler.json");
-	await writeFile(config, JSON.stringify({ name: "oren-local-test", main: path.join(root, main), compatibility_date: "2026-09-23", compatibility_flags: ["nodejs_compat"], workers_dev: false, preview_urls: false,
+	await writeFile(config, JSON.stringify({ name: "oren-local-test", main: path.join(root, main), compatibility_date: "2026-09-23", compatibility_flags: ["nodejs_compat"], workers_dev: false, preview_urls: false, vars,
 		assets: { directory: assets, binding: "ASSETS", run_worker_first: JSON.parse(await readFile(path.join(root, "wrangler.jsonc"), "utf8")).assets.run_worker_first, html_handling: "none", not_found_handling: "404-page" } }));
 	const worker = await unstable_startWorker({ config, dev: { origin: { hostname: "course.example.test", secure: true }, remote: false, persist: false, server: { hostname: "127.0.0.1", port: 0 }, inspector: false, watch: false } });
 	t.after(() => worker.dispose());
@@ -110,6 +110,27 @@ test("production Worker emits one safe configuration signal per environment", { 
 	const events = await (await request("/__test/diagnostics")).json();
 	assert.deepEqual(events, [{ category: "configuration", operation: "startup", status: 503, field: "APP_ORIGIN", reason: "missing" }]);
 	assert.equal((await request("/tests/fixtures/hosting/diagnostics-worker.mjs")).status, 404);
+});
+
+test("production Worker preserves safe registration diagnostics and its public fallback", { timeout: 60_000 }, async t => {
+	for (const field of ["REGISTRATION_MODE", "PILOT_EMAILS"]) {
+		await t.test(field, async t => {
+			const vars = { APP_ORIGIN: "https://course.example.test", SUPABASE_URL: "https://project.supabase.co",
+				SUPABASE_PUBLISHABLE_KEY: "sb_publishable_test", SUPABASE_SECRET_KEY: "sb_secret_test", SESSION_SECRET: Buffer.alloc(32, 3).toString("base64"),
+				REGISTRATION_MODE: "pilot", PILOT_EMAILS: "private-tester@example.test", [field]: "private invalid value" };
+			const { request } = await start(t, "tests/fixtures/hosting/diagnostics-worker.mjs", vars);
+			assert.equal((await request("/")).status, 200);
+			for (let i = 0; i < 2; i++) {
+				const response = await request("/api/account/session");
+				assert.equal(response.status, 503);
+				assert.equal(response.headers.get("cache-control"), "private, no-store");
+				assert.deepEqual(await response.json(), { error: "unavailable" });
+			}
+			const events = await (await request("/__test/diagnostics")).json();
+			assert.deepEqual(events, [{ category: "configuration", operation: "startup", status: 503, field, reason: "invalid" }]);
+			assert.doesNotMatch(JSON.stringify(events), /private|@|sb_secret|stack|https:/);
+		});
+	}
 });
 
 test("Worker streams authorized Storage media and cancels the upstream on disconnect", { timeout: 60_000 }, async t => {

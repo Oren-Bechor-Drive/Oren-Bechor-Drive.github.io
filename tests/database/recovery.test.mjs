@@ -5,6 +5,9 @@ import { randomUUID } from "node:crypto";
 import { access, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import fs from "node:fs/promises";
+import net from "node:net";
+import { syncBuiltinESMExports } from "node:module";
 import { after, before, test } from "node:test";
 import { startDatabase } from "../support/database.mjs";
 import { createFixtureRecovery } from "../support/database-recovery.mjs";
@@ -23,6 +26,32 @@ after(async () => source?.close());
 const unpack = bytes => JSON.parse(new TextDecoder().decode(bytes));
 const pack = archive => new TextEncoder().encode(JSON.stringify(archive));
 const execute = promisify(execFile);
+
+test("database setup removes its owned directory when loopback port allocation fails", async t => {
+	const directories = [];
+	const allocate = fs.mkdtemp;
+	const createServer = net.createServer;
+	t.mock.method(fs, "mkdtemp", async (...args) => {
+		const directory = await allocate(...args);
+		if (directory.includes("oren-database-test-")) directories.push(directory);
+		return directory;
+	});
+	t.mock.method(net, "createServer", (...args) => {
+		const server = createServer(...args);
+		server.listen = () => { process.nextTick(() => server.emit("error", new Error("Synthetic loopback allocation failure"))); return server; };
+		return server;
+	});
+	syncBuiltinESMExports();
+	try {
+		await assert.rejects(startDatabase(), /Synthetic loopback allocation failure/);
+		assert.equal(directories.length, 1);
+		for (const directory of directories) await assert.rejects(access(directory), { code: "ENOENT" });
+	} finally {
+		t.mock.restoreAll();
+		syncBuiltinESMExports();
+		await Promise.all(directories.map(directory => rm(directory, { recursive: true, force: true })));
+	}
+});
 async function target(t) {
 	const database = await startDatabase();
 	t.after(() => database.close());

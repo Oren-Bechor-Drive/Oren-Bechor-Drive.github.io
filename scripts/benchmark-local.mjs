@@ -136,13 +136,18 @@ export async function runLocalBenchmark(options = {}) {
 		return { status: response.status, bytes: bytes.length, data: JSON.parse(bytes.toString("utf8")) };
 	}
 	try {
-		let media = await createPrivateMedia({ root: directory, entries: [] });
+		browser = await chromium.launch();
+		const mediaBytes = await recordSyntheticVideo(browser, directory);
 		app = await startLessonGateway({ quiz: true, longLesson: true, authLimit: 10000,
 			requestLimiter: () => {
 				const allowed = !deliberatelyLimited && ++admittedRequests <= 10000;
 				return { allowed, retryAfterSeconds: allowed ? 0 : 60 };
 			},
-			media: { lookup: (...args) => media.lookup(...args), forSection: (...args) => media.forSection(...args), send: (...args) => media.send(...args) },
+			mediaFactory: versions => {
+				const { sectionId, contentVersionId } = versions.find(version => version.accessLevel === "paid");
+				return createPrivateMedia({ root: directory, entries: [{ id: "benchmark-video", file: "synthetic.webm", type: "video/webm",
+					title: "סרטון סינתטי לבדיקה", sectionId, contentVersionId }] });
+			},
 		});
 		// All identities, Auth sessions, paid grants and teaching here are disposable fixtures.
 		const clients = [];
@@ -154,12 +159,6 @@ export async function runLocalBenchmark(options = {}) {
 			if (index < 10) await app.grant(email);
 			clients.push(client);
 		}
-		browser = await chromium.launch();
-		const mediaBytes = await recordSyntheticVideo(browser, directory);
-		const lesson = await nodeRequest(clients[0], testSectionPath("paid"));
-		requireStatus(lesson.status);
-		media = await createPrivateMedia({ root: directory, entries: [{ id: "benchmark-video", file: "synthetic.webm", type: "video/webm",
-			title: "סרטון סינתטי לבדיקה", sectionId: testSections.paid, contentVersionId: lesson.data.lesson.id }] });
 		const processBefore = await processSnapshot();
 		for (const profile of profiles) {
 			const context = await browser.newContext({ viewport: profile.viewport, isMobile: profile.isMobile, hasTouch: profile.isMobile,

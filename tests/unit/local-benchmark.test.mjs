@@ -38,7 +38,7 @@ test("unsupported CLI targets fail without echoing supplied credentials", async 
 	}
 });
 
-test("an allocated browser and owned gateway close when media setup fails", { timeout: 60000 }, async t => {
+test("an allocated browser and owned gateway close when later browser setup fails", { timeout: 60000 }, async t => {
 	const before = new Set((await readdir(tmpdir())).filter(name => name.startsWith("oren-local-benchmark-")));
 	const fetch = globalThis.fetch;
 	let origin, browser;
@@ -50,10 +50,14 @@ test("an allocated browser and owned gateway close when media setup fails", { ti
 	const launch = chromium.launch.bind(chromium);
 	t.mock.method(chromium, "launch", async (...args) => {
 		browser = await launch(...args);
-		t.mock.method(browser, "newPage", async () => { throw new Error("synthetic media setup failure"); });
+		const newContext = browser.newContext.bind(browser);
+		t.mock.method(browser, "newContext", async (...settings) => {
+			if (origin) throw new Error("synthetic browser context failure");
+			return newContext(...settings);
+		});
 		return browser;
 	});
-	await assert.rejects(runLocalBenchmark({ iterations: 1 }), /synthetic media setup failure/);
+	await assert.rejects(runLocalBenchmark({ iterations: 1 }), /synthetic browser context failure/);
 	assert.ok(origin, "a real owned loopback gateway was allocated before the failure");
 	assert.equal(browser.isConnected(), false);
 	await assert.rejects(fetch(origin + "/api/account/session"));

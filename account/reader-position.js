@@ -1,9 +1,12 @@
 // Reader-owned opaque progress. Rendering and authorization remain with the page.
 export function createReaderPosition({ send }) {
 	let state, active, inFlight;
-	function hydrate(input) {
+	function hydrate({ contentVersionId, csrf, savedPosition }) {
 		const old = state;
-		const acknowledged = input.acknowledged ?? (input.revision > 0);
+		const contentChanged = Boolean(savedPosition && savedPosition.contentVersionId !== contentVersionId);
+		const acknowledged = Boolean(savedPosition && !contentChanged);
+		const input = { contentVersionId, csrf, position: acknowledged ? savedPosition.position : 0,
+			revision: savedPosition?.revision ?? 0 };
 		const same = old && old.contentVersionId === input.contentVersionId && old.csrf === input.csrf;
 		const dirty = same && (old.latest !== old.saved || old.pendingInitial);
 		const unchanged = same && old.revision === input.revision && old.saved === input.position && old.acknowledged === acknowledged;
@@ -11,13 +14,14 @@ export function createReaderPosition({ send }) {
 			&& old.contentVersionId === inFlight.input.contentVersionId && old.csrf === inFlight.input.csrf
 			&& old.revision === inFlight.input.expectedRevision
 			&& input.revision === inFlight.input.expectedRevision + 1 && input.position === inFlight.input.position;
-		state = { ...input, acknowledged, saved: input.position, latest: dirty ? old.latest : input.position,
+		state = { contentVersionId, csrf, revision: input.revision, acknowledged,
+			saved: input.position, latest: dirty ? old.latest : input.position,
 			pendingInitial: Boolean(dirty && old.pendingInitial && !acknowledged) };
 		if (dirty && (!unchanged && !observedWrite || old.error)) {
 			state.error = Object.assign(new Error("position_conflict"), { status: 409 });
 			throw state.error;
 		}
-		return state.latest;
+		return { position: state.latest, contentChanged };
 	}
 	async function drain() {
 		while (state) {
@@ -29,8 +33,9 @@ export function createReaderPosition({ send }) {
 			inFlight = { owner, input };
 			try {
 				const { position } = await send(input);
+				// An idempotent write can acknowledge the same position after other writes.
 				if (!position || position.contentVersionId !== input.contentVersionId || position.position !== input.position
-					|| !Number.isSafeInteger(position.revision) || position.revision < 1 || ![input.expectedRevision, input.expectedRevision + 1].includes(position.revision)) {
+					|| !Number.isSafeInteger(position.revision) || position.revision < 1 || position.revision < input.expectedRevision) {
 					throw Object.assign(new Error("unavailable"), { status: 503 });
 				}
 				// A fresh GET can acknowledge this write before its transport reply arrives.
@@ -63,7 +68,6 @@ export function createReaderPosition({ send }) {
 			if (!active) active = drain().finally(() => { active = undefined; });
 			return active;
 		},
-		async settled() { await active?.catch(() => {}); },
 		clear() { state = undefined; },
 	};
 }
