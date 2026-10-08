@@ -1,4 +1,6 @@
 import { inspectPassword } from "./password-policy.js";
+import { normalizeAccountReturn } from "./return-destination.js";
+import { readRetryAfter, retryGuidance } from "./retry-guidance.js";
 import "../js/input-mode.js";
 
 const mode = document.body.dataset.account;
@@ -21,7 +23,6 @@ const messages = {
 	sign_in_failed: "ההתחברות לא הושלמה. בדקו את כתובת האימייל והסיסמה, וודאו שאישרתם את האימייל.",
 	invalid_email: "יש להזין כתובת אימייל תקינה, למשל name@gmail.com.",
 	invalid_password: mode === "login" ? "יש להזין סיסמה באורך 1 עד 128 תווים." : "בחרו סיסמה עם לפחות 12 תווים. אם היא ארוכה מדי, קצרו אותה.",
-	rate_limited: "בוצעו ניסיונות רבים בזמן קצר. המתינו מעט ונסו שוב.",
 	request_rejected: "הבקשה פגה. לחצו על ניסיון נוסף ונסו שוב.",
 	session_expired: "ההתחברות הסתיימה. היכנסו שוב לחשבון.",
 	recovery_required: "יש לפתוח את הקישור לאיפוס הסיסמה שקיבלתם באימייל, באותו דפדפן שבו ביקשתם אותו.",
@@ -33,17 +34,12 @@ const messages = {
 	request_failed: "הבקשה לא הושלמה. נסו שוב בעוד רגע.",
 };
 
-// Only protected account destinations are accepted after password sign-in.
 function returnDestination() {
-	const value = new URLSearchParams(location.search).get("return");
-	if (!value?.startsWith("/account/") || value.includes("\\")) return "/account/";
-	const target = new URL(value, location.origin);
-	if (target.origin !== location.origin || target.hash) return "/account/";
-	if (target.pathname === "/account/learning.html" && !target.search) return target.pathname;
-	if (target.pathname === "/account/reader.html" && /^[0-9a-f-]{36}$/i.test(target.searchParams.get("section") ?? "")
-		&& ["free", "paid"].includes(target.searchParams.get("access"))
-		&& target.searchParams.size === 2) return target.pathname + target.search;
-	return "/account/";
+	return normalizeAccountReturn(new URLSearchParams(location.search).get("return"), location.origin);
+}
+function errorMessage(error, fallback) {
+	return error.status === 429 || error.message === "rate_limited"
+		? retryGuidance(error.retryAfterSeconds ?? null) : messages[error.message] ?? fallback;
 }
 function fieldError(input) {
 	const value = input.value;
@@ -155,7 +151,7 @@ async function request(route, body) {
 	});
 	if (!response.headers.get("content-type")?.includes("application/json")) throw new Error("unavailable");
 	const data = await response.json();
-	if (!response.ok) throw new Error(data.error || "request_failed");
+	if (!response.ok) throw Object.assign(new Error(data.error || "request_failed"), { status: response.status, retryAfterSeconds: readRetryAfter(response.headers.get("retry-after")) });
 	return data;
 }
 async function bootstrap() {
@@ -185,7 +181,7 @@ async function bootstrap() {
 		}
 	} catch (error) {
 		if (mode === "verify") renderVerification(null);
-		feedback(messages[error.message] ?? messages.unavailable, true);
+		feedback(errorMessage(error, messages.unavailable), true);
 		unavailableLibrary.hidden = false; retry.hidden = false;
 	} finally { startup.hidden = true; }
 }
@@ -199,7 +195,7 @@ async function perform(action) {
 			try { session = await request("session"); renderVerification(session.verification); }
 			catch { renderVerification(null); }
 		}
-		feedback(messages[error.message] ?? messages.request_failed, true);
+		feedback(errorMessage(error, messages.request_failed), true);
 		retry.hidden = !["request_rejected", "session_expired", "unavailable"].includes(error.message);
 		unavailableLibrary.hidden = error.message !== "unavailable";
 		errorBox.focus();
@@ -243,7 +239,7 @@ if (mode === "verify") {
 }
 document.querySelector("[data-change-email]")?.addEventListener("click", () => { confirmation.hidden = true; form.hidden = false; document.querySelector("#email").focus(); });
 google?.addEventListener("click", () => void perform(async () => {
-	const result = await request("google", {}); const target = new URL(result.url);
+	const result = await request("google", { returnTo: returnDestination() }); const target = new URL(result.url);
 	if (target.protocol !== "https:") throw new Error("request_failed");
 	location.assign(target.href);
 }));

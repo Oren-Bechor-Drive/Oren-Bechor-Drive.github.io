@@ -1,6 +1,6 @@
 # Operations runbook
 
-This runbook covers content review, publication, support intake, and recovery for the current static site. GitHub Pages serves the root of `main` at `https://oren-bechor-drive.github.io/`. The published static site has no running account backend. The repository includes a local account gateway and a Supabase development database foundation; neither supplies a production account service. Payments, a staff console, a public support channel and application monitoring remain unimplemented.
+This runbook covers content review, publication, support intake, and recovery for the current static site. GitHub Pages serves the root of `main` at `https://oren-bechor-drive.github.io/`. The published static site has no running account backend. The repository includes a local account gateway and a Supabase development database foundation; neither supplies a production account service. Payments, a staff console, a public support channel and hosted monitoring remain unimplemented. Safe local diagnostic categories are implemented; they do not establish alert delivery or a responder.
 
 Use these project sources when a change touches their scope:
 
@@ -17,6 +17,8 @@ Use [local account setup](local-accounts.md) for the configured development gate
 
 Run `npm test`, `npm run check:media`, `npm run check:links` and `git diff --check` before publishing these changes. Record local fixture results separately from [hosted verification](../supabase/tests/README.md). Pushing files to GitHub Pages does not deploy the gateway, apply migrations, grant access, or configure Auth providers. Keep real restricted course content out of public delivery.
 
+Use the [local recovery rehearsal](local-recovery.md) to verify synthetic state export, atomic restoration, learner isolation and encryption-key handling against checked-in migrations. It accepts no hosted target. A real backup destination, schedule, key custody and authorized hosted restoration remain owner inputs.
+
 ## Keep evidence, approval, and technical checks separate
 
 A source review checks evidence and wording limits. Instructor approval accepts the teaching adaptation. Automated checks test repository behavior. One result does not replace another.
@@ -32,6 +34,8 @@ Instructor reviewer:
 Instructor review date:
 Approved scope and required corrections:
 ```
+
+Use the [teaching and media review packet](reference/teaching-review-packet-2026-10-08.md) for all 81 incomplete placements, proposed Hebrew passages and 28 production briefs. The packet records source-unverified passages separately and stays outside public output. [Launch inputs](launch-inputs.md) lists the exact owner values and policy decisions still needed.
 
 Oren's approval remains required before adapted teaching copy, real quiz content, answer explanations, or teaching media becomes final. If the approved files change, obtain approval for the new revision. A passing test run does not mean that teaching content is approved.
 
@@ -120,6 +124,8 @@ Triage a driving-rule error, unsafe instruction, or misleading answer as a conte
 
 ## Triage a technical outage
 
+Treat static publication and the protected service as separate systems. A successful GitHub Pages homepage response does not establish that accounts, learner RPCs or private media work. The gateway, newer migrations and cleanup jobs are locally implemented; their hosted setup and verification remain separate work in [hosting preparation](hosting.md). Learning-data cleanup after ten days is separate from account deletion and backup retention.
+
 Assign responsibilities before an incident. The person with repository write access manages code and reverts. A repository administrator checks Pages configuration and deployments. The content approver decides teaching corrections. A future provider owner handles that provider. These are responsibilities, not assigned staff names or response-time promises.
 
 1. Record the start time, affected URLs, scope, browser evidence, and the latest published commit.
@@ -156,6 +162,10 @@ Do not treat an automated `403` from a government page as proof that the visitor
 
 The following checklist is a readiness gate for a future service. It does not describe current capabilities.
 
+The independent local checkpoint uses `npm run check:pilot:local`, `npm run rehearse:recovery` and the [local performance baseline](local-performance.md). These commands own disposable synthetic resources, cannot select a hosted target and report failures with nonzero exit status. Passing them supplies local evidence; the [owner launch inputs](launch-inputs.md) still require actual approval, provider configuration, responders, recovery ownership and human/device verification before a hosted pilot.
+
+Use the [dated local readiness report](reviews/local-readiness-2026-10-08.md) for the verified revision, exact command results and remaining gates. Its passing checkpoint does not start the three-day pilot or authorize registration opening.
+
 Before accepting payment or storing learner data:
 
 - document each provider, production and test environment, source of truth, state transition, credential owner, and authorized escalation route;
@@ -170,3 +180,30 @@ Before accepting payment or storing learner data:
 During a future billing or access incident, preserve provider event identifiers and local correlation identifiers without copying credentials or unnecessary learner data. Compare the provider's transaction state, verified webhook history, local subscription state, and enforced entitlement. Do not grant access from a checkout return URL or replay an event until signature, idempotency, and target account checks pass. Route refunds, retention decisions, legal notices, and learner communications through the approved policy and authorized owner.
 
 Do not claim that monitoring, a staff console, backups, reconciliation, or an incident response team exists until each item is implemented and tested.
+
+## Verify diagnostic signals
+
+Locally simulate failed Auth, learner RPC, position, private-media and rate-store requests. Confirm a generic safe error with `private, no-store` and an approved category/operation/status event; no request values or provider details may appear. Repeat the same failure within 60 seconds to check suppression, then check the accumulated count after the window. A configuration error may name only its approved field and `missing`/`invalid` reason.
+
+For an incident, verify the public homepage separately from account session/login, an authorized learning read/save and private-media GET/HEAD/range behavior. Use owned synthetic fixtures locally. Hosted probes require an authorized tester and the owner's operational setup. Local stderr and Worker-emitted events are implemented; cloud collection remains disabled and alert destinations, retention and responder are unresolved. See [hosting diagnostics](hosting.md#safe-diagnostics).
+
+## Withdraw a protected quiz version
+
+This operation is locally implemented and verified. Applying its migration or operating on a hosted version requires an authorized hosted change. Do not run fixture Auth bootstrap or synthetic grants on that target.
+
+1. Identify the exact immutable quiz-version UUID from the trusted publication/review record. Confirm its topic and whether it is current; do not guess the UUID from a learner attempt or a public question ID. Record the incident/review reference and affected scope.
+2. Use the service-only operation with that exact UUID and a nonblank reason/review reference of at most 2000 characters:
+
+   ```sql
+   select public.withdraw_quiz_version(
+       '<exact-version-uuid>'::uuid,
+       '<incident-or-review-reference>'
+   );
+   ```
+
+   Replace both placeholders before executing. The result contains `versionId` and `withdrawnAt`. Repeating withdrawal is idempotent and retains the original reason/time. Withdrawal requires no teaching-approval claim.
+3. In an authorized owned test account, verify the affected unfinished attempt returns only its ID, topic, revision and withdrawn status. Save/submit must fail with `P4100` / HTTP 410 `quiz_withdrawn`; questions and preserved local answers must clear. Verify the current catalog omits the withdrawn version and unrelated drafts remain usable. Verify submitted history, original grades and completion remain unchanged.
+4. Review/correct the instruction, obtain approval for the exact replacement revision and publish through the existing trusted `publish_quiz` contract. An explicit learner start must create a new empty revision-zero draft; never migrate old answers automatically. Without a corrected current version, new affected starts remain unavailable.
+5. Keep the withdrawal record and original immutable content. A frontend rollback must not reactivate the withdrawn version or rewrite migration history. Disable affected entry points until compatible code is restored.
+
+Closing registration admission is a separate response: closed mode rejects existing gateway sessions on their next authorization check as well as new admission. It does not revoke provider tokens or independently block provisioned learners from direct authorized database/provider RPCs. Withdrawal enforces the version-specific stop at the database boundary. Decide any broader account/provider revocation through the owner's incident process; no such action is performed by this plan.

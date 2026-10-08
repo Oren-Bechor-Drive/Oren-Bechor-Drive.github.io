@@ -1,5 +1,8 @@
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const allowedTypes = new Set(["video/mp4", "video/webm", "image/png", "image/jpeg", "image/webp"]);
+const rootTypes = new Set(["video/mp4", "video/webm", "image/png", "image/jpeg", "image/webp"]);
+const sidecarTypes = new Set(["text/vtt", "text/plain; charset=utf-8"]);
+const descriptorFields = new Set(["id", "sectionId", "contentVersionId", "type", "title", "file"]);
+const invalid = () => { throw new Error("Invalid private media descriptor."); };
 const privateHeaders = { "Cache-Control": "private, no-store", "Pragma": "no-cache", "X-Content-Type-Options": "nosniff" };
 
 // Pure shared policy. Adapters own filenames, source metadata and stream lifetimes.
@@ -10,16 +13,41 @@ export function createMediaPolicy(entries, validFile) {
 	for (const input of entries) {
 		if (!input || typeof input.id !== "string" || !/^[a-z0-9][a-z0-9_-]{0,79}$/.test(input.id) || registry.has(input.id)
 			|| typeof input.sectionId !== "string" || !uuid.test(input.sectionId) || typeof input.contentVersionId !== "string" || !uuid.test(input.contentVersionId)
-			|| !allowedTypes.has(input.type) || typeof input.title !== "string" || !input.title.trim() || input.title.length > 300
-			|| typeof input.file !== "string" || !validFile(input.file)) throw new Error("Invalid private media descriptor.");
+			|| (!rootTypes.has(input.type) && !sidecarTypes.has(input.type)) || typeof input.title !== "string" || !input.title.trim() || input.title.length > 300
+			|| typeof input.file !== "string" || !validFile(input.file)) invalid();
+		if (!input.type.startsWith("video/") && (Object.hasOwn(input, "captions") || Object.hasOwn(input, "transcript"))) invalid();
+		if (sidecarTypes.has(input.type) && Object.keys(input).some(key => !descriptorFields.has(key))) invalid();
 		const { id, sectionId, contentVersionId, type, title, file } = input;
 		registry.set(id, Object.freeze({ id, sectionId, contentVersionId, type, title, file }));
 	}
+	const referenced = new Set();
+	function reference(input, owner, type) {
+		if (!input || typeof input !== "object" || Array.isArray(input) || Object.keys(input).some(key => !["id", "language", "label"].includes(key))
+			|| typeof input.id !== "string" || input.language !== "he" || typeof input.label !== "string" || !input.label.trim() || input.label.length > 300) invalid();
+		const entry = registry.get(input.id);
+		if (!entry || entry.type !== type || entry.sectionId !== owner.sectionId || entry.contentVersionId !== owner.contentVersionId || referenced.has(input.id)) invalid();
+		referenced.add(input.id);
+		return Object.freeze({ id: input.id, language: input.language, label: input.label });
+	}
+	for (const input of entries) {
+		const entry = registry.get(input.id);
+		if (!entry.type.startsWith("video/")) continue;
+		const alternatives = {};
+		if (Object.hasOwn(input, "captions")) {
+			if (!Array.isArray(input.captions)) invalid();
+			alternatives.captions = Object.freeze(input.captions.map(item => reference(item, entry, "text/vtt")));
+		}
+		if (Object.hasOwn(input, "transcript")) alternatives.transcript = reference(input.transcript, entry, "text/plain; charset=utf-8");
+		registry.set(entry.id, Object.freeze({ ...entry, ...alternatives }));
+	}
+	for (const entry of registry.values()) if (sidecarTypes.has(entry.type) && !referenced.has(entry.id)) invalid();
+	const publicReference = entry => ({ ...entry, url: `/api/media/${entry.id}` });
 	return {
 		lookup: id => registry.get(id),
 		forSection(sectionId, contentVersionId) {
-			return [...registry.values()].filter(entry => entry.sectionId === sectionId && entry.contentVersionId === contentVersionId)
-				.map(({ id, title, type }) => ({ id, title, type, url: `/api/media/${id}` }));
+			return [...registry.values()].filter(entry => rootTypes.has(entry.type) && entry.sectionId === sectionId && entry.contentVersionId === contentVersionId)
+				.map(({ id, title, type, captions, transcript }) => ({ id, title, type, url: `/api/media/${id}`,
+					...(captions ? { captions: captions.map(publicReference) } : {}), ...(transcript ? { transcript: publicReference(transcript) } : {}) }));
 		},
 		request(entry, { method, range }) {
 			if (!entry || registry.get(entry.id) !== entry || !["GET", "HEAD"].includes(method)) throw new Error("Invalid media delivery request.");

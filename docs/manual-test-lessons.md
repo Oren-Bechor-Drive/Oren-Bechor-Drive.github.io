@@ -52,7 +52,7 @@ The browser supplies its own cookie and Origin. Filter Network requests by `/api
 
 ## Check free and paid access
 
-Before sign-in, `await api(freePath)` and `await api(paidPath)` return `401` without body text. After learner A signs in, the free read returns `200`; the paid read returns `404`. Open the free reader, scroll down its long text, wait for the save message, reload, and check that it resumes near the same place. The button labeled `שמירת מיקום הקריאה` also saves the current scroll position. The response's `position.position` is an integer from 0 to 10000.
+Before sign-in, `await api(freePath)` and `await api(paidPath)` return `401` without body text. After learner A signs in, the free read returns `200`; the paid read returns `404`. Open the free reader, scroll down its long text, wait for the acknowledged save message, reload, and check that it resumes near the same place. Positions save automatically. The `ניסיון נוסף לשמירת המיקום` control appears only after a failed save. The response's `position.position` is an integer from 0 to 10000. Suspension flushes a pending position before clearing private DOM; persistence still requires server acknowledgement and cannot be guaranteed during an offline exit or forced browser termination.
 
 In the Node console, grant A one hour of paid test access:
 
@@ -114,3 +114,15 @@ To test a stale save, open the same section in two signed-in windows for one lea
 ## Stop
 
 In the Node console, run `await app.close()`, then `.exit`. A fresh fixture starts with empty accounts and positions.
+
+## Human and physical-device follow-up recorded on 2026-10-08
+
+The [dated browser evidence](reviews/site-quality-2026-09-22.md#protected-learning-follow-up-on-2026-10-08) uses local synthetic learners and owned media. Native accessibility-tree assertions and visual browser checks do not establish screen-reader usability. These human checks remain unperformed:
+
+- Use NVDA on Windows with Firefox/Chromium to check Hebrew reading order, landmarks, status announcements, question legends/radios, errors, result focus, transcript disclosure and caption labels.
+- Use VoiceOver with desktop Safari and a physical iPhone/iPad for the same protected journey, native media controls, captions/transcripts, browser chrome, keyboard and safe areas.
+- Use TalkBack on a physical Android device to check touch order/targets, the protected reader/quiz and native video/caption selection.
+- Check actual browser text-only 200% zoom at a narrow 320px viewport and platform forced colors. Automated 200% root-font sizing and forced-color emulation are proxies.
+- Once approved real media is supplied, verify caption synchronization and completeness, Hebrew transcript comprehension, essential visual descriptions and native playback controls.
+
+Fixture `republishSection`, `withdrawQuiz` and `publishQuiz` controls belong only to disposable tests. The [trusted withdrawal procedure](OPERATIONS.md#withdraw-a-protected-quiz-version) owns future operator actions.

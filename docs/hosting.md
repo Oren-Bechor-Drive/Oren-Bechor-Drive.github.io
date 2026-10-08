@@ -15,9 +15,17 @@ npm run dev:worker
 
 `package:worker` copies allowed public files into ignored `.worker/public`. A custom output must be outside the source tree or exactly its `.worker/public` directory; it cannot replace source, docs, tests or Git metadata. It excludes server source, docs, tests, configuration, credentials, hidden files and unsupported extensions, rejects symlinks and oversized assets, and preserves supplied media bytes. `dev:worker` is local. There is no deployment script. Checked-in `wrangler.jsonc` disables `workers.dev` and preview URLs and declares no public routes.
 
+Packaging prepares the complete replacement before moving the previous output to a sibling `.package-*` backup. A failed installation restores the previous output. If restoration also fails, the error reports the retained `previous` tree and exposes its parent as `recoveryDirectory`; the new tree remains under `prepared`. Stop other packaging processes, inspect both trees, and rename `previous` back to the original output once the filesystem problem is resolved. Remove the retained directory only after verifying restoration. These guarantees cover ordinary errors within one invocation, not concurrent packaging or a process crash. A successful retry removes obsolete public files.
+
 Images, CSS and JavaScript in the configured static exclusions bypass the Worker and receive generated security/cache headers. HTML, directory routes, account pages and API requests invoke the Worker and consume its dynamic request allowance. This preserves existing checked-in URLs.
 
 The local Worker serves the public site even without credentials; its account API returns unavailable. Runtime tests use synthetic identities. They do not authenticate against hosted Supabase or send emails.
+
+The [local recovery rehearsal](local-recovery.md) checks owned synthetic databases and private-media copies. It is separate from provider backup formats and does not establish a hosted recovery path.
+
+`npm run check:pilot:local` checks the closed/disabled defaults, actual public package and synthetic account, reading, quiz, withdrawal and media boundaries. It accepts only the fixed local mode, ignores environment-based targets, removes its owned fixtures and returns a nonzero exit status on failure. Its nine external gates remain explicit even when all local checks pass. The [local benchmark](local-performance.md) records latency, errors, transfer and bounded concurrency separately; it does not measure hosted capacity.
+
+The [2026-10-08 readiness report](reviews/local-readiness-2026-10-08.md) records 837 passing integrated tests, 9/9 local pilot checks, 11/11 recovery checks and the clean-checkout benchmark. No authorized local hosted-configuration file was supplied, so `check:hosting` and live provider/deployment checks remain unperformed.
 
 ## Configuration
 
@@ -55,7 +63,7 @@ A database lease serializes operations on a session across Worker instances. It 
 
 Rotation and revocation commit through service-only RPCs. Password reset invalidates the user's other sessions and authentication already in flight. If the provider's password-update result is uncertain, a durable reset barrier blocks new authentication publication until an operator reconciles it. It never expires into an automatic authorization decision. See the recovery procedure below.
 
-The default store holds at most 1000 sessions, with at most 800 anonymous sessions. Capacity exhaustion returns unavailable rather than switching to an unbounded or process-local store. Rate windows permit 150 API requests per minute and 20 account mutations per fifteen minutes per client address. PostgreSQL shares counters across instances and caps their storage at 4000 buckets. Counters store HMAC values, never raw IP addresses. Exhaustion denies requests; storage errors fail closed.
+The default store holds at most 1000 sessions, with at most 800 anonymous sessions. Capacity exhaustion returns unavailable rather than switching to an unbounded or process-local store. Rate windows permit 150 API requests per minute and 20 account mutations per fifteen minutes per client address. PostgreSQL shares counters across instances and caps their storage at 4000 buckets. Counters store HMAC values, never raw IP addresses. Exhaustion denies requests with the remaining positive whole seconds; storage errors fail closed. The decision RPC and retained boolean compatibility RPC share a single counter. Apply the decision migration before deploying the new caller. A provider throttle without known wait metadata has no fabricated `Retry-After` header.
 
 Cloudflare supplies `CF-Connecting-IP`; generic forwarded headers cannot select a different identity. Do not place this adapter behind a proxy that lets callers choose that header. Provider Auth/email limits remain additional limits. Application limits do not implement provider billing caps; selected accounts must remain on their Free plans.
 
@@ -95,9 +103,9 @@ Create a private bucket only after selecting the hosted project and confirming i
 
 The hosted adapter supports full delivery, HEAD and single byte ranges, validates upstream MIME type and range metadata, and streams without buffering a video in memory. Disconnects and fifteen seconds without upstream progress abort the download. Invalid upstream responses fail closed. This adapter currently accepts the standard `https://<project>.supabase.co` host, not custom Storage domains.
 
-The registry has the same `id`, `sectionId`, `contentVersionId`, `type`, `title` and `file` fields as the [local media manifest](protected-learning.md). `file` is now a private object path. Use opaque ASCII object names with letters, digits, `_`, `-` and `.`, separated by `/`; no dot-leading, empty or escaped path segments. Titles remain Hebrew. Accepted types are MP4/WebM and PNG/JPEG/WebP. The registry is server configuration, not learner-supplied data or a public file.
+The registry has the same `id`, `sectionId`, `contentVersionId`, `type`, `title` and `file` fields as the [local media manifest](protected-learning.md). `file` is now a private object path. Use opaque ASCII object names with letters, digits, `_`, `-` and `.`, separated by `/`; no dot-leading, empty or escaped path segments. Titles remain Hebrew. Accepted root types are MP4/WebM and PNG/JPEG/WebP. A video can reference Hebrew `text/vtt` captions and a `text/plain; charset=utf-8` transcript as separate same-section/version registry entries, using the [local manifest contract](protected-learning.md#private-media). Only root image/video descriptors appear in the section response; sidecars are nested opaque URLs. Invalid, repeated, orphan or wrong-version references prevent registry construction. Storage responses preserve precise text MIME types and the same authorization/cache boundary. The registry is server configuration, not learner-supplied data or a public file.
 
-No videos or registry entries have been uploaded. Captions, transcripts, approved media, browser playback and actual storage/egress capacity remain release work. The current adapter does not add adaptive streaming or remove the selected plan's per-file limit.
+No videos or registry entries have been uploaded. Caption/transcript delivery and native reader controls are locally implemented and tested with synthetic media. Real approved captions/transcripts, rights, hosted playback, physical-device accessibility and actual storage/egress capacity remain release work. The current adapter does not add adaptive streaming or remove the selected plan's per-file limit.
 
 ## Private pilot and public opening
 
@@ -111,3 +119,11 @@ No videos or registry entries have been uploaded. Captions, transcripts, approve
 For rollback, select `closed` and keep secrets stable. Session use will reject identities under the closed gate. Already delivered bytes cannot be recalled; provider account deletion and content unpublication are separate actions. Preserve the schema while investigating rather than dropping learner data.
 
 Backups are still unresolved: no backup destination has been supplied. Durable sessions and passing tests do not establish recoverability of learner data. Live provider setup, hosted verification, approved content and the owner's opening decision remain outside this local implementation.
+
+## Safe diagnostics
+
+`server/diagnostics.mjs` emits only approved category/operation/status values and optional configuration field/reason. It never accepts arbitrary messages, stacks, URLs, learner IDs, cookies, request bodies, provider payloads or credentials. The first matching event is emitted; repeats are suppressed for 60 seconds, and the next event reports an internally accumulated count. Reporter failure cannot change a response. Local Node emits to stderr. Worker initialization emits one safe configuration event per environment and keeps its public-site/unavailable-API behavior.
+
+Admission and Storage constructors own their configuration validation. Safe diagnostics can identify `REGISTRATION_MODE` or `PILOT_EMAILS` alongside the existing origin, key and media field names; they never include tester addresses or any configuration value. Invalid admission still leaves the API unavailable rather than opening registration.
+
+Gateway dependency failures distinguish account, learning, position, media and rate-store operations; unexpected failures use the same safe generic learner response. `wrangler.jsonc` cloud observability remains disabled. Local emitted events are not hosted log collection, alert delivery or a response commitment. The owner must supply log retention, alert destinations and a responder before configuring those services.

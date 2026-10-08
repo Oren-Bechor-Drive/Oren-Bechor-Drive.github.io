@@ -1,4 +1,4 @@
-# Public teaching coverage draft - 2026-10-08
+# Public teaching placement and review navigation draft - 2026-10-08
 
 This is a local comparison of all 140 reviewed quiz questions with the current 25 public reading sections. It is an editorial draft for Oren's review. It does not approve teaching, independently verify current law, add official-bank questions, or authorize publishing any proposed copy.
 
@@ -9,9 +9,9 @@ The inputs are [the reviewed question source](theory-quiz-content.json), [questi
 - Covered: the originally assessed section in the assigned quiz topic teaches the proposition needed for the keyed answer. This is a teaching-placement assessment, not legal approval.
 - Partial: the originally assessed section teaches the broad idea, but an answer-critical condition or distinction is absent.
 - Elsewhere: another existing reading section teaches the proposition. Review links now reach that teaching, including ten links to other topics. The label still records the missing teaching at the originally assessed placement; correcting navigation does not approve new teaching or fill that placement gap.
-- Gap: the required proposition is absent. The nearest section link is navigation only.
+- Gap: the required proposition is absent. The nearest assessed section remains an editorial placement, while public review returns to the learning topic.
 
-A question's lessonSectionId and optional lessonTopicId identify its review destination, not paragraph coverage. The figures below use the current HTML, including the new source-derived scenarios and self-checks, but those repetitions do not fill unrelated quiz gaps.
+A question's `lessonSectionId` and optional `lessonTopicId` retain its assessed teaching destination, not paragraph coverage. Its `lessonReferenceKind` records public navigation intent, not instructor approval. The 48 Covered and 11 Elsewhere questions use `explanation` links to their reviewed sections, labeled `חזרה להסבר בנושא`. The 25 Partial and 56 Gap questions use `topic` links to their own learning topic's `#topic` anchor, labeled `חזרה לנושא הלימוד`. These 81 neutral links do not fill or approve the missing teaching. The figures below use the current HTML, including the new source-derived scenarios and self-checks, but those repetitions do not fill unrelated quiz gaps.
 
 | Topic | Questions | Covered | Partial | Elsewhere | Gap |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -29,13 +29,13 @@ A question's lessonSectionId and optional lessonTopicId identify its review dest
 
 The exact question IDs requiring missing facts or qualifications appear below. No numerical point allocations or penalties were introduced. Existing speed defaults and ordinary accompaniment figures already appear in the current lesson; the old critique's blanket claim that those pages defer all figures is stale.
 
-## Question-to-section comparison
+## Question-to-section placement assessment
 
-Each question ID links to its current public quiz. The review-link column names the current source destination. The eleven Elsewhere destinations were corrected to existing teaching; question ownership and coverage totals are unchanged. Assessment text retains the comparison with the originally assessed own-topic placement, using that question's reviewed explanation.
+Each question ID links to its current public quiz. The assessed-destination column names the section retained in the maintenance source, including placements that public review now reaches only through neutral topic navigation. The eleven Elsewhere destinations still reach existing teaching; question ownership and coverage totals are unchanged. Assessment text retains the comparison with the originally assessed own-topic placement, using that question's reviewed explanation.
 
 ### learning-foundations
 
-| Question | Current review link | Coverage | Required proposition or missing distinction |
+| Question | Assessed teaching destination | Coverage | Required proposition or missing distinction |
 | --- | --- | --- | --- |
 | [0010](../../course/learning-foundations/quiz/#question-0010) | [definitions](../../course/learning-foundations/#definitions) | Covered | דרך אינה רק כביש סלול. גם מקום פתוח שלציבור יש זכות לעבור בו עשוי להיות דרך. |
 | [0011](../../course/learning-foundations/quiz/#question-0011) | [definitions](../../course/learning-foundations/#definitions) | Gap | Lighting-time definition, including poor daytime visibility, is absent. |
@@ -49,7 +49,7 @@ Each question ID links to its current public quiz. The review-link column names 
 
 ### signs-and-speed
 
-| Question | Current review link | Coverage | Required proposition or missing distinction |
+| Question | Assessed teaching destination | Coverage | Required proposition or missing distinction |
 | --- | --- | --- | --- |
 | [0332](../../course/signs-and-speed/quiz/#question-0332) | [speed](../../course/signs-and-speed/#speed) | Covered | כשצפויה סכנה מאטים, ואם צריך עוצרים, גם כשהמהירות הקודמת נמוכה מהמהירות המרבית. |
 | [0401](../../course/signs-and-speed/quiz/#question-0401) | [common-signs](../../course/signs-and-speed/#common-signs) | Gap | Information-sign purpose is absent. |
@@ -68,7 +68,7 @@ Each question ID links to its current public quiz. The review-link column names 
 
 ### roads-and-lanes
 
-| Question | Current review link | Coverage | Required proposition or missing distinction |
+| Question | Assessed teaching destination | Coverage | Required proposition or missing distinction |
 | --- | --- | --- | --- |
 | [0016](../../course/roads-and-lanes/quiz/#question-0016) | [road-direction](../../course/roads-and-lanes/#road-direction) | Covered | כיוון הנסיעה נקבע בהסדר התנועה, ולא לפי כיוון המכוניות החונות. |
 | [0090](../../course/roads-and-lanes/quiz/#question-0090) | [road-direction](../../course/roads-and-lanes/#road-direction) | Gap | Permission to pass a one-way-road obstacle on either side, subject to signs, is absent. |
@@ -88,7 +88,7 @@ Each question ID links to its current public quiz. The review-link column names 
 
 ### right-of-way
 
-| Question | Current review link | Coverage | Required proposition or missing distinction |
+| Question | Assessed teaching destination | Coverage | Required proposition or missing distinction |
 | --- | --- | --- | --- |
 | [0027](../../course/right-of-way/quiz/#question-0027) | [learning-foundations/definitions](../../course/learning-foundations/#definitions) | Elsewhere | The no-stop/wait/speed/course-change definition is taught in foundations. See [definitions](../../course/learning-foundations/#definitions). |
 | [0109](../../course/right-of-way/quiz/#question-0109) | [right-turn](../../course/right-of-way/#right-turn) | Covered | לפני הפנייה בודקים גם את השטח שמימין, שבו עלול להימצא רוכב שלא נראה במראה. |
@@ -109,7 +109,7 @@ Each question ID links to its current public quiz. The review-link column names 
 
 ### priority-hierarchy
 
-| Question | Current review link | Coverage | Required proposition or missing distinction |
+| Question | Assessed teaching destination | Coverage | Required proposition or missing distinction |
 | --- | --- | --- | --- |
 | [0058](../../course/priority-hierarchy/quiz/#question-0058) | [priority](../../course/priority-hierarchy/#priority) | Gap | Sign obligations for all relevant road users, beyond drivers, are absent. |
 | [0061](../../course/priority-hierarchy/quiz/#question-0061) | [priority](../../course/priority-hierarchy/#priority) | Partial | Police precedence is taught; identification by appointment card is not. |
@@ -129,7 +129,7 @@ Each question ID links to its current public quiz. The review-link column names 
 
 ### roundabouts
 
-| Question | Current review link | Coverage | Required proposition or missing distinction |
+| Question | Assessed teaching destination | Coverage | Required proposition or missing distinction |
 | --- | --- | --- | --- |
 | [0387](../../course/roundabouts/quiz/#question-0387) | [single-lane](../../course/roundabouts/#single-lane) | Gap | Numbered sign recognition and passing the central island on the right are absent. |
 | [0430](../../course/roundabouts/quiz/#question-0430) | [single-lane](../../course/roundabouts/#single-lane) | Gap | Advance warning sign versus the entry-priority sign is not taught. |
@@ -146,7 +146,7 @@ Each question ID links to its current public quiz. The review-link column names 
 
 ### overtaking
 
-| Question | Current review link | Coverage | Required proposition or missing distinction |
+| Question | Assessed teaching destination | Coverage | Required proposition or missing distinction |
 | --- | --- | --- | --- |
 | [0129](../../course/overtaking/quiz/#question-0129) | [restrictions](../../course/overtaking/#restrictions) | Partial | Pre-overtake feasibility is taught; checking through the complete manoeuvre needs explicit wording. |
 | [0130](../../course/overtaking/quiz/#question-0130) | [restrictions](../../course/overtaking/#restrictions) | Covered | שדה ראייה חסום אינו מאפשר לוודא שהדרך פנויה לאורך מרחק העקיפה. |
@@ -168,7 +168,7 @@ Each question ID links to its current public quiz. The review-link column names 
 
 ### trip-planning
 
-| Question | Current review link | Coverage | Required proposition or missing distinction |
+| Question | Assessed teaching destination | Coverage | Required proposition or missing distinction |
 | --- | --- | --- | --- |
 | [0191](../../course/trip-planning/quiz/#question-0191) | [obstacle](../../course/trip-planning/#obstacle) | Partial | Obstacle checks are taught, but checking traffic control before choosing the passing route is not explicit. |
 | [0192](../../course/trip-planning/quiz/#question-0192) | [obstacle](../../course/trip-planning/#obstacle) | Covered | כשהחסימה נמצאת בנתיב שלך, אין לכפות על הרכב שממול לפנות לך דרך. הוראת שוטר או תמרור עשויה להסדיר אחרת. |
@@ -176,7 +176,7 @@ Each question ID links to its current public quiz. The review-link column names 
 | [0731](../../course/trip-planning/quiz/#question-0731) | [merge](../../course/trip-planning/#merge) | Partial | Safe entry is taught; signalling before starting to merge is not explicit in this section. |
 | [0835](../../course/trip-planning/quiz/#question-0835) | [merge](../../course/trip-planning/#merge) | Gap | Returning from the shoulder and yielding to existing road traffic are absent. |
 | [0865](../../course/trip-planning/quiz/#question-0865) | [merge](../../course/trip-planning/#merge) | Partial | Mirrors and blind spots are taught; turning the head toward the intended movement is not explicit. |
-| [0988](../../course/trip-planning/quiz/#question-0988) | [obstacle](../../course/trip-planning/#obstacle) | Gap | Sustained-descending gear choice and engine braking are absent; obstacle is only a nearest-section link. |
+| [0988](../../course/trip-planning/quiz/#question-0988) | [obstacle](../../course/trip-planning/#obstacle) | Gap | Sustained-descending gear choice and engine braking are absent; obstacle is only the nearest assessed placement. Public review returns to the topic. |
 | [1064](../../course/trip-planning/quiz/#question-1064) | [junction](../../course/trip-planning/#junction) | Gap | Setting navigation before driving and screen distraction are absent. |
 | [1065](../../course/trip-planning/quiz/#question-1065) | [junction](../../course/trip-planning/#junction) | Gap | Navigation as route assistance that does not override signs is absent. |
 | [1383](../../course/trip-planning/quiz/#question-1383) | [signs-and-speed/speed](../../course/signs-and-speed/#speed) | Elsewhere | Speed appropriate to limited visibility is taught in signs/speed, not trip planning. See [speed](../../course/signs-and-speed/#speed). |
@@ -184,7 +184,7 @@ Each question ID links to its current public quiz. The review-link column names 
 
 ### driving-test
 
-| Question | Current review link | Coverage | Required proposition or missing distinction |
+| Question | Assessed teaching destination | Coverage | Required proposition or missing distinction |
 | --- | --- | --- | --- |
 | [0221](../../course/driving-test/quiz/#question-0221) | [control](../../course/driving-test/#control) | Gap | Parallel parking versus a marked alternative arrangement is absent. |
 | [0223](../../course/driving-test/quiz/#question-0223) | [control](../../course/driving-test/#control) | Gap | 40cm parking limit and measurement from the nearest wheels are absent. |
@@ -203,7 +203,7 @@ Each question ID links to its current public quiz. The review-link column names 
 
 ### licensing-and-points
 
-| Question | Current review link | Coverage | Required proposition or missing distinction |
+| Question | Assessed teaching destination | Coverage | Required proposition or missing distinction |
 | --- | --- | --- | --- |
 | [0003](../../course/licensing-and-points/quiz/#question-0003) | [new-driver](../../course/licensing-and-points/#new-driver) | Partial | Valid entitlement/conditions are taught; the owner/controller responsibility is not. |
 | [0004](../../course/licensing-and-points/quiz/#question-0004) | [new-driver](../../course/licensing-and-points/#new-driver) | Covered | המלווה צריך רישיון מתאים ובתוקף ולעמוד בדרישות הגיל והוותק. למורה נהיגה מוסמך יש חריג לדרישת הגיל. |

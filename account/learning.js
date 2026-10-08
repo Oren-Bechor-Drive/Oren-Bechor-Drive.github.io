@@ -1,6 +1,7 @@
 import "../js/input-mode.js";
 import { createProtectedPage } from "./protected-page.js";
 import { createQuizAttemptEditor } from "./quiz-attempt-editor.js";
+import { retryGuidance } from "./retry-guidance.js";
 
 const element = selector => document.querySelector(selector);
 const status = element("[data-learning-status]");
@@ -14,6 +15,7 @@ element("[data-learning-interface]").hidden = false;
 element("[data-sign-in]").href = `login.html?return=${encodeURIComponent(location.pathname)}`;
 let csrf, selectedTopic, nextCursor;
 let busy = false;
+const withdrawalMessage = "גרסת התרגול אינה זמינה עוד. חזרו ללמידה ובחרו גרסה מעודכנת.";
 const lifetime = createProtectedPage({
 	clear: ({ preserveState }) => clearPrivate({ preserveDraft: preserveState }),
 	restore: () => void run(loadTopics),
@@ -35,7 +37,7 @@ function message(error) {
 	if (error.status === 401) return "היכנסו לחשבון כדי להמשיך בלמידה.";
 	if (error.status === 404) return "התוכן אינו זמין לחשבון שלכם כרגע. אפשר להמשיך בנושאי הלימוד ובתרגול החינמי.";
 	if (error.status === 409) return "הניסיון עודכן בחלון אחר. טענו את הניסיון השמור לפני המשך התרגול.";
-	if (error.status === 429) return "בוצעו בקשות רבות. המתינו דקה ונסו שוב.";
+	if (error.status === 429) return retryGuidance(error.retryAfterSeconds ?? null);
 	return "הפעולה לא הושלמה. בדקו את החיבור ונסו שוב.";
 }
 function controls(disabled, editing = false) {
@@ -62,7 +64,21 @@ function clearPrivate({ preserveDraft = false } = {}) {
 	element("[data-retention]").hidden = true;
 	for (const selector of ["[data-attempt]", "[data-results]", "[data-result-summary]", "[data-history]"]) element(selector).hidden = true;
 	saveStatus.textContent = "";
+	status.dataset.withdrawn = "false";
+	element("[data-reload]").textContent = "טעינה מחדש";
 	controls(false);
+}
+function showWithdrawal() {
+	clearPrivate();
+	status.dataset.withdrawn = "true";
+	status.dataset.failed = "true";
+	status.setAttribute("role", "alert");
+	status.textContent = withdrawalMessage;
+	element("[data-draft-actions]").hidden = true;
+	element("[data-reload-attempt]").hidden = true;
+	element("[data-reload]").textContent = "חזרה ללמידה וטעינה מחדש";
+	element("[data-reload]").hidden = false;
+	element("[data-sign-in]").hidden = true;
 }
 async function run(action, editing = false) {
 	if (busy) return;
@@ -76,7 +92,7 @@ async function run(action, editing = false) {
 			return data;
 		};
 		await action(request);
-		if (status.dataset.failed === "true") {
+		if (status.dataset.failed === "true" && status.dataset.withdrawn !== "true") {
 			status.dataset.failed = "false";
 			status.setAttribute("role", "status");
 			status.textContent = "אפשר להמשיך בלמידה ובתרגול.";
@@ -84,6 +100,7 @@ async function run(action, editing = false) {
 		}
 	}, {
 		error(error) {
+			if (error.status === 410 && error.message === "quiz_withdrawn") { showWithdrawal(); return; }
 			if ([401, 404].includes(error.status)) lifetime.reset();
 			const { attempt, dirty, conflict } = editor.view;
 			element("[data-reload-attempt]").hidden = !conflict;
@@ -158,6 +175,7 @@ async function loadTopics(request) {
 }
 function renderAttempt() {
 	const { attempt: data, answers, conflict, editable } = editor.view;
+	if (data?.status === "withdrawn") { showWithdrawal(); return; }
 	const submitted = data.status === "submitted";
 	saveStatus.dataset.failed = "false";
 	selectedTopic = data.topicKey;
@@ -215,6 +233,7 @@ async function openQuiz(request, key) {
 	if (!canLeave()) return;
 	editor.load(await request(`quizzes/${encodeURIComponent(key)}/start`, {}));
 	renderAttempt();
+	if (!editor.view.attempt) return;
 	element("#quiz-heading").focus();
 	element("[data-attempt]").scrollIntoView({ block: "start", behavior: "instant" });
 }

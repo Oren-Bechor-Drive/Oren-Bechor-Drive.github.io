@@ -1,10 +1,10 @@
 import { createLearnerAccounts } from "./learner-accounts.mjs";
 import { inspectPassword } from "../account/password-policy.js";
 
-const fail = (status, code) => { throw Object.assign(new Error(code), { status, code }); };
+const fail = (status, code, retryAfterSeconds) => { throw Object.assign(new Error(code), { status, code, retryAfterSeconds }); };
 const fields = {
 	login: ["email", "password"], register: ["email", "password"], recover: ["email"],
-	reset: ["password"], google: [], logout: [], resend: [],
+	reset: ["password"], google: ["returnTo"], logout: [], resend: [],
 	position: ["contentVersionId", "position", "expectedRevision"],
 	quizSave: ["answers", "expectedRevision"], quizSubmit: ["expectedRevision"], empty: [],
 };
@@ -31,6 +31,7 @@ async function input(req, route) {
 		if (typeof body.password !== "string") fail(400, "invalid_password");
 		if (inspectPassword(body.password, { existing: route === "login" }).error) fail(400, "invalid_password");
 	}
+	if (route === "google" && body.returnTo !== undefined && (typeof body.returnTo !== "string" || body.returnTo.length > 2048)) fail(400, "invalid_input");
 	if (route === "position" && (typeof body.contentVersionId !== "string" || !uuid.test(body.contentVersionId)
 		|| !Number.isInteger(body.position) || body.position < 0 || body.position > 10000
 		|| !Number.isSafeInteger(body.expectedRevision) || body.expectedRevision < 0)) fail(400, "invalid_input");
@@ -40,7 +41,7 @@ async function input(req, route) {
 	return body;
 }
 
-export function createGateway({ origin, provider = null, media = null, googleEnabled = false, now = Date.now, authLimit = 20, sessionLimit = 1000, sessions, admit, requestLimiter, mutationLimiter }) {
+export function createGateway({ origin, provider = null, media = null, googleEnabled = false, now = Date.now, authLimit = 20, sessionLimit = 1000, sessions, admit, requestLimiter, mutationLimiter, diagnostics }) {
 	const address = new URL(origin);
 	if (address.origin !== origin || (address.protocol !== "https:" && !(address.protocol === "http:" && ["127.0.0.1", "localhost", "[::1]"].includes(address.hostname)))) throw new Error("An exact HTTPS origin or loopback HTTP origin is required");
 	const secure = address.protocol === "https:";
@@ -60,7 +61,7 @@ export function createGateway({ origin, provider = null, media = null, googleEna
 	async function readMutation(req, token, bodyType, limiter) {
 		if (req.headers.origin !== origin || req.headers["content-type"]?.split(";")[0].trim() !== "application/json"
 			|| !await accounts.acceptsRequest(token, req.headers["x-csrf-token"])) fail(403, "request_rejected");
-		if (limiter && !await limiter(req.socket.remoteAddress)) fail(429, "rate_limited");
+		if (limiter) await enforceLimit(limiter, req.socket.remoteAddress);
 		return input(req, bodyType);
 	}
 	return async function handle(req, res) {
@@ -68,13 +69,14 @@ export function createGateway({ origin, provider = null, media = null, googleEna
 		res.setHeader("Pragma", "no-cache");
 		res.setHeader("Referrer-Policy", "no-referrer");
 		res.setHeader("X-Content-Type-Options", "nosniff");
-		let route;
+		let route, diagnosticOperation = "account";
 		try {
-			if (!await requestLimit(req.socket.remoteAddress)) fail(429, "rate_limited");
+			await enforceLimit(requestLimit, req.socket.remoteAddress);
 			const url = new URL(req.url, origin);
 			const cookies = (req.headers.cookie ?? "").split(";").map(part => part.trim()).filter(part => part.startsWith(`${cookieName}=`));
 			const token = cookies.length === 1 ? cookies[0].slice(cookieName.length + 1) : null;
 			if (url.pathname === "/api/sections" || url.pathname.startsWith("/api/sections/")) {
+				diagnosticOperation = url.pathname.endsWith("/position") ? "position" : "learning";
 				if (url.search) fail(400, "invalid_input");
 				if (!provider) fail(503, "unavailable");
 				if (url.pathname === "/api/sections") {
@@ -94,6 +96,7 @@ export function createGateway({ origin, provider = null, media = null, googleEna
 				return respond(res, result);
 			}
 			if (url.pathname.startsWith("/api/media/")) {
+				diagnosticOperation = "media";
 				if (!["GET", "HEAD"].includes(req.method)) fail(405, "method_not_allowed");
 				if (url.search) fail(400, "invalid_input");
 				const entry = media?.lookup(url.pathname.slice("/api/media/".length));
@@ -102,6 +105,7 @@ export function createGateway({ origin, provider = null, media = null, googleEna
 				return await media.send(req, res, entry);
 			}
 			if (/^\/api\/(learning|quizzes|attempts|topics)(\/|$)/.test(url.pathname)) {
+				diagnosticOperation = "learning";
 				if (!provider) fail(503, "unavailable");
 				const [, , resource, key, action] = url.pathname.split("/");
 				if (url.pathname.split("/").length > 5) fail(404, "not_found");
@@ -145,6 +149,10 @@ export function createGateway({ origin, provider = null, media = null, googleEna
 			const body = await readMutation(req, token, route, mutationLimit);
 			return respond(res, await accounts.perform(token, route, body));
 		} catch (error) {
+			if ((error.status ?? 503) >= 500) {
+				try { diagnostics?.emit({ category: Number.isInteger(error.status) ? "dependency" : "unexpected", operation: error.diagnosticOperation === "rate_limit" ? "rate_limit" : diagnosticOperation, status: 503 }); }
+				catch { /* Reporter failures are nonfatal. */ }
+			}
 			if (res.writableEnded || res.destroyed) return;
 			if (res.headersSent) { res.destroy(); return; }
 			let status = error.status ?? 503;
@@ -152,8 +160,8 @@ export function createGateway({ origin, provider = null, media = null, googleEna
 			if (route === "login" && [400, 401, 403, 422].includes(status) && !["invalid_input", "invalid_email", "invalid_password", "request_rejected"].includes(code)) { status = 401; code = "sign_in_failed"; }
 			else if (status >= 500) { status = 503; code = "unavailable"; }
 			else if (status === 429) { code = "rate_limited"; }
-			else if (!["invalid_input", "invalid_email", "invalid_password", "request_rejected", "recovery_required", "session_expired", "too_large", "not_found", "lesson_unavailable", "learning_unavailable", "quiz_conflict", "method_not_allowed", "google_unavailable"].includes(code)) code = "request_failed";
-			if (status === 429) res.setHeader("Retry-After", "60");
+			else if (!["invalid_input", "invalid_email", "invalid_password", "request_rejected", "recovery_required", "session_expired", "too_large", "not_found", "lesson_unavailable", "learning_unavailable", "quiz_conflict", "quiz_withdrawn", "method_not_allowed", "google_unavailable"].includes(code)) code = "request_failed";
+			if (status === 429 && Number.isInteger(error.retryAfterSeconds) && error.retryAfterSeconds >= 1 && error.retryAfterSeconds <= 86400) res.setHeader("Retry-After", String(error.retryAfterSeconds));
 			json(res, { error: code }, status);
 		}
 	};
@@ -162,13 +170,25 @@ export function createGateway({ origin, provider = null, media = null, googleEna
 function createRateLimit({ now = Date.now, limit = 20, windowMs = 900_000, capacity = 2000 } = {}) {
 	const buckets = new Map();
 	return address => {
-		for (const [key, value] of buckets) if (value.until <= now()) buckets.delete(key);
+		const time = now();
+		for (const [key, value] of buckets) if (value.until <= time) buckets.delete(key);
 		let value = buckets.get(address);
 		if (!value) {
-			if (buckets.size >= capacity) return false;
-			value = { count: 0, until: now() + windowMs };
+			if (buckets.size >= capacity) return { allowed: false, retryAfterSeconds: Math.max(1, Math.ceil((Math.min(...Array.from(buckets.values(), item => item.until)) - time) / 1000)) };
+			value = { count: 0, until: time + windowMs };
 			buckets.set(address, value);
 		}
-		return ++value.count <= limit;
+		if (value.count >= limit) return { allowed: false, retryAfterSeconds: Math.max(1, Math.ceil((value.until - time) / 1000)) };
+		value.count++;
+		return { allowed: true, retryAfterSeconds: 0 };
 	};
+}
+
+async function enforceLimit(limiter, address) {
+	let decision;
+	try { decision = await limiter(address); }
+	catch (error) { throw Object.assign(new Error("unavailable"), { status: error?.status ?? 503, code: error?.code, diagnosticOperation: "rate_limit" }); }
+	if (!decision || typeof decision.allowed !== "boolean" || !Number.isInteger(decision.retryAfterSeconds)
+		|| (decision.allowed ? decision.retryAfterSeconds !== 0 : decision.retryAfterSeconds < 1 || decision.retryAfterSeconds > 86400)) throw Object.assign(new Error("unavailable"), { status: 503, code: "unavailable", diagnosticOperation: "rate_limit" });
+	if (!decision.allowed) fail(429, "rate_limited", decision.retryAfterSeconds);
 }

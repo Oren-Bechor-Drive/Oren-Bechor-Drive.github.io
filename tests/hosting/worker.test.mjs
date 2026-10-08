@@ -8,13 +8,13 @@ import { unstable_startWorker } from "wrangler";
 import { packageWorkerAssets } from "../../scripts/package-worker.mjs";
 const root = fileURLToPath(new URL("../../", import.meta.url));
 
-async function start(t, main = "tests/fixtures/hosting/worker.mjs") {
+async function start(t, main = "tests/fixtures/hosting/worker.mjs", vars = {}) {
 	const directory = await mkdtemp(path.join(tmpdir(), "oren-worker-"));
 	t.after(() => rm(directory, { recursive: true, force: true }));
 	const assets = path.join(directory, "public");
 	await packageWorkerAssets({ root, output: assets });
 	const config = path.join(directory, "wrangler.json");
-	await writeFile(config, JSON.stringify({ name: "oren-local-test", main: path.join(root, main), compatibility_date: "2026-09-23", compatibility_flags: ["nodejs_compat"], workers_dev: false, preview_urls: false,
+	await writeFile(config, JSON.stringify({ name: "oren-local-test", main: path.join(root, main), compatibility_date: "2026-09-23", compatibility_flags: ["nodejs_compat"], workers_dev: false, preview_urls: false, vars,
 		assets: { directory: assets, binding: "ASSETS", run_worker_first: JSON.parse(await readFile(path.join(root, "wrangler.jsonc"), "utf8")).assets.run_worker_first, html_handling: "none", not_found_handling: "404-page" } }));
 	const worker = await unstable_startWorker({ config, dev: { origin: { hostname: "course.example.test", secure: true }, remote: false, persist: false, server: { hostname: "127.0.0.1", port: 0 }, inspector: false, watch: false } });
 	t.after(() => worker.dispose());
@@ -99,6 +99,40 @@ test("production entry serves public files while missing configuration disables 
 	}
 });
 
+test("production Worker emits one safe configuration signal per environment", { timeout: 60_000 }, async t => {
+	const { request } = await start(t, "tests/fixtures/hosting/diagnostics-worker.mjs");
+	assert.equal((await request("/")).status, 200);
+	for (let i = 0; i < 3; i++) {
+		const response = await request("/api/account/session?token=do-not-log");
+		assert.equal(response.status, 503);
+		assert.deepEqual(await response.json(), { error: "unavailable" });
+	}
+	const events = await (await request("/__test/diagnostics")).json();
+	assert.deepEqual(events, [{ category: "configuration", operation: "startup", status: 503, field: "APP_ORIGIN", reason: "missing" }]);
+	assert.equal((await request("/tests/fixtures/hosting/diagnostics-worker.mjs")).status, 404);
+});
+
+test("production Worker preserves safe registration diagnostics and its public fallback", { timeout: 60_000 }, async t => {
+	for (const field of ["REGISTRATION_MODE", "PILOT_EMAILS"]) {
+		await t.test(field, async t => {
+			const vars = { APP_ORIGIN: "https://course.example.test", SUPABASE_URL: "https://project.supabase.co",
+				SUPABASE_PUBLISHABLE_KEY: "sb_publishable_test", SUPABASE_SECRET_KEY: "sb_secret_test", SESSION_SECRET: Buffer.alloc(32, 3).toString("base64"),
+				REGISTRATION_MODE: "pilot", PILOT_EMAILS: "private-tester@example.test", [field]: "private invalid value" };
+			const { request } = await start(t, "tests/fixtures/hosting/diagnostics-worker.mjs", vars);
+			assert.equal((await request("/")).status, 200);
+			for (let i = 0; i < 2; i++) {
+				const response = await request("/api/account/session");
+				assert.equal(response.status, 503);
+				assert.equal(response.headers.get("cache-control"), "private, no-store");
+				assert.deepEqual(await response.json(), { error: "unavailable" });
+			}
+			const events = await (await request("/__test/diagnostics")).json();
+			assert.deepEqual(events, [{ category: "configuration", operation: "startup", status: 503, field, reason: "invalid" }]);
+			assert.doesNotMatch(JSON.stringify(events), /private|@|sb_secret|stack|https:/);
+		});
+	}
+});
+
 test("Worker streams authorized Storage media and cancels the upstream on disconnect", { timeout: 60_000 }, async t => {
 	const { request, networkOrigin } = await start(t);
 	assert.equal((await request("/api/media/stream")).status, 401);
@@ -132,4 +166,29 @@ test("Worker streams authorized Storage media and cancels the upstream on discon
 	}
 	assert.equal(state.cancelled, true);
 	assert.ok(state.sentChunks < 128, "Disconnect must stop the upstream before the full video is read.");
+});
+
+test("Worker authorizes caption and transcript bytes while keeping private fixtures outside static output", { timeout: 60_000 }, async t => {
+	const { request } = await start(t);
+	const expected = [
+		["captions-he", "text/vtt", "WEBVTT\n\n00:00.000 --> 00:01.000\nכתוביות סינתטיות לבדיקה.\n"],
+		["transcript-he", "text/plain; charset=utf-8", "תמלול סינתטי לבדיקה."],
+	];
+	for (const [id] of expected) for (const method of ["GET", "HEAD"]) assert.equal((await request(`/api/media/${id}`, { method })).status, 401);
+	for (const pathname of ["/captions.vtt", "/transcript.txt", "/tests/fixtures/hosting/worker.mjs"]) assert.equal((await request(pathname)).status, 404);
+	const session = await request("/api/account/session");
+	const login = await request("/api/account/login", { method: "POST", body: JSON.stringify({ email: "learner@example.test", password: "correct-password" }), headers: {
+		cookie: session.headers.get("set-cookie").split(";")[0], origin: "https://course.example.test", "content-type": "application/json", "x-csrf-token": (await session.json()).csrf,
+	} });
+	assert.equal(login.status, 200);
+	const cookie = login.headers.get("set-cookie").split(";")[0];
+	for (const [id, type, text] of expected) for (const method of ["GET", "HEAD"]) {
+		const response = await request(`/api/media/${id}`, { method, headers: { cookie } });
+		assert.equal(response.status, 200);
+		assert.equal(response.headers.get("content-type"), type);
+		if (method === "HEAD") assert.equal(response.headers.get("content-length"), String(Buffer.byteLength(text)));
+		assert.equal(response.headers.get("cache-control"), "private, no-store");
+		assert.equal(response.headers.get("x-content-type-options"), "nosniff");
+		assert.equal(await response.text(), method === "HEAD" ? "" : text);
+	}
 });

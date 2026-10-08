@@ -8,10 +8,12 @@ export function createQuizAttemptEditor() {
 		Object.entries(left).every(([key, value]) => right[key] === value);
 	const dirty = state => state?.dirty ?? false;
 	const obsolete = () => new DOMException("Obsolete Quiz attempt", "AbortError");
+	const withdrawn = error => error.status === 410 && (error.code === "quiz_withdrawn" || error.message === "quiz_withdrawn");
 	function check(state) {
 		if (current !== state) throw obsolete();
 	}
 	function load(data) {
+		if (data.status === "withdrawn") data = { id: data.id, topicKey: data.topicKey, revision: data.revision, status: "withdrawn" };
 		generation++;
 		current = {
 			attempt: structuredClone(data), answers: { ...data.answers }, baseRevision: data.revision,
@@ -37,6 +39,7 @@ export function createQuizAttemptEditor() {
 		const saved = await request(`attempts/${draft.id}`);
 		if (owner !== generation) throw obsolete();
 		load(saved);
+		if (saved.status === "withdrawn") return "withdrawn";
 		if (saved.status === "submitted") return "submitted";
 		if (sameAnswers(saved.answers, draft.answers)) return "saved";
 		current.answers = { ...draft.answers };
@@ -64,6 +67,7 @@ export function createQuizAttemptEditor() {
 				}
 				return true;
 			} catch (error) {
+				if (withdrawn(error)) { check(state); load({ ...state.attempt, status: "withdrawn" }); }
 				if (current === state && error.status === 409) state.conflict = true;
 				throw error;
 			} finally {
@@ -87,6 +91,8 @@ export function createQuizAttemptEditor() {
 				load(submitted);
 				return { status: "submitted" };
 			} catch (error) {
+				if (withdrawn(error) && current === state) load({ ...state.attempt, status: "withdrawn" });
+				else if (withdrawn(error) && current?.attempt.status !== "withdrawn") check(state);
 				if (current === state && error.status === 409) state.conflict = true;
 				throw error;
 			} finally {

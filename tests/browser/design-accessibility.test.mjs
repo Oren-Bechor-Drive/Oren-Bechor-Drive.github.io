@@ -282,7 +282,7 @@ test("search, quiz choices and account control borders retain 3:1 contrast inclu
 	await account.close();
 });
 
-test("320px pages reflow when browser root text grows to 24px", async (t) => {
+test("320px pages reflow with 200 percent browser root text", async (t) => {
 	const browser = await browserFixture(t);
 	for (const javaScriptEnabled of [true, false]) {
 		for (const [path, textSelector] of [
@@ -300,9 +300,9 @@ test("320px pages reflow when browser root text grows to 24px", async (t) => {
 					viewport: { width: 320, height: 900 }, javaScriptEnabled,
 				});
 				const originalSize = await page.locator(textSelector).first().evaluate((node) => parseFloat(getComputedStyle(node).fontSize));
-				await page.evaluate(() => { document.documentElement.style.fontSize = "24px"; });
+				await page.evaluate(() => { document.documentElement.style.fontSize = "32px"; });
 				const enlargedSize = await page.locator(textSelector).first().evaluate((node) => parseFloat(getComputedStyle(node).fontSize));
-				assert.ok(enlargedSize >= originalSize * 1.45, `${path}: meaningful text responds to the browser root size`);
+				assert.ok(enlargedSize >= originalSize * 1.95, `${path}: meaningful text responds to 200 percent browser root sizing`);
 				const reflow = await page.evaluate(() => {
 					const clipped = [...document.querySelectorAll("h1, h2, h3, p, summary, a, label, button")]
 						.filter((node) => !node.closest('[hidden], [aria-hidden="true"], [data-road-carousel], .skip-link, .visually-hidden'))

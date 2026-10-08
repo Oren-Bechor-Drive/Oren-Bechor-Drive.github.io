@@ -1,5 +1,6 @@
 import { createMemorySessions } from "./session-memory.mjs";
 import { subscriptionOffer } from "./subscription-offer.mjs";
+import { normalizeAccountReturn } from "../account/return-destination.js";
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 
 const randomToken = () => randomBytes(32).toString("base64url");
@@ -38,8 +39,12 @@ export function createLearnerAccounts({ origin, provider = null, googleEnabled =
 	async function canIssue(record, generation) {
 		if (!await sessions.live(record) || generation !== await sessions.generation()) fail(401, "session_expired");
 	}
+	function validateTokens(tokens) {
+		if (typeof tokens?.access_token !== "string" || !tokens.access_token.trim() || typeof tokens.refresh_token !== "string" || !tokens.refresh_token.trim()
+			|| !Number.isFinite(tokens.expires_in) || tokens.expires_in <= 0 || !Number.isFinite(now() + tokens.expires_in * 1000)) fail(401, "sign_in_failed");
+	}
 	async function authenticate(tokens) {
-		if (!tokens?.access_token || !tokens.refresh_token || !Number.isFinite(tokens.expires_in)) fail(401, "sign_in_failed");
+		validateTokens(tokens);
 		const user = await provider.identity(tokens.access_token);
 		if (!verified(user) || !await admit(user.email)) fail(401, "sign_in_failed");
 		await provider.provision(user.id);
@@ -52,7 +57,7 @@ export function createLearnerAccounts({ origin, provider = null, googleEnabled =
 		try {
 			if (record.tokenExpires <= now() + 30_000) {
 				let refreshed;
-				try { refreshed = await provider.refresh(record.tokens.refresh_token); }
+				try { refreshed = await provider.refresh(record.tokens.refresh_token); validateTokens(refreshed); }
 				catch (error) {
 					// The provider may have consumed the old refresh token even when its response was lost.
 					await sessions.remove(record);
@@ -99,6 +104,7 @@ export function createLearnerAccounts({ origin, provider = null, googleEnabled =
 				tokens = await provider.exchange(code, flow.verifier);
 				if (!await sessions.live(record)) fail(401, "session_expired");
 				if (flow.kind === "recovery") {
+					validateTokens(tokens);
 					const user = await provider.identity(tokens.access_token);
 					if (!verified(user) || !await admit(user.email)) fail(401, "sign_in_failed");
 					await canIssue(record, generation);
@@ -106,9 +112,10 @@ export function createLearnerAccounts({ origin, provider = null, googleEnabled =
 				}
 				const { user, learner } = await authenticate(tokens);
 				await canIssue(record, generation);
-				return { ...destination("/account/"), cookie: (await rotate(record, "authenticated", tokens, user, learner)).cookie };
+				const returnTo = flow.kind === "google" ? normalizeAccountReturn(flow.returnTo, origin) : "/account/";
+				return { ...destination(returnTo), cookie: (await rotate(record, "authenticated", tokens, user, learner)).cookie };
 			} catch {
-				if (tokens?.access_token) await provider.logout(tokens.access_token).catch(() => {});
+				if (typeof tokens?.access_token === "string" && tokens.access_token) await provider.logout(tokens.access_token).catch(() => {});
 				return destination("/account/login.html?status=link-expired");
 			}
 		});
@@ -138,7 +145,10 @@ export function createLearnerAccounts({ origin, provider = null, googleEnabled =
 					await canIssue(record, generation);
 					const issued = await rotate(record, "authenticated", tokens, user, learner);
 					return { data: summary(issued.record), cookie: issued.cookie };
-				} catch (error) { await provider.logout(tokens.access_token).catch(() => {}); throw error; }
+				} catch (error) {
+					if (typeof tokens?.access_token === "string" && tokens.access_token) await provider.logout(tokens.access_token).catch(() => {});
+					throw error;
+				}
 			}
 			if (route === "register" || route === "recover") {
 				const flow = startFlow(record, route === "recover" ? "recovery" : "signup");
@@ -158,7 +168,7 @@ export function createLearnerAccounts({ origin, provider = null, googleEnabled =
 			if (route === "resend") {
 				const flow = signupFlow(record);
 				if (!flow) return { data: { ok: true, verification: null } };
-				if (flow.nextResendAt > now()) fail(429, "rate_limited");
+				if (flow.nextResendAt > now()) throw Object.assign(new Error("rate_limited"), { status: 429, code: "rate_limited", retryAfterSeconds: Math.ceil((flow.nextResendAt - now()) / 1000) });
 				flow.nextResendAt = now() + 60_000;
 				if (await admit(flow.email)) {
 					try { await provider.resend(flow.email, flow); }
@@ -172,7 +182,9 @@ export function createLearnerAccounts({ origin, provider = null, googleEnabled =
 			}
 			if (route === "google") {
 				if (!googleEnabled) fail(503, "google_unavailable");
-				return { data: { url: provider.google(startFlow(record, "google")) } };
+				const flow = startFlow(record, "google");
+				flow.returnTo = normalizeAccountReturn(body.returnTo, origin);
+				return { data: { url: provider.google(flow) } };
 			}
 			if (route === "logout") {
 				const token = record.tokens?.access_token;
@@ -245,6 +257,7 @@ export function createLearnerAccounts({ origin, provider = null, googleEnabled =
 			return withLearnerSession(token, async (accessToken, csrf) => {
 				try { return { data: { ...await provider[operation](accessToken, ...args), csrf, ...(operation === "myLearning" ? { subscriptionOffer } : {}) } }; }
 				catch (error) {
+					if (error.code === "P4100") fail(410, "quiz_withdrawn");
 					if (error.code === "42501") fail(404, "learning_unavailable");
 					if (error.code === "22023") fail(400, "invalid_input");
 					if (error.code === "40001") fail(409, "quiz_conflict");

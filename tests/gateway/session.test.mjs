@@ -9,6 +9,19 @@ async function setup(t, options) {
 }
 const credentials = { email: "learner@example.test", password: "correct-password" };
 
+test("Google accepts only a bounded optional string destination and falls back for unsafe paths", async t => {
+	const { client } = await setup(t);
+	await client.request();
+	for (const returnTo of [null, 3, {}, "x".repeat(2049)]) {
+		assert.equal((await client.request("google", { returnTo })).response.status, 400);
+	}
+	const begun = await client.request("google", { returnTo: "https://evil.test/account/" });
+	assert.equal(begun.response.status, 200);
+	const state = new URL(begun.data.url).searchParams.get("state");
+	const completed = await client.request(`callback?state=${state}&code=valid-code`);
+	assert.equal(completed.response.headers.get("location"), "/account/");
+});
+
 test("session capacity allows rotation and reclaims expired browser sessions", async t => {
 	let now = 0;
 	const { client, origin } = await setup(t, { now: () => now, sessionLimit: 1 });
@@ -134,7 +147,7 @@ test("refresh is serialized, provider revocation and absolute expiry fail closed
 	assert.equal((await client.request()).data.user, null);
 });
 
-test("PKCE callbacks bind to initiating browser, consume state once and ignore return URLs", async t => {
+test("PKCE callbacks bind to initiating browser, consume state once and ignore callback return URLs", async t => {
 	const { client, provider, origin } = await setup(t);
 	await client.request();
 	const result = await client.request("google", {});
@@ -223,15 +236,20 @@ test("login keeps existing short passwords and its 128 Unicode character maximum
 });
 
 test("account rate limits reject excess requests before reaching the provider", async t => {
-	const { client, provider } = await setup(t, { authLimit: 2 });
+	let now = 0;
+	const { client, provider } = await setup(t, { authLimit: 2, now: () => now });
 	await client.request();
 	await client.request("login", credentials);
 	await client.request("logout", {});
 	await client.request();
 	const result = await client.request("login", credentials);
 	assert.equal(result.response.status, 429);
-	assert.ok(result.response.headers.get("retry-after"));
-	assert.equal(provider.calls.filter(call => call[0] === "password").length, 1);
+	assert.equal(result.response.headers.get("retry-after"), "900");
+	now += 60_000;
+	assert.equal((await client.request("login", credentials)).response.headers.get("retry-after"), "840");
+	now += 840_000;
+	assert.equal((await client.request("login", credentials)).response.status, 200);
+	assert.equal(provider.calls.filter(call => call[0] === "password").length, 2);
 });
 
 test("static service exposes only public files", async t => {

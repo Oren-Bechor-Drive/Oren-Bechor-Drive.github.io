@@ -8,6 +8,22 @@ import { accountProvider, browserClient, startAccountGateway } from "../helpers/
 const descriptor = { id: "video", sectionId: "a524e32d-2640-4d94-a51c-000000000001", contentVersionId: "a524e32d-2640-4d94-a51c-000000000002", file: "lessons/video.mp4", type: "video/mp4", title: "סרטון בדיקה" };
 const config = { url: "https://test-project.supabase.co", secretKey: "sb_secret_test", bucket: "private-lessons", entries: [descriptor] };
 
+test("Storage construction owns safe origin, key, bucket and descriptor validation", () => {
+	for (const [option, value, field] of [
+		["url", "https://private.example.test", "SUPABASE_URL"],
+		["secretKey", "private invalid key", "SUPABASE_SECRET_KEY"],
+		["bucket", "private invalid bucket", "PRIVATE_MEDIA_BUCKET"],
+		["entries", [{ ...descriptor, file: "../private.mp4" }], "PRIVATE_MEDIA_ENTRIES"],
+	]) {
+		assert.throws(() => createStorageMedia({ ...config, [option]: value }), error => {
+			assert.equal(error.configurationField, field);
+			assert.equal(error.configurationReason, "invalid");
+			assert.doesNotMatch(error.message, /private (invalid|tester|key|bucket)|private\.example\.test|private\.mp4| at /);
+			return true;
+		}, option);
+	}
+});
+
 async function fixture(t, handler, settings = {}) {
 	const requests = [];
 	const storage = createServer((req, res) => { requests.push({ method: req.method, url: req.url, headers: req.headers }); handler(req, res); });
@@ -69,6 +85,54 @@ test("Storage forwards valid seeks and uses authenticated GET for browser HEAD",
 		assert.equal(app.requests.at(-1).method, "GET");
 		assert.equal(app.requests.at(-1).headers.range, "bytes=2-5");
 	}
+});
+
+test("Storage delivers private sidecars with exact text types and rejects an incorrect transcript charset", async t => {
+	const entries = [{ ...descriptor, captions: [{ id: "captions-he", language: "he", label: "עברית" }], transcript: { id: "transcript-he", language: "he", label: "תמלול בעברית" } },
+		{ ...descriptor, id: "captions-he", file: "lessons/captions.vtt", type: "text/vtt", title: "כתוביות בדיקה" },
+		{ ...descriptor, id: "transcript-he", file: "lessons/transcript.txt", type: "text/plain; charset=utf-8", title: "תמלול בדיקה" }];
+	const bodies = { "captions.vtt": "WEBVTT\n\n00:00.000 --> 00:01.000\nבדיקה.\n", "transcript.txt": "תמלול סינתטי לבדיקה." };
+	let transcriptType = "text/plain; charset=utf-8", captionsType = "text/vtt";
+	const app = await fixture(t, (req, res) => {
+		const name = req.url.split("/").at(-1);
+		if (!bodies[name]) return object(req, res);
+		const body = Buffer.from(bodies[name]);
+		const range = req.headers.range === "bytes=0-3";
+		res.writeHead(range ? 206 : 200, { "content-type": name.endsWith(".vtt") ? captionsType : transcriptType, "content-length": range ? 4 : body.length,
+			...(range ? { "content-range": `bytes 0-3/${body.length}` } : {}) });
+		res.end(range ? body.subarray(0, 4) : body);
+	}, { entries });
+	for (const entry of entries.slice(1)) {
+		const url = new URL(`/api/media/${entry.id}`, app.url);
+		assert.equal((await fetch(url)).status, 401);
+		for (const method of ["GET", "HEAD"]) {
+			const response = await fetch(url, { method, headers: { cookie: app.client.cookie } });
+			assert.equal(response.status, 200);
+			assert.equal(response.headers.get("content-type"), entry.type);
+			assert.equal(response.headers.get("cache-control"), "private, no-store");
+			assert.equal(response.headers.get("x-content-type-options"), "nosniff");
+			assert.equal(await response.text(), method === "HEAD" ? "" : bodies[entry.file.split("/").at(-1)]);
+			const seek = await fetch(url, { method, headers: { cookie: app.client.cookie, range: "bytes=0-3" } });
+			assert.equal(seek.status, 206);
+			assert.equal((await seek.arrayBuffer()).byteLength, method === "HEAD" ? 0 : 4);
+		}
+	}
+	for (const type of ["text/html", "text/plain", "text/plain; charset=iso-8859-1", "text/plain; charset=utf-8; extra=unsafe"]) {
+		transcriptType = type;
+		const response = await fetch(new URL("/api/media/transcript-he", app.url), { headers: { cookie: app.client.cookie } });
+		assert.equal(response.status, 503, type);
+		assert.deepEqual(await response.json(), { error: "unavailable" });
+	}
+	for (const type of ["text/html", "text/vtt; charset=iso-8859-1"]) {
+		captionsType = type;
+		const response = await fetch(new URL("/api/media/captions-he", app.url), { headers: { cookie: app.client.cookie } });
+		assert.equal(response.status, 503, type);
+		assert.deepEqual(await response.json(), { error: "unavailable" });
+	}
+	const calls = app.requests.length;
+	app.deny();
+	for (const entry of entries.slice(1)) assert.equal((await fetch(new URL(`/api/media/${entry.id}`, app.url), { headers: { cookie: app.client.cookie } })).status, 404);
+	assert.equal(app.requests.length, calls, "Denied requests never reach Storage.");
 });
 
 test("Storage rejects unsafe origins, credentials, buckets and object paths", () => {

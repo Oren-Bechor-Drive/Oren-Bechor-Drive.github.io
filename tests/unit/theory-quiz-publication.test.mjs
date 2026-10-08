@@ -34,7 +34,25 @@ test("every selected theory question is published once in its assigned topic wit
 	}
 });
 
-test("every reviewed explanation link reaches its selected authored topic and section", async () => {
+test("review link intent transcribes the assessed coverage of all 140 questions", async () => {
+	const bank = await load("theory-quiz-content.json");
+	const coverage = await readFile("docs/reference/design-teaching-coverage.md", "utf8");
+	const assessments = [...coverage.matchAll(/^\| \[(\d{4})\].*?\| (Covered|Partial|Elsewhere|Gap) \|/gm)];
+	const byId = new Map(assessments.map(([, id, assessment]) => [id, assessment]));
+	assert.equal(assessments.length, 140);
+	assert.equal(byId.size, 140);
+	const counts = { Covered: 0, Partial: 0, Elsewhere: 0, Gap: 0 };
+	for (const question of bank.questions) {
+		const assessment = byId.get(question.officialId);
+		assert.ok(assessment, question.officialId);
+		counts[assessment]++;
+		assert.equal(question.lessonReferenceKind,
+			assessment === "Gap" || assessment === "Partial" ? "topic" : "explanation", question.officialId);
+	}
+	assert.deepEqual(counts, { Covered: 48, Partial: 25, Elsewhere: 11, Gap: 56 });
+});
+
+test("public review links distinguish topic navigation from reviewed explanations", async () => {
 	const bank = await load("theory-quiz-content.json");
 	const { lessons, issues } = await readLearningContent(process.cwd());
 	assert.deepEqual(issues, []);
@@ -43,14 +61,22 @@ test("every reviewed explanation link reaches its selected authored topic and se
 		const dom = new JSDOM(await readFile(quizFile, "utf8"));
 		try {
 			for (const question of bank.questions.filter(question => question.topicId === topic.id)) {
-				const targetTopic = question.lessonTopicId ?? question.topicId;
+				const lessonTopic = question.lessonTopicId ?? question.topicId;
+				const targetLesson = lessons.find(lesson => lesson.file === `course/${lessonTopic}/index.html`);
+				assert.ok(targetLesson.sections.some(section => section.id === question.lessonSectionId), question.officialId);
+				assert.ok(["topic", "explanation"].includes(question.lessonReferenceKind), question.officialId);
+				const topicReference = question.lessonReferenceKind === "topic";
+				const targetTopic = topicReference ? question.topicId : lessonTopic;
 				const link = dom.window.document.querySelector(`#question-${question.officialId} [data-quiz-lesson-link]`);
 				assert.ok(link, question.officialId);
 				const destination = new URL(link.getAttribute("href"), `https://example.test/course/${topic.id}/quiz/`);
 				assert.equal(destination.pathname, `/course/${targetTopic}/`, question.officialId);
-				assert.equal(destination.hash, `#${question.lessonSectionId}`, question.officialId);
-				const targetLesson = lessons.find(lesson => lesson.file === `course/${targetTopic}/index.html`);
-				assert.ok(targetLesson.sections.some(section => section.id === question.lessonSectionId), question.officialId);
+				assert.equal(destination.hash, topicReference ? "#topic" : `#${question.lessonSectionId}`, question.officialId);
+				assert.equal(link.textContent, topicReference ? "חזרה לנושא הלימוד" : "חזרה להסבר בנושא", question.officialId);
+				if (topicReference) {
+					const ownLesson = lessons.find(lesson => lesson.file === `course/${question.topicId}/index.html`);
+					assert.equal(ownLesson.topicAnchor, "topic", question.officialId);
+				}
 			}
 		} finally { dom.window.close(); }
 	}

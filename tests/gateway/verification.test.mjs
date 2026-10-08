@@ -27,8 +27,10 @@ test("verification summaries and resend remain bound to the initiating session a
 	assert.equal((await other.request()).data.verification, null);
 	assert.deepEqual((await other.request("resend", {})).data, { ok: true, verification: null });
 	assert.equal(provider.calls.some(call => call[0] === "resend"), false);
-	assert.equal((await client.request("resend", {})).response.status, 429);
-	advance(60_000);
+	assert.equal((await client.request("resend", {})).response.headers.get("retry-after"), "60");
+	advance(12_000);
+	assert.equal((await client.request("resend", {})).response.headers.get("retry-after"), "48");
+	advance(48_000);
 	const resent = await client.request("resend", {});
 	assert.equal(resent.response.status, 200);
 	assert.equal(resent.data.verification.resendAfter, 60);

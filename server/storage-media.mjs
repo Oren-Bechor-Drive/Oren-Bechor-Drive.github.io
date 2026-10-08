@@ -3,15 +3,23 @@ import { pipeline } from "node:stream/promises";
 import { createMediaPolicy } from "./media-policy.mjs";
 
 const unavailable = () => { throw Object.assign(new Error("unavailable"), { status: 503, code: "unavailable" }); };
+const configurationError = (field, message) => Object.assign(new Error(message), { configurationField: field, configurationReason: "invalid" });
 const integer = value => typeof value === "string" && /^\d+$/.test(value) && Number.isSafeInteger(Number(value)) ? Number(value) : null;
+function matchingType(value, expected) {
+	if (typeof value !== "string") return false;
+	const parts = value.toLowerCase().split(";").map(part => part.trim());
+	if (expected === "text/plain; charset=utf-8") return parts.length === 2 && parts[0] === "text/plain" && parts[1] === "charset=utf-8";
+	if (expected === "text/vtt") return parts[0] === "text/vtt" && (parts.length === 1 || (parts.length === 2 && parts[1] === "charset=utf-8"));
+	return parts[0] === expected;
+}
 
 function storageOrigin(value) {
 	let url;
-	try { url = new URL(value); } catch { throw new Error("Invalid Storage origin."); }
+	try { url = new URL(value); } catch { throw configurationError("SUPABASE_URL", "Invalid Storage origin."); }
 	const hosted = url.protocol === "https:" && /^[a-z0-9-]+\.supabase\.co$/.test(url.hostname) && !url.port;
 	const local = url.protocol === "http:" && ["127.0.0.1", "localhost", "[::1]"].includes(url.hostname);
 	if ((!hosted && !local) || url.username || url.password || url.search || url.hash || url.pathname !== "/"
-		|| ![url.origin, `${url.origin}/`].includes(value)) throw new Error("An exact Supabase HTTPS origin or loopback HTTP origin is required.");
+		|| ![url.origin, `${url.origin}/`].includes(value)) throw configurationError("SUPABASE_URL", "An exact Supabase HTTPS origin or loopback HTTP origin is required.");
 	return url.origin;
 }
 
@@ -20,9 +28,12 @@ function storageOrigin(value) {
 export function createStorageMedia({ url, secretKey, bucket, entries, fetcher = fetch }) {
 	const base = storageOrigin(url);
 	if (typeof secretKey !== "string" || secretKey.length > 4096 || !/^[A-Za-z0-9_.-]+$/.test(secretKey)
-		|| !(/^sb_secret_[\w-]+$/.test(secretKey) || /^[\w-]+\.[\w-]+\.[\w-]+$/.test(secretKey))) throw new Error("A server Storage key is required.");
-	if (typeof bucket !== "string" || !/^[a-z0-9][a-z0-9_-]{0,99}$/.test(bucket) || typeof fetcher !== "function") throw new Error("Invalid Storage configuration.");
-	const policy = createMediaPolicy(entries, file => file.length <= 1024 && file.split("/").every(part => /^[A-Za-z0-9_-][A-Za-z0-9_.-]*$/.test(part)));
+		|| !(/^sb_secret_[\w-]+$/.test(secretKey) || /^[\w-]+\.[\w-]+\.[\w-]+$/.test(secretKey))) throw configurationError("SUPABASE_SECRET_KEY", "A server Storage key is required.");
+	if (typeof bucket !== "string" || !/^[a-z0-9][a-z0-9_-]{0,99}$/.test(bucket)) throw configurationError("PRIVATE_MEDIA_BUCKET", "Invalid Storage configuration.");
+	if (typeof fetcher !== "function") throw new Error("Invalid Storage transport.");
+	let policy;
+	try { policy = createMediaPolicy(entries, file => file.length <= 1024 && file.split("/").every(part => /^[A-Za-z0-9_-][A-Za-z0-9_.-]*$/.test(part))); }
+	catch { throw configurationError("PRIVATE_MEDIA_ENTRIES", "Invalid private media descriptor."); }
 	return {
 		lookup: policy.lookup,
 		forSection: policy.forSection,
@@ -67,7 +78,7 @@ export function createStorageMedia({ url, secretKey, bucket, entries, fetcher = 
 					if (!size || delivery.response(size).status !== 416) unavailable();
 				} else {
 					const length = integer(response.headers.get("content-length"));
-					if (![200, 206].includes(status) || !length || response.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== entry.type
+					if (![200, 206].includes(status) || !length || !matchingType(response.headers.get("content-type"), entry.type)
 						|| (response.headers.has("content-encoding") && response.headers.get("content-encoding") !== "identity")) unavailable();
 					if (status === 206) {
 						const match = /^bytes (\d+)-(\d+)\/(\d+)$/.exec(response.headers.get("content-range") ?? "");

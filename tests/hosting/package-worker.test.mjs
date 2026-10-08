@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { mkdtemp, mkdir, writeFile, readFile, readdir, symlink, rm } from "node:fs/promises";
+import fs from "node:fs/promises";
+import { syncBuiltinESMExports } from "node:module";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { packageWorkerAssets } from "../../scripts/package-worker.mjs";
@@ -64,4 +66,81 @@ test("default output belongs to the supplied source tree and supports repeat pac
 	await file("index.html", "updated");
 	await packageWorkerAssets({ root });
 	assert.equal(await readFile(path.join(output, "index.html"), "utf8"), "updated");
+});
+
+function failRename(t, reject) {
+	const rename = fs.rename;
+	t.mock.method(fs, "rename", async (source, destination) => {
+		if (reject(source, destination)) throw Object.assign(new Error("Injected rename failure"), { code: "EIO" });
+		return rename(source, destination);
+	});
+	syncBuiltinESMExports();
+	t.after(() => { t.mock.restoreAll(); syncBuiltinESMExports(); });
+}
+
+test("a failed replacement restores the previous package and permits retry", async t => {
+	const { root, output, file } = await fixture(t);
+	await file("index.html", "previous");
+	await file("js/obsolete.js", "previous script");
+	await packageWorkerAssets({ root, output });
+	await file("index.html", "replacement");
+	await rm(path.join(root, "js/obsolete.js"));
+	let failed = false;
+	failRename(t, (source, destination) => {
+		if (!failed && destination === output && path.basename(source) !== "previous") {
+			failed = true;
+			return true;
+		}
+		return false;
+	});
+	await assert.rejects(packageWorkerAssets({ root, output }), { code: "EIO" });
+	assert.equal(await readFile(path.join(output, "index.html"), "utf8"), "previous");
+	assert.equal(await readFile(path.join(output, "js/obsolete.js"), "utf8"), "previous script");
+	assert.deepEqual((await readdir(path.dirname(output))).sort(), ["public", "source"]);
+	await packageWorkerAssets({ root, output });
+	assert.equal(await readFile(path.join(output, "index.html"), "utf8"), "replacement");
+	await assert.rejects(readFile(path.join(output, "js/obsolete.js")), { code: "ENOENT" });
+});
+
+test("failed installation and restoration retain both trees for explicit recovery", async t => {
+	const { root, output, file } = await fixture(t);
+	await file("index.html", "previous");
+	await packageWorkerAssets({ root, output });
+	await file("index.html", "replacement");
+	failRename(t, (_source, destination) => destination === output);
+	let failure;
+	try { await packageWorkerAssets({ root, output }); } catch (error) { failure = error; }
+	assert.ok(failure instanceof AggregateError);
+	assert.equal(failure.errors.length, 2);
+	assert.equal(path.dirname(failure.recoveryDirectory), path.dirname(output));
+	assert.match(failure.message, /restor/i);
+	assert.equal(await readFile(path.join(failure.recoveryDirectory, "previous/index.html"), "utf8"), "previous");
+	assert.equal(await readFile(path.join(failure.recoveryDirectory, "prepared/index.html"), "utf8"), "replacement");
+	await assert.rejects(readFile(path.join(output, "index.html")), { code: "ENOENT" });
+	t.mock.restoreAll();
+	syncBuiltinESMExports();
+	await fs.rename(path.join(failure.recoveryDirectory, "previous"), output);
+	await rm(failure.recoveryDirectory, { recursive: true });
+	await packageWorkerAssets({ root, output });
+	assert.equal(await readFile(path.join(output, "index.html"), "utf8"), "replacement");
+});
+
+test("failed first installation leaves no partial output or temporary tree", async t => {
+	const { root, output, file } = await fixture(t);
+	await file("index.html");
+	failRename(t, (_source, destination) => destination === output);
+	await assert.rejects(packageWorkerAssets({ root, output }), { code: "EIO" });
+	await assert.rejects(readFile(path.join(output, "index.html")), { code: "ENOENT" });
+	assert.deepEqual(await readdir(path.dirname(output)), ["source"]);
+});
+
+test("a failed backup move leaves the previous package in place", async t => {
+	const { root, output, file } = await fixture(t);
+	await file("index.html", "previous");
+	await packageWorkerAssets({ root, output });
+	await file("index.html", "replacement");
+	failRename(t, source => source === output);
+	await assert.rejects(packageWorkerAssets({ root, output }), { code: "EIO" });
+	assert.equal(await readFile(path.join(output, "index.html"), "utf8"), "previous");
+	assert.deepEqual((await readdir(path.dirname(output))).sort(), ["public", "source"]);
 });

@@ -5,33 +5,20 @@ import { startDatabase } from "../support/database.mjs";
 import { createSupabaseSessions } from "../../server/session-store.mjs";
 import { createLearnerAccounts } from "../../server/learner-accounts.mjs";
 import { accountProvider } from "../helpers/account-gateway.mjs";
+import { createDatabaseSessionFetch, databaseSessionConfiguration } from "../support/database-session-fetch.mjs";
 
-let database;
+let database, fetchDatabase;
 const secret = randomBytes(32).toString("base64");
 const credentials = { email: "learner@example.test", password: "correct-password" };
-before(async () => { database = await startDatabase(); }, { timeout: 30000 });
+before(async () => { database = await startDatabase(); fetchDatabase = createDatabaseSessionFetch(database); }, { timeout: 30000 });
 after(async () => { await database?.close(); });
 beforeEach(async () => {
 	await database.admin.query("truncate private.gateway_sessions; update private.gateway_session_control set generation=0, reset_key=null,reset_lease=null,reset_user_key=null");
 });
 
-// Exercise the production REST adapter and the actual service-role SQL function.
-// Only HTTP transport is replaced; every RPC commits in an independent connection.
-async function fetchDatabase(url, options) {
-	const client = await database.connect();
-	try {
-		assert.equal(new URL(url).pathname, "/rest/v1/rpc/gateway_session");
-		assert.equal(options.headers.apikey, "sb_secret_fixture");
-		assert.equal(options.headers.authorization, undefined);
-		const { p_action, p_key = null, p_lease = null, p_data = {} } = JSON.parse(options.body);
-		await client.query("set role service_role");
-		const result = await client.query("select public.gateway_session($1,$2,$3,$4) as result", [p_action, p_key, p_lease, p_data]);
-		return Response.json(result.rows[0].result);
-	} finally { await client.end(); }
-}
 async function store(settings = {}) {
 	return createSupabaseSessions({
-		url: "https://project.supabase.co", serviceKey: "sb_secret_fixture", secret, fetchImpl: fetchDatabase, ...settings,
+		...databaseSessionConfiguration, secret, fetchImpl: fetchDatabase, ...settings,
 	});
 }
 async function accounts(provider = accountProvider(), settings = {}) {
@@ -41,6 +28,57 @@ async function login(account) {
 	const anonymous = await account.session();
 	return account.perform(anonymous.cookie.token, "login", credentials);
 }
+
+test("database session transport refuses foreign origins and malformed RPC contracts", async () => {
+	const url = "http://127.0.0.1/rest/v1/rpc/gateway_session";
+	const options = { method: "POST", headers: { apikey: "sb_secret_fixture", "content-type": "application/json" },
+		body: JSON.stringify({ p_action: "generation", p_key: null, p_lease: null, p_data: {} }) };
+	for (const target of ["https://secret@example.test/rest/v1/rpc/gateway_session", url + "?target=remote", url + "#fragment"]) {
+		await assert.rejects(fetchDatabase(target, options));
+	}
+	for (const invalid of [
+		{ ...options, method: "GET" },
+		{ ...options, headers: { ...options.headers, authorization: "Bearer synthetic-private-token" } },
+		{ ...options, headers: { ...options.headers, apikey: "wrong-synthetic-key" } },
+		{ ...options, body: JSON.stringify({ p_action: "generation", unexpected: "synthetic-private-value" }) },
+		{ ...options, body: JSON.stringify({ p_action: "generation", p_key: null, p_lease: null, p_data: [] }) },
+		{ ...options, body: JSON.stringify({ p_action: "unknown", p_key: null, p_lease: null, p_data: {} }) },
+	]) await assert.rejects(fetchDatabase(url, invalid));
+	assert.equal((await database.admin.query("select count(*) from private.gateway_sessions")).rows[0].count, "0");
+});
+
+test("database session transport requires an owned live fixture and closes rejected SQL calls", async () => {
+	const url = "http://127.0.0.1/rest/v1/rpc/gateway_session";
+	const options = { method: "POST", headers: { apikey: "sb_secret_fixture", "content-type": "application/json" },
+		body: JSON.stringify({ p_action: "generation", p_key: null, p_lease: null, p_data: {} }) };
+	let connections = 0;
+	for (const forged of ["postgres://private@example.test/database", { connect() { connections++; } }, { ...database }]) {
+		await assert.rejects(createDatabaseSessionFetch(forged)(url, options), /startDatabase-owned/);
+	}
+	assert.equal(connections, 0);
+	assert.deepEqual(await (await fetchDatabase(url, options)).json(), { generation: 0 });
+	const idleConnections = async () => (await database.admin.query("select count(*) from pg_stat_activity where datname=current_database() and pid<>pg_backend_pid()")).rows[0].count;
+	const before = await idleConnections();
+	await assert.rejects(fetchDatabase(url, { ...options, body: JSON.stringify({ p_action: "create", p_key: null, p_lease: null, p_data: {} }) }));
+	assert.equal(await idleConnections(), before);
+	const closed = await startDatabase();
+	await closed.close();
+	await assert.rejects(createDatabaseSessionFetch(closed)(url, options), /closed/);
+});
+
+test("Google return destinations survive encrypted durable flow restoration", async () => {
+	const provider = accountProvider();
+	const make = async () => createLearnerAccounts({ origin: "https://example.test", provider, googleEnabled: true, sessions: await store() });
+	const first = await make();
+	const anonymous = await first.session();
+	const returnTo = "/account/reader.html?section=a524e32d-2640-4d94-a51c-000000000001&access=free";
+	const begun = await first.perform(anonymous.cookie.token, "google", { returnTo });
+	const state = new URL(begun.data.url).searchParams.get("state");
+	assert.equal(JSON.stringify((await database.admin.query("select * from private.gateway_sessions")).rows).includes(returnTo), false);
+	const second = await make();
+	const result = await second.completeCallback(anonymous.cookie.token, { state, code: "valid-code" });
+	assert.equal(result.redirect, returnTo);
+});
 
 test("pending verification survives an instance change encrypted and serializes the resend cooldown", async () => {
 	let clock = Date.now();

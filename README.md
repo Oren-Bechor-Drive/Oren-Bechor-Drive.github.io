@@ -117,7 +117,7 @@ The enhanced quiz allows navigation before every question is answered, but finis
 
 ### Maintain public theory quizzes
 
-The maintenance source is `docs/reference/theory-quiz-content.json`; each question has exactly one `topicId` owning its quiz placement. Its `lessonSectionId` identifies the reviewed explanation-return section; optional `lessonTopicId` selects another existing topic when the teaching belongs there, otherwise it defaults to `topicId`. The publisher validates that target lesson and section before writing. These links do not certify complete teaching coverage. The source retains question identity, answer order, explanations and any documented adaptations. `docs/reference/theory-media.json` maps source image URLs to inspected local originals, dimensions, alt text and hashes. The original candidate collection is historical evidence, not a second publication source.
+The maintenance source is `docs/reference/theory-quiz-content.json`; each question has exactly one `topicId` owning its quiz placement. Its `lessonSectionId` and optional `lessonTopicId` retain the reviewed editorial teaching placement. Required `lessonReferenceKind` is `explanation` for an available reviewed explanation, or `topic` for incomplete teaching. Explanation links return to the validated section, while topic links return to the question's own learning topic at `../#topic` with the neutral label `חזרה לנושא הלימוד`. The publisher validates the kind and the retained lesson/section placement before writing. These fields do not certify instructor approval or complete teaching coverage. The source retains question identity, answer order, explanations and any documented adaptations. `docs/reference/theory-media.json` maps source image URLs to inspected local originals, dimensions, alt text and hashes. The original candidate collection is historical evidence, not a second publication source.
 
 After reviewing a content change, run `node scripts/publish-theory-quizzes.mjs`. It updates the ten checked-in quiz pages and lesson question counts. Run `node scripts/publish-theory-quizzes.mjs --check` to detect drift without writing. Both modes validate source provenance, original media and every required authored region, then check all prepared learning pages before publication. Missing or duplicate regions fail with their file names; reordering HTML attributes does not bypass verification. The publisher preserves bytes outside its owned regions. Tests exercise the same `publishTheoryQuizzes(rootDir, { check })` operation on disposable copies without changing the working directory. This is a maintenance step, not a build required to serve the site. Run `npm test`, `npm run check:links`, `npm run check:media` and `git diff --check` before publication. The publication test checks that every initial question is retained once, each selected question belongs to its assigned topic, and its text, choices, answer key and explanation match the maintenance source.
 
@@ -313,6 +313,16 @@ npm test
 git diff --check
 ```
 
+The separate local tools use owned synthetic fixtures and accept no hosted target:
+
+```bash
+npm run check:pilot:local
+npm run rehearse:recovery
+npm run benchmark:local
+```
+
+The pilot checker reports the checkout revision, migration list, nine local checks and unresolved external gates. The [recovery runbook](docs/local-recovery.md) describes its fixture archive and separate media/session-key checks. The [performance baseline](docs/local-performance.md) records reproducible desktop/mobile profiles, successful-request latency, errors, transfer and bounded concurrency. Run the benchmark without competing test workloads; its local results do not establish hosted capacity or approve opening accounts.
+
 `package.json` overrides transitive Sharp versions with the direct development dependency's patched range. This keeps Miniflare's image decoder on Sharp 0.35.5 or newer even while its upstream dependency pins 0.35.4. The lockfile also includes the patched `source-map-js` 1.2.2. Image optimization and local Worker tests exercise these development dependencies; the static website does not load them.
 
 `npm run check:links` discovers the same authored HTML pages as the media audit. It checks local `href` and `src` declarations, directory pages, query strings, and HTML fragments. It reports missing files, missing fragments, malformed local references, empty `src` values, unreadable HTML, and references outside a configured deployment prefix. It skips external and embedded URLs and makes no network requests. Responsive image candidates, CSS URLs, image metadata, MIME types, and rendered navigation stay with the media audit and browser tests. The CLI checks the current domain-root deployment; use `auditSiteLinks({ rootDir, deploymentPrefix })` in a focused test for a prefixed deployment.
@@ -368,6 +378,9 @@ See [database ownership](docs/ARCHITECTURE.md#accounts-and-access-development-da
 - [Operations](docs/OPERATIONS.md): current content review, publication, live checks, support intake and rollback procedures.
 - [Official source review](docs/reference/official-source-review-2026-09-22.md): dated official-resource audit, evidence and limits.
 - [Site quality review](docs/reviews/site-quality-2026-09-22.md): current responsive, accessibility and local resource audit with remaining manual checks.
+- [Local performance baseline](docs/local-performance.md): synthetic timing, transfer and bounded-concurrency evidence.
+- [Local readiness verification](docs/reviews/local-readiness-2026-10-08.md): completed independent improvements, final 837-test result, recovery/benchmark evidence and unresolved hosted/human gates.
+- [Owner launch inputs](docs/launch-inputs.md): concrete supplied facts, missing decisions, data-policy dependencies and pilot inputs.
 - [AGENTS.md](AGENTS.md): contributor boundaries and required checks.
 - [Font sources and license](assets/fonts/README.md): the local font files and their delivery requirements.
 - [Supplied course brief](docs/reference/the-idea.pdf): original instructor and course material.
@@ -440,11 +453,13 @@ Work through the sections below in dependency order. Content production and publ
 - [ ] Assign and run recurring official-source reviews, resolve the documented publication-timing limit, and obtain Oren's approval of the teaching material. Do not copy stale numerical claims from the PDF.
 - [ ] Receive the 16 planned videos, 12 images/diagrams and revised lesson texts from Oren. The owner's latest update is that the files are not ready and will be supplied later. Confirm each asset's teaching purpose, rights and permission to show identifiable people or vehicles; preserve supplied originals and record source/approval information.
 - [ ] Add Hebrew captions, transcripts, useful alternative text and descriptions of essential visual information. Review text embedded in road diagrams for readability on phones.
-- [ ] Add accessible video playback with keyboard controls, playback speed, captions, loading/error states and retry. Verify mobile playback, slow connections and delivery costs; choose hosting and encoding based on the approved public/paid split.
+- [x] Implement private video captions and on-demand UTF-8 transcripts with native controls, Hebrew tracks, bounded text delivery, keyboard/pointer focus, loading/error states and suspension clearing. Real gateway/Storage/Worker and synthetic browser tests cover this behavior.
+- [ ] Supply approved video alternatives and essential visual descriptions; verify native playback speed, physical-mobile/assistive controls, slow connections and delivery costs against the real assets and chosen hosted service.
 - [x] Replace public quiz placeholders with 140 sourced theory questions, including original diagrams, answer keys, explanations and variable topic counts. Source review and explicit adaptations are documented; this does not assert instructor approval of future paid quizzes.
 - [x] Define quiz behavior: answer all authored questions before submission, show score out of the actual count and explanations after submission, allow unlimited retries, and unlock optional topic completion at 85% with the required answer count rounded up. Retain history while subscribed, subject to the ten-day post-expiry cleanup.
 - [x] Implement and locally test scoring, feedback, history and completion in the protected service. Hosted deployment and approved quiz content remain outstanding. The static preview scores complete attempts locally and makes no certification or driving-test claims.
 - [x] Add one placeholder quiz to each existing topic and combine the turning quizzes into the right-of-way topic quiz.
+- [x] Prepare the [81-question teaching review packet](docs/reference/teaching-review-packet-2026-10-08.md), proposed Hebrew passages, 16 video storyboards and 12 image/diagram briefs. All remain unpublished and await exact-revision approval; 42 mappings remain source unverified.
 - [ ] Have Oren approve all ten paid-course quizzes before launch; public theory practice does not constitute that approval.
 - [x] Extend public learning-content verification for answer keys, native feedback and explanation relationships, with file-specific diagnostics. Verify theory-source fidelity and media provenance separately. Protected paid publication retains its own checks.
 
@@ -472,12 +487,16 @@ Proposed page names below describe responsibilities. Choose final paths during i
 - [ ] Select hosting and service providers after confirming regional availability, business eligibility, Hebrew/RTL support, recurring billing needs, data handling, export options and operating costs. Record decisions before integrating provider-specific behavior.
 - [ ] Decide the public and service domains, HTTPS setup, staging/production separation and migration plan. Resolve the documented GitHub Pages header/caching limitations where needed, with redirects and coordinated URL/metadata updates if the public host changes.
 - [ ] Extend the implemented learner, entitlement and reading-position schema with the approved remaining models for staff roles, video/completion progress, quiz attempts, subscriptions, payment-event records and policy acceptance. Use stable identifiers and approved retention/deletion rules; preserve applied migrations and add new ones for changes.
-- [ ] Implement server-side validation and authorization for each protected operation. Keep service credentials in managed server secrets, separate environments, and define rotation and recovery procedures.
-- [ ] Define API error responses, retries, rate limits and concurrency behavior. Configure origin restrictions, CSRF protection where applicable and response security headers; update the current CSP only for the services actually integrated.
+- [x] Implement and locally verify server-side validation and authorization for the current protected operations, including learner ownership, current access, exact content versions, origin/CSRF checks and safe error responses. Keep provider credentials and tokens on the server.
+- [x] Implement local and database-backed rate limits, retry/conflict contracts and concurrent session/learning operations. Keep response headers and CSP limited to integrated services. Known denials report remaining seconds across account, learning and reader screens; provider throttles without metadata keep generic guidance. The decision migration is locally tested and must precede any new hosted caller.
+- [ ] Configure managed hosted secrets and separate environments, verify deployed authorization/error/rate-limit behavior, and rehearse secret rotation and recovery.
 - [ ] Move all account-only lesson bodies, private answer data and protected media out of public delivery before launching the real course, including free lessons that require an account. Publish through trusted operations with stable section/version identifiers, and check deployment artifacts for restricted material. The current static preview is publicly retrievable; a client-side lock or hidden link cannot enforce access.
-- [ ] Serve restricted content only after server-side entitlement checks, including direct URL requests. Use private media storage and scoped, expiring delivery access where needed; prevent shared caches from exposing private responses.
+- [x] Implement and locally verify authorized section/quiz/media APIs, including direct requests, current entitlement/session checks, exact published versions and private cache controls. Restricted media stays outside static output.
+- [ ] Configure real private storage and publish approved restricted content, then verify deployed delivery, expiry and shared-cache behavior.
 - [ ] Deliver paid media for website viewing without a course-content download feature. Bound media grants by the paid-access end and a short delivery lifetime, and verify expiry and private-origin access with the selected provider. Document that screen capture and copying content already delivered cannot be prevented completely.
-- [ ] Set up backups, tested restores, deployment rollback and monitored database migrations before storing live learner or billing data.
+- [x] Rehearse synthetic learner data restoration, withdrawal preservation, authorization, history/completion, private-media copy/hash and session-key behavior in owned disposable databases through `npm run rehearse:recovery`. This archive is separate from provider backup formats.
+- [x] Add repeatable local pilot and performance commands with synthetic fixtures, real failure exits and bounded concurrency. Final local verification passed 837 tests, nine pilot checks and eleven recovery checks; [dated evidence](docs/reviews/local-readiness-2026-10-08.md) keeps hosted capacity, configuration and human/device checks outstanding.
+- [ ] Supply and configure hosted backup destination, schedule, retention and key custody; authorize and verify hosted restore/rollback and monitored migrations before storing live learner data.
 
 ### Accounts and learner area
 
@@ -510,6 +529,7 @@ Proposed page names below describe responsibilities. Choose final paths during i
 
 ### Administration and support
 
+- [x] Add a service-only protected quiz withdrawal operation with immutable records, submitted-evidence preservation, empty corrected-version restart, concurrency tests and an [operator runbook](docs/OPERATIONS.md#withdraw-a-protected-quiz-version). No hosted withdrawal is performed.
 - [ ] Provide a restricted staff area or supported operational tools to find learners, inspect subscription/access state, resolve support requests and manage approved content releases. Start with the tasks staff actually need.
 - [ ] Separate learner, support, content-editor and billing permissions as needed. Require strong staff authentication and audit sensitive access, refunds, entitlement overrides and account changes.
 - [x] Document the current repository content-review, publication, live-check and rollback procedure in the [operations runbook](docs/OPERATIONS.md). This procedure records instructor approval but does not supply it.
@@ -520,13 +540,15 @@ Proposed page names below describe responsibilities. Choose final paths during i
 
 ### Verification and launch
 
-- [ ] Extend automated coverage for accounts, session expiry, authorization, learner-data isolation, progress, grading, checkout, webhook replay and subscription transitions. Verify denied access through direct page, API and media requests, not only hidden UI controls.
+- [x] Add local automated coverage for accounts, session expiry, authorization, learner-data isolation, saved positions, grading, retention and denied direct API/media access, using deterministic Auth and disposable PostgreSQL.
+- [ ] Verify the hosted account/learning/media journeys and add checkout, webhook replay and subscription-transition coverage when billing implementation is authorized.
 - [x] Audit the current static welcome, library, reading and quiz paths for responsive reflow, reduced motion, JavaScript fallbacks and local resource weight. Record findings and remaining manual checks in the [site quality review](docs/reviews/site-quality-2026-09-22.md).
 - [ ] Exercise the future complete public-to-paid journey on desktop and mobile, including keyboard-only use, a screen reader, enlarged text, reduced motion, disabled or blocked JavaScript, slow networks and service failures.
 - [ ] Complete the [remaining manual accessibility checks](docs/reviews/site-quality-2026-09-22.md#remaining-manual-checks-and-limits): VoiceOver or NVDA announcements/navigation, Windows forced colors, browser text-only enlargement, and physical iOS/Android behavior with browser chrome, virtual keyboards and safe areas. Include the account forms and password requirements feedback.
 - [ ] Measure page weight, video startup, layout stability and service response times on representative phones/connections. Establish performance and cost budgets, then load-test expected concurrent playback and service traffic.
 - [ ] Review authentication, payment and private-data handling before launch. Test privilege escalation, cross-account access, abusive requests, unsafe redirects and secret exposure, and resolve findings.
 - [ ] Extend CI and staging checks for the new services and migrations while retaining `npm test`, `npm run check:media` and dependency checks. Keep credentials and private learner data out of repository fixtures and logs.
+- [x] Emit safe local configuration/dependency/unexpected diagnostic categories with bounded duplicate suppression and generic learner errors. Cloud observability remains disabled; no alert delivery is configured.
 - [ ] Configure error monitoring, uptime checks and alerts for playback, login, payment-webhook and email failures. Redact personal data and credentials; identify who responds to each alert.
 - [ ] Set operational targets for recovery time/data loss, service availability, rate limits, event deduplication retention, media-grant lifetime and alert thresholds. Rehearse them in staging and record support escalation owners.
 - [ ] Add only the analytics needed to measure course discovery, checkout completion and learning use, subject to the approved privacy/consent decisions. Define events and retention before adding tracking services.
