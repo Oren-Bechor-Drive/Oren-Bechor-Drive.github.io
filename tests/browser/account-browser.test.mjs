@@ -14,7 +14,8 @@ test("synthetic Google sign-in returns to the requested authorized reader", asyn
 		const state = new URL(route.request().url()).searchParams.get("state");
 		await route.fulfill({ status: 302, headers: { location: `${app.origin}/api/account/callback?state=${state}&code=valid-code` } });
 	});
-	await page.goto(`${app.origin}/account/login.html?return=${encodeURIComponent(destination)}`);
+	const requested = destination.replace("a524e32d-2640-4d94-a51c", "A524E32D-2640-4D94-A51C");
+	await page.goto(`${app.origin}/account/login.html?return=${encodeURIComponent(requested)}`);
 	await page.getByRole("button", { name: "המשך עם Google" }).click();
 	await page.waitForURL(app.origin + destination);
 	await page.locator("[data-reading-body]").waitFor({ state: "visible" });

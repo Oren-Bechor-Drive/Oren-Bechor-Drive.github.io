@@ -9,6 +9,7 @@ test("return destinations include only the exact protected paths and reader para
 		assert.equal(normalizeAccountReturn(wanted, origin), wanted);
 	}
 	assert.equal(normalizeAccountReturn("/account/reader.html?access=free&section=a524e32d-2640-4d94-a51c-000000000001", origin), reader);
+	assert.equal(normalizeAccountReturn(reader.replace("a524e32d-2640-4d94-a51c", "A524E32D-2640-4D94-A51C"), origin), reader);
 });
 test("unsafe, ambiguous, malformed and overlong destinations fall back to the account page", () => {
 	for (const value of [undefined, null, {}, "", "https://evil.test/", "//evil.test/", "/account/\\evil.test",

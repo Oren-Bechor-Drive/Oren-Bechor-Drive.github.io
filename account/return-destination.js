@@ -11,5 +11,5 @@ export function normalizeAccountReturn(value, origin) {
 	if (target.origin !== origin || target.hash || params.size !== 2
 		|| params.getAll("section").length !== 1 || params.getAll("access").length !== 1
 		|| !uuid.test(params.get("section") ?? "") || !["free", "paid"].includes(params.get("access"))) return "/account/";
-	return "/account/reader.html?" + new URLSearchParams({ section: params.get("section"), access: params.get("access") });
+	return "/account/reader.html?" + new URLSearchParams({ section: params.get("section").toLowerCase(), access: params.get("access") });
 }
