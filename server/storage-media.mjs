@@ -4,6 +4,13 @@ import { createMediaPolicy } from "./media-policy.mjs";
 
 const unavailable = () => { throw Object.assign(new Error("unavailable"), { status: 503, code: "unavailable" }); };
 const integer = value => typeof value === "string" && /^\d+$/.test(value) && Number.isSafeInteger(Number(value)) ? Number(value) : null;
+function matchingType(value, expected) {
+	if (typeof value !== "string") return false;
+	const parts = value.toLowerCase().split(";").map(part => part.trim());
+	if (expected === "text/plain; charset=utf-8") return parts.length === 2 && parts[0] === "text/plain" && parts[1] === "charset=utf-8";
+	if (expected === "text/vtt") return parts[0] === "text/vtt" && (parts.length === 1 || (parts.length === 2 && parts[1] === "charset=utf-8"));
+	return parts[0] === expected;
+}
 
 function storageOrigin(value) {
 	let url;
@@ -67,7 +74,7 @@ export function createStorageMedia({ url, secretKey, bucket, entries, fetcher = 
 					if (!size || delivery.response(size).status !== 416) unavailable();
 				} else {
 					const length = integer(response.headers.get("content-length"));
-					if (![200, 206].includes(status) || !length || response.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== entry.type
+					if (![200, 206].includes(status) || !length || !matchingType(response.headers.get("content-type"), entry.type)
 						|| (response.headers.has("content-encoding") && response.headers.get("content-encoding") !== "identity")) unavailable();
 					if (status === 206) {
 						const match = /^bytes (\d+)-(\d+)\/(\d+)$/.exec(response.headers.get("content-range") ?? "");

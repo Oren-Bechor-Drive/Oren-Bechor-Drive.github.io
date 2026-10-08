@@ -8,6 +8,13 @@ import { createStorageMedia } from "../../server/storage-media.mjs";
 import { accountProvider, browserClient, startAccountGateway } from "../helpers/account-gateway.mjs";
 
 const descriptor = { id: "video", sectionId: "a524e32d-2640-4d94-a51c-000000000001", contentVersionId: "a524e32d-2640-4d94-a51c-000000000002", file: "video.mp4", type: "video/mp4", title: "סרטון בדיקה" };
+const captions = { ...descriptor, id: "captions-he", file: "captions.vtt", type: "text/vtt", title: "כתוביות בדיקה" };
+const transcript = { ...descriptor, id: "transcript-he", file: "transcript.txt", type: "text/plain; charset=utf-8", title: "תמלול בדיקה" };
+const captionReference = { id: captions.id, language: "he", label: "עברית" };
+const transcriptReference = { id: transcript.id, language: "he", label: "תמלול בעברית" };
+const accessibleVideo = { ...descriptor, captions: [captionReference], transcript: transcriptReference };
+const sidecars = new Map([[captions.file, { type: captions.type, text: "WEBVTT\n\n00:00.000 --> 00:01.000\nכתוביות בדיקה.\n" }],
+	[transcript.file, { type: transcript.type, text: "תמלול סינתטי לבדיקה. <script>window.privateTextRan = true</script>" }]]);
 // Literal provider responses keep expected seek arithmetic independent of production policy.
 const partials = new Map([
 	["bytes=2-5", ["2345", "bytes 2-5/10"]], ["bytes=-3", ["789", "bytes 7-9/10"]],
@@ -20,10 +27,13 @@ async function factory(t, kind) {
 		t.after(() => rm(root, { recursive: true, force: true }));
 		await writeFile(path.join(root, descriptor.file), "0123456789");
 		await writeFile(path.join(root, "סרטון.mp4"), "0123456789");
+		for (const [file, { text }] of sidecars) await writeFile(path.join(root, file), text);
 		return entries => createPrivateMedia({ root, entries });
 	}
 	return entries => createStorageMedia({ url: "https://test-project.supabase.co", secretKey: "sb_secret_test", bucket: "private-lessons", entries,
-		fetcher: async (_url, { headers }) => {
+		fetcher: async (url, { headers }) => {
+			const sidecar = sidecars.get(url.split("/").at(-1));
+			if (sidecar) return new Response(sidecar.text, { headers: { "content-type": sidecar.type, "content-length": String(Buffer.byteLength(sidecar.text)) } });
 			const partial = partials.get(headers.range);
 			if (headers.range && !partial) return new Response(null, { status: 416, headers: { "content-range": "bytes */10" } });
 			const body = partial?.[0] ?? "0123456789";
@@ -33,6 +43,69 @@ async function factory(t, kind) {
 }
 
 for (const kind of ["file", "storage"]) {
+	test(`${kind} private video sidecars stay nested, immutable and individually authorized`, async t => {
+		const create = await factory(t, kind);
+		const input = structuredClone(accessibleVideo);
+		const media = await create([input, captions, transcript]);
+		input.captions[0].label = "changed";
+		input.transcript.id = "changed";
+		assert.equal(media.lookup("video").captions[0].label, "עברית");
+		assert.throws(() => { media.lookup("video").captions.push(captionReference); });
+		assert.throws(() => { media.lookup("video").transcript.label = "changed"; });
+		const expected = [{ id: "video", title: descriptor.title, type: descriptor.type, url: "/api/media/video",
+			captions: [{ ...captionReference, url: "/api/media/captions-he" }], transcript: { ...transcriptReference, url: "/api/media/transcript-he" } }];
+		assert.deepEqual(media.forSection(descriptor.sectionId, descriptor.contentVersionId), expected);
+		const listing = media.forSection(descriptor.sectionId, descriptor.contentVersionId);
+		listing[0].captions[0].label = "changed";
+		assert.deepEqual(media.forSection(descriptor.sectionId, descriptor.contentVersionId), expected);
+		const provider = accountProvider();
+		let version = descriptor.contentVersionId;
+		provider.readSection = async () => ({ id: version });
+		const app = await startAccountGateway({ provider, media });
+		t.after(app.close);
+		const client = browserClient(app.origin);
+		await client.request();
+		await client.request("login", { email: "sidecars@example.test", password: "correct-password" });
+		for (const entry of [captions, transcript]) {
+			for (const method of ["GET", "HEAD"]) {
+				const url = `${app.origin}/api/media/${entry.id}`;
+				assert.equal((await fetch(url, { method })).status, 401);
+				const response = await fetch(url, { method, headers: { cookie: client.cookie } });
+				assert.equal(response.status, 200);
+				assert.equal(response.headers.get("content-type"), entry.type);
+				assert.equal(response.headers.get("x-content-type-options"), "nosniff");
+				assert.equal(response.headers.get("cache-control"), "private, no-store");
+				assert.equal(await response.text(), method === "HEAD" ? "" : sidecars.get(entry.file).text);
+			}
+		}
+		version = "a524e32d-2640-4d94-a51c-000000000003";
+		for (const entry of [captions, transcript]) assert.equal((await fetch(`${app.origin}/api/media/${entry.id}`, { headers: { cookie: client.cookie } })).status, 404);
+	});
+
+	test(`${kind} private sidecars reject invalid references and orphaned text`, async t => {
+		const create = await factory(t, kind);
+		const invalid = [
+			[captions], [transcript],
+			[{ ...accessibleVideo, type: "image/png" }, captions, transcript],
+			[{ ...accessibleVideo, captions: {} }, captions, transcript],
+			[{ ...accessibleVideo, captions: [{ ...captionReference, id: "missing" }] }, captions, transcript],
+			[{ ...accessibleVideo, captions: [captionReference, captionReference] }, captions, transcript],
+			[{ ...accessibleVideo, transcript: captionReference }, captions, transcript],
+			[accessibleVideo, { ...captions, sectionId: "a524e32d-2640-4d94-a51c-000000000003" }, transcript],
+			[accessibleVideo, captions, { ...transcript, contentVersionId: "a524e32d-2640-4d94-a51c-000000000003" }],
+			[accessibleVideo, { ...captions, type: "text/plain; charset=utf-8" }, transcript],
+			[accessibleVideo, captions, { ...transcript, type: "text/plain" }],
+			[accessibleVideo, { ...captions, extra: "unexpected" }, transcript],
+			[accessibleVideo, captions, { ...transcript, captions: [] }],
+			[accessibleVideo, { ...descriptor, id: "another", captions: [captionReference] }, captions, transcript],
+		];
+		for (const patch of [{ language: "en" }, { language: ["he"] }, { label: "" }, { label: "x".repeat(301) }, { extra: true }, { url: "https://evil.test/" }]) {
+			invalid.push([{ ...accessibleVideo, captions: [{ ...captionReference, ...patch }] }, captions, transcript]);
+			invalid.push([{ ...accessibleVideo, transcript: { ...transcriptReference, ...patch } }, captions, transcript]);
+		}
+		for (const entries of invalid) await assert.rejects(async () => create(entries), /Invalid private media/);
+	});
+
 	test(`${kind} media rejects coercible identities and keeps an immutable opaque catalog`, async t => {
 		const create = await factory(t, kind);
 		for (const patch of [{ id: 123 }, { id: ["video"] }, { sectionId: [descriptor.sectionId] }, { contentVersionId: [descriptor.contentVersionId] }, { id: "../video" }, { sectionId: "wrong" }, { contentVersionId: "wrong" }, { type: "text/html" }, { title: "" }]) {

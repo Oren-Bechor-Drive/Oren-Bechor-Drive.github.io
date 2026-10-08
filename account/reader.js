@@ -43,7 +43,12 @@ function clear({ preserveState = false } = {}) {
 	conflict = restoring = false;
 	heading.textContent = defaultHeading;
 	body.textContent = "";
+	media.querySelectorAll("track, source, img").forEach(item => item.removeAttribute("src"));
 	media.querySelectorAll("video").forEach(video => { video.pause(); video.removeAttribute("src"); video.load(); });
+	media.querySelectorAll(".reading-transcript").forEach(details => {
+		details.open = false;
+		details.querySelectorAll("p").forEach(text => { text.textContent = ""; });
+	});
 	media.replaceChildren();
 	element("[data-reading]").hidden = true;
 	saveButton.disabled = true;
@@ -70,6 +75,89 @@ function failure(error, loading = false) {
 	saveButton.hidden = loading || !reading || conflict;
 
 }
+async function readTranscript(url, signal) {
+	const limit = 256 * 1024;
+	const response = await fetch(url, { credentials: "same-origin", cache: "no-store", signal: AbortSignal.any([signal, AbortSignal.timeout(10000)]) });
+	if (!response.ok) {
+		await response.body?.cancel();
+		throw Object.assign(new Error("Transcript unavailable"), { status: response.status, retryAfterSeconds: readRetryAfter(response.headers.get("retry-after")) });
+	}
+	const length = response.headers.get("content-length");
+	if (response.headers.get("content-type")?.trim().toLowerCase() !== "text/plain; charset=utf-8" || !response.body
+		|| (length !== null && (!/^\d+$/.test(length) || !Number.isSafeInteger(Number(length)) || Number(length) > limit))) {
+		await response.body?.cancel();
+		throw new Error("Invalid transcript metadata");
+	}
+	const reader = response.body.getReader();
+	const decoder = new TextDecoder("utf-8", { fatal: true });
+	let size = 0, text = "";
+	try {
+		while (true) {
+			const { done, value } = await reader.read();
+			if (done) break;
+			size += value.byteLength;
+			if (size > limit) throw new Error("Transcript exceeds the reading limit");
+			text += decoder.decode(value, { stream: true });
+		}
+		return text + decoder.decode();
+	} finally {
+		await reader.cancel().catch(() => {});
+		reader.releaseLock();
+	}
+}
+function addVideoAlternatives(video, descriptor, figure) {
+	const contentVersionId = reading.lesson.id;
+	if (descriptor.captions?.length) {
+		const feedback = document.createElement("p");
+		feedback.className = "reading-media-feedback";
+		feedback.setAttribute("role", "status");
+		for (const item of descriptor.captions) {
+			const track = document.createElement("track");
+			track.kind = "captions";
+			track.srclang = item.language;
+			track.label = item.label;
+			track.src = item.url;
+			track.default = item.language === "he";
+			track.addEventListener("error", () => {
+				if (!video.isConnected) return;
+				void lifetime.run(async ({ request, commit }) => {
+					// Native tracks do not expose their HTTP status. Recheck access before feedback.
+					const current = await request(endpoint);
+					if (current.lesson.id !== contentVersionId) throw Object.assign(new Error("Media version unavailable"), { status: 404 });
+					commit(() => { feedback.textContent = "טעינת הכתוביות לא הושלמה. טענו את קטע הלימוד מחדש כדי לנסות שוב."; });
+				}, { error: error => failure(error, true) });
+			});
+			video.append(track);
+		}
+		figure.append(feedback);
+	}
+	if (!descriptor.transcript) return;
+	const details = document.createElement("details");
+	details.className = "reading-transcript";
+	const summary = document.createElement("summary");
+	summary.textContent = "תמלול הסרטון";
+	const feedback = document.createElement("p");
+	feedback.className = "reading-transcript-status reading-media-feedback";
+	feedback.setAttribute("role", "status");
+	const text = document.createElement("p");
+	text.className = "reading-transcript-text";
+	details.append(summary, feedback, text);
+	let loaded = false, loading = false;
+	details.addEventListener("toggle", () => {
+		if (!details.open || !details.isConnected || loaded || loading) return;
+		loading = true;
+		feedback.textContent = "טוענים את התמלול...";
+		void lifetime.run(async ({ signal, commit }) => {
+			const content = await readTranscript(descriptor.transcript.url, signal);
+			commit(() => { text.textContent = content; feedback.textContent = ""; loaded = true; });
+		}, { error(error) {
+			if ([401, 404].includes(error.status)) failure(error, true);
+			else feedback.textContent = error.status === 429 ? retryGuidance(error.retryAfterSeconds ?? null)
+				: "טעינת התמלול לא הושלמה. סגרו ופתחו את התמלול כדי לנסות שוב.";
+		}, finish() { loading = false; } });
+	});
+	figure.append(details);
+}
 async function load(preservePosition = false) {
 	lifetime.reset({ preserveState: preservePosition });
 	if (!valid) { status.textContent = "בחרו קטע לימוד מתוך מסך הלמידה שלכם."; return; }
@@ -95,6 +183,7 @@ async function load(preservePosition = false) {
 			const caption = document.createElement("figcaption");
 			caption.textContent = item.title;
 			figure.append(content, caption);
+			if (content.tagName === "VIDEO") addVideoAlternatives(content, item, figure);
 			media.append(figure);
 		}
 		element("[data-reading]").hidden = false;

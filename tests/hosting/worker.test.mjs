@@ -133,3 +133,28 @@ test("Worker streams authorized Storage media and cancels the upstream on discon
 	assert.equal(state.cancelled, true);
 	assert.ok(state.sentChunks < 128, "Disconnect must stop the upstream before the full video is read.");
 });
+
+test("Worker authorizes caption and transcript bytes while keeping private fixtures outside static output", { timeout: 60_000 }, async t => {
+	const { request } = await start(t);
+	const expected = [
+		["captions-he", "text/vtt", "WEBVTT\n\n00:00.000 --> 00:01.000\nכתוביות סינתטיות לבדיקה.\n"],
+		["transcript-he", "text/plain; charset=utf-8", "תמלול סינתטי לבדיקה."],
+	];
+	for (const [id] of expected) for (const method of ["GET", "HEAD"]) assert.equal((await request(`/api/media/${id}`, { method })).status, 401);
+	for (const pathname of ["/captions.vtt", "/transcript.txt", "/tests/fixtures/hosting/worker.mjs"]) assert.equal((await request(pathname)).status, 404);
+	const session = await request("/api/account/session");
+	const login = await request("/api/account/login", { method: "POST", body: JSON.stringify({ email: "learner@example.test", password: "correct-password" }), headers: {
+		cookie: session.headers.get("set-cookie").split(";")[0], origin: "https://course.example.test", "content-type": "application/json", "x-csrf-token": (await session.json()).csrf,
+	} });
+	assert.equal(login.status, 200);
+	const cookie = login.headers.get("set-cookie").split(";")[0];
+	for (const [id, type, text] of expected) for (const method of ["GET", "HEAD"]) {
+		const response = await request(`/api/media/${id}`, { method, headers: { cookie } });
+		assert.equal(response.status, 200);
+		assert.equal(response.headers.get("content-type"), type);
+		if (method === "HEAD") assert.equal(response.headers.get("content-length"), String(Buffer.byteLength(text)));
+		assert.equal(response.headers.get("cache-control"), "private, no-store");
+		assert.equal(response.headers.get("x-content-type-options"), "nosniff");
+		assert.equal(await response.text(), method === "HEAD" ? "" : text);
+	}
+});
