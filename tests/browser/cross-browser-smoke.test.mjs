@@ -2,6 +2,10 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { firefox, webkit } from "playwright";
 import { serveRoadMedia } from "../helpers/road-media.mjs";
+import { roadPhotoSources } from "../../js/road-photo-sources.js";
+
+const photoNumbers = Object.keys(roadPhotoSources).map(Number).sort((a, b) => a - b);
+const latePhotos = new Set(photoNumbers.slice(-3));
 
 const engines = [
 	["Firefox", firefox],
@@ -52,6 +56,15 @@ function trackPageErrors(page) {
 	return () => assert.deepEqual(errors, [], errors.join("\n"));
 }
 
+async function finishGalleryLoading(page) {
+	await page.locator("[data-road-carousel]").scrollIntoViewIfNeeded();
+	// Complete this page's image work before navigation cancels its requests.
+	await page.waitForFunction(count =>
+		document.querySelector(".road-carousel-group").children.length === count,
+		photoNumbers.length,
+	);
+}
+
 async function exerciseDesktopJourney(browser) {
 	const page = await browser.newPage({
 		viewport: { width: 1440, height: 900 },
@@ -66,6 +79,7 @@ async function exerciseDesktopJourney(browser) {
 	const assertNoPageErrors = trackPageErrors(page);
 
 	await openPage(page, "/");
+	await finishGalleryLoading(page);
 	await page.locator('.site-menu a[href="#about"]').click();
 	assert.equal(new URL(page.url()).hash, "#about");
 	await page.getByRole("tab", {name:"טעויות נפוצות בטסט המעשי"}).click();
@@ -113,10 +127,16 @@ async function exerciseMobileJourney(browser) {
 		viewport: { width: 390, height: 844 },
 		reducedMotion: "reduce",
 	});
-	await page.route("**/*", serveRoadMedia);
+	await page.route("**/*", async route => {
+		const number = Number(new URL(route.request().url()).pathname.match(/students-pass\/(\d+)\.png$/)?.[1]);
+		if (route.request().method() === "HEAD" && latePhotos.has(number))
+			await new Promise(resolve => setTimeout(resolve, 1000));
+		return serveRoadMedia(route);
+	});
 	const assertNoPageErrors = trackPageErrors(page);
 
 	await openPage(page, "/");
+	await finishGalleryLoading(page);
 	assert.equal(await page.locator(".site-menu").isVisible(), false);
 	await page.locator(".menu-toggle").click();
 	await page.locator('.site-menu a[href="#about"]').click();
