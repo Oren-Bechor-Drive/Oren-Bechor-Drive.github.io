@@ -6,7 +6,7 @@ import { serveRoadMedia } from "../helpers/road-media.mjs";
 test("hero car follows the resized road, runs once, preserves resize state and respects reduced motion", async (t) => {
 	const browser = await chromium.launch();
 	t.after(() => browser.close());
-	for (const width of [1860, 1366]) {
+	for (const width of [1860, 1366, 390, 768]) {
 		const page = await browser.newPage({
 			viewport: { width, height: 930 },
 			reducedMotion: "no-preference",
@@ -85,6 +85,11 @@ test("hero car follows the resized road, runs once, preserves resize state and r
 				`${width}px at ${time}ms: car must stay on the road center`,
 			);
 			assert.equal(state.opacity, "1");
+			assert.equal(
+				await page.locator(".hero-road-car").isVisible(),
+				true,
+				`${width}px: the animated car remains visible on the road`,
+			);
 			assert.ok(
 				state.headingError < 0.12,
 				`${width}px at ${time}ms: car must face along the road`,
@@ -110,7 +115,7 @@ test("hero car follows the resized road, runs once, preserves resize state and r
 		);
 		await sample(6000);
 		await page.setViewportSize({
-			width: width === 1860 ? 1366 : 1860,
+			width: width > 768 ? (width === 1860 ? 1366 : 1860) : (width === 390 ? 768 : 390),
 			height: 844,
 		});
 		await page.evaluate(
@@ -146,11 +151,18 @@ test("hero car follows the resized road, runs once, preserves resize state and r
 				.evaluate((car) => getComputedStyle(car).opacity),
 			"1",
 		);
+		assert.equal(await page.locator(".hero-road-car").isVisible(), true);
 		await page.emulateMedia({ reducedMotion: "no-preference" });
 		await page.waitForFunction(
 			() =>
 				document.querySelector(".hero-road-car").getAnimations()
 					.length === 1,
+		);
+		await page.locator(".hero-road-car").evaluate(car => car.getAnimations()[0].finish());
+		assert.equal(
+			await page.locator(".hero-road-car").evaluate(car => getComputedStyle(car).opacity),
+			"0",
+			"returning from reduced motion still hides the car when its finite trip finishes",
 		);
 		assert.equal(
 			await page.evaluate(
@@ -162,17 +174,22 @@ test("hero car follows the resized road, runs once, preserves resize state and r
 	}
 });
 
-test("hero car stays out of phone and tablet copy", async (t) => {
+test("hero car remains omitted without JavaScript", async (t) => {
 	const browser = await chromium.launch();
 	t.after(() => browser.close());
-	for (const width of [390, 768]) {
+	for (const width of [390, 768, 1366]) {
 		const page = await browser.newPage({
 			viewport: { width, height: 844 },
 			reducedMotion: "no-preference",
+			javaScriptEnabled: false,
 		});
 		await page.route("**/*", serveRoadMedia);
 		await page.goto("http://gallery.test/");
-		assert.equal(await page.locator(".hero-road-car").isVisible(), false);
+		assert.equal(
+			await page.locator(".hero-road-car").evaluate(car => getComputedStyle(car).opacity),
+			"0",
+			"baseline HTML leaves the decorative car transparent",
+		);
 		assert.equal(
 			await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
 			true,

@@ -38,7 +38,7 @@ test("page introduces the instructor before the combined learning section", asyn
 	assert.deepEqual(navigationTargets, ["#instructor", "#about", "#faq"]);
 });
 
-test("course actions and footer links open supplied public destinations", async () => {
+test("course actions preserve the public destination and footer contains only labeled social icons", async () => {
 	const document = new JSDOM(await read("index.html")).window.document;
 	assert.equal(document.querySelector('a[href="#"]'), null);
 	for (const selector of [".nav-action", "#start .button"]) {
@@ -47,16 +47,16 @@ test("course actions and footer links open supplied public destinations", async 
 		assert.equal(action.getAttribute("href"), "course/");
 		assert.match(action.textContent, /נושאי הלימוד/);
 	}
-	assert.match(document.querySelector("#start p").textContent, /הסרטונים וההרשמה עדיין אינם זמינים/);
+	assert.equal(document.querySelector("#start p"), null);
+	assert.equal(document.querySelector("#start h2").textContent, "הנושא הבא שלכם מתחיל כאן.");
+	assert.equal(document.querySelector("#start .direction-icon").getAttribute("aria-hidden"), "true");
 	assert.equal(document.querySelector("[data-icon-kit]"), null);
 	const social = document.querySelector(".footer-social");
-	assert.equal(social.getAttribute("aria-describedby"), "contact-status");
-	assert.deepEqual([...social.querySelectorAll(':scope > span[aria-disabled="true"] > span')].map(item => item.textContent), ["אינסטגרם", "טיקטוק", "יוטיוב", "וואטסאפ"]);
+	assert.deepEqual([...social.querySelectorAll(':scope > span[aria-disabled="true"]')].map(item => item.getAttribute("aria-label")), ["אינסטגרם - קישור אינו זמין", "טיקטוק - קישור אינו זמין", "יוטיוב - קישור אינו זמין", "וואטסאפ - קישור אינו זמין"]);
+	assert.deepEqual([...social.querySelectorAll("img")].map(image => image.getAttribute("src")), ["assets/icons/social/instagram.svg", "assets/icons/social/tiktok.svg", "assets/icons/social/youtube.svg", "assets/icons/social/whatsapp.svg"]);
 	assert.equal(social.querySelector("a, button, [tabindex]"), null);
-	assert.match(document.querySelector("#contact-status").textContent, /קישורי יצירת הקשר והרשתות החברתיות יתווספו בהמשך/);
-	const footerLinks = [...document.querySelectorAll(".site-footer nav a")];
-	assert.deepEqual(footerLinks.map(link => link.getAttribute("href")), ["./", "course/"]);
-	assert.ok(document.querySelector(".site-footer p").textContent.includes("אורן בכור"));
+	assert.equal(document.querySelector(".site-footer p, .site-footer nav, #contact-status"), null);
+	assert.equal(document.querySelector(".site-footer").textContent.trim(), "");
 });
 
 test("course icon brands the header and browser tab", async () => {

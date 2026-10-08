@@ -363,7 +363,7 @@ test(
 		await page.route("**/*", serveRoadMedia);
 		await page.goto("http://gallery.test/");
 		assert.equal(await page.locator("[data-topic-summaries] h3 a:visible").count(), 10);
-		assert.equal(await page.locator(".site-footer nav a").count(), 2, "footer destinations do not depend on optional browser APIs");
+		assert.equal(await page.locator(".footer-social img").count(), 4, "footer icons do not depend on optional browser APIs");
 		assert.deepEqual(
 			errors,
 			[],

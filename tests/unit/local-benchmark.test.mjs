@@ -2,8 +2,9 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { readdir } from "node:fs/promises";
+import { mkdtemp, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
+import path from "node:path";
 import { chromium } from "playwright";
 import { runLocalBenchmark, summarizeSamples } from "../../scripts/benchmark-local.mjs";
 
@@ -38,6 +39,32 @@ test("unsupported CLI targets fail without echoing supplied credentials", async 
 	}
 });
 
+test("unexpected capacity rate limits fail the real CLI while retaining the measured report", { timeout: 180000 }, async t => {
+	const directory = await mkdtemp(path.join(tmpdir(), "oren-benchmark-cli-failure-"));
+	t.after(() => rm(directory, { recursive: true, force: true }));
+	const preload = path.join(directory, "rate-limit.mjs");
+	await writeFile(preload, `const original = globalThis.fetch;
+globalThis.fetch = (input, options, ...args) => new URL(input).pathname.endsWith('/paid') && options?.headers?.cookie
+ ? Promise.resolve(Response.json({ error: 'rate_limited' }, { status: 429 })) : original(input, options, ...args);
+`);
+	await assert.rejects(execute(process.execPath, ["--import", preload, "scripts/benchmark-local.mjs", "--iterations", "1"],
+		{ timeout: 170000, maxBuffer: 1_000_000 }), error => {
+		assert.equal(error.code, 1);
+		const report = JSON.parse(error.stdout);
+		assert.equal(report.scope, "local");
+		assert.equal(report.passed, false);
+		assert.ok(report.scenarios.every(scenario => scenario.errorCount === 0));
+		for (const concurrency of [1, 5, 10]) {
+			const scenario = report.scenarios.find(item => item.name === `gateway/read-paid/concurrency-${concurrency}`);
+			assert.equal(scenario.count, 0);
+			assert.equal(scenario.rateLimitedCount, concurrency);
+		}
+		assert.equal(report.scenarios.find(item => item.name === "gateway/deliberate-rate-limit").rateLimitedCount, 1);
+		assert.doesNotMatch(error.stdout + error.stderr, /correct-password|access-[0-9]|oren_session=|@example\.test/);
+		return true;
+	});
+});
+
 test("an allocated browser and owned gateway close when later browser setup fails", { timeout: 60000 }, async t => {
 	const before = new Set((await readdir(tmpdir())).filter(name => name.startsWith("oren-local-benchmark-")));
 	const fetch = globalThis.fetch;
@@ -68,6 +95,7 @@ test("an allocated browser and owned gateway close when later browser setup fail
 test("a measured local report counts successful samples separately from deliberate rate limits", { timeout: 180000 }, async () => {
 	const report = await runLocalBenchmark({ iterations: 1 });
 	assert.equal(report.scope, "local");
+	assert.equal(report.passed, true);
 	assert.ok(report.environment.browser);
 	assert.ok(report.scenarios.every(scenario => scenario.errorCount === 0), "every measured local journey succeeds");
 	assert.ok(report.scenarios.filter(scenario => scenario.name !== "gateway/deliberate-rate-limit")

@@ -4,7 +4,7 @@
 
 Run `npm ci`, then `npm run test:database` as a regular user. `npm test` includes the same database suite. No hosted URL, credentials, Docker daemon, or existing database is used.
 
-The helper starts pinned PostgreSQL 17.6 in an owned temporary directory on a free loopback port. It loads `database/auth-bootstrap.sql`, applies all migration files, and closes connections and removes the database afterward. The bootstrap models only the Auth columns, claims functions, API roles, inherited privileges, and automatic-RLS trigger needed by these tests. Never apply it to Supabase.
+The helper starts pinned PostgreSQL 17.10 in an owned temporary directory on a free loopback port. It loads `database/auth-bootstrap.sql`, applies all migration files, and closes connections and removes the database afterward. The bootstrap models only the Auth columns, claims functions, API roles, inherited privileges, and automatic-RLS trigger needed by these tests. Never apply it to Supabase. The [local dependency limitation](../../README.md#local-account-screens-and-gateway) records outstanding upstream security fixes that the current embedded package does not yet supply.
 
 The foundation's 23 database cases exercise actual SQL roles and policies, including:
 

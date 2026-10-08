@@ -57,8 +57,13 @@ for (const width of [1440, 390]) {
 test("revoked transcript access clears every protected reader element", async t => {
 	const r = await fixture(t);
 	await r.open();
+	// Finish native media authorization before this test revokes transcript access.
+	await r.page.waitForFunction(() => document.querySelector("video")?.readyState >= 1
+		&& document.querySelector("track")?.readyState === 2);
 	await r.app.revoke(r.email);
+	const denied = r.page.waitForResponse(response => response.url().endsWith("/api/media/transcript-he"));
 	await r.summary.click();
+	assert.equal((await denied).status(), 404);
 	await r.page.locator("[data-reader-status]").filter({ hasText: "אינו זמין" }).waitFor();
 	assert.equal(await r.page.locator("[data-reading]").isVisible(), false);
 	assert.equal(await r.page.locator("[data-reading-media]").textContent(), "");

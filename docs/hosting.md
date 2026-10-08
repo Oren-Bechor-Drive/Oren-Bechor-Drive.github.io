@@ -122,7 +122,7 @@ Backups are still unresolved: no backup destination has been supplied. Durable s
 
 ## Safe diagnostics
 
-`server/diagnostics.mjs` emits only approved category/operation/status values and optional configuration field/reason. It never accepts arbitrary messages, stacks, URLs, learner IDs, cookies, request bodies, provider payloads or credentials. The first matching event is emitted; repeats are suppressed for 60 seconds, and the next event reports an internally accumulated count. Reporter failure cannot change a response. Local Node emits to stderr. Worker initialization emits one safe configuration event per environment and keeps its public-site/unavailable-API behavior.
+`server/diagnostics.mjs` emits only approved category/operation/status values and optional configuration field/reason. It never accepts arbitrary messages, stacks, URLs, learner IDs, cookies, request bodies, provider payloads or credentials. Repeats match category, operation, status, field and reason. The first matching event is emitted; repeats are suppressed for 60 seconds, and the next event reports an internally accumulated count. Different statuses have separate counts and cannot suppress one another. Reporter failure cannot change a response. Local Node emits to stderr. Worker initialization emits one safe configuration event per environment and keeps its public-site/unavailable-API behavior.
 
 Admission and Storage constructors own their configuration validation. Safe diagnostics can identify `REGISTRATION_MODE` or `PILOT_EMAILS` alongside the existing origin, key and media field names; they never include tester addresses or any configuration value. Invalid admission still leaves the API unavailable rather than opening registration.
 

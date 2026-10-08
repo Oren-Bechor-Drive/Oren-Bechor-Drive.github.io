@@ -10,11 +10,62 @@ import {
 } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import { JSDOM } from "jsdom";
 import sharp from "sharp";
 import { discoverStudentPhotos } from "./student-photos.mjs";
 
 // Run after changing gallery photos. The generated files are served directly.
 const outputDirectory = "assets/images/optimized";
+
+// Source locations keep attribute ownership independent of quoting and formatting.
+function updateImageDeclarations(html, declarations) {
+	const dom = new JSDOM(html, { includeNodeLocations: true });
+	const edits = [];
+	function updateAttributes(element, values) {
+		const location = dom.nodeLocation(element);
+		let additions = "";
+		for (const [name, value] of Object.entries(values)) {
+			if (element.getAttribute(name) === String(value)) continue;
+			const escaped = String(value).replaceAll("&", "&amp;")
+				.replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+			const attribute = location.attrs?.[name];
+			if (attribute) {
+				const authored = html.slice(attribute.startOffset, attribute.endOffset);
+				const prefix = authored.match(/^[^=]+\s*=\s*/)?.[0] ?? `${authored}=`;
+				const quote = authored[prefix.length] === "'" ? "'" : '"';
+				edits.push({ start: attribute.startOffset, end: attribute.endOffset,
+					value: `${prefix}${quote}${escaped}${quote}` });
+			} else additions += ` ${name}="${escaped}"`;
+		}
+		if (additions) {
+			let end = location.startTag.endOffset - 1;
+			if (html[end - 1] === "/") end -= 1;
+			edits.push({ start: end, end, value: additions });
+		}
+	}
+	try {
+		for (const image of dom.window.document.querySelectorAll("img")) {
+			const source = image.getAttribute("src");
+			const declaration = declarations.get(
+				image.classList.contains("hero-road-car") ? "hero-road-car" : source,
+			);
+			if (!declaration) continue;
+			const values = { ...declaration };
+			if (source === "assets/icons/course-icon.png") {
+				delete values.width;
+				delete values.height;
+			}
+			updateAttributes(image, values);
+		}
+		const icon = dom.window.document.querySelector('link[rel~="icon"][href]');
+		if (icon) updateAttributes(icon, { href: `${outputDirectory}/favicon.png?v=2` });
+		for (const { start, end, value } of edits.sort((a, b) => b.start - a.start))
+			html = html.slice(0, start) + value + html.slice(end);
+		return html;
+	} finally {
+		dom.window.close();
+	}
+}
 
 async function prepareMedia(rootDir, stagingDir) {
 	const declarations = new Map();
@@ -243,36 +294,7 @@ async function prepareMedia(rootDir, stagingDir) {
 
 	// Update only image attributes, keeping the hand-authored page and its formatting.
 	const html = await readFile(path.join(rootDir, "index.html"), "utf8");
-	const updated = html
-		.replace(/<img\b[^>]*>/g, (tag) => {
-			const source = tag.match(/\bsrc="([^"]+)"/)?.[1];
-			const classes = tag.match(/\bclass="([^"]*)"/)?.[1].split(/\s+/) ?? [];
-			const declaration = declarations.get(
-				classes.includes("hero-road-car") ? "hero-road-car" : source,
-			);
-			if (!declaration) return tag;
-			const indent = tag.match(/\n([\t ]+)\S/)?.[1] ?? "\t";
-			for (const [name, value] of Object.entries(declaration)) {
-				if (
-					source === "assets/icons/course-icon.png" &&
-					["width", "height"].includes(name)
-				)
-					continue;
-				const attribute = new RegExp(`\\b${name}="[^"]*"`);
-				if (attribute.test(tag))
-					tag = tag.replace(attribute, `${name}="${value}"`);
-				else
-					tag = tag.replace(
-						/\s*\/?>$/,
-						`\n${indent}${name}="${value}"\n${indent.slice(0, -1)}/>`,
-					);
-			}
-			return tag;
-		})
-		.replace(
-			/(<link\b[^>]*rel="icon"[^>]*href=")[^"]+/,
-			`$1${outputDirectory}/favicon.png?v=2`,
-		);
+	const updated = updateImageDeclarations(html, declarations);
 	await writeFile(path.join(stagingDir, "index.html"), updated);
 	const originalBytes = [...originalSourceBytes.values()].reduce(
 		(sum, bytes) => sum + bytes,

@@ -20,6 +20,8 @@ The reader snapshots its latest opaque reading position before suspension clears
 
 An explicit zero position still requires acknowledgement when there is no saved row or its row belongs to a superseded content version. The reader passes the raw saved row or null; the coordinator derives current-version acknowledgement separately from the row's concurrency revision. Saving zero for a newly published version retains the previous row revision for the POST, then updates the row's version and revision only after server acknowledgement. Loading alone does not claim a successful save.
 
+Returning to the previously saved position while an earlier save is in flight remains a pending edit. Restoration retains that latest position and reconciles the earlier write before saving the reverted value. Hydration preserves the queue's internal ownership. If the restoration GET has not acknowledged a late failed write, the failure is surfaced; transient failures offer explicit retry instead of automatic replay. Clearing progress, changing content version or rotating the session ends that ownership, so an old acknowledgement or denial cannot change freshly loaded state at the same revision.
+
 Suspension saving is best effort. A server acknowledgement proves persistence, but offline navigation or forced browser termination can still lose an unacknowledged write. Late transport results never repopulate private DOM or steal focus, and access denial clears the reader state.
 
 ## Publication

@@ -8,15 +8,17 @@ export function createReaderPosition({ send }) {
 		const input = { contentVersionId, csrf, position: acknowledged ? savedPosition.position : 0,
 			revision: savedPosition?.revision ?? 0 };
 		const same = old && old.contentVersionId === input.contentVersionId && old.csrf === input.csrf;
-		const dirty = same && (old.latest !== old.saved || old.pendingInitial);
+		const dirty = same && (old.latest !== old.saved || old.pendingSave);
 		const unchanged = same && old.revision === input.revision && old.saved === input.position && old.acknowledged === acknowledged;
 		const observedWrite = same && acknowledged && inFlight
+			&& old.ownership === inFlight.owner.ownership
 			&& old.contentVersionId === inFlight.input.contentVersionId && old.csrf === inFlight.input.csrf
 			&& old.revision === inFlight.input.expectedRevision
 			&& input.revision === inFlight.input.expectedRevision + 1 && input.position === inFlight.input.position;
-		state = { contentVersionId, csrf, revision: input.revision, acknowledged,
+		// Restoration retains ownership; clearing or a version/session change ends it.
+		state = { ownership: same ? old.ownership : {}, contentVersionId, csrf, revision: input.revision, acknowledged,
 			saved: input.position, latest: dirty ? old.latest : input.position,
-			pendingInitial: Boolean(dirty && old.pendingInitial && !acknowledged) };
+			pendingSave: Boolean(dirty && old.pendingSave && (!acknowledged || unchanged)) };
 		if (dirty && (!unchanged && !observedWrite || old.error)) {
 			state.error = Object.assign(new Error("position_conflict"), { status: 409 });
 			throw state.error;
@@ -26,10 +28,12 @@ export function createReaderPosition({ send }) {
 	async function drain() {
 		while (state) {
 			if (state.error) throw state.error;
-			if (state.latest === state.saved && !state.pendingInitial) return;
+			if (state.latest === state.saved && !state.pendingSave) return;
 			const owner = state;
 			const input = { contentVersionId: owner.contentVersionId, position: owner.latest,
 				expectedRevision: owner.revision, csrf: owner.csrf };
+			// A newer position can revert to saved while this write still commits.
+			owner.pendingSave = true;
 			inFlight = { owner, input };
 			try {
 				const { position } = await send(input);
@@ -39,16 +43,17 @@ export function createReaderPosition({ send }) {
 					throw Object.assign(new Error("unavailable"), { status: 503 });
 				}
 				// A fresh GET can acknowledge this write before its transport reply arrives.
-				if (state && state.contentVersionId === input.contentVersionId && state.csrf === input.csrf && !state.error
+				if (state && state.ownership === owner.ownership && !state.error
 					&& (state === owner || state.revision === input.expectedRevision
 						|| state.revision === position.revision && state.saved === position.position)) {
 					state.saved = position.position;
 					state.revision = position.revision;
 					state.acknowledged = true;
-					state.pendingInitial = false;
+					state.pendingSave = false;
 				}
 			} catch (error) {
-				if (state === owner) {
+				// Hydration may replace the object without acknowledging this write.
+				if (state?.ownership === owner.ownership && (state === owner || state.revision === input.expectedRevision)) {
 					if ([401, 404, 409].includes(error.status)) state.error = error;
 					throw error;
 				}
@@ -61,7 +66,7 @@ export function createReaderPosition({ send }) {
 			if (!Number.isInteger(position) || position < 0 || position > 10000) throw new Error("Invalid reading position");
 			if (state && !state.error) {
 				state.latest = position;
-				if (!state.acknowledged) state.pendingInitial = true;
+				if (!state.acknowledged) state.pendingSave = true;
 			}
 		},
 		flush() {

@@ -156,6 +156,68 @@ test("restore recognizes an authorized snapshot of its in-flight write without l
 	assert.deepEqual(requests.map(({ position, expectedRevision }) => [position, expectedRevision]), [[3000, 1], [7500, 2]]);
 });
 
+test("restoration preserves a reverted position while the earlier write is still in flight", async () => {
+	const first = deferred(), requests = [];
+	const saver = createReaderPosition({ send: async input => {
+		requests.push(input);
+		if (requests.length === 1) await first.promise;
+		return { position: { contentVersionId: input.contentVersionId, position: input.position, revision: input.expectedRevision + 1 } };
+	} });
+	saver.hydrate(snapshot());
+	saver.update(3000);
+	const pending = saver.flush();
+	saver.update(2000);
+	const restored = saver.hydrate(snapshot({ savedPosition: positionRow({ position: 3000, revision: 2 }) }));
+	first.resolve();
+	await pending;
+	assert.deepEqual(restored, { position: 2000, contentChanged: false });
+	assert.deepEqual(requests.map(({ position, expectedRevision }) => [position, expectedRevision]), [[3000, 1], [2000, 2]]);
+});
+
+test("a reverted position remains pending after the earlier write loses its response", async () => {
+	const first = deferred(), requests = [];
+	const saver = createReaderPosition({ send: async input => {
+		requests.push(input);
+		if (requests.length === 1) return first.promise;
+		return { position: { contentVersionId: input.contentVersionId, position: input.position, revision: input.expectedRevision + 1 } };
+	} });
+	saver.hydrate(snapshot());
+	saver.update(3000);
+	const pending = saver.flush();
+	saver.update(2000);
+	const rejected = assert.rejects(pending, { status: 503 });
+	first.reject(Object.assign(new Error("response lost"), { status: 503 }));
+	await rejected;
+	await saver.flush();
+	assert.deepEqual(requests.map(({ position, expectedRevision }) => [position, expectedRevision]), [[3000, 1], [2000, 1]]);
+});
+
+for (const status of [401, 404, 409, 429, 503]) {
+	test(`restoring an unacknowledged write does not silently retry its late failure ${status}`, async () => {
+		const first = deferred(), requests = [];
+		const saver = createReaderPosition({ send: async input => {
+			requests.push(input);
+			if (requests.length === 1) return first.promise;
+			return { position: { contentVersionId: input.contentVersionId, position: input.position, revision: input.expectedRevision + 1 } };
+		} });
+		saver.hydrate(snapshot());
+		saver.update(7500);
+		const pending = saver.flush();
+		assert.deepEqual(saver.hydrate(snapshot()), { position: 7500, contentChanged: false });
+		const rejected = assert.rejects(pending, { status });
+		first.reject(Object.assign(new Error("late failure"), { status }));
+		await rejected;
+		assert.equal(requests.length, 1);
+		if ([401, 404, 409].includes(status)) {
+			await assert.rejects(saver.flush(), { status });
+			assert.equal(requests.length, 1);
+		} else {
+			await saver.flush();
+			assert.deepEqual(requests.map(({ position, expectedRevision }) => [position, expectedRevision]), [[7500, 1], [7500, 1]]);
+		}
+	});
+}
+
 test("an obsolete save failure does not poison a freshly authorized view", async () => {
 	const old = deferred();
 	const saver = createReaderPosition({ send: () => old.promise });
@@ -166,6 +228,58 @@ test("an obsolete save failure does not poison a freshly authorized view", async
 	old.reject(Object.assign(new Error(), { status: 503 }));
 	await pending;
 	await saver.flush();
+});
+
+for (const status of [401, 404, 409, 503]) {
+	test(`explicit clearing rejects old failure ownership at the same authorized revision ${status}`, async () => {
+		const response = deferred(), requests = [];
+		const saver = createReaderPosition({ send: input => { requests.push(input); return response.promise; } });
+		saver.hydrate(snapshot());
+		saver.update(7500);
+		const pending = saver.flush();
+		saver.clear();
+		assert.deepEqual(saver.hydrate(snapshot()), { position: 2000, contentChanged: false });
+		response.reject(Object.assign(new Error("obsolete failure"), { status }));
+		await pending;
+		await saver.flush();
+		assert.equal(requests.length, 1);
+	});
+}
+
+test("explicit clearing prevents an old acknowledgement from creating an unrequested write", async () => {
+	const first = deferred(), requests = [];
+	const saver = createReaderPosition({ send: async input => {
+		requests.push(input);
+		if (requests.length === 1) await first.promise;
+		return { position: { contentVersionId: input.contentVersionId, position: input.position, revision: input.expectedRevision + 1 } };
+	} });
+	saver.hydrate(snapshot());
+	saver.update(7500);
+	const pending = saver.flush();
+	saver.clear();
+	saver.hydrate(snapshot());
+	first.resolve();
+	await pending;
+	await saver.flush();
+	assert.deepEqual(requests.map(({ position, expectedRevision }) => [position, expectedRevision]), [[7500, 1]]);
+});
+
+test("an observed write from a cleared queue cannot reconcile a newer pending position", async () => {
+	const first = deferred();
+	const saver = createReaderPosition({ send: async input => {
+		await first.promise;
+		return { position: { contentVersionId: input.contentVersionId, position: input.position, revision: input.expectedRevision + 1 } };
+	} });
+	saver.hydrate(snapshot());
+	saver.update(7500);
+	const pending = saver.flush();
+	saver.clear();
+	saver.hydrate(snapshot());
+	saver.update(8000);
+	assert.throws(() => saver.hydrate(snapshot({ savedPosition: positionRow({ position: 7500, revision: 2 }) })), { status: 409 });
+	const rejected = assert.rejects(pending, { status: 409 });
+	first.resolve();
+	await rejected;
 });
 
 test("repeated restores recognize the same pending acknowledgement and preserve the newest position", async () => {

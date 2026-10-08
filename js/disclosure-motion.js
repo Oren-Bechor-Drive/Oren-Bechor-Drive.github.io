@@ -1,4 +1,4 @@
-// Shared by the mobile navigation and learning-topic list. CSS owns timing;
+// Shared by mobile navigation and the public quiz selector. CSS owns timing;
 // semantic state changes immediately, including while an exit is still visible.
 export function initDisclosureMotion(
 	trigger,
@@ -9,6 +9,20 @@ export function initDisclosureMotion(
 	const document = trigger.ownerDocument;
 	const window = document.defaultView;
 	const mobile = window?.matchMedia?.(query);
+	let focusedControl = trigger.contains(document.activeElement) || surface.contains(document.activeElement)
+		? document.activeElement
+		: undefined;
+
+	// CSS can hide a focused control before the breakpoint event is delivered.
+	document.addEventListener("focusin", (event) => {
+		focusedControl = trigger.contains(event.target) || surface.contains(event.target)
+			? event.target
+			: undefined;
+	});
+	document.addEventListener("focusout", (event) => {
+		if (event.target === focusedControl && event.target.getClientRects().length)
+			focusedControl = undefined;
+	});
 
 	function releasePress() {
 		delete trigger.dataset.pressed;
@@ -50,6 +64,8 @@ export function initDisclosureMotion(
 		const expanded = open && (mobile?.matches ?? true);
 		const visible =
 			expanded || (desktopVisible && mobile && !mobile.matches);
+		if (!visible && surface.contains(document.activeElement))
+			trigger.focus({ preventScroll: true });
 		trigger.setAttribute("aria-expanded", String(expanded));
 		surface.dataset.open = String(expanded);
 		surface.hidden = !visible;
@@ -57,8 +73,14 @@ export function initDisclosureMotion(
 	}
 
 	mobile?.addEventListener?.("change", () => {
+		const previousFocus = focusedControl;
 		useKeyboard();
 		setOpen(false);
+		if (!desktopVisible || !previousFocus) return;
+		if (mobile.matches && surface.contains(previousFocus))
+			trigger.focus({ preventScroll: true });
+		else if (!mobile.matches && trigger.contains(previousFocus))
+			surface.querySelector("a[href]")?.focus({ preventScroll: true });
 	});
 	setOpen(false);
 	return setOpen;

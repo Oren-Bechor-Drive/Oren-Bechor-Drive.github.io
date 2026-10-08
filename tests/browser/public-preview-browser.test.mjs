@@ -11,6 +11,9 @@ for (const width of [1440, 390]) {
 			const page = await browser.newPage({ viewport: { width, height: 844 }, javaScriptEnabled: mode !== "disabled", reducedMotion: "reduce" });
 			await page.route("**/*", route => mode === "blocked" && new URL(route.request().url()).pathname === "/js/script.js" ? route.abort() : serveRoadMedia(route));
 			await page.goto("http://gallery.test/");
+			const steps = page.locator(".learning-steps");
+			assert.deepEqual(await steps.locator("li").allTextContents(), ["רואים מצב אמיתי מהכביש", "מבינים איזה חוק חל", "לומדים מהי הפעולה הבטוחה"]);
+			assert.equal(await steps.locator("a, button, [tabindex]").count(), 0, "learning steps are ordinary text in every page mode");
 			if (width < 769 && mode === "enhanced") await page.locator("[data-menu-toggle]").click();
 			const navigation = page.locator(".nav-action");
 			await navigation.click();
@@ -26,7 +29,7 @@ for (const width of [1440, 390]) {
 			await page.waitForURL("http://gallery.test/course/learning-foundations/quiz/");
 			assert.ok(await page.locator(".quiz-question").count() > 0);
 			await page.goto("http://gallery.test/");
-			assert.match(await page.locator("#start p").innerText(), /הסרטונים וההרשמה עדיין אינם זמינים/);
+			assert.equal(await page.locator("#start p").count(), 0);
 			await page.locator("#start .button").click();
 			await page.waitForURL("http://gallery.test/course/");
 			assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);

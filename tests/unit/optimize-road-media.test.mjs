@@ -89,6 +89,76 @@ test("independent media trees keep their own photo lists without changing the wo
 	}
 });
 
+test("optimizer changes real image attributes while preserving unrelated authored bytes", async t => {
+	const { cwd } = await publicationFixture(t);
+	const before = [
+		'<!doctype html><title>תמונות</title>',
+		'<!-- <img src="assets/images/wheel.png" width="999"> -->',
+		'<link data-href="leave this" href="old-icon.png" rel="icon" type="image/png">',
+		'<img data-src="assets/images/wheel.png" src="assets/images/students-pass/1.png" data-width="999" width="1" data-height="888" height="1" data-srcset="keep candidates" srcset="old.webp 1w" data-sizes="keep sizes" sizes="1px" alt="תמונה">',
+		'<img data-class="hero-road-car" class="gallery-car" src="assets/images/cars/car-red.png" alt="מכונית">',
+		'<img src="unowned.png" data-width="keep this" width="9" alt="תמונה נוספת">',
+	].join("\n");
+	await writeFile(path.join(cwd, "index.html"), before);
+	await optimizeRoadMedia(cwd);
+	const html = await readFile(path.join(cwd, "index.html"), "utf8");
+	const module = await readFile(path.join(cwd, "js/road-photo-sources.js"), "utf8");
+	const { roadPhotoSources } = await import(`data:text/javascript,${encodeURIComponent(module)}`);
+	const dom = new JSDOM(html);
+	t.after(() => dom.window.close());
+	const document = dom.window.document;
+	const photo = document.querySelector("img");
+	assert.equal(photo.srcset, roadPhotoSources[1].srcset);
+	assert.equal(photo.sizes, roadPhotoSources[1].sizes);
+	assert.equal(photo.width, 4);
+	assert.equal(photo.height, 4);
+	for (const [name, value] of Object.entries({
+		"data-src": "assets/images/wheel.png", "data-width": "999", "data-height": "888",
+		"data-srcset": "keep candidates", "data-sizes": "keep sizes",
+	})) assert.equal(photo.getAttribute(name), value);
+	const car = document.querySelector(".gallery-car");
+	assert.equal(car.getAttribute("data-class"), "hero-road-car");
+	assert.match(car.srcset, /optimized\/cars\/car-red/);
+	assert.equal(document.querySelector("link").getAttribute("data-href"), "leave this");
+	assert.equal(document.querySelector("link").getAttribute("href"), "assets/images/optimized/favicon.png?v=2");
+	assert.ok(html.includes(before.split("\n")[1]), "commented image bytes stay unchanged");
+	assert.ok(html.endsWith(before.split("\n").at(-1)), "unowned image bytes stay unchanged");
+	let expected = before;
+	for (const [old, updated] of [
+		['href="old-icon.png"', 'href="assets/images/optimized/favicon.png?v=2"'],
+		['width="1"', 'width="4"'], ['height="1"', 'height="4"'],
+		['srcset="old.webp 1w"', `srcset="${roadPhotoSources[1].srcset}"`],
+		['sizes="1px"', `sizes="${roadPhotoSources[1].sizes}"`],
+		['alt="מכונית">', `alt="מכונית" srcset="${car.srcset}" sizes="${car.sizes}" width="4" height="4">`],
+	]) expected = expected.replace(old, updated);
+	assert.equal(html, expected, "only owned attribute spans and new attributes change");
+	await optimizeRoadMedia(cwd);
+	assert.equal(await readFile(path.join(cwd, "index.html"), "utf8"), html);
+});
+
+test("optimizer preserves single-quoted attributes, casing and values containing a closing angle", async t => {
+	const { cwd } = await publicationFixture(t);
+	const before = "<link HREF = 'old-icon.png' rel = 'shortcut icon' type='image/png'>\n<img ALT='תמונה > בדרך' SRC = 'assets/images/students-pass/1.png' WIDTH = '1' HEIGHT='1' SRCSET = 'old.webp 1w' SIZES='1px' />";
+	await writeFile(path.join(cwd, "index.html"), before);
+	await optimizeRoadMedia(cwd);
+	const html = await readFile(path.join(cwd, "index.html"), "utf8");
+	const dom = new JSDOM(html);
+	t.after(() => dom.window.close());
+	const image = dom.window.document.querySelector("img");
+	assert.equal(image.width, 4);
+	assert.equal(image.height, 4);
+	assert.match(image.srcset, /oren-bachor-students-1/);
+	assert.equal(image.getAttribute("alt"), "תמונה > בדרך");
+	assert.equal(html, before
+		.replace("HREF = 'old-icon.png'", "HREF = 'assets/images/optimized/favicon.png?v=2'")
+		.replace("WIDTH = '1'", "WIDTH = '4'")
+		.replace("HEIGHT='1'", "HEIGHT='4'")
+		.replace("SRCSET = 'old.webp 1w'", `SRCSET = '${image.srcset}'`)
+		.replace("SIZES='1px'", `SIZES='${image.sizes}'`));
+	await optimizeRoadMedia(cwd);
+	assert.equal(await readFile(path.join(cwd, "index.html"), "utf8"), html);
+});
+
 test("obsolete delivery cleanup ignores directories with image-like names", async (t) => {
 	const { cwd, optimize } = await publicationFixture(t);
 	const kept = path.join(cwd, "assets/images/optimized/archive.webp/notes.txt");

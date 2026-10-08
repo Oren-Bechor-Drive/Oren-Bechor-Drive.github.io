@@ -2,15 +2,15 @@
 
 This repository contains the public welcome page with its FAQ, a static 404 recovery page, and the course-library preview for Oren Bachor's Hebrew driving course. The welcome page introduces the course. The preview adds independently accessible reading sections and scored public practice quizzes; it remains marked noindex.
 
-The desktop hero presents the course promise, two actions and the red stop sign below the navigation. Tablet and phone layouts use a shorter natural height. The student-photo road carousel now sits below the compact instructor introduction; together they fit one viewport below the sticky header on typical laptop and phone screens. On mobile, the instructor content stacks in reading order: title, image, then one description. The red stop-sign illustration appears above the hero copy on phones. Shorter screens and enlarged text can extend the hero naturally.
+The desktop hero presents the course promise, two actions and the red stop sign below the navigation. Tablet and phone layouts fill the dynamic viewport below the header. The student-photo road carousel now sits below the compact instructor introduction; together they fit one viewport below the sticky header on typical laptop and phone screens. On mobile, the instructor content stacks in reading order: title, image, then one description. The red stop-sign illustration appears above the hero copy on phones. Shorter screens and enlarged text can extend the hero naturally.
 
 ## Current page flow
 
-The page moves through the hero, instructor introduction with its student-photo road carousel, one combined section with the three learning steps and learning-topic preview, the FAQ at `#faq`, and a closing public-preview action before the footer. Under `#about`, the course has one heading, one introductory paragraph, three learning steps linking to real topics and the complete ten-topic explorer. Desktop and mobile navigation link to the instructor, course, and FAQ. Section links align their destination immediately below the sticky header, or at the viewport top when the mobile fallback header scrolls with the page.
+The page moves through the hero, instructor introduction with its student-photo road carousel, one combined section with the three learning steps and learning-topic preview, the FAQ at `#faq`, and a closing public-preview action before the footer. Under `#about`, the course has one heading, one introductory paragraph, three learning steps presented as plain text and the complete ten-topic explorer. Desktop and mobile navigation link to the instructor, course, and FAQ. Section links align their destination immediately below the sticky header, or at the viewport top when the mobile fallback header scrolls with the page.
 
-The hero's primary action, "צפו בנושאי הקורס", leads to `#topics`; its secondary "הכירו את אורן" action leads to the instructor. The topbar "נושאי הלימוד" and closing "לנושאי הלימוד ולתרגול" actions link to the existing public course library at `course/`, approved by the owner on 2026-10-08. The closing notice keeps videos and full-course enrollment clearly unavailable. The published static preview has no course playback or enrollment flow. Local account screens and their gateway are described below.
+The hero's primary action, "צפו בנושאי הקורס", leads to `#topics`; its secondary "הכירו את אורן" action leads to the instructor. The topbar "נושאי הלימוד" and closing "לנושאי הלימוד ולתרגול" actions link to the existing public course library at `course/`, approved by the owner on 2026-10-08. The closing section contains only its heading and a larger blue action with a decorative left arrow. The hero and FAQ retain the current-availability notices. The published static preview has no course playback or enrollment flow. Local account screens and their gateway are described below.
 
-Without JavaScript, or if the entry module fails to load, mobile navigation links remain visible in a header in normal document flow. Successful initialization enables the sticky header and collapsible menu. All ten linked topic descriptions are readable in baseline HTML. Initialization uses them for the desktop tabs while phones keep the complete visible list.
+Without JavaScript, or if the entry module fails to load, mobile navigation links remain visible in a header in normal document flow. The synchronous `js/menu-bootstrap.js` head script reserves a compact header while the entry module loads, so the expanded fallback does not flash. Entry errors, page load without enhancement or a three-second deadline restore visible fallback navigation. Later module completion preserves that fallback and its focused links. Successful initialization enables the sticky header and collapsible menu. All ten linked topic descriptions are readable in baseline HTML. Initialization uses them for the desktop tabs while phones keep the complete visible list.
 
 On mobile, pointer and touch input open the navigation with a 180ms transition and close them over 150ms. Their trigger buttons provide subtle press feedback. Keyboard and assistive activation remain immediate. Closing menus stop accepting input as soon as they close, while CSS finishes the exit; rapid toggles reverse the transition. Reduced motion uses short opacity fades without movement. Browsers without discrete display transitions show and hide the menus immediately. `js/disclosure-motion.js` supplies navigation disclosure input and visibility state. Phones show all ten topic descriptions and reading links; the desktop explorer uses tabs.
 
@@ -18,7 +18,7 @@ Topic previews update immediately for keyboard and assistive activation. Pointer
 
 The instructor and unified course section reveal once on scroll. Focus immediately settles the containing section, and printing exposes all content even before it has been scrolled into view.
 
-Public footers show the brand and links to the homepage and learning topics. Social icons remain visible with placeholder text and are noninteractive until profile URLs are supplied; their existing local artwork and licenses are preserved. The 404 remains a focused recovery page without header or footer chrome.
+Course footers show the brand and links to the homepage and learning topics. The homepage footer contains only the four social icons with accessible Hebrew labels. They remain noninteractive until profile URLs are supplied; their existing local artwork and licenses are preserved. The 404 remains a focused recovery page without header or footer chrome.
 
 ## Repository and publishing
 
@@ -64,15 +64,17 @@ git remote -v
 
 ## Open locally
 
-From this folder, run:
+From this folder, use the supported Node version recorded in `package.json` and run:
 
 ```bash
-python3 -m http.server 8000
+node server/start.mjs
 ```
 
-Then open [http://localhost:8000](http://localhost:8000).
+Then open [http://localhost:3000](http://localhost:3000).
 
-No installation or build step is required.
+No dependency installation or build step is required for this public preview. The launcher binds only to loopback and serves the public-file allowlist. It does not load `.env.local`; without server credentials in the process environment, account APIs remain unavailable. Use the [local account setup](docs/local-accounts.md) when authentication is needed.
+
+Do not serve the checkout through a general directory server: it can expose ignored environment files and server-only source. Keep configuration and private media outside the public-file allowlist.
 
 ### Homepage FAQ and missing-page recovery
 
@@ -98,9 +100,15 @@ Below 900px, or without JavaScript, topics appear as compact expandable rows. Ba
 
 The learning page's contents links use native smooth scrolling, scoped to `html.lesson-page`. Sub-subject sections are not programmatically focusable, so navigating to them does not focus or outline the whole reading section. Reduced motion uses immediate scrolling. Fragment URLs, keyboard links, and navigation with JavaScript disabled retain their native behavior.
 
-The preview is served with the same command above. On the tailnet, use `http://<tailscale-ip>:8000/course/`. Its browser tests cover desktop and phone sizes, search and recovery, fragment navigation, keyboard topic selection, and disabled or blocked JavaScript.
+The preview is served with the same command above at `http://localhost:3000/course/`. Its browser tests cover desktop and phone sizes, search and recovery, fragment navigation, keyboard topic selection, and disabled or blocked JavaScript.
 
-For a preview over an already configured Tailscale connection, keep this server running and use `http://<tailscale-ip>:8000/` from another device on the same tailnet. Find the address with `tailscale ip -4` and check the connection with `tailscale status`. On Linux, start a stopped daemon with `sudo systemctl start tailscaled`, then connect with `tailscale up`. This is a development preview; the public canonical URL remains the GitHub Pages address.
+For a public preview over an already configured Tailscale connection, keep the loopback server running and use [Tailscale Serve](https://tailscale.com/docs/reference/tailscale-cli/serve) as a reverse proxy:
+
+```bash
+tailscale serve 3000
+```
+
+Open the HTTPS address printed by Serve from another device on the same tailnet, adding `/course/` for the library. Forward the loopback service rather than serving the checkout directory. This shares the public preview; local account origin and callback configuration remain bound to localhost. No Tailscale configuration is changed by the repository commands. The public canonical URL remains the GitHub Pages address.
 
 ### Add learning sections and quizzes
 
@@ -127,7 +135,7 @@ Theory diagrams in `assets/images/theory/originals/` are small, unmodified 350px
 
 `index.html` is checked in with compact whitespace and remains directly editable and servable. After editing `index.html`, run `npm run minify:html` before publishing. This command only formats the welcome page. Preserve the existing formatting in course, learning and quiz HTML; content changes do not require a formatting pass. Run it after `npm run optimize:media` when updating images. The command preserves single spaces between inline elements, literal whitespace in `pre` and `textarea`, SVG attribute casing, and image metadata. It reports both raw and gzip byte counts; gzip is a comparison here, not a server configuration change.
 
-The entry script uses `type="module"`, so browsers defer its execution automatically. Keeping it in the head lets its download start early. Every HTML image has an `alt` attribute. The brand icon uses the requested Hebrew alternative `alt="לוגו"`; the enclosing link retains its descriptive accessible name.
+The entry script uses `type="module"`, so browsers defer its execution automatically. The small classic `js/menu-bootstrap.js` script runs before stylesheets to reserve the compact header during that delay, with an error and timeout fallback. Keeping it in the head lets its download start early. Every HTML image has an `alt` attribute. The brand icon uses the requested Hebrew alternative `alt="לוגו"`; the enclosing link retains its descriptive accessible name.
 
 ## Search and sharing metadata
 
@@ -161,7 +169,7 @@ Longer lifetimes require a host or CDN with configurable response headers. Befor
 
 ## Hero road car
 
-The supplied small red car makes one 15-second trip along the hero road. `js/hero-road-car.js` samples the SVG route and animates position and rotation with the Web Animations API. It recalculates the route after resizing while preserving elapsed time. Hide the car below 768px; reduced motion parks it on larger screens. Without JavaScript the decorative car stays hidden. Preserve the original artwork.
+The supplied small red car makes one 15-second trip along the hero road. `js/hero-road-car.js` samples the SVG route and animates position and rotation with the Web Animations API. It recalculates the route after resizing while preserving elapsed time. The car remains visible on phones; reduced motion parks it on desktop and phones. Without JavaScript the decorative car stays hidden. Preserve the original artwork.
 
 ## Hero entrance and stop sign
 
@@ -169,7 +177,7 @@ The hero content and sign use one 16px upward fade over 280ms, once per browser 
 
 The red stop sign is an approved separate image edit at `assets/images/stop-sign-red.png`. Preserve the supplied blue `stop-sign.png`. The optimizer creates the red variant's delivery WebPs alongside the original's delivery files. Source and generated brand-artwork records are in [design asset provenance](docs/reference/design-assets-2026-10-08.md).
 
-Open [the welcome page](http://localhost:8000/) at desktop and phone sizes. Reload to verify the entrance settles for the session, and enable reduced motion to verify immediate content. See [DESIGN.md](DESIGN.md) for the complete behavior.
+Open [the welcome page](http://localhost:3000/) at desktop and phone sizes. Reload to verify the entrance settles for the session, and enable reduced motion to verify immediate content. See [DESIGN.md](DESIGN.md) for the complete behavior.
 
 ## Add or update student photos
 
@@ -227,6 +235,8 @@ npm test
 ```
 
 Publish generated files with their originals as described under [Add or update student photos](#add-or-update-student-photos). The optimizer synchronizes image candidates and dimensions in the HTML, refreshes the complete photo list, and removes obsolete WebPs only within the generated directory. This maintenance step is required when source images or delivery settings change; opening or serving the checked-in site still requires no build. Student-photo runtime loading falls back to the PNG if a delivery copy fails to decode or the original's Content-Length no longer matches the generated metadata.
+
+Declaration updates edit actual HTML attribute spans, preserving unrelated bytes, comments and `data-*` attributes. Authored image attributes can use single or double quotes and any attribute order. This source edit does not require changing the preserved originals.
 
 The HTML keeps original road-image dimensions and uses width descriptors in `srcset` plus `sizes` for delivery copies. Smaller variants serve ordinary desktop screens; larger variants support high-density screens without enlarging an original. Photo sizing accounts for the `object-fit: cover` crop. The optimizer's size formulas follow the road height, car scale, and photo frame in `css/welcome.css` and `css/responsive.css`; update them if that geometry changes. Car sprite sizing reads each color's `--car-art-width` rule. The hero car uses separate 80px and 160px WebP copies of the red-car artwork with `sizes="clamp(40px, 5vw, 80px)"`, matching its smaller CSS width. Module preload hints fetch the initial topic, disclosure, scroll-reveal, and hero-car modules alongside the entry script. Gallery code and its generated photo list load only when the road approaches the viewport. The below-fold road background is not preloaded.
 
@@ -291,7 +301,7 @@ Animation regressions cover focus during section entrances, visibility in print,
 
 Disclosure-motion tests pause CSS transitions in the browser's `transitionrun` handler before inspecting them from the test runner. Entrance checks deliberately wait longer than the natural transition duration, so a slow runner cannot miss working motion. Interrupted exits, press feedback and reduced-motion fades use the same capture method; keyboard checks still require immediate updates without animations.
 
-`tests/browser/progressive-enhancement-browser.test.mjs` exercises navigation and topic selection at desktop and phone widths. It also checks visible navigation and all ten descriptions with JavaScript disabled or the entry module blocked. Section-alignment tests distinguish the sticky header from the mobile fallback's zero scroll offset. The unavailable-IntersectionObserver test checks for browser errors and verifies that topic selection initializes and the footer recovery links remain available.
+`tests/browser/progressive-enhancement-browser.test.mjs` exercises navigation and topic selection at desktop and phone widths. It also checks visible navigation and all ten descriptions with JavaScript disabled or the entry module blocked. Delayed entry/dependency checks verify that the compact header stays stable during loading and that failures restore working links. Section-alignment tests distinguish the sticky header from the mobile fallback's zero scroll offset. The unavailable-IntersectionObserver test checks for browser errors and verifies that topic selection initializes, the closing course action remains available, and the footer icons load.
 
 Learning-content fixture tests exercise malformed authored HTML through the same verifier used by the real-page tests. Quiz browser tests follow authored order rather than fixed question IDs; additional one-question and five-question fixtures cover nonnumeric IDs and a video in the first question. Gallery behavior tests supply independent photo lists and verify that concurrent instances do not mutate generated metadata. The site-media tests cover nested pages, ordinary logos/SVGs, missing candidates and preloads, and command failure outside the welcome page.
 
@@ -358,7 +368,9 @@ npm ci
 npm run test:database
 ```
 
-The suite uses pinned native PostgreSQL 17.6 binaries, a temporary directory and a loopback port, then removes its fixtures. Run it as a regular user. Linux x64 is verified locally and is used in CI. The package's symlink setup script is approved in `package.json` for npm 12; if an existing installation predates that approval, run `npm rebuild @embedded-postgres/linux-x64`. Other platforms need their corresponding native package's setup script reviewed and approved when npm blocks it.
+The suite uses pinned native PostgreSQL 17.10 binaries, a temporary directory and a loopback port, then removes its fixtures. Run it as a regular user. Linux x64 is verified locally and is used in CI. The package's symlink setup script is approved in `package.json` for npm 12; if an existing installation predates that approval, run `npm rebuild @embedded-postgres/linux-x64`. Other platforms need their corresponding native package's setup script reviewed and approved when npm blocks it.
+
+As of 2026-10-08, `embedded-postgres` has no published PostgreSQL 17.11 package. Version 17.10 incorporates earlier upstream security fixes, but the [17.11 security fixes](https://www.postgresql.org/docs/release/17.11/) remain outstanding in this test dependency. `npm audit` does not report the bundled native database's advisories. Keep these random-password loopback clusters disposable and limited to owned synthetic inputs. Upgrade the pin and native-script approval when a compatible patched package is published. This does not establish the hosted database version or its patch status.
 
 `supabase/config.toml` configures an optional local Supabase stack with only `public` exposed and explicit API grants. Running that full stack requires Docker; the database suite does not. Local Auth configuration does not change hosted settings. Use the pinned CLI through `npx --no-install supabase`, consult its `--help`, and create future migrations with `supabase migration new <name>`. Do not edit an already-applied migration.
 
@@ -585,7 +597,7 @@ The referrer policy and supported CSP directives are implemented in HTML. Header
 
 ### Design critique implementation
 
-The owner-approved design refinements are tracked in [todo.md](todo.md). The welcome page and library share ten topics, public headers and footers support return navigation, native scrollbars stay visible, and print exposes lesson reading and every quiz question. Fredoka supplies real weights with rounded Hebrew shapes; the supplied Varela Round font files remain preserved. The red stop sign is a separate approved edit of the supplied blue original. Regenerate its delivery variants through `npm run optimize:media`, then minify the welcome HTML.
+The owner-approved design refinements are tracked in [todo.md](todo.md). The welcome page and library share ten topics, public headers and course footers support return navigation, native scrollbars stay visible, and print exposes lesson reading and every quiz question. Fredoka supplies real weights with rounded Hebrew shapes; the supplied Varela Round font files remain preserved. The red stop sign is a separate approved edit of the supplied blue original. Regenerate its delivery variants through `npm run optimize:media`, then minify the welcome HTML.
 
 Public scoring still uses feedback after submission. A completed set opens a review summary before the separate grading action. Question-to-section links are maintained in the reviewed source, verified by the publisher, and do not assert complete teaching coverage. Protected learning continues to use authorized APIs and synthetic local verification. The local password policy is at least 12 Unicode characters and at most 72 UTF-8 bytes without composition requirements; hosted provider settings have not been verified or changed.
 

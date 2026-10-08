@@ -814,6 +814,36 @@ test(
 	},
 );
 
+test("resizing follows a focused topic without requiring its mobile disclosure to open", async t => {
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	for (const reducedMotion of ["reduce", "no-preference"]) {
+		const page = await browser.newPage({ viewport: { width: 390, height: 844 }, reducedMotion });
+		await page.route("**/*", serveRoadMedia);
+		await page.goto("http://gallery.test/course/");
+		await page.getByRole("searchbox").waitFor({ state: "visible" });
+		await topicControl(page, "right-of-way").focus();
+		await page.keyboard.press("Tab");
+		assert.equal(await topicControl(page, "priority-hierarchy").evaluate(control => control === document.activeElement), true);
+		assert.equal(await page.locator("#priority-hierarchy").getAttribute("open"), null);
+		await page.setViewportSize({ width: 1440, height: 900 });
+		await waitForTwoFrames(page);
+		assert.equal(await page.getByRole("tab", { selected: true }).getAttribute("data-topic"), "priority-hierarchy");
+		assert.equal(await topicControl(page, "priority-hierarchy").evaluate(control => control === document.activeElement), true);
+		assert.equal(await topicOutline(page, "priority-hierarchy").isVisible(), true);
+		await page.setViewportSize({ width: 390, height: 844 });
+		await waitForTwoFrames(page);
+		assert.equal(await topicControl(page, "priority-hierarchy").evaluate(control => control === document.activeElement), true);
+		assert.equal(await topicOutline(page, "priority-hierarchy").isVisible(), true);
+		await page.getByRole("searchbox").click();
+		await page.setViewportSize({ width: 1440, height: 900 });
+		await waitForTwoFrames(page);
+		assert.equal(await page.getByRole("searchbox").evaluate(control => control === document.activeElement), true);
+		assert.equal(await page.locator(".search-field").evaluate(control => getComputedStyle(control).outlineStyle), "none");
+		await page.close();
+	}
+});
+
 test("filtered desktop tabs follow their displayed relevance order for keyboard navigation", async t => {
 	const browser = await chromium.launch();
 	t.after(() => browser.close());
