@@ -22,13 +22,15 @@ The local Auth contract cannot prove token validation, hosted API configuration,
 
 ## Gateway and reader integration verified on 2026-09-25
 
-The local gateway and desktop/mobile Chromium journeys use deterministic Auth with real disposable PostgreSQL. They cover saved reading percentages, stale-save conflicts, expiry, progress retained after a simulated 31-day lapse, renewal and learner isolation. Reader lifetime tests hold real responses to verify that superseded loads and saves cannot restore cleared content or steal focus. See [ownership and test seams](../../docs/ARCHITECTURE.md) and the [manual browser/API walkthrough](../../docs/manual-test-lessons.md).
+The local gateway and desktop/mobile Chromium journeys use deterministic Auth with real disposable PostgreSQL. They cover saved reading percentages, stale-save conflicts, expiry, renewal and learner isolation. The current protected-learning migration retains positions and attempts during the ten-day lapse window, then clears them while preserving explicitly completed topics. Renewal before that deadline retains learning data; renewal after it starts fresh, even when scheduled cleanup was delayed. Reader lifetime tests hold real responses to verify that superseded loads and saves cannot restore cleared content or steal focus. See [ownership and test seams](../../docs/ARCHITECTURE.md) and the [manual browser/API walkthrough](../../docs/manual-test-lessons.md).
 
 The hosted smoke script now also asserts that `save_my_position` returns one saved-position object rather than an array. Adapter tests cover that response contract locally. This added hosted assertion has not been rerun against the hosted project; the dated hosted evidence below remains the earlier database-only verification.
 
 ## Hosted smoke test
 
-`hosted-smoke.mjs` exercises the real Auth and REST endpoints using a publishable key and two short-lived synthetic password accounts. It is manual and never runs as part of CI. Run it only in the development project, with a trusted operator coordinating SQL fixture setup and cleanup. It uses no service-role key.
+`hosted-smoke.mjs` exercises the real Auth and REST endpoints using a publishable key and two short-lived synthetic password accounts. It is manual and never runs as part of CI. Its recorded four-phase run verified the original foundation migration only, before protected-learning retention and immutable quiz content were introduced. It uses no service-role key.
+
+Do not rerun the historical fixture procedure against a current hosted schema until a trusted operator has authorized a disposable development project and verified its complete teardown locally. Current entitlement records must be retained and revoked, and published versions are immutable. The previous delete-entitlements cleanup sequence cannot tear down this schema. No hosted account or fixture is created by the local checks below.
 
 Prepare one mode-0600 JSON file outside the repository with this structure:
 
@@ -63,7 +65,7 @@ node supabase/tests/hosted-smoke.mjs /path/to/private-fixture.json initial
 
 Expire only the owned entitlement by setting its end to the current server time, then run `expired`. Add a new current development entitlement for the same learner, then run `renewed`. Remove only that synthetic learner's `auth.sessions` rows, then run `revoked`. The last phase reuses the still-unexpired token to prove session revocation is enforced.
 
-The script stores access tokens in that private file and prints only phase/check results. The coordinating operator must use a `finally` cleanup path even if a phase fails: delete owned progress, entitlements, content versions and sections, identity mappings and learners, then synthetic refresh tokens, sessions, Auth identities and users. Remove the private credential file. Check all owned records are gone. These are test-fixture cleanup instructions, not an application account-deletion policy.
+The script stores access tokens in that private file and prints only phase/check results. A future rerun must have a verified teardown for its explicitly disposable project, including cleanup after a failed phase and removal of the private credential file. Do not delete entitlement timing records or bypass immutable-version triggers to clean up hosted fixtures. Revoke owned access and sessions immediately if a phase fails, then use the authorized disposable-project teardown. These test requirements do not define an application account-deletion policy.
 
 ## Verified on 2026-09-23
 

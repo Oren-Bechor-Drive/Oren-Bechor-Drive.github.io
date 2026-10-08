@@ -120,6 +120,8 @@ Triage a driving-rule error, unsafe instruction, or misleading answer as a conte
 
 ## Triage a technical outage
 
+Treat static publication and the protected service as separate systems. A successful GitHub Pages homepage response does not establish that accounts, learner RPCs or private media work. The gateway, newer migrations and cleanup jobs are locally implemented; their hosted setup and verification remain separate work in [hosting preparation](hosting.md). Learning-data cleanup after ten days is separate from account deletion and backup retention.
+
 Assign responsibilities before an incident. The person with repository write access manages code and reverts. A repository administrator checks Pages configuration and deployments. The content approver decides teaching corrections. A future provider owner handles that provider. These are responsibilities, not assigned staff names or response-time promises.
 
 1. Record the start time, affected URLs, scope, browser evidence, and the latest published commit.
