@@ -249,6 +249,7 @@ export function createLearnerAccounts({ origin, provider = null, googleEnabled =
 			return withLearnerSession(token, async (accessToken, csrf) => {
 				try { return { data: { ...await provider[operation](accessToken, ...args), csrf, ...(operation === "myLearning" ? { subscriptionOffer } : {}) } }; }
 				catch (error) {
+					if (error.code === "P4100") fail(410, "quiz_withdrawn");
 					if (error.code === "42501") fail(404, "learning_unavailable");
 					if (error.code === "22023") fail(400, "invalid_input");
 					if (error.code === "40001") fail(409, "quiz_conflict");

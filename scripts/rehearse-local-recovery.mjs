@@ -87,7 +87,16 @@ async function seed(database) {
 	await submit(database,active,topic,2);
 	await ageAndExpire(database,grace,9);
 	await ageAndExpire(database,cleared,11);
-	return { active,neverPaid,grace,cleared,topic,section,paidVersion,passed };
+	const withdrawalLearner = await identity(database), withdrawalTopic = `withdrawal-${randomUUID()}`;
+	const withdrawalVersion = (await database.admin.query("select public.publish_quiz($1,'תרגול להפסקה לבדיקה',$2,'synthetic-withdrawal-only') as id",
+		[withdrawalTopic,JSON.stringify(quizQuestions(3))])).rows[0].id;
+	const withdrawnDraft = await rpc(database,withdrawalLearner,"start_my_quiz",[withdrawalTopic]);
+	await rpc(database,withdrawalLearner,"save_my_quiz",[withdrawnDraft.id,'{"q1":"a"}',0]);
+	const withdrawalSubmitted = await submit(database,active,withdrawalTopic);
+	await database.admin.query("select public.withdraw_quiz_version($1,'synthetic-withdrawal-review')",[withdrawalVersion]);
+	await rpc(database,withdrawalLearner,"start_my_quiz",[withdrawalTopic]);
+	return { active,neverPaid,grace,cleared,topic,section,paidVersion,passed,
+		withdrawalLearner,withdrawalTopic,withdrawalVersion,withdrawnDraft,withdrawalSubmitted };
 }
 
 // There are no destination, credentials, archive-file or URL options. Every
@@ -137,6 +146,18 @@ export async function rehearseLocalRecovery() {
 				await rpc(source,fixture.active,"my_quiz_history",[fixture.topic,null]));
 			assert.deepEqual(await rpc(destination,fixture.active,"read_my_attempt",[fixture.passed.id]),
 				await rpc(source,fixture.active,"read_my_attempt",[fixture.passed.id]));
+		});
+		await check("withdrawn drafts and unchanged submitted history", async () => {
+			const { withdrawalLearner,withdrawalTopic,withdrawnDraft,withdrawalSubmitted,active } = fixture;
+			assert.deepEqual(await rpc(destination,withdrawalLearner,"read_my_attempt",[withdrawnDraft.id]),
+				{ id:withdrawnDraft.id,topicKey:withdrawalTopic,revision:1,status:"withdrawn" });
+			await assert.rejects(rpc(destination,withdrawalLearner,"save_my_quiz",[withdrawnDraft.id,'{"q1":"a"}',1]),{ code:"P4100" });
+			await assert.rejects(rpc(destination,withdrawalLearner,"submit_my_quiz",[withdrawnDraft.id,1]),{ code:"P4100" });
+			await assert.rejects(rpc(destination,withdrawalLearner,"start_my_quiz",[withdrawalTopic]),{ code:"P4100" });
+			assert.equal((await rpc(destination,active,"my_learning")).topics.some(topic => topic.key === withdrawalTopic),false);
+			assert.deepEqual(await rpc(destination,active,"read_my_attempt",[withdrawalSubmitted.id]),withdrawalSubmitted);
+			assert.deepEqual(await rpc(destination,active,"my_quiz_history",[withdrawalTopic,null]),
+				await rpc(source,active,"my_quiz_history",[withdrawalTopic,null]));
 		});
 		await check("position revisions", async () => {
 			const values = [fixture.section,"paid"];

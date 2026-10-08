@@ -608,3 +608,161 @@ test("direct learner RPCs treat SQL-looking topic keys and answers as data", asy
 	assert.deepEqual(saved.answers, { q1: "a" });
 	assert.equal(saved.revision, 1);
 });
+
+const withdraw = (f, version = f.version, reason = "synthetic-withdrawal-review") => actor(f,
+	db => rpc(db,"withdraw_quiz_version",[version,reason]),"service_role");
+
+test("trusted withdrawal hides two unfinished versions and preserves submitted history and completion", async () => {
+	const own = await fixture({ count:3 }), otherIdentity = await fixture({ count:3 }), submittedIdentity = await fixture({ count:3 });
+	const other = { ...otherIdentity,topic:own.topic,version:own.version };
+	const submitted = { ...submittedIdentity,topic:own.topic,version:own.version };
+	const unrelated = { ...own,topic:otherIdentity.topic,version:otherIdentity.version };
+	const draft = await start(own), otherDraft = await start(other), result = await submit(submitted,3,3);
+	const unrelatedDraft = await start(unrelated);
+	const completed = await actor(submitted,db => rpc(db,"complete_my_topic",[own.topic]));
+	const history = await actor(submitted,db => rpc(db,"my_quiz_history",[own.topic,null]));
+	const withdrawal = await withdraw(own);
+	assert.equal(withdrawal.versionId,own.version);
+	assert.ok(withdrawal.withdrawnAt);
+	for (const [learner,attempt] of [[own,draft],[other,otherDraft]]) {
+		assert.deepEqual(await actor(learner,db => rpc(db,"read_my_attempt",[attempt.id])),
+			{ id:attempt.id,topicKey:own.topic,revision:attempt.revision,status:"withdrawn" });
+		await rejected(learner,"save_my_quiz",[attempt.id,'{"q1":"a"}',attempt.revision],"P4100");
+		await rejected(learner,"submit_my_quiz",[attempt.id,attempt.revision],"P4100");
+	}
+	assert.deepEqual(await actor(submitted,db => rpc(db,"read_my_attempt",[result.id])),result);
+	assert.deepEqual(await actor(submitted,db => rpc(db,"my_quiz_history",[own.topic,null])),history);
+	assert.deepEqual(await actor(submitted,db => rpc(db,"complete_my_topic",[own.topic])),completed);
+	assert.deepEqual(await actor(submitted,db => rpc(db,"submit_my_quiz",[result.id,result.revision])),result);
+	assert.deepEqual(await actor(unrelated,db => rpc(db,"read_my_attempt",[unrelatedDraft.id])),unrelatedDraft);
+	assert.deepEqual(await start(unrelated),unrelatedDraft);
+	assert.equal((await actor(unrelated,db => rpc(db,"save_my_quiz",[unrelatedDraft.id,'{"q1":"a"}',0]))).revision,1);
+	assert.deepEqual(await withdraw(own,own.version,"synthetic-new-reference"),withdrawal);
+	assert.equal((await database.admin.query("select reason_reference from private.quiz_version_withdrawals where version_id=$1",[own.version])).rows[0].reason_reference,"synthetic-withdrawal-review");
+	assert.equal((await database.admin.query("select count(*) from public.quiz_attempts where learner_id=any($1::uuid[]) and submitted_at is not null",[[own.learner,other.learner]])).rows[0].count,"0");
+	await database.admin.query("select public.publish_quiz($1,'תרגול מתוקן לבדיקה',$2,'synthetic-correction')",[own.topic,JSON.stringify(quizQuestions(4))]);
+	const overview = await actor(submitted,db => rpc(db,"my_learning"));
+	const topic = overview.topics.find(topic => topic.key === own.topic);
+	assert.deepEqual(topic.latestAttempt,{ id:result.id,submittedAt:result.submittedAt,score:3,questionCount:3 });
+	assert.equal(topic.completedAt,completed.completedAt);
+	assert.equal(overview.hadPaidAccess,true);
+});
+
+test("withdrawn current versions leave the active catalog while corrected versions start empty", async () => {
+	const f = await fixture({ count:3 }), draft = await start(f);
+	await actor(f,db => rpc(db,"save_my_quiz",[draft.id,'{"q1":"a"}',0]));
+	await withdraw(f);
+	const overview = await actor(f,db => rpc(db,"my_learning"));
+	assert.equal(overview.topics.some(topic => topic.key === f.topic),false);
+	assert.equal(overview.paidAccess,true);
+	assert.equal(overview.hadPaidAccess,true);
+	const stopped = await start(f);
+	assert.equal(stopped.status,"withdrawn");
+	assert.ok((await database.admin.query("select withdrawn_at from public.quiz_attempts where id=$1",[draft.id])).rows[0].withdrawn_at);
+	const corrected = (await database.admin.query("select public.publish_quiz($1,'תרגול מתוקן לבדיקה',$2,'synthetic-correction') as id",[f.topic,JSON.stringify(quizQuestions(4))])).rows[0].id;
+	const fresh = await start(f);
+	assert.notEqual(fresh.id,draft.id);
+	assert.deepEqual(fresh.answers,{});
+	assert.equal(fresh.questions.length,4);
+	assert.equal(fresh.revision,0);
+	assert.equal((await database.admin.query("select version_id from public.quiz_attempts where id=$1",[fresh.id])).rows[0].version_id,corrected);
+	const refreshed = await actor(f,db => rpc(db,"my_learning"));
+	assert.equal(refreshed.topics.find(topic => topic.key === f.topic).latestAttempt,null);
+	assert.deepEqual(await actor(f,db => rpc(db,"read_my_attempt",[draft.id])),{ id:draft.id,topicKey:f.topic,revision:1,status:"withdrawn" });
+});
+
+test("ordinary publication still resumes valid immutable drafts and withdrawal outranks stale draft revisions", async () => {
+	const f = await fixture({ count:3 }), draft = await start(f);
+	await database.admin.query("select public.publish_quiz($1,'תרגול חדש לבדיקה',$2,'synthetic-new-publication')",[f.topic,JSON.stringify(quizQuestions(4))]);
+	assert.deepEqual(await start(f),draft);
+	await withdraw(f);
+	await rejected(f,"save_my_quiz",[draft.id,'{"q1":"a"}',99],"P4100");
+	await rejected(f,"submit_my_quiz",[draft.id,99],"P4100");
+	await database.admin.query("update public.entitlements set revoked_at=now() where id=$1",[f.entitlement]);
+	await rejected(f,"read_my_attempt",[draft.id]);
+	await rejected(f,"save_my_quiz",[draft.id,'{"q1":"a"}',0]);
+	await rejected(f,"submit_my_quiz",[draft.id,0]);
+});
+
+test("withdrawal is service-only, validates references and keeps immutable records private", async () => {
+	const f = await fixture({ count:3 });
+	for (const role of ["anon","authenticated"]) {
+		await rejected(f,"withdraw_quiz_version",[f.version,"synthetic-reference"],"42501",role);
+		await assert.rejects(actor(f,db => db.query("select * from private.quiz_version_withdrawals"),role),{ code:"42501" });
+	}
+	for (const reference of [null,"","   ","x".repeat(2001)]) await rejected(f,"withdraw_quiz_version",[f.version,reference],"22023","service_role");
+	await withdraw(f);
+	await assert.rejects(database.admin.query("update private.quiz_version_withdrawals set reason_reference='changed' where version_id=$1",[f.version]),{ code:"55000" });
+	await assert.rejects(database.admin.query("delete from private.quiz_version_withdrawals where version_id=$1",[f.version]),{ code:"55000" });
+	const newLearner = await fixture({ count:3 });
+	await rejected({ ...newLearner,topic:f.topic },"start_my_quiz",[f.topic],"P4100");
+});
+
+async function blockedBy(pid, blocker) {
+	const timeout = Date.now()+5000;
+	while (Date.now()<timeout) {
+		if ((await database.admin.query("select $2::integer=any(pg_blocking_pids($1)) as blocked",[pid,blocker])).rows[0].blocked) return;
+		await new Promise(resolve => setTimeout(resolve,5));
+	}
+	assert.fail("Expected version-lock barrier was not reached");
+}
+
+test("submission commits before a waiting withdrawal without changing submitted history", async () => {
+	const f = await fixture({ count:3 }), draft = await start(f);
+	const saved = await actor(f,db => rpc(db,"save_my_quiz",[draft.id,JSON.stringify(quizAnswers(3,3)),0]));
+	const learner = await database.connect(), operator = await database.connect();
+	let pending;
+	try {
+		await learner.query("begin"); await actAs(learner,f.user,f.session);
+		const submitted = await rpc(learner,"submit_my_quiz",[draft.id,saved.revision]);
+		await operator.query("begin"); await actAs(operator,f.user,f.session,"service_role");
+		const learnerPid = (await learner.query("select pg_backend_pid() as pid")).rows[0].pid;
+		const operatorPid = (await operator.query("select pg_backend_pid() as pid")).rows[0].pid;
+		pending = rpc(operator,"withdraw_quiz_version",[f.version,"synthetic-concurrent-review"]).then(value=>({ value }),error=>({ error }));
+		await blockedBy(operatorPid,learnerPid);
+		await learner.query("commit");
+		assert.ifError((await pending).error);
+		await operator.query("commit");
+		assert.deepEqual(await actor(f,db => rpc(db,"read_my_attempt",[draft.id])),submitted);
+		assert.equal((await actor(f,db => rpc(db,"my_quiz_history",[f.topic,null]))).attempts[0].id,draft.id);
+	} finally {
+		await learner.query("rollback"); await pending; await operator.query("rollback");
+		await learner.end(); await operator.end();
+	}
+});
+
+test("a draft submission waiting behind committed withdrawal fails without grades", async () => {
+	const f = await fixture({ count:3 }), draft = await start(f);
+	const saved = await actor(f,db => rpc(db,"save_my_quiz",[draft.id,JSON.stringify(quizAnswers(3,3)),0]));
+	const operator = await database.connect(), learner = await database.connect();
+	let pending;
+	try {
+		await operator.query("begin"); await actAs(operator,f.user,f.session,"service_role");
+		await rpc(operator,"withdraw_quiz_version",[f.version,"synthetic-concurrent-review"]);
+		await learner.query("begin"); await actAs(learner,f.user,f.session);
+		const operatorPid = (await operator.query("select pg_backend_pid() as pid")).rows[0].pid;
+		const learnerPid = (await learner.query("select pg_backend_pid() as pid")).rows[0].pid;
+		pending = rpc(learner,"submit_my_quiz",[draft.id,saved.revision]).then(value=>({ value }),error=>({ error }));
+		await blockedBy(learnerPid,operatorPid);
+		await operator.query("commit");
+		assert.equal((await pending).error?.code,"P4100");
+		await learner.query("rollback");
+		const stored = (await database.admin.query("select submitted_at,score,results from public.quiz_attempts where id=$1",[draft.id])).rows[0];
+		assert.deepEqual(stored,{ submitted_at:null,score:null,results:null });
+	} finally {
+		await operator.query("rollback"); await pending; await learner.query("rollback");
+		await operator.end(); await learner.end();
+	}
+});
+
+test("withdrawn drafts follow existing retention and remain separate from submitted state", async () => {
+	const f = await fixture({ count:3 }), draft = await start(f);
+	await withdraw(f); await start(f);
+	await assert.rejects(database.admin.query("update public.quiz_attempts set submitted_at=now(),score=0,results='[]' where id=$1",[draft.id]),{ code:"23514" });
+	await expire(f,9);
+	assert.equal((await database.admin.query("select count(*) from public.quiz_attempts where id=$1",[draft.id])).rows[0].count,"1");
+	await expire(f,11);
+	await actor(f,db => rpc(db,"sweep_expired_learning"),"service_role");
+	assert.equal((await database.admin.query("select count(*) from public.quiz_attempts where id=$1",[draft.id])).rows[0].count,"0");
+	assert.equal((await database.admin.query("select count(*) from private.quiz_version_withdrawals where version_id=$1",[f.version])).rows[0].count,"1");
+});

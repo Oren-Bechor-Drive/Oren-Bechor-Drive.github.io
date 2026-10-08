@@ -166,3 +166,56 @@ for (const failure of [false, true]) {
 		}
 	});
 }
+
+const withdrawn = () => ({ id:"attempt-one",topicKey:"topic-one",revision:1,status:"withdrawn" });
+const withdrawalError = () => Object.assign(new Error("quiz_withdrawn"),{ status:410 });
+
+test("restoring a withdrawn draft removes held choices and exposes only its tombstone", async () => {
+	const editor = createQuizAttemptEditor();
+	editor.load(draft());
+	editor.choose("q1","a");
+	editor.clear({ preserveDraft:true });
+	assert.equal(await editor.restore(async () => withdrawn()),"withdrawn");
+	assert.deepEqual(editor.view.attempt,withdrawn());
+	assert.deepEqual(editor.view.answers,{});
+	assert.equal(editor.view.editable,false);
+	assert.equal(editor.view.unsaved,false);
+	editor.clear({ preserveDraft:true });
+	assert.equal(await editor.restore(() => assert.fail("Withdrawn choices must not survive")),"none");
+});
+
+for (const operation of ["save","submit"]) {
+	test(`withdrawal during ${operation} clears questions, editing and preserved answers`, async () => {
+		const editor = createQuizAttemptEditor();
+		editor.load(draft());
+		editor.choose("q1","a"); editor.choose("q2","b");
+		let calls = 0;
+		const request = async (_path, body) => {
+			calls++;
+			if (operation === "submit" && calls === 1) return draft(body.answers,2);
+			throw withdrawalError();
+		};
+		await assert.rejects(editor[operation](request),{ status:410 });
+		assert.equal(editor.view.attempt.status,"withdrawn");
+		assert.equal(editor.view.attempt.questions,undefined);
+		assert.deepEqual(editor.view.answers,{});
+		assert.equal(editor.view.unsaved,false);
+		assert.equal(await editor.save(() => assert.fail("Withdrawn draft cannot save")),false);
+		assert.deepEqual(await editor.submit(() => assert.fail("Withdrawn draft cannot submit")),{ status:"blocked" });
+		editor.load({ ...draft(),id:"replacement" });
+		assert.deepEqual(editor.view.answers,{});
+	});
+}
+
+test("a late withdrawal failure cannot clear a newer attempt", async () => {
+	const editor = createQuizAttemptEditor();
+	editor.load(draft()); editor.choose("q1","a");
+	const response = deferred();
+	const saving = editor.save(() => response.promise);
+	editor.load({ ...draft(),id:"replacement" });
+	editor.choose("q2","b");
+	response.reject(withdrawalError());
+	await assert.rejects(saving,{ name:"AbortError" });
+	assert.equal(editor.view.attempt.id,"replacement");
+	assert.deepEqual(editor.view.answers,{ q2:"b" });
+});

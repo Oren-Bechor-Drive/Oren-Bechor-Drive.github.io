@@ -27,7 +27,7 @@ The pinned embedded package contains `postgres`, `pg_ctl` and `initdb`; this reh
 
 [The rehearsal](../scripts/rehearse-local-recovery.mjs) verifies current free/paid access, learner isolation, submitted quiz history with immutable versions, durable topic completions, saved-position revisions and ten-day retention cleanup through actual database RPCs. Its corrupt-archive case removes referenced learners and verifies atomic rollback before restoring the valid archive. [Recovery tests](../tests/database/recovery.test.mjs) also cover malformed row JSON, unknown columns, changed manifests, schema drift, nonempty targets, exact bigint values and fixture cleanup.
 
-Quiz-withdrawal recovery coverage is pending the withdrawal migration. This initial rehearsal does not verify withdrawn drafts.
+The rehearsal also restores withdrawal records and stopped drafts, verifies that their questions stay hidden and save/submit remain denied, and checks that submitted results and history remain unchanged. The active catalog excludes a withdrawn current version.
 
 A fixture-generated encryption key restores an authenticated session through the production encrypted-session adapter and service-only database RPC. A different key requires fresh sign-in, and explicit session invalidation removes restored authority. The key lives only in the rehearsal process. This check does not establish production key custody or hosted Auth token validity.
 

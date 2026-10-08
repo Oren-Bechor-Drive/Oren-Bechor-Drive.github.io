@@ -97,6 +97,17 @@ export async function startLessonGateway({ quiz = false, quizCount = 20, quizTop
 		app = await startAccountGateway({ provider, ...gatewayOptions });
 		return {
 			origin: app.origin,
+			async withdrawQuiz(topicKey, reasonReference = "synthetic-withdrawal-review") {
+				const rows = await connected(client => client.query(`select public.withdraw_quiz_version(current_version_id,$2) as result
+					from private.quiz_topics where key=$1`, [topicKey, reasonReference]));
+				if (!rows.rowCount) throw new Error("No synthetic quiz topic to withdraw");
+				return rows.rows[0].result;
+			},
+			async publishQuiz(topicKey, count = 20) {
+				if (!Number.isSafeInteger(count) || count < 1 || count > 100) throw new Error("Supply a synthetic quiz count from 1 to 100");
+				return (await connected(client => client.query("select public.publish_quiz($1,$2,$3,$4) as id",
+					[topicKey, "תרגול מעודכן לבדיקה", JSON.stringify(quizQuestions(count)), "synthetic-test-only"]))).rows[0].id;
+			},
 			async grant(email, until = new Date(Date.now() + 3_600_000).toISOString()) {
 				const id = await existingIdentity(email);
 				await connected(async client => {

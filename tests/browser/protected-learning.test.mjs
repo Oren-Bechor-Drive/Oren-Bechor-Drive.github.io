@@ -283,3 +283,64 @@ test("choices made during autosave are persisted without moving native focus", a
 	assert.equal(await fields.nth(0).getByRole("radio").nth(1).isChecked(), true);
 	assert.equal(await fields.nth(1).getByRole("radio").first().isChecked(), true);
 });
+
+const withdrawalFeedback = "גרסת התרגול אינה זמינה עוד. חזרו ללמידה ובחרו גרסה מעודכנת.";
+for (const width of [1440,390]) {
+	test(`withdrawal clears unsafe quiz controls and opens an empty correction at ${width}px`, async t => {
+		const app = await startLessonGateway({ quiz:true,quizCount:3 }); t.after(app.close);
+		const browser = await chromium.launch(); t.after(() => browser.close());
+		const page = await browser.newPage({ viewport:{ width,height:844 },reducedMotion:"reduce" });
+		page.setDefaultTimeout(10000);
+		const errors = []; page.on("pageerror",error => errors.push(error.message));
+		const email = `withdrawal-${width}@example.test`;
+		await page.goto(app.origin+"/account/login.html");
+		await page.getByLabel("כתובת אימייל").fill(email);
+		await page.getByLabel("סיסמה",{ exact:true }).fill("correct-password");
+		await page.getByRole("button",{ name:"כניסה לחשבון",exact:true }).click();
+		await page.waitForURL(app.origin+"/account/"); await app.grant(email);
+		await page.goto(app.origin+"/account/learning.html");
+		await page.getByRole("button",{ name:"פתיחת התרגול",exact:true }).click();
+		const first = page.locator("[data-questions] fieldset").first();
+		await first.getByRole("radio").first().check();
+		await page.locator("[data-save-status]").filter({ hasText:"התשובות נשמרו" }).waitFor();
+		await app.withdrawQuiz("synthetic-topic");
+		if (width === 390) {
+			// Hold one unsaved choice across suspension. Restoring the withdrawn
+			// tombstone must erase it rather than populate a corrected version.
+			await page.route("**/api/attempts/*/save",route => route.fulfill({ status:503,contentType:"application/json",body:'{"error":"unavailable"}' }));
+			await first.getByRole("radio").nth(1).check();
+			await page.locator("[data-save-status]").filter({ hasText:"הפעולה לא הושלמה" }).waitFor();
+			await page.unroute("**/api/attempts/*/save");
+			await page.evaluate(() => {
+				Object.defineProperty(document,"hidden",{ configurable:true,value:true }); document.dispatchEvent(new Event("visibilitychange"));
+				Object.defineProperty(document,"hidden",{ configurable:true,value:false }); document.dispatchEvent(new Event("visibilitychange"));
+			});
+		} else {
+			await first.getByRole("radio").nth(1).check();
+		}
+		await page.locator("[data-learning-status]").filter({ hasText:withdrawalFeedback }).waitFor();
+		assert.equal(await page.locator("[data-questions] input").count(),0);
+		assert.equal(await page.locator("#quiz-heading").textContent(),"");
+		assert.equal(await page.locator("[data-attempt]").isVisible(),false);
+		assert.equal(await page.getByRole("button",{ name:"שמירת תשובות",exact:true }).isVisible(),false);
+		assert.equal(await page.getByRole("button",{ name:"הגשת התרגול",exact:true }).isVisible(),false);
+		assert.equal(await page.locator("[data-reload-attempt]").isVisible(),false);
+		assert.equal(await page.locator("[data-learning-status]").getAttribute("role"),"alert");
+		const reload = page.getByRole("button",{ name:"חזרה ללמידה וטעינה מחדש",exact:true });
+		assert.equal(await reload.isVisible(),true);
+		await reload.click();
+		await page.locator("[data-learning-status]").filter({ hasText:"עדיין לא פורסמו" }).waitFor();
+		assert.equal(await page.getByRole("button",{ name:"פתיחת התרגול",exact:true }).count(),0);
+		await app.publishQuiz("synthetic-topic",4);
+		await page.reload();
+		const open = page.getByRole("button",{ name:"פתיחת התרגול",exact:true });
+		await open.click();
+		await page.locator("[data-questions] fieldset").nth(3).waitFor();
+		assert.equal(await page.locator("[data-questions] input:checked").count(),0);
+		assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),true);
+		assert.equal(await open.evaluate(element => getComputedStyle(element).outlineStyle),"none");
+		await page.keyboard.press("Tab");
+		assert.equal(await page.evaluate(() => getComputedStyle(document.activeElement).outlineStyle),"solid");
+		assert.deepEqual(errors,[]);
+	});
+}

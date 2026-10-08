@@ -158,7 +158,7 @@ test("the local rehearsal proves learner state, session behavior and separate me
 	assert.ok(report.migrations.length > 0);
 	assert.ok(report.durationMs > 0);
 	for (const check of report.checks) assert.equal(check.passed, true, check.name);
-	for (const name of ["access and learner isolation", "history and completions", "position revisions", "retention cleanup", "atomic corrupt-archive rollback", "stable-key session restoration", "key rotation requires sign-in", "invalidated session requires sign-in", "separate private-media copy and hash"]) {
+	for (const name of ["access and learner isolation", "history and completions", "withdrawn drafts and unchanged submitted history", "position revisions", "retention cleanup", "atomic corrupt-archive rollback", "stable-key session restoration", "key rotation requires sign-in", "invalidated session requires sign-in", "separate private-media copy and hash"]) {
 		assert.ok(report.checks.some(check => check.name === name), name);
 	}
 	assert.doesNotMatch(JSON.stringify(report), /payload|ciphertext|secret|token|password|postgres:\/\//);

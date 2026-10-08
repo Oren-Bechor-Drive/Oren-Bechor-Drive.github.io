@@ -65,7 +65,7 @@ test("all application tables have RLS and no anonymous table privileges", async 
 	const tables = (await database.admin.query("select c.oid,n.nspname,c.relname,c.relrowsecurity from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','private') and c.relkind='r'")).rows;
 	assert.deepEqual(tables.map(table => `${table.nspname}.${table.relname}`).sort(), [
 		"private.gateway_sessions", "private.gateway_session_control", "private.gateway_rate_buckets",
-		"private.learner_identities", "private.learning_retention", "private.quiz_topics", "private.quiz_versions",
+		"private.learner_identities", "private.learning_retention", "private.quiz_topics", "private.quiz_versions", "private.quiz_version_withdrawals",
 		"public.entitlements", "public.learners", "public.learning_sections", "public.quiz_attempts",
 		"public.section_progress", "public.section_versions", "public.topic_completions",
 	].sort());
@@ -293,6 +293,7 @@ test("effective function privileges and search paths restrict every administrati
 		],
 		service_role: ["private.gateway_session", "public.gateway_session", "private.gateway_rate_limit", "public.gateway_rate_limit",
 			"private.gateway_rate_limit_decision", "public.gateway_rate_limit_decision",
+			"private.withdraw_quiz_version", "public.withdraw_quiz_version",
 			"private.sweep_gateway_rate_limits", "public.sweep_gateway_rate_limits", "private.provision_learner", "public.provision_learner", "public.publish_section",
 			"public.publish_learning_section", "private.publish_quiz", "public.publish_quiz", "private.sweep_expired_learning", "public.sweep_expired_learning"],
 	};
