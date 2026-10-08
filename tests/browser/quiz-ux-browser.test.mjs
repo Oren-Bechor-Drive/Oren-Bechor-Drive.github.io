@@ -75,10 +75,14 @@ for (const width of [320, 1440]) {
 		assert.equal(await page.locator("[data-quiz-summary]").isVisible(), false);
 		assert.equal(await page.locator(".quiz-question input:disabled").count(), 60);
 		await page.locator("[data-quiz-review]").click();
-		assert.equal(await page.locator(".quiz-question:visible [data-quiz-lesson-link]").getAttribute("href"), "../#priority");
-		await page.locator(".quiz-question:visible [data-quiz-lesson-link]").click();
-		assert.equal(new URL(page.url()).hash, "#priority");
-		assert.equal(await page.locator("#priority").isVisible(), true);
+		assert.equal(await page.locator(".quiz-question:visible").getAttribute("id"), "question-0058");
+		const topicLink = page.locator("#question-0058 [data-quiz-lesson-link]");
+		assert.equal(await topicLink.getAttribute("href"), "../#topic");
+		assert.equal(await topicLink.innerText(), "חזרה לנושא הלימוד");
+		await topicLink.click();
+		await page.waitForURL("http://gallery.test/course/priority-hierarchy/#topic");
+		assert.equal(await page.locator("#topic").isVisible(), true);
+		assert.equal(await page.getByRole("heading", { level: 1, name: "מדרג הציות" }).isVisible(), true);
 	});
 }
 
