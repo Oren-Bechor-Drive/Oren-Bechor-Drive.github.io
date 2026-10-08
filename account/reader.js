@@ -1,6 +1,7 @@
 import "../js/input-mode.js";
 import { createProtectedPage } from "./protected-page.js";
 import { createReaderPosition } from "./reader-position.js";
+import { readRetryAfter, retryGuidance } from "./retry-guidance.js";
 
 const element = selector => document.querySelector(selector);
 const status = element("[data-reader-status]");
@@ -26,7 +27,7 @@ const positions = createReaderPosition({ send: async input => {
 		headers: { "content-type": "application/json", "x-csrf-token": input.csrf },
 		body: JSON.stringify({ contentVersionId: input.contentVersionId, position: input.position, expectedRevision: input.expectedRevision }) });
 	const data = await response.json();
-	if (!response.ok) throw Object.assign(new Error(data.error), { status: response.status });
+	if (!response.ok) throw Object.assign(new Error(data.error), { status: response.status, retryAfterSeconds: readRetryAfter(response.headers.get("retry-after")) });
 	return data;
 } });
 const lifetime = createProtectedPage({ clear, restore: () => load(true), beforeSuspend() {
@@ -60,7 +61,7 @@ function failure(error, loading = false) {
 		conflict = true;
 		feedback.textContent = "המיקום עודכן בחלון אחר. טענו את קטע הלימוד מחדש כדי להמשיך מהמיקום השמור.";
 	} else feedback.textContent = error.status === 429
-		? "בוצעו בקשות רבות. המתינו דקה ונסו שוב."
+		? retryGuidance(error.retryAfterSeconds ?? null)
 		: "השמירה או הטעינה לא הושלמו. בדקו את החיבור ונסו שוב.";
 	feedback.dataset.failed = "true";
 	if ([401, 404].includes(error.status)) status.dataset.failed = "true";

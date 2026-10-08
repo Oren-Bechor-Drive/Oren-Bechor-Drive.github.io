@@ -1,6 +1,7 @@
 import "../js/input-mode.js";
 import { createProtectedPage } from "./protected-page.js";
 import { createQuizAttemptEditor } from "./quiz-attempt-editor.js";
+import { retryGuidance } from "./retry-guidance.js";
 
 const element = selector => document.querySelector(selector);
 const status = element("[data-learning-status]");
@@ -35,7 +36,7 @@ function message(error) {
 	if (error.status === 401) return "היכנסו לחשבון כדי להמשיך בלמידה.";
 	if (error.status === 404) return "התוכן אינו זמין לחשבון שלכם כרגע. אפשר להמשיך בנושאי הלימוד ובתרגול החינמי.";
 	if (error.status === 409) return "הניסיון עודכן בחלון אחר. טענו את הניסיון השמור לפני המשך התרגול.";
-	if (error.status === 429) return "בוצעו בקשות רבות. המתינו דקה ונסו שוב.";
+	if (error.status === 429) return retryGuidance(error.retryAfterSeconds ?? null);
 	return "הפעולה לא הושלמה. בדקו את החיבור ונסו שוב.";
 }
 function controls(disabled, editing = false) {

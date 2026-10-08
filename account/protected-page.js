@@ -1,5 +1,7 @@
 // One page lifetime owns requests and their completion effects. Page modules own
 // rendering and editing policy; suspended pages cannot accept old work.
+import { readRetryAfter } from "./retry-guidance.js";
+
 export function createProtectedPage({ clear, restore, beforeSuspend = () => {}, window: events = window, document: visibility = document }) {
 	let lifetime = new AbortController();
 	let suspended = visibility.hidden;
@@ -44,10 +46,10 @@ export function createProtectedPage({ clear, restore, beforeSuspend = () => {}, 
 					...(body === undefined ? {} : { method: "POST", headers: { "content-type": "application/json", "x-csrf-token": csrf }, body: JSON.stringify(body) }) });
 				const data = await response.json();
 				check();
-				if (!response.ok) throw Object.assign(new Error(data.error), { status: response.status });
+				if (!response.ok) throw Object.assign(new Error(data.error), { status: response.status, retryAfterSeconds: readRetryAfter(response.headers.get("retry-after")) });
 				return data;
 			};
-			try { await work({ request, commit: action => { if (current()) action(); } }); }
+			try { await work({ request, signal: owner.signal, commit: action => { if (current()) action(); } }); }
 			catch (failure) { if (current()) error(failure); }
 			finally { if (current()) finish(); }
 		},

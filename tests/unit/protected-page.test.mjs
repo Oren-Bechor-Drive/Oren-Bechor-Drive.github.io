@@ -13,6 +13,34 @@ function fixture(options = {}) {
 }
 const deferred = () => { let resolve, reject; const promise = new Promise((yes, no) => { resolve = yes; reject = no; }); return { promise, resolve, reject }; };
 
+test("rendering signal aborts on suspension and is renewed on restoration", async () => {
+	const f = fixture();
+	let original, restored;
+	await f.page.run(async ({ signal }) => { original = signal; });
+	assert.equal(original.aborted, false);
+	f.events.dispatchEvent(new Event("pagehide"));
+	assert.equal(original.aborted, true);
+	f.events.dispatchEvent(Object.assign(new Event("pageshow"), { persisted: true }));
+	await Promise.resolve();
+	await f.page.run(async ({ signal }) => { restored = signal; });
+	assert.notEqual(restored, original);
+	assert.equal(restored.aborted, false);
+});
+
+test("protected request failures retain validated retry metadata", async () => {
+	const f = fixture();
+	const original = globalThis.fetch;
+	try {
+		for (const [header, seconds] of [["840", 840], ["0", null], [null, null]]) {
+			globalThis.fetch = async () => Response.json({ error: "rate_limited" }, { status: 429, headers: header ? { "Retry-After": header } : {} });
+			let observed;
+			await f.page.run(async ({ request }) => request("/api/learning"), { error: error => { observed = error; } });
+			assert.equal(observed.status, 429);
+			assert.equal(observed.retryAfterSeconds, seconds);
+		}
+	} finally { globalThis.fetch = original; }
+});
+
 test("suspension snapshots once before clearing private rendering", () => {
 	const order = [];
 	const f = fixture({ beforeSuspend: () => order.push("snapshot"), clear: () => order.push("clear") });
