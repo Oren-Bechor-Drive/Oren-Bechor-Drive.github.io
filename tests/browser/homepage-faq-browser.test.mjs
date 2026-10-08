@@ -97,7 +97,7 @@ test(
 
 				await page.locator('.site-menu a[href="#faq"]').click();
 				assert.equal(new URL(page.url()).hash, "#faq");
-				assert.equal(await page.locator("#faq details").count(), 5);
+				assert.equal(await page.locator("#faq details").count(), 6);
 				assert.equal(await page.locator("#faq").isVisible(), true);
 				assert.deepEqual(
 					await faqRevealState(page),

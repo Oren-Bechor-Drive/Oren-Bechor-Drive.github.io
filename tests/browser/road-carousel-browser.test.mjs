@@ -51,7 +51,7 @@ test(
 				const entrances = trace.filter(
 					(event) =>
 						event.name === "Animation" &&
-						event.args?.data?.displayName === "brake",
+						event.args?.data?.displayName === "hero-arrive",
 				);
 				assert.ok(
 					entrances.length > 0,
@@ -78,49 +78,30 @@ test(
 					.getAttribute("aria-busy") === "true",
 		);
 		await t.test(
-			"loading wheel covers the stopped road until discovery finishes",
+			"discovery leaves the baseline road readable while motion waits",
 			async () => {
-				const loader = page.locator(".road-loader");
-				assert.equal(await loader.isVisible(), true);
-				const state = await loader.evaluate((element) => {
-					const wheel = element.querySelector("img");
-					return {
-						wheelSource: wheel.getAttribute("src"),
-						wheelAnimation: wheel.getAnimations()[0]?.playState,
-						blur: getComputedStyle(element).backdropFilter,
-						roadAnimations: document
-							.querySelector(".road-carousel-track")
-							.getAnimations().length,
-					};
-				});
-				assert.equal(state.wheelSource, "assets/images/wheel.png");
-				assert.equal(state.wheelAnimation, "running");
-				assert.equal(state.roadAnimations, 0);
-				assert.match(state.blur, /blur\([1-9]/);
+				assert.equal(await page.locator(".road-loader").count(), 0);
+				const state = await page
+					.locator(".road-carousel-track")
+					.evaluate((track) => ({
+						animations: track.getAnimations().length,
+						filter: getComputedStyle(track).filter,
+						visiblePhotos: [...track.querySelectorAll(".road-photo img")]
+							.filter((image) => image.getClientRects().length > 0).length,
+					}));
+				assert.equal(state.animations, 0);
+				assert.equal(state.filter, "none");
+				assert.equal(state.visiblePhotos, 6);
 				await page.emulateMedia({ reducedMotion: "reduce" });
 				await page.waitForFunction(
-					() =>
-						document.querySelector(".hero-visual").getAnimations()
-							.length === 0,
-				);
-				assert.equal(
-					await page
-						.locator(".hero-visual")
-						.evaluate((element) => element.getAnimations().length),
-					0,
-				);
-				assert.equal(
-					await loader
-						.locator("img")
-						.evaluate((wheel) => wheel.getAnimations().length),
-					0,
+					() => document.querySelector(".hero-visual").getAnimations().length === 0,
 				);
 				await page.emulateMedia({ reducedMotion: "no-preference" });
 			},
 		);
 		releaseDiscovery();
 		await page.locator('[data-road-carousel][data-ready="true"]').waitFor();
-		assert.equal(await page.locator(".road-loader").isVisible(), false);
+		assert.equal(await page.locator(".road-loader").count(), 0);
 		const loadedSources = await page
 			.locator(".road-carousel-group")
 			.first()
@@ -131,7 +112,7 @@ test(
 				loadedSources.every((source) => source.endsWith(".webp")),
 			"motion checks must exercise optimized student photo delivery",
 		);
-		// Measure the resting layout after the hero's off-screen entrance.
+		// Measure the resting layout after the hero's entrance.
 		await page
 			.locator(".hero-copy > *")
 			.evaluateAll((elements) =>
@@ -216,10 +197,17 @@ test(
 					true,
 					"the gallery must belong to the instructor introduction",
 				);
-				assert.ok(
-					state.instructorHeight + state.headerHeight <= height + 1,
-					"the instructor and complete road must fit below the header",
-				);
+				if (height >= 768) {
+					assert.ok(
+						state.instructorHeight + state.headerHeight <= height + 1,
+						"the instructor and road fit typical viewports below the header",
+					);
+				} else {
+					assert.ok(
+						state.instructorHeight + state.headerHeight >= height - 1,
+						"short screens allow the introduction to grow naturally",
+					);
+				}
 				assert.ok(
 					Math.abs(state.instructorBottom - state.roadBottom) < 1,
 					"the road must finish the instructor section",
@@ -282,8 +270,8 @@ test(
 				await page.route("**/js/script.js", (route) => route.abort());
 				await page.reload();
 				assert.equal(
-					await page.locator(".road-loader").isVisible(),
-					false,
+					await page.locator(".road-loader").count(),
+					0,
 				);
 				assert.equal(
 					await page.locator(".road-carousel-group").count(),

@@ -3,13 +3,14 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#f2f5fc" />
 		<meta
 			http-equiv="Content-Security-Policy"
 			content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
 		/>
 		<meta name="referrer" content="strict-origin-when-cross-origin" />
 		<meta name="robots" content="noindex" />
-		<title>מעגלי תנועה וצמתים - קורס נהיגה נכונה עם אורן בכור</title>
+		<title>מעגלי תנועה וצמתים - נהיגה נכונה עם אורן בכור</title>
 		<meta
 			name="description"
 			content="התקרבות לצומת ולפס האטה, כניסה למעגל תנועה חד-נתיבי ותכנון מסלול במעגל דו-נתיבי."
@@ -21,25 +22,25 @@
 		/>
 		<link
 			rel="preload"
-			href="../../assets/fonts/varela-round-v21-hebrew.woff2"
+			href="../../assets/fonts/fredoka-v17-hebrew.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
 		/>
 		<link
 			rel="preload"
-			href="../../assets/fonts/varela-round-v21-latin.woff2"
+			href="../../assets/fonts/fredoka-v17-latin.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
 		/>
-		<link rel="stylesheet" href="../../css/base.css" />
+		<link rel="stylesheet" href="../../css/base.css?v=3" />
 		<link rel="stylesheet" href="../css/course.css" />
 		<link rel="stylesheet" href="../css/lesson.css" />
 		<script type="module" src="../js/account-link.js"></script>
 	</head>
 	<body>
-		<a class="skip-link" href="#main">דילוג לתוכן הלמידה</a>
+		<a class="skip-link" href="#main">דילוג לתוכן הראשי</a>
 		<header class="course-header">
 			<div class="course-shell course-header-inner">
 				<a
@@ -59,7 +60,11 @@
 					/><span
 						><strong>נהיגה נכונה</strong><small>עם אורן בכור</small></span
 					></a
-				><button
+				>
+				<nav class="course-header-nav" aria-label="ניווט ראשי">
+					<a class="course-library-link" href="../">נושאי הלימוד</a>
+				</nav>
+				<button
 					class="course-profile"
 					type="button"
 					aria-label="הפרופיל עדיין אינו זמין"
@@ -84,23 +89,31 @@
 					מאטים לפני נקודת ההחלטה, סורקים את המעברים ואת התנועה, ומתכננים את
 					הנתיב לפני הכניסה למעגל.
 				</p>
-				<p class="lesson-draft">פרקי קריאה. הסרטונים יתווספו בהמשך.</p>
+				<p class="lesson-meta" data-reading-minutes="3">
+					זמן קריאה משוער: 3 דקות.
+				</p>
+				<p class="lesson-draft">
+					אפשר לקרוא ולתרגל. סרטונים ותרשימים יתווספו בהמשך.
+				</p>
 			</div>
 			<div class="lesson-layout">
-				<nav class="lesson-contents" aria-labelledby="contents-title">
+				<nav
+					class="lesson-contents"
+					aria-labelledby="contents-title"
+					id="contents"
+				>
 					<h2 id="contents-title">מה לומדים כאן?</h2>
-					<p>אפשר להתחיל בכל חלק.</p>
+
 					<ul>
-						<li><a href="#approach">התקרבות לצומת</a></li>
-						<li><a href="#single-lane">מעגל חד-נתיבי</a></li>
-						<li><a href="#two-lane">מעגל דו-נתיבי</a></li>
+						<li><a href="#approach">התקרבות לצומת ולפס האטה</a></li>
+						<li><a href="#single-lane">מעגל תנועה חד-נתיבי</a></li>
+						<li><a href="#two-lane">מעגל תנועה דו-נתיבי</a></li>
 					</ul>
 				</nav>
 				<article
 					class="lesson-content"
 					id="topic"
 					aria-labelledby="topic-title"
-					aria-label="הסברים על צמתים ומעגלי תנועה"
 				>
 					<section
 						class="lesson-section"
@@ -119,13 +132,26 @@
 							<li>מזהים מעבר חצייה, פס האטה ותנועה שעלולה לחצות את המסלול.</li>
 							<li>לא נכנסים אם אין מקום להשלים את המעבר ולפנות את הצומת.</li>
 						</ul>
-						<div
-							class="video-placeholder"
-							role="img"
-							aria-label="מקום לסרטון הסבר: התקרבות לצומת מרומזר ולפס האטה"
+						<aside
+							class="lesson-scenario"
+							aria-labelledby="approach-scenario-title"
 						>
-							<span>סרטון הסבר: התקרבות לצומת מרומזר ולפס האטה</span>
-						</div>
+							<h3 id="approach-scenario-title">מצב מהכביש</h3>
+							<p>
+								לקראת צומת אתם רואים טור מכוניות בצד השני. מאטים מוקדם ובודקים
+								אם נשאר מקום לפנות את הצומת לפני שנכנסים.
+							</p>
+						</aside>
+						<details class="lesson-self-check">
+							<summary>מה בודקים מעבר לצומת לפני הכניסה?</summary>
+							<p>שיש מקום להשלים את המעבר ולפנות את הצומת.</p>
+						</details>
+						<p class="video-placeholder" role="note">
+							סרטון יתווסף בהמשך: התקרבות לצומת ולפס האטה.
+						</p>
+						<a class="lesson-return-contents" href="#contents"
+							>חזרה לתוכן העניינים</a
+						>
 					</section>
 					<section
 						class="lesson-section"
@@ -153,13 +179,29 @@
 							למסלול ולהוראות שנלמדו עם מורה הנהיגה, באופן שמבהיר את הכוונה בלי
 							להחליף בדיקה של הסביבה.
 						</p>
-						<div
-							class="video-placeholder"
-							role="img"
-							aria-label="מקום לסרטון הסבר: כניסה ויציאה ממעגל תנועה"
+						<aside
+							class="lesson-scenario"
+							aria-labelledby="single-lane-scenario-title"
 						>
-							<span>סרטון הסבר: כניסה ויציאה ממעגל תנועה</span>
-						</div>
+							<h3 id="single-lane-scenario-title">מצב מהכביש</h3>
+							<p>
+								בכניסה למעגל הולך רגל מתחיל לחצות. מאפשרים לו להשלים את החצייה
+								לפני שמתקדמים לנקודה שממנה בודקים את התנועה במעגל.
+							</p>
+						</aside>
+						<details class="lesson-self-check">
+							<summary>האם פער בתנועה במעגל מספיק כדי להיכנס?</summary>
+							<p>
+								לא. בודקים תחילה את מעבר החצייה, ובהמשך את התנועה ואת הפער
+								שמאפשר כניסה בטוחה.
+							</p>
+						</details>
+						<p class="video-placeholder" role="note">
+							סרטון יתווסף בהמשך: כניסה ויציאה ממעגל תנועה.
+						</p>
+						<a class="lesson-return-contents" href="#contents"
+							>חזרה לתוכן העניינים</a
+						>
 					</section>
 					<section
 						class="lesson-section"
@@ -195,13 +237,7 @@
 							כדי לצאת. בחירה מוקדמת, שמירה על הנתיב והסתכלות לצדדים מצמצמות את
 							נקודת הקונפליקט.
 						</p>
-						<div
-							class="video-placeholder"
-							role="img"
-							aria-label="מקום לסרטון הסבר: בחירת נתיב במעגל תנועה דו-נתיבי"
-						>
-							<span>סרטון הסבר: בחירת נתיב במעגל תנועה דו-נתיבי</span>
-						</div>
+
 						<aside class="lesson-takeaway">
 							<strong>לא נכנסים על סמך נתיב אחד פנוי</strong>
 							<p>
@@ -209,26 +245,53 @@
 								לפני הכניסה.
 							</p>
 						</aside>
+						<aside
+							class="lesson-scenario"
+							aria-labelledby="two-lane-scenario-title"
+						>
+							<h3 id="two-lane-scenario-title">מצב מהכביש</h3>
+							<p>
+								אתם מתקרבים למעגל דו-נתיבי. נתיב אחד נראה פנוי, אבל רכב בנתיב
+								האחר יכול להשפיע על המסלול שלכם. בודקים את שניהם לפני הכניסה.
+							</p>
+						</aside>
+						<details class="lesson-self-check">
+							<summary>האם אפשר להיכנס על סמך נתיב אחד פנוי?</summary>
+							<p>לא. בודקים את שני הנתיבים ואת המסלול הצפוי של כלי הרכב.</p>
+						</details>
+						<p class="video-placeholder" role="note">
+							סרטון יתווסף בהמשך: בחירת נתיב במעגל תנועה דו-נתיבי.
+						</p>
+						<a class="lesson-return-contents" href="#contents"
+							>חזרה לתוכן העניינים</a
+						>
 					</section>
 					<div class="lesson-quiz">
 						<p>תרגול בנושא מעגלי תנועה וצמתים</p>
-						<a class="course-button lesson-quiz-link" href="quiz/">לשאלון התרגול</a>
+						<a
+							class="btn btn-primary course-button lesson-quiz-link"
+							href="quiz/"
+							>לשאלון התרגול</a
+						>
 						<small>12 שאלות בנושא, עם ציון והסברים לתשובות.</small>
 					</div>
 					<footer class="lesson-end">
-						<p>
-							סרטוני ההתנהגות במעגלים עדיין אינם זמינים.
-						</p>
-						<a class="course-button" href="../#roundabouts"
-							>חזרה לנושאי הלימוד</a
-						>
+						<a class="lesson-next" href="../overtaking/"
+							>הנושא הבא: עקיפה ואיסורי עקיפה<span
+								class="direction-icon icon-arrow-left-long"
+								aria-hidden="true"
+							></span
+						></a>
+						<a href="../#roundabouts">לכל הנושאים</a>
 					</footer>
 				</article>
 			</div>
 		</main>
 		<footer class="course-shell course-footer">
-			<p>הקורס משלים את התרגול בשיעורי הנהיגה ואינו מחליף את מורה הנהיגה.</p>
-			<a href="../../index.html">חזרה לדף הבית</a>
+			<p>נהיגה נכונה עם אורן בכור</p>
+			<nav aria-label="קישורי האתר">
+				<a href="../../index.html">לדף הבית</a><a href="../">לנושאי הלימוד</a>
+			</nav>
 		</footer>
 	</body>
 </html>

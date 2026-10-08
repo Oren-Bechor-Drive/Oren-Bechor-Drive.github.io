@@ -9,7 +9,7 @@ import { inspectImage } from "../../scripts/road-media-integrity.mjs";
 const photoCount = Object.keys(roadPhotoSources).length;
 const root = new URL("../../", import.meta.url);
 const deliveryImages =
-	".brand-mark, .hero-road-car, .hero-visual img, .road-loader img, .road-carousel-group:first-child img, .instructor-photo img";
+	".brand-mark, .hero-road-car, .hero-visual img, .road-carousel-group:first-child img, .instructor-photo img";
 
 for (const failure of ["missing delivery copies", "stale original metadata"]) {
 	test(`student photos recover to PNG with ${failure}`, async (t) => {
@@ -64,7 +64,7 @@ for (const failure of ["missing delivery copies", "stale original metadata"]) {
 				(photo) => photo.loaded && photo.source.endsWith(".png"),
 			),
 		);
-		assert.equal(await page.locator(".road-loader").isVisible(), false);
+		assert.equal(await page.locator(".road-loader").count(), 0);
 	});
 }
 
@@ -104,8 +104,8 @@ test("fonts and the high-priority logo download before stylesheets arrive and ar
 			});
 			const criticalResponses = Promise.all(
 				[
-					"/assets/fonts/varela-round-v21-hebrew.woff2",
-					"/assets/fonts/varela-round-v21-latin.woff2",
+					"/assets/fonts/fredoka-v17-hebrew.woff2",
+					"/assets/fonts/fredoka-v17-latin.woff2",
 					"/assets/images/optimized/course-icon.webp",
 				].map((asset) =>
 					page.waitForResponse(
@@ -135,7 +135,7 @@ test("fonts and the high-priority logo download before stylesheets arrive and ar
 			});
 			assert.deepEqual(
 				loadedFonts,
-				["Varela Round", "Varela Round"],
+				["Fredoka", "Fredoka"],
 				"Hebrew and Latin must decode and render",
 			);
 			assert.equal(
@@ -192,17 +192,8 @@ test("responsive delivery reduces desktop and mobile bytes and preserves density
 				javaScriptEnabled: scenario.javaScriptEnabled,
 			});
 			const downloaded = new Map();
-			// Keep the startup overlay visible long enough to verify its lazy wheel.
-			let releaseDiscovery;
-			const wheelLoaded = new Promise((resolve) => {
-				releaseDiscovery = resolve;
-			});
-			t.after(() => releaseDiscovery());
 			await page.route("**/*", async (route) => {
-				if (route.request().method() === "HEAD") await wheelLoaded;
 				const served = await serveRoadMedia(route);
-				if (served?.source.match(/\/wheel(?:-\d+)?\.webp$/))
-					releaseDiscovery();
 				if (
 					served?.byteLength &&
 					/\.(png|webp|jpg)$/.test(served.source)
@@ -222,11 +213,6 @@ test("responsive delivery reduces desktop and mobile bytes and preserves density
 			await page.waitForFunction(
 				(selector) =>
 					[...document.querySelectorAll(selector)]
-						.filter(
-							(i) =>
-								!i.closest(".road-loader") ||
-								i.getClientRects().length > 0,
-						)
 						.every((i) => i.complete && i.naturalWidth > 0),
 				deliveryImages,
 			);
@@ -309,24 +295,13 @@ test("responsive delivery reduces desktop and mobile bytes and preserves density
 					roadMediaBytes < (120 + 12 * photoCount) * 1024,
 					`mobile road image budget exceeded: ${roadMediaBytes}`,
 				);
-				if (
-					scenario.deviceScaleFactor > 1 &&
-					scenario.javaScriptEnabled !== false
-				)
-					assert.ok(
-						downloaded.get(
-							"assets/images/optimized/wheel-256.webp",
-						) <=
-							13 * 1024,
-						"high-density wheel exceeds its compression budget",
-					);
+
 			}
 			if (
 				scenario.deviceScaleFactor === 1 &&
 				scenario.javaScriptEnabled !== false
 			) {
 				for (const [source, budget] of [
-					["assets/images/optimized/wheel.webp", 6 * 1024],
 					[
 						roadPhotoSources[11]?.srcset
 							.split(",")[0]
@@ -346,6 +321,17 @@ test("responsive delivery reduces desktop and mobile bytes and preserves density
 					);
 				}
 			}
+			assert.equal(
+				await page.locator(".road-loader").count(),
+				0,
+				"gallery content stays unobscured while it loads",
+			);
+			assert.ok(
+				[...downloaded.keys()].every(
+					(source) => !/\/wheel(?:-\d+)?\.(?:png|webp)$/.test(source),
+				),
+				"removed loader artwork does not consume delivery bytes",
+			);
 			for (const img of images) {
 				const source = inspectImage(
 					await readFile(new URL(img.src, root)),

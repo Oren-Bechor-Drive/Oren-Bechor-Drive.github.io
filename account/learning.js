@@ -1,4 +1,4 @@
-import "./focus.js";
+import "../js/input-mode.js";
 import { createProtectedPage } from "./protected-page.js";
 import { createQuizAttemptEditor } from "./quiz-attempt-editor.js";
 
@@ -10,6 +10,8 @@ const form = element("[data-quiz-form]");
 const questions = element("[data-questions]");
 const historyList = element("[data-history-list]");
 const editor = createQuizAttemptEditor();
+element("[data-learning-interface]").hidden = false;
+element("[data-sign-in]").href = `login.html?return=${encodeURIComponent(location.pathname)}`;
 let csrf, selectedTopic, nextCursor;
 let busy = false;
 const lifetime = createProtectedPage({
@@ -24,17 +26,17 @@ function node(tag, text, className) {
 	return result;
 }
 function button(label, action) {
-	const result = node("button", label, "account-action account-action-secondary");
+	const result = node("button", label, "account-action btn btn-secondary account-action-secondary");
 	result.type = "button";
 	result.addEventListener("click", () => run(action));
 	return result;
 }
 function message(error) {
 	if (error.status === 401) return "היכנסו לחשבון כדי להמשיך בלמידה.";
-	if (error.status === 404) return "התוכן אינו זמין לחשבון. לתרגול נדרש מנוי פעיל.";
+	if (error.status === 404) return "התוכן אינו זמין לחשבון שלכם כרגע. אפשר להמשיך בנושאי הלימוד ובתרגול החינמי.";
 	if (error.status === 409) return "הניסיון עודכן בחלון אחר. טענו את הניסיון השמור לפני המשך התרגול.";
 	if (error.status === 429) return "בוצעו בקשות רבות. המתינו דקה ונסו שוב.";
-	return "לא הצלחנו להשלים את הפעולה. בדקו את החיבור ונסו שוב.";
+	return "הפעולה לא הושלמה. בדקו את החיבור ונסו שוב.";
 }
 function controls(disabled, editing = false) {
 	const { editable } = editor.view;
@@ -50,12 +52,15 @@ function clearPrivate({ preserveDraft = false } = {}) {
 	busy = false;
 	topics.replaceChildren();
 	element("[data-sections]").replaceChildren();
+	element("[data-section-catalog]").hidden = true;
 	questions.replaceChildren();
 	historyList.replaceChildren();
 	element("[data-explanations]").replaceChildren();
 	element("#quiz-heading").textContent = "";
 	element("[data-score]").textContent = "";
-	for (const selector of ["[data-attempt]", "[data-results]", "[data-history]"]) element(selector).hidden = true;
+	element("[data-score-threshold]").textContent = "";
+	element("[data-retention]").hidden = true;
+	for (const selector of ["[data-attempt]", "[data-results]", "[data-result-summary]", "[data-history]"]) element(selector).hidden = true;
 	saveStatus.textContent = "";
 	controls(false);
 }
@@ -71,12 +76,23 @@ async function run(action, editing = false) {
 			return data;
 		};
 		await action(request);
+		if (status.dataset.failed === "true") {
+			status.dataset.failed = "false";
+			status.setAttribute("role", "status");
+			status.textContent = "אפשר להמשיך בלמידה ובתרגול.";
+			element("[data-reload]").hidden = true;
+		}
 	}, {
 		error(error) {
 			if ([401, 404].includes(error.status)) lifetime.reset();
 			const { attempt, dirty, conflict } = editor.view;
 			element("[data-reload-attempt]").hidden = !conflict;
 			status.textContent = message(error);
+			status.dataset.failed = "true";
+			status.setAttribute("role", "alert");
+			element("[data-reload]").hidden = error.status === 401;
+			element("[data-sign-in]").hidden = error.status !== 401;
+			if (attempt) saveStatus.dataset.failed = "true";
 			if (attempt) saveStatus.textContent = message(error) + (dirty && !conflict ? " התשובות שבחרתם עדיין מופיעות כאן. לחצו על שמירת תשובות כדי לנסות שוב." : "");
 		},
 		finish() {
@@ -91,24 +107,37 @@ function canLeave() {
 	return false;
 }
 async function loadTopics(request) {
+	status.dataset.failed = "false";
+	status.setAttribute("role", "status");
+	element("[data-reload]").hidden = true;
 	const data = await request("learning");
 	const catalog = await request("sections");
+	element("[data-sign-in]").hidden = true;
+	element("[data-retention]").hidden = !(data.paidAccess || data.hadPaidAccess);
+	element("[data-section-catalog]").hidden = false;
 	const sections = element("[data-sections]");
 	sections.replaceChildren();
 	for (const section of catalog.sections) {
-		const link = node("a", section.title + (section.accessLevel === "free" ? " - הגדרה" : " - שיעור"), "account-action account-action-secondary");
+		const card = node("article", undefined, "learning-topic");
+		card.append(node("h3", section.title), node("p", section.accessLevel === "free" ? "קריאה בחשבון חינמי" : "קריאה בגישה המורחבת", "account-hint"));
+		const link = node("a", "פתיחת חומר הקריאה", "account-action btn btn-secondary account-action-secondary");
 		link.href = `reader.html?section=${encodeURIComponent(section.id)}&access=${section.accessLevel}`;
-		sections.append(link);
+		card.append(link);
+		sections.append(card);
 	}
-	if (!catalog.sections.length) sections.append(node("p", "חומרי הלימוד המאושרים עדיין לא פורסמו."));
+	if (!catalog.sections.length) sections.append(node("p", "חומרי הקריאה הזמינים לחשבון עדיין לא פורסמו."));
 	topics.replaceChildren();
-	status.textContent = data.paidAccess ? "בחרו נושא כדי להמשיך בתרגול." : "לתרגול נדרש מנוי פעיל. נושאים שהושלמו נשמרים בחשבון.";
-	if (!data.topics.length) status.textContent += " התרגולים המאושרים עדיין לא פורסמו.";
+	status.textContent = data.paidAccess ? "בחרו חומר קריאה או נושא לתרגול."
+		: "החשבון החינמי מאפשר לקרוא חומרי בסיס שפורסמו כאן. אפשר גם ללמוד ולתרגל ללא מנוי בנושאי הלימוד. הגישה לתרגולים השמורים בחשבון עדיין אינה זמינה בחשבון שלכם.";
+	if (!data.topics.length) status.textContent += " תרגולים לחשבון עדיין לא פורסמו.";
 	for (const topic of data.topics) {
 		const card = node("section", undefined, "learning-topic");
+		card.dataset.topic = topic.key;
 		card.append(node("h2", topic.title));
-		if (topic.completedAt) card.append(node("p", "הושלם"));
+		card.append(node("p", topic.completedAt ? "הושלם" : "עדיין לא סומן כהושלם", topic.completedAt ? "learning-completion" : "account-hint"));
 		if (data.paidAccess) {
+			const last = topic.latestAttempt;
+			card.append(node("p", last ? `הציון האחרון: ${last.score}/${last.questionCount}, ${Math.round(100 * last.score / last.questionCount)}%.` : "עדיין לא הוגש תרגול בנושא זה.", "account-hint"));
 			const actions = node("div", undefined, "learning-actions");
 			actions.append(button("פתיחת התרגול", request => openQuiz(request, topic.key)), button("היסטוריית ניסיונות", request => openHistory(request, topic.key)));
 			card.append(actions);
@@ -129,6 +158,8 @@ async function loadTopics(request) {
 }
 function renderAttempt() {
 	const { attempt: data, answers, conflict, editable } = editor.view;
+	const submitted = data.status === "submitted";
+	saveStatus.dataset.failed = "false";
 	selectedTopic = data.topicKey;
 	element("[data-attempt]").hidden = false;
 	element("[data-history]").hidden = true;
@@ -147,23 +178,34 @@ function renderAttempt() {
 			input.checked = answers[question.id] === option.id;
 			input.disabled = !editable;
 			label.append(input, node("span", option.text));
+			if (submitted) {
+				const result = data.results.find(result => result.questionId === question.id);
+				const correct = option.id === result.correctOptionId;
+				const chosen = answers[question.id] === option.id;
+				label.dataset.correct = String(correct);
+				label.dataset.chosen = String(chosen);
+				if (correct || chosen) label.append(node("span", correct && chosen ? "התשובה הנכונה שבחרתם" : correct ? "התשובה הנכונה" : "התשובה שבחרתם", "learning-answer-marker"));
+			}
 			field.append(label);
 		}
 		questions.append(field);
 	}
-	const submitted = data.status === "submitted";
 	element("[data-draft-actions]").hidden = submitted;
 	element("[data-results]").hidden = !submitted;
+	element("[data-result-summary]").hidden = !submitted;
+	element("[data-quiz-threshold]").hidden = submitted;
 	saveStatus.textContent = submitted ? "הניסיון הוגש ונשמר." : "התשובות נשמרות לאחר כל בחירה. אפשר לחזור ולהמשיך מאוחר יותר.";
 	const explanations = element("[data-explanations]");
 	explanations.replaceChildren();
 	if (submitted) {
-		element("[data-score]").textContent = `הציון שלכם: ${data.score}/${data.questions.length}. ${data.passed ? "עברתם את התרגול." : "אפשר לנסות שוב ללא הגבלה."}`;
+		element("[data-score]").textContent = `הציון שלכם: ${data.score}/${data.questions.length}, ${Math.round(100 * data.score / data.questions.length)}%. ${data.passed ? "עברתם את התרגול." : "אפשר לנסות שוב ללא הגבלה."}`;
+		element("[data-score-threshold]").textContent = `כדי לעבור נדרשות ${Math.ceil(data.questions.length * 0.85)} תשובות נכונות מתוך ${data.questions.length}, לפחות 85%.`;
 		for (const result of data.results) {
 			const question = data.questions.find(question => question.id === result.questionId);
 			const correct = question.options.find(option => option.id === result.correctOptionId);
+			const chosen = question.options.find(option => option.id === answers[question.id]);
 			const item = node("li");
-			item.append(node("strong", result.correct ? "תשובה נכונה" : "תשובה שגויה"), node("p", question.prompt), node("p", `התשובה הנכונה: ${correct.text}`), node("p", result.explanation));
+			item.append(node("strong", result.correct ? "תשובה נכונה" : "תשובה שגויה"), node("p", question.prompt), node("p", `התשובה שבחרתם: ${chosen?.text ?? ""}`), node("p", `התשובה הנכונה: ${correct.text}`), node("p", result.explanation));
 			explanations.append(item);
 		}
 		element("[data-complete]").hidden = !data.passed;
@@ -174,9 +216,11 @@ async function openQuiz(request, key) {
 	editor.load(await request(`quizzes/${encodeURIComponent(key)}/start`, {}));
 	renderAttempt();
 	element("#quiz-heading").focus();
+	element("[data-attempt]").scrollIntoView({ block: "start", behavior: "instant" });
 }
 async function save(request) {
 	if (!editor.view.editable) return;
+	saveStatus.dataset.failed = "false";
 	saveStatus.textContent = "שומרים את התשובות...";
 	if (await editor.save(request)) saveStatus.textContent = "התשובות נשמרו.";
 }

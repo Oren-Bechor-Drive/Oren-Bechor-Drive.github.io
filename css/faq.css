@@ -12,13 +12,13 @@
 .faq-kicker {
 	margin: 0 0 8px;
 	color: var(--secondary);
-	font-size: 14px;
+	font-size: var(--font-small);
 	font-weight: 700;
 }
 
 .faq-heading h2 {
 	margin: 0;
-	font-size: clamp(30px, 4vw, 40px);
+	font-size: clamp(1.875rem, 4vw, 2.5rem);
 	line-height: 1.25;
 	letter-spacing: -0.02em;
 }
@@ -27,7 +27,7 @@
 	max-width: 42ch;
 	margin: 18px 0 0;
 	color: var(--text-soft);
-	font-size: 17px;
+	font-size: 1.0625rem;
 }
 
 .faq-list {
@@ -56,7 +56,7 @@
 	min-height: 72px;
 	padding: 18px 22px;
 	cursor: pointer;
-	font-size: 19px;
+	font-size: 1.1875rem;
 	font-weight: 600;
 	line-height: 1.45;
 	list-style: none;
@@ -104,7 +104,7 @@
 .faq-answer p {
 	margin: 0;
 	color: var(--text-soft);
-	font-size: 16px;
+	font-size: var(--font-body);
 	line-height: 1.7;
 }
 
@@ -120,7 +120,7 @@
 		gap: 14px;
 		min-height: 64px;
 		padding: 16px 18px;
-		font-size: 17px;
+		font-size: 1.0625rem;
 	}
 
 	.faq-answer {
@@ -131,5 +131,18 @@
 @media (prefers-reduced-motion: reduce) {
 	.faq-item[data-motion="pointer"] summary::after {
 		transition: none;
+	}
+}
+
+@media (forced-colors: active) {
+	.faq-item summary::after {
+		forced-color-adjust: none;
+		background: CanvasText;
+	}
+
+	.faq-item summary:focus-visible {
+		outline: 3px solid Highlight;
+		outline-offset: -3px;
+		box-shadow: none;
 	}
 }

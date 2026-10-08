@@ -3,42 +3,60 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#f2f5fc" />
 		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'" />
 		<meta name="referrer" content="no-referrer" />
 		<meta name="robots" content="noindex" />
 		<title>בוחרים סיסמה חדשה - נהיגה נכונה עם אורן בכור</title>
 		<meta name="description" content="בחרו סיסמה שתוכלו לזכור ושיהיה קשה לנחש." />
 		<link rel="icon" href="../assets/images/optimized/favicon.png?v=2" type="image/png" />
-		<link rel="preload" href="../assets/fonts/varela-round-v21-hebrew.woff2" as="font" type="font/woff2" crossorigin />
-		<link rel="preload" href="../assets/fonts/varela-round-v21-latin.woff2" as="font" type="font/woff2" crossorigin />
-		<link rel="stylesheet" href="../css/base.css" />
+		<link rel="preload" href="../assets/fonts/fredoka-v17-hebrew.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="../assets/fonts/fredoka-v17-latin.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="stylesheet" href="../css/base.css?v=3" />
 		<link rel="stylesheet" href="account.css" />
 		<script type="module" src="account.js"></script>
 	</head>
 	<body data-account="reset">
-		<a class="skip-link" href="#main">דילוג לתוכן</a>
+		<a class="skip-link" href="#main">דילוג לתוכן הראשי</a>
 		<main id="main" class="account-shell" tabindex="-1">
 			<a class="account-back" href="../index.html">חזרה לדף הבית</a>
+			<a class="account-brand" href="../index.html"><img src="../assets/images/optimized/course-icon.webp" srcset="../assets/images/optimized/course-icon.webp 42w, ../assets/images/optimized/course-icon-84.webp 84w" sizes="42px" width="42" height="42" alt="" /><span class="account-brand-copy"><strong>נהיגה נכונה</strong><small>עם אורן בכור</small></span></a>
 			<section class="account-card" aria-labelledby="account-heading">
 				<h1 id="account-heading">בוחרים סיסמה חדשה</h1>
 				<p class="account-intro">בחרו סיסמה שתוכלו לזכור ושיהיה קשה לנחש.</p>
 				<noscript><p class="account-feedback">כדי להתחבר לחשבון יש להפעיל JavaScript בדפדפן.</p></noscript>
+				<div class="account-feedback-space">
 				<p class="account-feedback" role="alert" tabindex="-1" hidden></p>
 				<p class="account-feedback" role="status" aria-live="polite" hidden></p>
-				<button class="account-action account-action-secondary account-retry" type="button" data-retry hidden>ניסיון נוסף</button>
-				<form data-account-form>
+				<p class="account-hint" data-startup role="status" hidden>בודקים את החיבור לשירות...</p>
+				</div>
+				<p class="account-links" data-unavailable-library hidden><a href="../course/">לנושאי הלימוד ולתרגול החינמי</a></p>
+				<button class="account-action btn btn-secondary account-action-secondary account-retry" type="button" data-retry hidden>ניסיון נוסף</button>
+				<form data-account-form novalidate hidden>
 					<fieldset class="account-fields">
 						<div class="account-field">
 						<label for="password">סיסמה חדשה</label>
 						<div class="account-password">
-							<input id="password" name="password" type="password" dir="ltr" autocomplete="new-password" minlength="12" maxlength="128" required aria-describedby="password-hint" />
+							<input id="password" aria-invalid="false" name="password" type="password" dir="ltr" autocomplete="new-password" minlength="12" maxlength="72" required aria-describedby="password-hint password-size-hint password-error" />
 							<button class="password-toggle" type="button" data-password-toggle aria-label="הצגת הסיסמה" aria-controls="password" aria-pressed="false"></button>
 						</div>
-						<p id="password-hint" class="account-hint">לפחות 12 תווים. מומלץ לשלב כמה מילים שקל לכם לזכור.</p>
+						<p id="password-error" class="account-field-error" hidden></p>
+						<div class="password-strength" data-password-strength data-score="0" hidden>
+							<div class="password-strength-track" role="meter" aria-label="עמידה בדרישות הסיסמה" aria-valuemin="0" aria-valuemax="1" aria-valuenow="0" aria-valuetext="חסרה עוד דרישה אחת">
+								<span class="password-strength-fill"></span>
+							</div>
+							<p class="password-strength-label" data-password-strength-label aria-live="polite" aria-atomic="true">הזינו סיסמה</p>
+						</div>
+						<ul id="password-hint" class="password-requirements account-hint">
+							<li data-password-rule="length">לפחות 12 תווים, עד 72 תווים באנגלית</li>
+						</ul>
+						<p id="password-size-hint" class="account-hint">בעברית אפשר עד 36 תווים. אימוג'י ותווים אחרים עשויים לקצר את האורך המרבי.</p>
+						<p class="account-hint">אפשר לשלב כמה מילים שקל לכם לזכור. אין חובה לאותיות באנגלית, ספרות או סימנים.</p>
+
 					</div>
-						<button class="account-action" type="submit" disabled>שמירת הסיסמה</button>
+						<button class="account-action btn btn-primary" type="submit" disabled>שמירת הסיסמה</button>
 					</fieldset>
-				</form><p class="account-links"><a href="login.html">חזרה לכניסה לחשבון</a></p><p class="account-links"><a href="recovery.html">בקשת קישור חדש לאיפוס</a></p>
+				</form><p class="account-links"><a href="login.html">חזרה לכניסה לחשבון</a></p><p class="account-links"><a href="recovery.html" data-new-recovery>בקשת קישור חדש לאיפוס</a></p>
 			</section>
 			<p class="account-footer">נהיגה נכונה עם אורן בכור</p>
 		</main>

@@ -7,7 +7,7 @@ import { serveRoadMedia } from "../helpers/road-media.mjs";
 
 const courseRoot = fileURLToPath(new URL("../../course/", import.meta.url));
 
-test("every course page exposes the unavailable profile control on the physical left", async (t) => {
+test("every course page hides the unavailable profile control and keeps public navigation usable", async (t) => {
 	const browser = await chromium.launch();
 	t.after(() => browser.close());
 	const pages = (await discoverSitePages(courseRoot)).map((file) => `course/${file}`);
@@ -35,10 +35,11 @@ test("every course page exposes the unavailable profile control on the physical 
 				/user\.svg/,
 				`${path} uses the local profile icon`,
 			);
-			const profileBox = await profile.boundingBox();
-			const brandBox = await page.locator(".course-brand").boundingBox();
-			assert.ok(profileBox.x < brandBox.x, `${path} places profile on the physical left`);
-			assert.ok(profileBox.width >= 40 && profileBox.height >= 40);
+			assert.equal(await profile.isVisible(), false, `${path} hides the unconfigured account action`);
+			const library = page.locator(".course-library-link");
+			assert.equal(await library.isVisible(), true, `${path} retains public topic navigation`);
+			assert.equal(new URL(await library.getAttribute("href"), page.url()).pathname, "/course/");
+			assert.ok((await library.boundingBox()).height >= 44);
 		}
 		await page.close();
 	}
@@ -106,7 +107,7 @@ test("course pages use the same canvas as the home page and keep reading surface
 	}
 });
 
-test("lesson subsection headings use the amber underline at desktop and mobile widths", async (t) => {
+test("lesson subsection headings use plain text color at desktop and mobile widths", async (t) => {
 	const browser = await chromium.launch();
 	t.after(() => browser.close());
 	for (const width of [1280, 390]) {
@@ -115,17 +116,18 @@ test("lesson subsection headings use the amber underline at desktop and mobile w
 		await page.goto("http://gallery.test/course/right-of-way/");
 		const headings = page.locator(".lesson-content h2");
 		assert.ok((await headings.count()) > 1);
+		const textColor = await page.locator("body").evaluate(element => getComputedStyle(element).color);
 		for (const heading of await headings.all()) {
 			assert.deepEqual(await heading.evaluate((element) => {
 				const style = getComputedStyle(element);
 				return {
 					line: style.textDecorationLine,
-					color: style.textDecorationColor,
+					color: style.color,
 					beforeContent: getComputedStyle(element, "::before").content,
 				};
 			}), {
-				line: "underline",
-				color: "rgb(246, 219, 120)",
+				line: "none",
+				color: textColor,
 				beforeContent: "none",
 			});
 		}

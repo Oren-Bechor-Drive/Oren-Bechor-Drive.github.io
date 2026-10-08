@@ -3,16 +3,17 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#f2f5fc" />
 		<meta
 			http-equiv="Content-Security-Policy"
 			content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
 		/>
 		<meta name="referrer" content="strict-origin-when-cross-origin" />
 		<meta name="robots" content="noindex" />
-		<title>שאלון: טעויות נפוצות בטסט - קורס נהיגה נכונה עם אורן בכור</title>
+		<title>שאלון: טעויות נפוצות בטסט המעשי - נהיגה נכונה עם אורן בכור</title>
 		<meta
 			name="description"
-			content="תרגול בנושא טעויות נפוצות בטסט עם שאלות ממאגר התאוריה, ציון והסברים לתשובות."
+			content="תרגול בנושא טעויות נפוצות בטסט המעשי עם שאלות ממאגר התאוריה, ציון והסברים לתשובות."
 		/>
 		<link
 			rel="icon"
@@ -21,19 +22,19 @@
 		/>
 		<link
 			rel="preload"
-			href="../../../assets/fonts/varela-round-v21-hebrew.woff2"
+			href="../../../assets/fonts/fredoka-v17-hebrew.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
 		/>
 		<link
 			rel="preload"
-			href="../../../assets/fonts/varela-round-v21-latin.woff2"
+			href="../../../assets/fonts/fredoka-v17-latin.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
 		/>
-		<link rel="stylesheet" href="../../../css/base.css" />
+		<link rel="stylesheet" href="../../../css/base.css?v=3" />
 		<link rel="stylesheet" href="../../css/course.css" />
 		<link rel="stylesheet" href="../../css/lesson.css" />
 		<link rel="stylesheet" href="../../css/quiz.css" />
@@ -41,7 +42,7 @@
 		<script type="module" src="../../js/account-link.js"></script>
 	</head>
 	<body>
-		<a class="skip-link" href="#main">דילוג לשאלון</a>
+		<a class="skip-link" href="#main">דילוג לתוכן הראשי</a>
 		<header class="course-header">
 			<div class="course-shell course-header-inner">
 				<a
@@ -65,6 +66,9 @@
 						><small>עם אורן בכור</small></span
 					>
 				</a>
+				<nav class="course-header-nav" aria-label="ניווט ראשי">
+					<a class="course-library-link" href="../../">נושאי הלימוד</a>
+				</nav>
 				<button
 					class="course-profile"
 					type="button"
@@ -85,14 +89,14 @@
 				חזרה לנושא הלימוד</a
 			>
 			<div class="lesson-intro">
-				<h1 data-quiz-title>שאלון: טעויות נפוצות בטסט</h1>
+				<h1 data-quiz-title>שאלון: טעויות נפוצות בטסט המעשי</h1>
 				<p>
-					14 שאלות בנושא. אפשר לעבור בין השאלות ולשנות תשובות לפני ההגשה. כדי לקבל
-					ציון יש לענות על כולן.
+					14 שאלות בנושא. זמן משוער: 14-21 דקות. ענו על השאלות וחזרו להסברים כדי
+					להבין את הבחירות.
 				</p>
 				<p class="quiz-note">
-					תרגול על בסיס מאגר התאוריה של משרד התחבורה. בסיום מוצגים הציון, התשובות
-					הנכונות והסברי הקורס.
+					תרגול על בסיס מאגר התאוריה של משרד התחבורה. בחישוב הציון נדרשת תשובה לכל
+					שאלה. לפני הבדיקה אפשר לשנות תשובות.
 				</p>
 			</div>
 			<p data-quiz-fallback>
@@ -175,9 +179,10 @@
 								אם סומן אופן חנייה מסוים פועלים לפיו. בהיעדרו מעמידים במקביל לשפת הכביש,
 								במקום שמותר לחנות בו.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#control">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0221 ממאגר משרד התחבורה.
+							מקור: שאלה 0221.
 						</p>
 					</fieldset>
 					<fieldset
@@ -237,9 +242,10 @@
 							<p data-quiz-explanation>
 								המרחק נמדד מגלגלי הרכב הקרובים לשפת הכביש, ולא ממרכז הרכב.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#control">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0223 ממאגר משרד התחבורה.
+							מקור: שאלה 0223.
 						</p>
 					</fieldset>
 					<fieldset
@@ -302,9 +308,10 @@
 								בדיקת המראות מסייעת להבין מי מאחור ולהאט באופן צפוי. בסכנה מיידית אין
 								לעכב בלימה נחוצה.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#observation">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							עיבוד לשאלת המקור 0733 ממאגר משרד התחבורה.
+							מקור: שאלה 0733 (נוסח מעודכן).
 						</p>
 					</fieldset>
 					<fieldset
@@ -365,9 +372,10 @@
 							<p data-quiz-explanation>
 								לחיצה על הבלם מונעת תזוזה לא רצויה בעת שילוב הילוך לנסיעה.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#control">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0738 ממאגר משרד התחבורה.
+							מקור: שאלה 0738.
 						</p>
 					</fieldset>
 					<fieldset
@@ -428,9 +436,10 @@
 							<p data-quiz-explanation>
 								מחזיקים את הרכב בבלם הרגל לפני שמשחררים את בלם החנייה.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#control">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0739 ממאגר משרד התחבורה.
+							מקור: שאלה 0739.
 						</p>
 					</fieldset>
 					<fieldset
@@ -490,9 +499,10 @@
 							<p data-quiz-explanation>
 								בודקים שהמקום מותר ומתאים לעצירה לפני שמאטים ומתקרבים אליו.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../../roads-and-lanes/#road-direction">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0766 ממאגר משרד התחבורה.
+							מקור: שאלה 0766.
 						</p>
 					</fieldset>
 					<fieldset
@@ -554,9 +564,10 @@
 								אדם מאחורי הרכב עלול להיעלם מהמראות. בודקים את סביבת הרכב ונוסעים לאחור
 								רק כשצריך ובבטחה.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#control">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0799 ממאגר משרד התחבורה.
+							מקור: שאלה 0799.
 						</p>
 					</fieldset>
 					<fieldset
@@ -616,9 +627,10 @@
 							<p data-quiz-explanation>
 								המראות אינן מכסות כל נקודה סביב הרכב. משלימים את הבדיקה במבט ישיר מתאים.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#observation">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0800 ממאגר משרד התחבורה.
+							מקור: שאלה 0800.
 						</p>
 					</fieldset>
 					<fieldset
@@ -679,9 +691,10 @@
 								נסיעה איטית והסתכלות רצופה נותנות זמן להבחין באדם או במכשול ולהפסיק את
 								התנועה.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#control">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0801 ממאגר משרד התחבורה.
+							מקור: שאלה 0801.
 						</p>
 					</fieldset>
 					<fieldset
@@ -744,9 +757,10 @@
 							<p data-quiz-explanation>
 								אחיזה מתאימה מאפשרת תיקוני היגוי מדויקים בלי לאבד שליטה ברכב.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#control">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0872 ממאגר משרד התחבורה.
+							מקור: שאלה 0872.
 						</p>
 					</fieldset>
 					<fieldset
@@ -806,9 +820,10 @@
 							<p data-quiz-explanation>
 								גם כשזכות הקדימה שלך, ממשיכים לצפות טעויות של אחרים ולהימנע מהתנגשות.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../../priority-hierarchy/#priority">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0903 ממאגר משרד התחבורה.
+							מקור: שאלה 0903.
 						</p>
 					</fieldset>
 					<fieldset
@@ -870,9 +885,10 @@
 								פתיחת דלת או יציאה מהרכב עלולות לפגוע ברוכב או ברכב חולף. בודקים לפני
 								הפתיחה.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#control">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0951 ממאגר משרד התחבורה.
+							מקור: שאלה 0951.
 						</p>
 					</fieldset>
 					<fieldset
@@ -932,9 +948,10 @@
 							<p data-quiz-explanation>
 								בלם החנייה מיועד להחזיק את הרכב כשהוא חונה ולמנוע הידרדרות.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#control">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 1045 ממאגר משרד התחבורה.
+							מקור: שאלה 1045.
 						</p>
 					</fieldset>
 					<fieldset
@@ -995,9 +1012,10 @@
 							<p data-quiz-explanation>
 								גובה מתאים של משענת הראש מסייע להגן על הראש והצוואר בפגיעה מאחור.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#control">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 1765 ממאגר משרד התחבורה.
+							מקור: שאלה 1765.
 						</p>
 					</fieldset>
 				</form>
@@ -1010,13 +1028,13 @@
 				></p>
 				<div class="quiz-controls" data-quiz-controls hidden>
 					<button
-						class="quiz-previous"
+						class="quiz-previous btn btn-secondary"
 						type="button"
 						data-quiz-previous
 					>
 						השאלה הקודמת
 					</button>
-					<button class="course-button" type="button" data-quiz-next>
+					<button class="course-button btn btn-primary" type="button" data-quiz-next>
 						השאלה הבאה
 					</button>
 				</div>
@@ -1028,12 +1046,13 @@
 				hidden
 			>
 				<h2 id="quiz-result-title" tabindex="-1">תוצאות השאלון</h2>
+				<p class="quiz-score" data-quiz-score aria-hidden="true"></p>
 				<p data-quiz-count></p>
-				<p>אפשר לעבור על התשובות וההסברים או להתחיל ניסיון חדש.</p>
-				<p>זהו תרגול עצמי, ולא מבחן תאוריה רשמי. התוצאה אינה נשמרת בחשבון.</p>
+				<p data-quiz-threshold></p>
+				<p class="quiz-result-note">זהו תרגול עצמי, ולא מבחן תאוריה רשמי. התוצאה אינה נשמרת בחשבון.</p>
 				<div class="quiz-result-actions">
-					<button class="course-button" type="button" data-quiz-review>חזרה לשאלות</button>
-					<button class="quiz-previous" type="button" data-quiz-retry>ניסיון חדש</button>
+					<button class="course-button btn btn-primary" type="button" data-quiz-review>חזרה לשאלות</button>
+					<button class="quiz-previous btn btn-secondary" type="button" data-quiz-retry>ניסיון חדש</button>
 					<a data-lesson-link href="../#topic">חזרה לנושא הלימוד</a>
 				</div>
 			</section>
@@ -1044,14 +1063,17 @@
 					ברישיון <a href="https://opendefinition.org/licenses/cc-by/">Creative Commons Attribution</a>.
 				</p>
 				<p>
-					הותאמו העיצוב וסימני הפיסוק. שאלות שנוסחן עודכן מסומנות כעיבוד לשאלת
-					המקור. השיוך לנושאים וההסברים הם של הקורס, ואינם מטעם משרד התחבורה.
+					העיצוב והפיסוק הותאמו לאתר. שאלות שנוסחן עודכן מסומנות כך. השיוך לנושאים
+					וההסברים הם של הקורס, ואינם מטעם משרד התחבורה.
 				</p>
 			</aside>
 		</main>
 		<footer class="course-shell course-footer">
-			<p>אפשר לתרגל כל נושא בכל זמן. התרגול אינו נועל את המשך הלמידה.</p>
-			<a href="../../">לכל נושאי הלימוד</a>
+			<p>נהיגה נכונה עם אורן בכור.</p>
+			<nav aria-label="קישורי האתר">
+				<a href="../../../index.html">דף הבית</a>
+				<a href="../../">נושאי הלימוד</a>
+			</nav>
 		</footer>
 	</body>
 </html>

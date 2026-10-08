@@ -109,7 +109,7 @@ for (const [width, late] of [
 						.ready !== "true",
 			);
 		}
-		assert.equal(await page.locator(".road-loader").isVisible(), false);
+		assert.equal(await page.locator(".road-loader").count(), 0);
 		const leftBefore = await page.evaluate((late) => {
 			if (late === "resize") return null;
 			const animation = document

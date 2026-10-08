@@ -1,12 +1,4 @@
-.site-header {
-	position: sticky;
-	inset-block-start: 0;
-	z-index: 10;
-	height: var(--header-height);
-	border-block-end: 1px solid rgb(190 201 223 / 0.65);
-	background: rgb(242 245 252 / 0.94);
-	backdrop-filter: blur(14px);
-}
+
 
 .nav-shell {
 	display: flex;
@@ -30,7 +22,7 @@
 	height: 42px;
 	flex: 0 0 42px;
 	border-radius: 12px;
-	box-shadow: inset 0 0 0 1px rgb(30 57 120 / 0.1);
+	box-shadow: var(--shadow-logo);
 }
 
 .brand-copy {
@@ -39,12 +31,12 @@
 }
 
 .brand-copy strong {
-	font-size: 15px;
+	font-size: var(--font-label);
 }
 
 .brand-copy small {
 	color: var(--text-soft);
-	font-size: 12px;
+	font-size: .8125rem;
 }
 
 .site-menu {
@@ -59,7 +51,7 @@
 	min-height: 44px;
 	align-content: center;
 	color: var(--text-soft);
-	font-size: 14px;
+	font-size: var(--font-small);
 	font-weight: 600;
 	text-decoration: none;
 }
@@ -77,14 +69,14 @@
 	content: "";
 	transform: scaleX(0);
 	transform-origin: right;
-	transition: transform 180ms var(--ease-out);
+	transition: transform var(--duration-base) var(--ease-out);
 }
 
 .nav-action {
 	padding-inline: 18px;
 	border: 0;
 	border-radius: var(--radius-control);
-	background: var(--primary-bright);
+	background: var(--primary);
 	color: var(--on-primary) !important;
 }
 
@@ -98,10 +90,16 @@
 	display: none;
 	min-width: 64px;
 	min-height: 44px;
-	border: 1px solid var(--border-strong);
+	border: 1px solid var(--control-border);
 	border-radius: var(--radius-control);
 	background: var(--white);
 	color: var(--text);
 	cursor: pointer;
-	font-weight: 700;
+	font-weight: 600;
+}
+
+@media (forced-colors: active) {
+	.nav-action {
+		border: 1px solid transparent;
+	}
 }

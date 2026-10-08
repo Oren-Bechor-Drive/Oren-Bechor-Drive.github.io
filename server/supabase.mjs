@@ -35,6 +35,7 @@ export function createSupabaseProvider({ url, publishableKey, secretKey, fetcher
 		completeTopic: (token, topicKey) => rpc(token, "complete_my_topic", { p_topic_key: topicKey }),
 		password: (email, password) => request("/auth/v1/token?grant_type=password", { method: "POST", body: { email, password } }),
 		signup: (email, password, flow) => request(`/auth/v1/signup?redirect_to=${encodeURIComponent(flow.redirect)}`, { method: "POST", body: { email, password, ...pkce(flow) } }),
+		resend: (email, flow) => request(`/auth/v1/resend?redirect_to=${encodeURIComponent(flow.redirect)}`, { method: "POST", body: { type: "signup", email, ...pkce(flow) } }),
 		recover: (email, flow) => request(`/auth/v1/recover?redirect_to=${encodeURIComponent(flow.redirect)}`, { method: "POST", body: { email, ...pkce(flow) } }),
 		google(flow) {
 			const target = new URL("/auth/v1/authorize", base);

@@ -40,6 +40,35 @@ const firstQuiz = "course/learning-foundations/quiz/index.html";
 const lastQuiz = "course/licensing-and-points/quiz/index.html";
 const lastLesson = "course/licensing-and-points/index.html";
 
+test("prepared library content is validated without restoring its obsolete owned region", async t => {
+	const f = await fixture(t);
+	const publish = await publisher();
+	const libraryFile = "course/index.html";
+	const library = await f.read(libraryFile);
+	const obsolete = library.replace(/(<[^>]*data-topic-question-count[^>]*>)([^<]*)/,
+		'$1<a class="subject-learn" href="missing-topic/">תוכן ישן להחלפה</a>');
+	assert.notEqual(obsolete, library);
+	await f.write(libraryFile, obsolete);
+	const before = await f.snapshot();
+	await assert.rejects(publish(f.root, { check: true }), /Outdated authored quiz:.*course\/index.html/);
+	assert.deepEqual(await f.snapshot(), before);
+	const result = await publish(f.root);
+	assert.ok(result.changedFiles.includes(libraryFile));
+	assert.equal((await f.read(libraryFile)).includes("missing-topic/"), false);
+	assert.deepEqual((await readLearningContent(f.root)).issues, []);
+	await publish(f.root, { check: true });
+
+	// An invalid link outside the owned region must still reject all writes.
+	const dom = new JSDOM(library);
+	try {
+		dom.window.document.querySelector(".subject-learn").setAttribute("href", "missing-retained-topic/");
+		await f.write(libraryFile, dom.serialize());
+	} finally { dom.window.close(); }
+	const retainedBefore = await f.snapshot();
+	await assert.rejects(publish(f.root), /Invalid prepared learning content:[\s\S]*learning link 'missing-retained-topic\/'/);
+	assert.deepEqual(await f.snapshot(), retainedBefore);
+});
+
 test("CLI check detects stale description regardless of attribute order and never writes", async t => {
 	const f = await fixture(t);
 	await f.write(firstQuiz, (await f.read(firstQuiz)).replace(
@@ -158,12 +187,13 @@ test("root-scoped publication preserves reviewed source fidelity, escaping, medi
 	question.options[0] = "כן, <strong>כמו מקור</strong> & 'ציטוט'.";
 	question.explanation = 'הסבר עם <script>דוגמה</script>, "מירכאות" & $&.';
 	question.topicId = 'licensing-and-points';
+	question.lessonSectionId = 'new-driver';
 	await f.write(contentFile, JSON.stringify(f.bank));
 	const result = await publish(f.root);
 	assert.equal(result.questionCount, 140);
 	assert.equal(result.topics.find(topic => topic.id === 'learning-foundations').questionCount, 8);
 	assert.equal(result.topics.find(topic => topic.id === 'licensing-and-points').questionCount, 18);
-	assert.deepEqual(result.changedFiles.sort(), [firstQuiz, 'course/learning-foundations/index.html', lastQuiz, lastLesson].sort());
+	assert.deepEqual(result.changedFiles.sort(), ['course/index.html', firstQuiz, 'course/learning-foundations/index.html', lastQuiz, lastLesson].sort());
 	const { quizzes, issues } = await readLearningContent(f.root);
 	assert.deepEqual(issues, []);
 	const published = quizzes.flatMap(quiz => quiz.questions.map(question => ({ ...question, file: quiz.file })));
@@ -185,7 +215,7 @@ test("root-scoped publication preserves reviewed source fidelity, escaping, medi
 			for (const source of f.bank.questions.filter(question => question.topicId === topic.id)) {
 				const fieldset = dom.window.document.getElementById(`question-${source.officialId}`);
 				assert.equal(normalize(fieldset.querySelector('.quiz-source').textContent),
-					`${source.adaptation ? 'עיבוד לשאלת המקור' : 'שאלת מקור'} ${source.officialId} ממאגר משרד התחבורה.`);
+					`מקור: שאלה ${source.officialId}${source.adaptation ? ' (נוסח מעודכן)' : ''}.`);
 				assert.equal(fieldset.querySelectorAll('script, strong').length, 0);
 				const media = [...fieldset.querySelectorAll('img')];
 				assert.equal(media.length, source.imageUrls.length);
@@ -203,6 +233,37 @@ test("root-scoped publication preserves reviewed source fidelity, escaping, medi
 	assert.deepEqual(await f.snapshot(), after);
 });
 
+test("review links can reach another authored topic without moving the question or changing its content", async t => {
+	const f = await fixture(t);
+	const publish = await publisher();
+	const before = await f.snapshot();
+	const originalQuiz = await f.read(lastQuiz);
+	const question = f.bank.questions.find(question => question.officialId === '0003');
+	question.lessonTopicId = 'learning-foundations';
+	question.lessonSectionId = 'definitions';
+	await f.write(contentFile, JSON.stringify(f.bank));
+	assert.deepEqual((await publish(f.root)).changedFiles, [lastQuiz]);
+	assert.equal(await f.read(lastQuiz), originalQuiz.replace('href="../#new-driver"', 'href="../../learning-foundations/#definitions"'));
+	const after = await f.snapshot();
+	for (const [index, file] of f.pages.entries())
+		if (file !== lastQuiz) assert.equal(after[index], before[index], file);
+	assert.deepEqual((await publish(f.root, { check: true })).changedFiles, []);
+});
+
+test("a missing reviewed target anchor rejects cross-topic publication before any writes", async t => {
+	const f = await fixture(t);
+	const publish = await publisher();
+	const question = f.bank.questions.find(question => question.officialId === '0003');
+	question.lessonTopicId = 'learning-foundations';
+	question.lessonSectionId = 'definitions';
+	await f.write(contentFile, JSON.stringify(f.bank));
+	const target = 'course/learning-foundations/index.html';
+	await f.write(target, (await f.read(target)).replace('id="definitions"', 'id="definitions-removed"'));
+	const before = await f.snapshot();
+	await assert.rejects(publish(f.root), /0003.*lessonSectionId.*learning-foundations/);
+	assert.deepEqual(await f.snapshot(), before);
+});
+
 test("invalid reviewed input and media provenance are rejected before authored writes", async t => {
 	const f = await fixture(t);
 	const publish = await publisher();
@@ -212,6 +273,11 @@ test("invalid reviewed input and media provenance are rejected before authored w
 		['duplicate topic', bank => bank.topics.push(bank.topics[0]), /topic/],
 		['unsafe topic path', bank => bank.topics[0].id = '../outside', /topic/],
 		['blank choice', bank => bank.questions[0].options[0] = ' ', /0003/],
+		['invalid lesson section', bank => bank.questions[0].lessonSectionId = 'missing', /0003.*lessonSectionId/],
+		['unknown lesson topic', bank => bank.questions[0].lessonTopicId = 'missing', /0003.*lessonTopicId/],
+		['unsafe lesson topic', bank => bank.questions[0].lessonTopicId = '../outside', /0003.*lessonTopicId/],
+		['null lesson topic', bank => bank.questions[0].lessonTopicId = null, /0003.*lessonTopicId/],
+		['anchor belongs to another lesson', bank => bank.questions[0].lessonTopicId = 'learning-foundations', /0003.*lessonSectionId.*learning-foundations/],
 		['unknown source reference', bank => bank.questions[0].sourceIds.push('missing-source'), /0003.*source/],
 		['missing publisher provenance', bank => delete bank.source, /source/],
 		['unsupported attribution license', bank => bank.source.licenseId = 'unlicensed', /license/],

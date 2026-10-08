@@ -55,7 +55,7 @@ async function deployedFetch(url, options = {}) {
 	let body;
 	try { body = await readFile(new URL(file, root)); }
 	catch { body = await readFile(new URL("404.html", root)); status = 404; }
-	return new Response(body, { status, headers: { "content-type": file.endsWith(".html") ? "text/html" : file.endsWith(".xml") ? "application/xml" : file.endsWith(".jpg") ? "image/jpeg" : "text/plain" } });
+	return new Response(body, { status, headers: { "content-type": file.endsWith(".html") ? "text/html" : file.endsWith(".xml") ? "application/xml" : file.endsWith(".jpg") ? "image/jpeg" : file.endsWith(".png") ? "image/png" : "text/plain" } });
 }
 
 test("production gate verifies deployed HTML, verification values, crawler files, previews and real 404s", async () => {

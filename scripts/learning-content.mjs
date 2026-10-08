@@ -249,7 +249,7 @@ export async function readLearningContent(rootDir) {
 				id: element.id,
 				title,
 				videoCount: element.querySelectorAll(
-					'.video-placeholder[role="img"][aria-label]',
+					'.video-placeholder[role="img"][aria-label], .video-placeholder[role="note"]',
 				).length,
 			};
 			sections.push(section);
@@ -262,6 +262,7 @@ export async function readLearningContent(rootDir) {
 			.map((link) => link.getAttribute("href"))
 			.sort();
 		if (
+			!(sections.length === 1 && !document.querySelector(".lesson-contents")) &&
 			JSON.stringify(contents) !==
 			JSON.stringify(sections.map((section) => `#${section.id}`).sort())
 		)

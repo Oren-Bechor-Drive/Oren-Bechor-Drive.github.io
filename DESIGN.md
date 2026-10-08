@@ -2,124 +2,105 @@
 name: Solar Serenity
 colors:
   surface: '#f2f5fc'
-  surface-dim: '#cfd8ea'
-  surface-bright: '#f2f5fc'
-  surface-container-lowest: '#ffffff'
-  surface-container-low: '#ecf0fa'
+  surface-low: '#ecf0fa'
   surface-container: '#e5ebf7'
-  surface-container-high: '#dee5f3'
-  surface-container-highest: '#d7e0f0'
-  on-surface: '#131d1f'
-  on-surface-variant: '#3e494a'
-  inverse-surface: '#283234'
-  inverse-on-surface: '#eaf0ff'
-  outline: '#6e797a'
-  outline-variant: '#bec9df'
-  surface-tint: '#264796'
+  surface-high: '#dee5f3'
+  white: '#ffffff'
+  text: '#131d1f'
+  text-soft: '#3e494a'
+  text-muted: '#596568'
   primary: '#264796'
   on-primary: '#ffffff'
-  primary-container: '#dbe5ff'
-  on-primary-container: '#1e3978'
-  inverse-primary: '#b0c3ef'
+  primary-hover: '#1e3978'
+  primary-wash: '#edf1fa'
   secondary: '#705d00'
-  on-secondary: '#ffffff'
-  secondary-container: '#fade7b'
-  on-secondary-container: '#756103'
+  secondary-bright: '#f6db78'
+  secondary-wash: '#fffdf5'
   tertiary: '#9e3f41'
-  on-tertiary: '#ffffff'
-  tertiary-container: '#ffa7a5'
-  on-tertiary-container: '#882e31'
-  error: '#ba1a1a'
-  on-error: '#ffffff'
-  error-container: '#ffdad6'
-  on-error-container: '#93000a'
-  primary-fixed: '#dbe5ff'
-  primary-fixed-dim: '#b0c3ef'
-  on-primary-fixed: '#0d1b40'
-  on-primary-fixed-variant: '#203c7e'
-  secondary-fixed: '#fde17e'
-  secondary-fixed-dim: '#dfc565'
-  on-secondary-fixed: '#221b00'
-  on-secondary-fixed-variant: '#554600'
-  tertiary-fixed: '#ffdad8'
-  tertiary-fixed-dim: '#ffb3b1'
-  on-tertiary-fixed: '#410007'
-  on-tertiary-fixed-variant: '#7f282b'
-  background: '#f2f5fc'
-  on-background: '#131d1f'
-  surface-variant: '#d7e0f0'
+  tertiary-bright: '#d96c6c'
+  tertiary-wash: '#fdf3f3'
+  border: '#dfe5f0'
+  border-strong: '#c5cfe2'
+  border-card: 'rgb(197 207 226 / 0.72)'
+  control-border: '#75839c'
+  success: '#246a45'
+  success-wash: '#edf6f0'
+  amber-text: '#554600'
+  header-surface: 'rgb(242 245 252 / 0.94)'
+  header-border: 'rgb(190 201 223 / 0.65)'
+  inverse-text: '#eaf0ff'
 typography:
   display-lg:
-    fontFamily: '"Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif'
-    fontSize: 56px
-    fontWeight: '700'
-    lineHeight: 64px
+    fontFamily: '"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif'
+    fontSize: 3.5rem
+    fontWeight: '600'
+    lineHeight: 4rem
     letterSpacing: -0.025em
   display-lg-mobile:
-    fontFamily: '"Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif'
-    fontSize: 36px
-    fontWeight: '700'
-    lineHeight: 44px
+    fontFamily: '"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif'
+    fontSize: 2.25rem
+    fontWeight: '600'
+    lineHeight: 2.75rem
     letterSpacing: -0.02em
   headline-lg:
-    fontFamily: '"Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif'
-    fontSize: 36px
+    fontFamily: '"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif'
+    fontSize: 2.25rem
     fontWeight: '600'
-    lineHeight: 44px
+    lineHeight: 2.75rem
     letterSpacing: -0.02em
   headline-lg-mobile:
-    fontFamily: '"Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif'
-    fontSize: 28px
+    fontFamily: '"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif'
+    fontSize: 1.75rem
     fontWeight: '600'
-    lineHeight: 36px
+    lineHeight: 2.25rem
     letterSpacing: -0.015em
   headline-md:
-    fontFamily: '"Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif'
-    fontSize: 24px
+    fontFamily: '"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif'
+    fontSize: 1.5rem
     fontWeight: '600'
-    lineHeight: 32px
+    lineHeight: 2rem
     letterSpacing: -0.01em
   headline-sm:
-    fontFamily: '"Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif'
-    fontSize: 20px
+    fontFamily: '"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif'
+    fontSize: 1.25rem
     fontWeight: '600'
-    lineHeight: 28px
+    lineHeight: 1.75rem
     letterSpacing: -0.005em
   body-lg:
-    fontFamily: '"Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif'
-    fontSize: 18px
+    fontFamily: '"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif'
+    fontSize: 1.125rem
     fontWeight: '400'
-    lineHeight: 28px
+    lineHeight: 1.75rem
     letterSpacing: 0em
   body-md:
-    fontFamily: '"Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif'
-    fontSize: 16px
+    fontFamily: '"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif'
+    fontSize: 1rem
     fontWeight: '400'
-    lineHeight: 26px
+    lineHeight: 1.625rem
     letterSpacing: 0em
   body-sm:
-    fontFamily: '"Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif'
-    fontSize: 14px
+    fontFamily: '"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif'
+    fontSize: 0.875rem
     fontWeight: '400'
-    lineHeight: 22px
+    lineHeight: 1.375rem
     letterSpacing: 0em
   label-lg:
-    fontFamily: '"Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif'
-    fontSize: 15px
+    fontFamily: '"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif'
+    fontSize: 0.9375rem
     fontWeight: '600'
-    lineHeight: 20px
+    lineHeight: 1.25rem
     letterSpacing: 0.01em
   label-md:
-    fontFamily: '"Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif'
-    fontSize: 13px
+    fontFamily: '"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif'
+    fontSize: 0.8125rem
     fontWeight: '600'
-    lineHeight: 18px
+    lineHeight: 1.125rem
     letterSpacing: 0.02em
   label-sm:
-    fontFamily: '"Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif'
-    fontSize: 11px
+    fontFamily: '"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif'
+    fontSize: 0.8125rem
     fontWeight: '600'
-    lineHeight: 16px
+    lineHeight: 1rem
     letterSpacing: 0.03em
 rounded:
   sm: 0.25rem
@@ -155,31 +136,31 @@ The aesthetic marries Scandinavian white-space restraint with optimistic, tactil
 
 ## Colors
 
-The primary blue `#264796` is sampled from the user-supplied learner-sign reference. Primary actions and the course icon and stop-sign artwork use this blue; hover states use `#1e3978`, and filled primary controls use white text. All primary tints and blue-tinted surfaces derive from this hue. Amber and coral retain their secondary and semantic roles.
+The primary blue `#264796` is sampled from the user-supplied learner-sign reference. Primary actions and the course icon use this blue; the decorative stop sign uses the approved red artwork; hover states use `#1e3978`, and filled primary controls use white text. All primary tints and blue-tinted surfaces derive from this hue. Amber and coral retain their secondary and semantic roles.
 
 The palette transitions former deeper notes into luminous sunny tones, while elevating the chroma of the blue, yellow/amber, and coral accents for heightened presence against luminous white and soft off-white canvas surfaces.
 
 ### Primary Color (`#264796` - Reference Blue)
 The primary driver for high-priority actions, focus rings, and primary interactive components. Luminous and modern, it provides crisp contrast and clear visual weight against clean white canvases. Its tint surface wash is `#edf1fa`.
 
-### Secondary Color (`#F6DB78` - Warm Sunny Amber)
-This warm golden amber serves as the secondary anchor. It is used for secondary actions, highlight ribbons, verified indicators, and warm positive feedback. Its ambient companion surface is `#FFFDF5`.
+### Amber Highlight (`--secondary-bright`, `#f6db78`)
+Use amber for welcome-page emphasis, the instructor band and lesson takeaways. Its companion surface is `--secondary-wash` (`#fffdf5`); dark amber text uses `--secondary` (`#705d00`). Secondary action buttons use the blue outlined variant. Passing results use success green.
 
-### Tertiary Color (`#D96C6C` - Poppy Coral)
-A saturated, lively coral red that delivers punchy notifications, alerts, and critical indicators without feeling clinical or aggressive. Paired with `#FDF3F3` for soft container fills.
+### Error Coral (`--tertiary`, `#9e3f41`)
+Use `--tertiary` for error text and incorrect-answer borders, `--tertiary-wash` (`#fdf3f3`) for error fills, and `--tertiary-bright` (`#d96c6c`) for supporting decorative borders. Text identifies errors independently of color.
 
 ### Neutral & Surfaces
 - **Canvas Base (`#FFFFFF`):** High-luminescence ground layer for cards, inputs, and modal dialogs.
-- **Backdrop Surface (`#f5f7fb`):** Soft, clean, ultra-light blue-gray for canvas grounds, sidebars, and grouped lists.
-- **Borders:** Low-noise framing via `#dfe5f0` (subtle) and `#c5cfe2` (structural/hover).
-- **Text:** Deep charcoal `#141D1E` for headers and body copy; slate `#687375` for labels; and `#8C9799` for tertiary metadata.
+- **Backdrop Surface (`#f2f5fc`):** Soft, clean, ultra-light blue-gray for canvas grounds, sidebars, and grouped lists.
+- **Borders:** Card separators use `--border` (`#dfe5f0`) and `--border-strong` (`#c5cfe2`). Interactive boundaries use `--control-border` (`#75839c`) for at least 3:1 contrast on white and pale controls, including hover.
+- **Text:** Deep charcoal `#131D1F` for headers and body copy; slate `#596568` for labels; and `#596568` for tertiary metadata.
 
 ## Typography
 
-Use `"Varela Round", Arial, "Helvetica Neue", Helvetica, sans-serif` for all Hebrew and Latin text. Varela Round uses locally hosted WOFF2 subsets from Google Fonts, declared in `css/base.css` with `font-display: swap`. The HTML preloads the Hebrew and Latin subsets.
+Use `"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif` for all Hebrew and Latin text. Fredoka uses locally hosted WOFF2 subsets from Google Fonts, declared in `css/base.css` with `font-display: swap`. The HTML preloads the Hebrew and Latin subsets. Preserve the supplied Varela Round bytes and original license; active font provenance is documented in `assets/fonts/README.md`.
 
 ### Hierarchy & Typesetting
-- **Display & Headlines:** Use Varela Round at the documented sizes and weights, checking Hebrew line wrapping at desktop and mobile widths. Varela Round provides only weight `400`; browsers synthesize the documented `600` and `700` emphasis.
+- **Display & Headlines:** Use Fredoka at the documented sizes and weights, checking Hebrew line wrapping at desktop and mobile widths. Fredoka provides real variable weights `400` through `700`; use `400` for sustained reading and `500` or `600` for headings and controls.
 - **Body & Continuous Text:** Retains an airy 1.55 to 1.65 line-height ratio, preventing reader fatigue and harmonizing with spacious layouts.
 - **Labels & Micro-copy:** Micro-typography shifts to semi-bold weights (`600`) with subtle positive tracking (`+0.01em` to `+0.03em`), guaranteeing crisp legibility in badges, buttons, and navigation tags.
 
@@ -201,7 +182,7 @@ A fluid responsive grid paired with rhythmic spatial steps prioritizes spaciousn
 Visual hierarchy uses tonal surface layering combined with soft, warm-tinted ambient drop shadows rather than heavy borders.
 
 ### Elevation Levels
-- **Level 0 (Inset Ground):** Surface `#f5f7fb` with an inner 1px border `#dfe5f0`. Ideal for input wells, search panels, and code callouts.
+- **Level 0 (Inset Ground):** Surface `#f2f5fc` with an inner 1px border `#dfe5f0`. Ideal for input wells, search panels, and code callouts.
 - **Level 1 (Default Containers):** Solid `#FFFFFF` card surface, 1px border `#dfe5f0`, and diffused shadow: `0 2px 8px -2px rgba(20, 29, 30, 0.04), 0 1px 3px 0 rgba(20, 29, 30, 0.02)`.
 - **Level 2 (Hovered Cards & Dropdowns):** Solid `#FFFFFF`, 1px border `#c5cfe2`, and elevated ambient shadow: `0 12px 28px -6px rgba(20, 29, 30, 0.07), 0 4px 10px -2px rgba(20, 29, 30, 0.03)`.
 - **Level 3 (Modals & Float Overlays):** Solid `#FFFFFF`, 1px border `#c5cfe2`, and broad light spread: `0 24px 48px -12px rgba(20, 29, 30, 0.09), 0 8px 20px -4px rgba(38, 71, 150, 0.06)`.
@@ -219,9 +200,9 @@ The design system maintains a balanced, rounded shape profile (`roundedness: 2`)
 ## Components
 
 ### Buttons
-- **Primary:** Solid royal blue (`#264796`) background, `#FFFFFF` text, `0.5rem` border radius, padding 10px 20px. Hover: `#1e3978`. Focus: 3px outer glow in `rgba(38, 71, 150, 0.25)`.
-- **Secondary (Sunny Accent):** Solid warm amber (`#F6DB78`) fill with `#141D1E` text for warm conversion triggers, or sunny surface fill (`#FFFDF5`) with `#806C14` text for low-friction actions. Hover: `#E5CA61` (on solid) or `#FEF9E6` (on wash).
-- **Tertiary / Ghost:** Borderless `#FFFFFF` surface, `#141D1E` text with subtle border `#dfe5f0`. Hover: `#f5f7fb` background.
+- **Primary:** Shared `.btn.btn-primary`, blue fill, white text, 8px radius, 10px 20px padding and a 44px minimum target. Hover uses `--primary-hover`. Keyboard focus uses a solid 3px blue outline with 4px offset; pointer input keeps it hidden.
+- **Secondary:** Shared `.btn.btn-secondary`, white fill, blue text and `--control-border` boundary. Match primary geometry and weight 600. Amber remains an emphasis color.
+- **Tertiary / Ghost:** Borderless `#FFFFFF` surface, `#131D1F` text with subtle border `#dfe5f0`. Hover: `#f2f5fc` background.
 
 ### Cards
 - **Base Style:** Pure `#FFFFFF` surface with Level 1 elevation and 1px `#dfe5f0` border.
@@ -232,94 +213,94 @@ The design system maintains a balanced, rounded shape profile (`roundedness: 2`)
 
 Use the selected Font Awesome Classic Solid family for interface arrows and chevrons: `arrow-right-long`, `arrow-left-long`, `arrow-down-long`, `arrow-up-long`, `chevron-up`, `chevron-down`, `chevron-left`, and `chevron-right`. The locally hosted SVGs and upstream license live in `assets/icons/directions/`. Shared CSS masks inherit each control's color and use 16px boxes. Keep directions explicit for Hebrew RTL navigation, use the actual up/down shapes for disclosure states, and hide decorative icons from assistive technology. This applies to navigation links, topic controls, and the closed quiz question selector. Supplied road-sign artwork is separate from interface iconography.
 
-Course-only utility icons use the same local Font Awesome Classic Solid source. `assets/icons/interface/user.svg` appears inside the unavailable profile circle, and `magnifying-glass.svg` marks the library search field. Render both as CSS masks in the current interface color; the visible disabled profile control owns the Hebrew accessible label, while its glyph and the search glyph remain decorative.
+Course-only utility icons use the same local Font Awesome Classic Solid source. `assets/icons/interface/user.svg` is available for configured account navigation, and `magnifying-glass.svg` marks the library search field. Render both as CSS masks in the current interface color and keep glyphs decorative. Hide profile navigation in static pages until account support is configured.
 
 ### Chips & Badges
-- **Sunny Amber (Active / Highlighting / Success):** Background `#FFFDF5`, text `#806C14`, border `1px solid rgba(246, 219, 120, 0.30)`.
+- **Sunny Amber (Highlighting):** Background `#FFFDF5`, text `#705D00`, border `1px solid rgba(246, 219, 120, 0.30)`.
 - **Reference Blue (Informational):** Background `#edf1fa`, text `#264796`, border `1px solid rgba(38, 71, 150, 0.25)`.
-- **Poppy Coral (Alerts / Critical):** Background `#FDF3F3`, text `#B84646`, border `1px solid rgba(217, 108, 108, 0.25)`.
-- **Neutral:** Background `#f5f7fb`, text `#687375`, border `1px solid #dfe5f0`.
+- **Poppy Coral (Alerts / Critical):** Background `#FDF3F3`, text `#9e3f41`, border `1px solid rgba(217, 108, 108, 0.25)`.
+- **Neutral:** Background `#f2f5fc`, text `#596568`, border `1px solid #dfe5f0`.
 - Formatted as full pills (`9999px`), `label-sm` font, padding 4px 10px.
 
 ### Input Fields & Selects
-- **Text Inputs:** `#FFFFFF` fill, 1px border `#dfe5f0`, `0.5rem` radius, padding 12px 16px, text `#141D1E`, placeholder `#8C9799`. Reserve the outer focus indicator for keyboard navigation, following Focus behavior below.
+- **Text Inputs:** `#FFFFFF` fill, 1px border `--control-border`, `0.5rem` radius, padding 12px 16px, text `#131D1F`, placeholder `#596568`. Reserve the outer focus indicator for keyboard navigation, following Focus behavior below.
 
 ### Focus behavior
 
 - Mouse clicks and touch taps must not display focus rings, outlines, or focus halos on fields, buttons, or links. Clicking a label and typing in a pointer-focused field must also keep the ring hidden.
 - Preserve native focus, caret placement, selection, editing and activation. Never blur a clicked control or prevent its default pointer action just to hide an outline. Do not autofocus fields on page load.
-- Tab and Shift+Tab navigation must show a clear focus indicator. Do not globally remove outlines. Keep the baseline `:focus-visible` styling when JavaScript is disabled or fails.
-- `:focus-visible` alone is insufficient for text and number inputs because browsers can match it after a click. Account pages share `account/focus.js` and the input-mode rules in `account/account.css`; import the helper from each account entry module instead of duplicating listeners. A pointer event hides rings; Tab restores them. Ordinary typing does not change the input mode.
+- Tab and Shift+Tab navigation must show a clear focus indicator. Arrow/Home/End navigation within radio, select, tab or combobox controls must also show keyboard focus. Do not globally remove outlines. Keep the baseline `:focus-visible` styling when JavaScript is disabled or fails.
+- `:focus-visible` alone is insufficient for text and number inputs because browsers can match it after a click. `js/input-mode.js` owns shared input-mode listeners; home, library, public quiz and account entry modules import it directly. All consumers use the single `data-input-mode` state and base input-mode rules. Import the helper instead of duplicating listeners. A pointer event hides rings; keyboard navigation restores them. Ordinary typing, caret arrows and Enter submission from a pointer-focused text field do not change the input mode.
+- Programmatically focused feedback targets follow the same pointer/keyboard input mode as controls.
+- In forced-colors mode, mask icons use `CanvasText` and retain their fill, action boundaries use system-visible borders, and the FAQ uses an inset `Highlight` outline for keyboard focus. Pointer focus remains unoutlined.
 - Verify clicks, touch taps, label activation, typing after a click, and keyboard navigation when adding or changing controls. Include switching from keyboard navigation back to pointer input.
 
 ### Checkboxes, Radios & Switches
-- **Checkboxes & Radios:** Unchecked state features an empty `#FFFFFF` fill and `#c5cfe2` border. Checked state transitions to a royal blue `#264796` fill with a crisp check/bullet.
+- **Checkboxes & Radios:** Unchecked state features an empty `#FFFFFF` fill and `--control-border` boundary. Checked state transitions to a royal blue `#264796` fill with a crisp check/bullet.
 - **Toggle Switches:** Unchecked track in `#dfe5f0` with white thumb; checked track transitions to `#F6DB78` (warm sunny accent) to signal active status.
 
 ### Lists & Navigation Rails
-- Row dividers utilize 1px `#dfe5f0`. Active navigation list items feature a `#FFFDF5` surface background with `#F6DB78` left accent edge (3px) and bold `#141D1E` label copy.
+- Row dividers utilize 1px `#dfe5f0`. Active navigation list items feature a `#FFFDF5` surface background with `#F6DB78` left accent edge (3px) and bold `#131D1F` label copy.
 
 ## Current Welcome Page
 
-The approved composition is the hero, the instructor introduction with its student gallery, one combined learning section containing the three learning steps and topic preview, the homepage FAQ, and a closing first-lesson action before the footer. This section records page-specific choices within the broader system above; unused palette colors remain available for future designs.
+The approved composition is the hero, the instructor introduction with its student gallery, one combined learning section containing the three learning steps and topic preview, the homepage FAQ, and a closing public-preview action before the footer. This section records page-specific choices within the broader system above; unused palette colors remain available for future designs.
 
 ### Hero, Learning Steps, and Instructor Gallery
 
 - The instructor uses the supplied `oren.jpg` photo, with responsive WebP copies, rounded corners, and a cover crop positioned at 50% 75% to keep Oren visible in shallow frames. The two-line title identifies Oren Bachor as the driving instructor and course presenter. One Hebrew paragraph introduces his certification, more than eight years of experience, and explanations of real road situations. On desktop the photo and text sit at opposite outer edges, with each column capped at 540px. At 768px and below, use one column in both reading and visual order: centered title, photo, description. The introduction is constrained to 1280px and shares one small viewport below the sticky header with the road gallery beneath it. Allow natural growth on short screens or for enlarged text.
 - Use a full-width warm amber (`#F6DB78`) instructor section to distinguish it from the pale blue hero. The top of the amber aligns with the bottom of the sticky header when navigating to `#instructor`.
-- The hero contains the concrete course promise, supporting copy, a primary "מנחה הקורס" button linking to `#instructor`, a secondary "צפו בנושאי הקורס" button linking to `#about`, and the supplied stop sign. It fills the initial viewport below the header. The secondary hero button has a white background with blue text and border, and a pale blue hover. Header and closing course-start controls use disabled native buttons labeled "הלמידה עדיין אינה זמינה" until a real course destination is supplied. Use the pale `--surface-high` fill and readable `--text-soft` text, without hover or press movement.
+- The hero identifies Oren, his certification and more than eight years of experience. Its primary "צפו בנושאי הקורס" link targets `#topics`; the secondary "הכירו את אורן" link targets `#instructor`. An adjacent status line identifies open reading/practice and the full course in preparation. The heading has two sentence lines. Tablet and phone layouts use a shorter natural hero and a 36ch reading measure; short viewports use a compact side-by-side layout. The red stop-sign variant is a separate approved edit; preserve the blue original. Header and closing actions link to `course/`, without promising enrollment, videos or saved progress.
 - Place the supplied road background below the compact instructor introduction. The introduction and road together fit below the sticky header on typical laptop and phone screens. Preserve gallery geometry and cadence; `hero-road` remains the gallery's existing technical identifier.
-- Present the course as one white `#about` section headed "קורס נהיגה נכונה: מבינים את הכביש". Its three introductory paragraphs explain the audience, topics and examples, and review alongside practical lessons. Each paragraph has a maximum width of `72ch`, a 20px top margin, and 18px text, reduced to 16px at 768px and below. Follow with a pale blue strip containing the three learning steps, a short topic-selection prompt, the topic explorer, and the note that the course supports driving lessons. Keep all seven topics and their descriptions. Use three step columns on desktop and a vertical list on phones. The entire course shares one content width, spacing rhythm, and scroll-reveal root; omit a divider or second section title between the steps and explorer.
+- Present the course as one white `#about` section, with one concise introductory paragraph, three linked learning steps, the ten topics in library order and the learning note. Above 640px, topic buttons form a tablist with one tab stop, `aria-selected`, `aria-controls` and a labeled tabpanel. Arrow keys select the next topic; Home/End select first/last. The panel reads the authored baseline description and links to its lesson. Phones show all ten baseline descriptions and links as a visible list. No dropdown or duplicate description source is maintained. The panel uses a quiet pale blue surface and a modest heading.
 - The topbar links to the instructor, `#about`, and `#faq`. Use only the sticky header height as the global scroll offset, with no extra section scroll margins, so section backgrounds align immediately below the header. The mobile fallback header is in normal document flow and uses a zero scroll offset.
-- Place the homepage FAQ immediately before `#start`. End with a centered pale blue section headed "מוכנים להבין את הכביש טוב יותר?", the supplied supporting sentence, and one disabled "הלמידה עדיין אינה זמינה" button until a real lesson destination is supplied.
+- Place the homepage FAQ immediately before `#start`. End with a centered pale blue section headed "הנושא הבא שלכם מתחיל כאן.", an explicit notice that the full course is in preparation and videos/enrollment are unavailable, and one blue "לנושאי הלימוד ולתרגול" link to `course/`.
 - The road spans the viewport, repeats horizontally, fills its height, and has square corners. Its height responds to the small viewport height, with a 180-264px desktop range and a 140-188px phone range.
 - Center the visible car silhouettes despite differing transparent margins in their source files. Size cars relative to the road height and retain a separate car-scale setting; phone layouts show neighboring cars partially clipped.
 - Place student photos on the car roofs with 8px rounded corners and a subtle 3px transparent edge fade. Keep the middle of each photo opaque, crop with `object-fit: cover`, and preserve the original image files.
 - Move cars continuously to the left with linear timing. Keep photo order numeric and randomize car colors independently. Preserve the approved cadence of about 11.11 seconds per car on desktop and 9.46 seconds on phones, configured by `--road-seconds-per-car`. The gallery derives loop duration from rendered row width and car spacing and updates it on viewport resize; short rows include any extra viewport space in their travel distance. The road is noninteractive and has no pause control.
-- Start motion once the initial consecutive photos have decoded and cover the viewport with one car of spare space, with a minimum of six photos or the complete list for a smaller gallery. Append later photos in numeric order while preserving the visible cars' position and travel speed. Keep a static row until startup succeeds or when JavaScript is unavailable; a later loading failure freezes photo additions but preserves the working row. That row continues adapting its duration on viewport resize while retaining its position within the animation cycle. With reduced motion, stop the animation and hide the duplicate row; overflow remains clipped.
-- While JavaScript loads the gallery, center the supplied `wheel.png` in a 128px square over a 55% white overlay with 4px backdrop blur. Rotate it in place every 1.2 seconds with linear timing. Remove the overlay when the gallery is ready, empty, or fails to load. Keep the wheel still with reduced motion and use an opaque white overlay with reduced transparency. Without JavaScript, leave the static photos uncovered.
+- Start motion once the initial consecutive photos have decoded and cover the viewport with one car of spare space, with a minimum of six photos or the complete list for a smaller gallery. Append later photos in numeric order while preserving the visible cars' position and travel speed. Keep a static row until startup succeeds or when JavaScript is unavailable; a later loading failure freezes photo additions but preserves the working row. That row continues adapting its duration on viewport resize while retaining its position within the animation cycle. With reduced motion, stop the animation and hide the duplicate row. Make the complete photo row horizontally scrollable with keyboard focus and scroll snapping; normal motion keeps its approved cadence and no pause control.
+- During loading, startup failure and without JavaScript, keep the static photo row readable. Do not cover it with a blur, wheel or loading overlay. Group the photos under one meaningful region description; decorative car sprites and grouped photos use empty alt text and `aria-hidden="true"`.
 
 ### Applied Layout and Styling
 
-A small supplied red car follows the hero road from top to bottom in 15 seconds at a steady speed, turns with the bends, then waits off screen for five seconds before repeating. Keep it behind the sign and copy and noninteractive. Sample the road in rendered coordinates so the car retains its proportions on phones and follows the route after resizing. Reduced motion parks it near the start of the road; without JavaScript, omit the decorative car.
+A small supplied red car follows the hero road from top to bottom once in 15 seconds at a steady speed and turns with the bends. Keep it behind the sign and copy and noninteractive. Sample the road in rendered coordinates so the car retains its proportions on phones and follows the route after resizing. Reduced motion parks it near the start of the road; without JavaScript, omit the decorative car.
 
 The hero heading, paragraph, and buttons share a right edge on desktop and remain centered at 768px and below. Underline only "להבין" and "לקבל" in warm yellow (`#F6DB78`). A static, faint blue road curve follows the supplied drawn route: enter at the top center, sweep into a broad low loop to the left of the stop sign, climb diagonally behind the sign and copy into a high right-hand bend, then return to the bottom center. The curve fills the hero and stays behind all content. Keep it decorative, noninteractive, and lighter on mobile so it does not compete with the centered copy.
 
-The hero stop sign enters once at full opacity, pivoting around its bottom center. Inspect the production entrance by reloading the welcome page at desktop and phone widths. Use the `brake` keyframes with `--stop-sign-duration: 3s` and linear entry: hold off screen to the left at `translateX(calc(-50vw - 100%)) rotate(-20deg)` through 8%, then arrive at `translateX(10%) rotate(-20deg)` at 40%. Correct back to `translateX(6%) rotate(8deg)` at 46%, then `translateX(0) rotate(0)` at 48%, using `--ease-out` for both corrections. The corrections take 180ms and 60ms; the sign settles at 1.44s and stays upright. Reduced motion shows the static sign immediately.
-
-At widths of 768px and below, use `--stop-sign-duration: 2s` and a 400ms animation delay. Keep the same keyframes and overshoot distances. The mobile sign begins moving at 560ms and settles at 1.36s; its corrections take 120ms and 40ms. Desktop retains the 3s timeline with no added delay. Reduced motion still shows the sign immediately.
-
-The hero heading, description, and buttons stay fully opaque throughout their 1s entrances with the strong `--ease-out` curve, arriving quickly and settling slowly. The heading starts immediately from off screen to the right, translated by `100vw`. After 325ms, the description and both buttons move together from below the viewport, translated by `100vh`. Keep the hero shell in its own stacking context at `z-index: 0`. The hero uses `overflow: clip` so these entrances stay within the hero without creating an internally scrollable container. The text sequence finishes at 1.325s. Focusing a hero button immediately finishes the description and button entrances; clipping prevents focus-driven internal scrolling while the browser updates their positions. Reduced motion shows all hero content immediately in its resting position.
+The hero content and sign enter together with a 16px upward fade over 280ms. Run this entrance once per browser session when storage is available; blocked storage uses the same short entrance. Content stays visible without JavaScript. Focus immediately settles the controls. Reduced motion shows static content. The decorative hero car makes one finite trip and disappears after exiting; hide it below 768px.
 
 The hero's `:focus-within` rule overrides the description and button transforms before native focus scrolling. The JavaScript focus handler finishes those animations so leaving the hero does not restart them. Keep both protections: clipping prevents internal scrolling, while the focus rule prevents the page from scrolling toward an off-screen animated button.
 
-Mobile navigation enters with opacity `0` to `1` and `translateY(-4px)` to `translateY(0)`. The mobile learning-topic list enters with opacity `0` to `1` and `scale(0.98)` to `scale(1)`, anchored at its top right. Both use `--ease-out`, 180ms entrances, and 150ms exits along the same path, without staggering links or options. Apply these transitions only for pointer or touch input; keyboard opening and dismissal remain immediate. Their trigger buttons use `translateY(1px) scale(0.99)` while pressed, with a 140ms `--ease-out` transition. Reduced motion replaces the surface movement with 80ms opacity fades and button movement with 100ms opacity feedback from `1` to `0.92`. Keep these exceptions scoped to the mobile controls; the gallery's reduced-motion behavior remains as documented above.
+Mobile navigation uses the existing short opacity/4px entrance for pointer input and immediate keyboard activation. Close on outside pointer interaction, focus leaving its shell, scroll, link activation or Escape. The menu button uses a familiar three-line icon and an accessible Hebrew label.
 
-The instructor introduction and unified course section reveal once as they enter the viewport. Trigger each when 20% is visible above a 12% bottom inset, then stop observing it so the motion never replays. The instructor title and photo enter from opposite inline directions over 520ms, with the photo delayed 90ms; phone layouts move both upward by 16px. The course introduction, learning steps, and topic explorer move upward together by 20px over 480ms, followed 110ms later by the supporting note moving 16px over 520ms. Every entrance combines opacity and transform with `--ease-out`. Content remains visible without JavaScript or IntersectionObserver. Reduced motion removes transforms and delays while retaining an 80ms opacity fade. Focusing the section or any of its controls immediately settles the entire reveal. Print output shows all content immediately.
+Instructor content uses an opacity-only reveal over 280ms. The combined learning section keeps its short reveal; keyboard focus settles content immediately. Reduced motion uses a short opacity fade without spatial movement; print exposes everything.
 
 Topic preview changes animate only the title and description container; the unchanged explanatory note stays still. A new pointer or touch selection fades and moves the outgoing content by 6px, replaces it after 110ms, and returns it over 180ms with `--ease-out`. Selecting the active topic does not restart feedback. Keyboard and assistive activation update immediately. Enabling reduced motion settles any pending update and removes movement and delay from later selections.
 
-The footer centers a right-to-left row of Instagram, TikTok, YouTube, and WhatsApp items and its contact-status note at every viewport width. Use locally served 24px Font Awesome SVG brand icons in the primary blue with visible Hebrew labels. Until destinations are supplied, render noninteractive items with a shared unavailable notice. Items wrap into centered rows as needed on small screens. The footer has no FAQ link. Future real links must have at least 44px touch targets and visible keyboard focus.
+Public footers use the brand and two navigation links: "דף הבית" and "נושאי הלימוד", each with a 44px target. The homepage also shows the original four labeled social icons as noninteractive placeholders, with the notice that contact and social links will be added later. Add working social destinations only when supplied. The focused 404 recovery page remains an intentional exception without chrome.
 
-On this welcome page, use a solid 3px primary blue (`#264796`) outline for keyboard focus instead of the general translucent focus glow described above, so it remains visible on white, blue, and amber surfaces.
+Separate consecutive homepage topic descriptions with a 1px `--border-strong` divider and reading space on both sides. Keep the first topic free of a leading divider, including the baseline experience without JavaScript. Phones use compact 1rem section padding without adding a trailing border after the final topic.
+
+Use the shared solid 3px primary blue outline for keyboard focus across the site so it remains visible on white, blue and amber surfaces.
 
 The header brand image uses the requested Hebrew alternative `alt="לוגו"`. Keep the enclosing home link's descriptive accessible name and the visible course and instructor names.
 
-Without JavaScript or when the entry module is unavailable, the mobile header stays in document flow with visible navigation links, and section links align to the viewport top. Successful initialization enables the sticky header, its scroll offset, and the collapsible menu. Show all seven topic descriptions as static content before enhancement; the interactive preview uses those descriptions and replaces the static presentation after initialization.
+Without JavaScript or when the entry module is unavailable, the mobile header stays in document flow with visible navigation links, and section links align to the viewport top. Successful initialization enables the sticky header, its scroll offset, and the collapsible menu. Show all ten topic descriptions as static content before enhancement; the interactive preview uses those descriptions and replaces the static presentation after initialization.
 
-The current page uses a maximum 1280px content width, with 48px side margins above 1024px, 32px at 1024px and below, 20px at 768px and below, and 16px at 440px and below. The main layout and menu switch at 768px; the topic dropdown switches below 640px. These are the implemented page breakpoints rather than a mandatory column grid.
+The current page uses a maximum 1280px content width, with 48px side margins above 1024px, 32px at 1024px and below, 20px at 768px and below, and 16px at 440px and below. The main layout and menu switch at 768px; the complete topic list replaces tabs below 640px. These are the implemented page breakpoints rather than a mandatory column grid.
 
 The page uses `#f2f5fc` for its base surface and `#131D1F` for primary text. `css/base.css` holds runtime tokens, `css/components.css` holds navigation styles, `css/welcome.css` holds the main section layouts, `css/faq.css` holds the FAQ layout and disclosure styles, and `css/responsive.css` holds motion, interaction states, responsive overrides, and accessibility preferences. Keep this stylesheet load order.
 
 ### Accessibility and unavailable destinations
 
-The header subtitle uses `--text-soft` to maintain at least 4.5:1 contrast over the translucent header. The home link accessible name includes the complete visible brand text. Footer social channels use local 24px SVG icons with visible Hebrew labels, noninteractive unavailable items, and a shared Hebrew explanation that destinations will be added later. No hover treatment implies those items are active links.
+The header subtitle uses `--text-soft` to maintain at least 4.5:1 contrast over the translucent header. The home link accessible name includes the complete visible brand text. Hide footer social channels until real destinations are supplied. Preserve their supplied local SVG source assets.
 
 ## Homepage FAQ
 
-The public questions and answers live in `index.html` at `#faq`, immediately before `#start`. The section uses five native `details` and `summary` rows based on the former help page's first five questions. Keep the native controls and baseline answers usable without JavaScript. Desktop and mobile navigation link directly to the section.
+The public questions and answers live in `index.html` at `#faq`, immediately before `#start`. The section uses six native `details` and `summary` rows: the former help page's first five questions and a current-availability question. Keep the native controls and baseline answers usable without JavaScript. Desktop and mobile navigation link directly to the section.
 
-At widths above 768px, place the heading in a narrow column in normal flow and the disclosures in a wider column. At 768px and below, use one column. Each answer uses a 16px card radius, the pale base surface when closed, a white surface and subtle shadow when open, and the local chevron rotated to show its state. Keep the amber kicker and the established Varela Round hierarchy.
+At widths above 768px, place the heading in a narrow column in normal flow and the disclosures in a wider column. At 768px and below, use one column. Each answer uses a 16px card radius, the pale base surface when closed, a white surface and subtle shadow when open, and the local chevron rotated to show its state. Use the single heading "שאלות נפוצות" without a repeated kicker, and the established Fredoka hierarchy.
 
 Pointer and touch activation animates the complete FAQ card height and chevron rotation in both directions over 220ms with `--ease-out`. A rapid second activation reverses from the currently rendered height. Keyboard activation and reduced-motion interaction settle immediately, including when they interrupt active motion.
 
@@ -337,31 +318,33 @@ The complete error message enters together once on page load: the yellow circle 
 
 ## Local account pages
 
-The Hebrew pages under `account/` reuse the base palette, Varela Round, blue primary actions, white rounded cards, and pale blue background. They are standalone account screens with no top bar or account kicker. Keep a return link to the homepage and the existing Hebrew page headings. The forgot-password link appears between the password field and the sign-in button.
+The Hebrew pages under `account/` reuse the base palette, Fredoka, blue primary actions, white rounded cards, and pale blue background. They are standalone account screens with no top bar or account kicker. Keep a return link to the homepage and the existing Hebrew page headings. The forgot-password link appears between the password field and the sign-in button.
 
-Every account-page `h1` has a warm yellow underline using `--secondary-bright`, `0.1em` thickness and offset, and no ink skipping. Scope this treatment to `.account-card h1`; preserve the existing heading size and alignment and the other pages' heading styles.
+Account headings use charcoal text and real weight without an amber underline. Reserve the underline for the welcome hero's emphasized words.
 
-Center the compact account card within the available viewport without document scrolling at normal desktop and phone sizes. Keep all controls reachable with card-only overflow when a short viewport, zoom, keyboard, or long error message leaves insufficient space. Do not clip form controls to suppress scrolling. Labels and reading order stay RTL; email and password inputs use LTR text.
+Center the compact account card when it fits. Use ordinary document scrolling when short screens, zoom, a keyboard or long messages need more space; keep every control reachable. Do not clip form controls to suppress scrolling. Labels and reading order stay RTL; email and password inputs use LTR text.
 
 Use locally hosted Font Awesome Google Brands artwork for Google sign-in and Classic Solid eye/eye-slash artwork for password visibility. Render decorative glyphs as CSS masks; buttons retain Hebrew accessible labels and the password toggle exposes its pressed state. Pointer input keeps normal editing and caret behavior without the blue outer focus outline. Keyboard Tab navigation displays the outline. Without JavaScript, retain the baseline focus-visible treatment.
 
-The course's disabled profile control remains its static fallback. When the local gateway confirms account support, replace it with a visually identical link to login or the account page. This conditional link does not change public topic navigation. Account fields are editable while the service loads or is unavailable, including without JavaScript. Only submission stays disabled until session initialization succeeds. Disable the fieldset only while an account request is being submitted. Google stays disabled with an explanation until enabled by the configured service.
+The course's profile control stays hidden in its static fallback. When the local gateway confirms account support, reveal the link to login or the account page. This conditional link does not change public topic navigation. Account fields are editable while the service loads or is unavailable, including without JavaScript. Only submission stays disabled until session initialization succeeds. Disable the fieldset only while an account request is being submitted. Hide the Google control and divider until the configured service enables Google.
 
-Registration alone shows a compact password requirements bar below the password input. Its fill grows from the RTL start edge as four rules are met: 9-128 characters, uppercase and lowercase English letters, a digit, and an ASCII special character. Use red for one or two completed rules, amber for three, and green for all four. Keep the empty bar neutral, pair color with Hebrew labels and a completed-rule count, and show all requirements as a compact two-column list. The bar measures rule completion, not estimated entropy. Keep login and reset free of this indicator.
+Registration and reset share one password rule: at least 12 Unicode characters and at most 72 UTF-8 bytes without composition requirements. Both show a compact length-rule completion indicator, using text independently of color. Persistent Hebrew field errors identify the issue and recovery with `aria-invalid` and `aria-describedby`; do not rely on native browser validation bubbles. Busy buttons name the current action. Account submission remains disabled until session initialization succeeds. Provider settings and policy changes are local configuration evidence; hosted verification remains separate.
 
-Account screens are a local development capability. They do not imply a paid subscription, available checkout, protected static lessons, or persistent progress in the browser. The homepage's course-start controls retain their existing release boundary.
+Confirmation guidance leads with opening the email link in the same browser used for registration, including a tip for links opened inside email apps. With an active pending registration, show only the masked address and a resend action with a server-enforced 60-second cooldown. Expired or absent context falls back to requesting a new link through registration. Preserve the static same-browser guidance without JavaScript. A resend acknowledgement is conditional and does not claim email delivery or reveal whether an account exists.
 
-The protected learning page lists the signed-in learner's available, titled sections. Its links open `account/reader.html` with a section ID and access level. The reader uses the existing account palette and card, with an authorized reading area, status, reload, and save-position control. Static HTML contains no private body. The reader keeps baseline navigation and a JavaScript requirement message; existing account typography, spacing, short-viewport overflow, focus and reduced-motion behavior apply. This area has no paid enrollment action.
+Account screens are a local development capability. They do not imply a paid subscription, available checkout, protected static lessons, or persistent progress in the browser. The homepage links to the public reading and practice preview; full-course enrollment and videos remain unavailable.
+
+The protected learning page lists the signed-in learner's available, titled sections. Its links open `account/reader.html` with a section ID and access level. The reader uses the existing account palette and card, with an authorized 65ch reading area, autosave status and end navigation. Reload and manual save retry appear only for their corresponding failures. Static HTML contains no private body. The reader keeps baseline navigation and a JavaScript requirement message; existing account typography, spacing, short-viewport overflow, focus and reduced-motion behavior apply. This area has no paid enrollment action.
 
 Omit the supplementary account-note paragraphs. Password bar updates use a right-anchored horizontal scale transition over 220ms with the shared `--ease-out` curve and a 180ms color transition. Retarget transitions from the current rendered state when typing reverses progress. Reduced motion changes the fill length immediately and retains only a 100ms color fade. Requirement labels, counts, and validation update immediately.
 
 ## Course library preview
 
-The user selected option A, an open library organized by named learning topics. `course/index.html` implements that layout as a preview, with no fixed learning order, locked topics, or fabricated completion progress. Preserve the existing Varela Round font, blue actions, shared pale blue canvas, and white 16px-radius topic cards. Reading surfaces remain opaque white for sustained legibility. The course header matches the home page: a sticky 72px bar (66px at 768px and below), translucent tinted background, subtle bottom border, and 14px backdrop blur. Match its 1280px shell, responsive gutters, 42px logo and brand typography; hide the subtitle on mobile. Keep anchor targets and sticky sidebars below the header. Its clickable brand leads to `index.html`. A visible 44px circular disabled profile button sits on the physical left, using the local Font Awesome user icon and the accessible label "הפרופיל עדיין אינו זמין". This is the static fallback; the configured local gateway replaces it with an account link as described above. This header is shared visually by the library, learning and quiz pages.
+The user selected option A, an open library organized by named learning topics. `course/index.html` implements that layout as a preview, with no fixed learning order, locked topics, or fabricated completion progress. Preserve the existing Fredoka font, blue actions, shared pale blue canvas, and white 16px-radius topic cards. Reading surfaces remain opaque white for sustained legibility. The course header matches the home page: a sticky 72px bar (66px at 768px and below), translucent tinted background, subtle bottom border, and 14px backdrop blur. Match its 1280px shell, responsive gutters, 42px logo and brand typography; retain the instructor subtitle on mobile at 13px or larger. Keep anchor targets and sticky sidebars below the header. Its clickable brand leads to `index.html`. A 44px profile link is enhanced when account support is configured; hide the unavailable static profile control, using the local Font Awesome user icon and the configured link's accurate accessible label. Static pages have no unavailable profile control; the local gateway reveals account navigation as described above. This header is shared visually by the library, learning and quiz pages.
 
-The reading order is a short introduction, search and the topic browser, within a maximum width of 1080px. At 900px and above, successful initialization presents a compact translucent-white vertical topic list on the right and a separate white reading panel on the left. Selecting a topic highlights its row without rearranging the list. The list stays sticky while reading long outlines and scrolls internally if the viewport is too short. The panel shows the title, description, outline, availability note and any learning link. Its minimum height limits layout shifts between short topics. Content comes from the baseline HTML; no second authored copy is maintained.
+The reading order is a short introduction, search and the topic browser, within a maximum width of 1080px. At 900px and above, successful initialization presents a compact translucent-white vertical topic list on the right and a separate white reading panel on the left. Selecting a topic highlights its row without rearranging the list. The list stays sticky while reading long outlines and scrolls internally if the viewport is too short. The panel shows the title, description, outline, availability note and any learning link. Its compact minimum height limits layout shifts without an empty 640px reading area. Content comes from the baseline HTML; no second authored copy is maintained.
 
-Below 900px, or when JavaScript is unavailable, use a single column of compact native details/summary rows. Closed rows show the title and chevron; opening one reveals its description and outline. Topics share the native exclusive group `course-topics`; older browsers retain readable disclosures even without group support. The seven topics shared with the welcome page retain its descriptions. Selection carries across viewport changes, with focus transferred to the corresponding control when needed. No illustration, fake video player, or sample lesson count is needed for this layout.
+Below 900px, or when JavaScript is unavailable, use a single column of compact native details/summary rows. Closed rows show the title, description and chevron; opening one reveals the learning action, effort metadata and outline. Topics share the native exclusive group `course-topics`; older browsers retain readable disclosures even without group support. All ten topics shared with the welcome page retain its descriptions and order. Selection carries across viewport changes, with focus transferred to the corresponding control when needed. No illustration, fake video player, or sample lesson count is needed for this layout.
 
 Pointer and touch topic selection introduces the desktop reading content with a 180ms opacity transition and 6px upward arrival, using the shared `--ease-out` curve. The panel and topic list stay still. On mobile, animate the complete card height over 200ms with the same curve, including the description inside its summary. Keep closing content rendered until the compact height is reached. A rapid reversal starts from the current rendered height. When a preceding card collapses, keep the newly activated summary at its viewport position and below the sticky header; fragment navigation and filtering supersede that tracking. After enhancement, JavaScript manages exclusivity so the outgoing card can close while the new card opens; baseline HTML retains the native named group. Keyboard interaction settles active motion and selects without animation. Reduced motion removes spatial transitions. Course buttons provide a 140ms press response with a 1px downward movement and scale of 0.99, disabled for keyboard focus and reduced motion. Fine pointers receive only subtle one-to-two-pixel feedback on course buttons, tabs, lesson navigation and quiz choices. Baseline content remains visible without JavaScript.
 
@@ -371,21 +354,21 @@ Search and its recovery controls appear only after initialization; an announced 
 
 ### First learning page
 
-`course/right-of-way/index.html` adapts PDF pages 12-17 into separate white reading sections for left turns, right turns and U-turns. A fourth section covers narrow/steep-road priority using official teaching sources. The foundations page includes separate definitions, theory/practice and recap sections. `course/priority-hierarchy/index.html` adapts page 18 as its own learning topic and section. A back-to-library link and introduction precede a right-hand contents list; each section keeps its own border, rounded corners, and 28px separation. Section headings use the warm amber underline shared with the home-page hero. The contents list is sticky on desktop and becomes a two-column list above the reading content below 901px. Use native anchor links and baseline HTML throughout; these pages need no JavaScript. Short amber takeaways distinguish the key point in each section. PDF provenance labels and links are omitted from the learning interface; official resource destinations supplied as course content remain available in the licensing lesson.
+`course/right-of-way/index.html` adapts PDF pages 12-17 into separate white reading sections for left turns, right turns and U-turns. A fourth section covers narrow/steep-road priority using official teaching sources. The foundations page includes separate definitions, theory/practice and recap sections. `course/priority-hierarchy/index.html` adapts page 18 as its own learning topic and section. A back-to-library link and introduction precede a right-hand contents list; each section keeps its own border, rounded corners, and 28px separation. Section headings use charcoal text, real weight and size without an amber underline. The contents list is sticky on desktop, moves above the reading content below 901px and becomes one column below 480px. Omit it on single-section lessons. Use native anchor links and baseline HTML throughout; these pages need no JavaScript. Short amber takeaways distinguish the key point in each section. PDF provenance labels and links are omitted from the learning interface; official resource destinations supplied as course content remain available in the licensing lesson.
 
-Use media only where it helps explain the subject. Reserve video for movement, timing and developing hazards; use images or diagrams for recognition and road layouts. Summaries and administrative explanations need no media. Planned media uses a compact, 80px-minimum-height space with a solid surface-container-low background (#ecf0fa), a dashed border and descriptive Hebrew text. Do not use gradients in media placeholders. Video and image/diagram placeholders share this treatment and have explicit accessible labels, without broken images or inactive players. Complete right-turn and U-turn demonstrations absorb individual checks and completion steps. Each topic ends with one blue "לשאלון התרגול" link and a note identifying its actual question count and answer review. Place that block after the reading sections; individual sections do not own quizzes. All course preview pages remain noindex.
+Use media only where it helps explain the subject. Reserve video for movement, timing and developing hazards; use images or diagrams for recognition and road layouts. Summaries and administrative explanations need no media. Planned media uses at most one compact text note per section with a solid surface-container-low background (#ecf0fa), a dashed border and descriptive Hebrew text. Do not use gradients in media placeholders. Video and image/diagram placeholders share this treatment and use note semantics, without broken images or inactive players. Complete right-turn and U-turn demonstrations absorb individual checks and completion steps. Each topic ends with one blue "לשאלון התרגול" link and a note identifying its actual question count and answer review. Place that block after the reading sections; individual sections do not own quizzes. All course preview pages remain noindex.
 
 On the learning page, native contents links scroll smoothly to the selected sub-subject without focusing or outlining its reading section. Sections have no `tabindex`; links retain native keyboard navigation and fragment URLs. Scope smooth scrolling to `html.lesson-page` so quiz question focus and other course navigation retain their own behavior. The shared reduced-motion rule switches scrolling to immediate movement. No JavaScript is required for this interaction.
 
 ### Practice quiz preview
 
-Clicking or tapping a quiz answer shows its selected background, border and radio state without an outer focus ring. Keyboard focus retains the solid blue outer outline around the answer. The course search field uses a blue border for focus instead of an additional outer ring, including when typing after a tap.
+Clicking or tapping a quiz answer shows its selected background, border and radio state without an outer focus ring. Keyboard focus retains the solid blue outer outline around the answer. The course search field uses a visible blue keyboard outline and the shared input-mode helper; pointer-focused typing keeps its ring hidden.
 
-Enhance the question selector into a labeled combobox with a scrollable white list, rounded corners, a subtle shadow and 44px options. Highlight the current question in blue and show the selected Font Awesome up/down chevrons. Position the list above the trigger when there is insufficient space below. Pointer entrances use 180ms opacity and scale from 0.97; exits use 150ms along the same path, with the shared `--ease-out` curve. Keyboard interaction is immediate, supports arrows, Home/End, Enter/Space and Escape, and keeps focus on the trigger while exploring options. Outside interaction dismisses the list. Reduced motion removes the transitions. Options come from the native selector, which remains in the document; blocked JavaScript preserves the complete static question list.
+Enhance the question selector into a labeled combobox with a scrollable white list, a visible native scrollbar, rounded corners, a subtle shadow and 44px options. Each option identifies whether its question is unanswered or answered; after submission it identifies correct or incorrect answers with Hebrew text and the existing blue/coral roles. Keep the trigger label compact, using the current question name. Highlight the current question in blue and show the selected Font Awesome up/down chevrons. Position the list above the trigger when there is insufficient space below. Pointer entrances use 180ms opacity and scale from 0.97; exits use 150ms along the same path, with the shared `--ease-out` curve. Keyboard interaction is immediate, supports arrows, Home/End, Enter/Space and Escape, and keeps focus on the trigger while exploring options. Outside interaction dismisses the list. Reduced motion removes the transitions. Options come from the native selector, which remains in the document; blocked JavaScript preserves the complete static question list.
 
 Each topic links to its own static quiz page, with the topic title and lesson return links authored in HTML. All ten reuse `course/js/quiz.js`. Former section quiz URLs retain their transition links. The compact 820px-wide layout shows the subject title, actual question count, question selector, one fieldset with four native radio choices, and previous/next controls. Question counts follow coverage, without padding to 20. Original question diagrams sit above the choices at their natural width, capped at 100% of the card. Preserve their aspect ratio and use accurate Hebrew alt text.
 
-Selections remain editable until submission. Missing answers produce Hebrew feedback and focus the first unanswered question. Completed attempts show the number correct, a rounded percentage and text identifying whether the learner passed. Passing requires at least 85% correct, with the required answer count rounded up and shown beside the result. Keep actions to review answers or start a new attempt. Review keeps the submitted choices locked and displays a native answer disclosure with a text result, correct answer and explanation. Correct feedback uses the primary border; incorrect feedback uses the existing dark coral tone. Text identifies correctness independently of color. Restart clears choices and results and returns to the first question. With JavaScript disabled or blocked, every fieldset and its native self-check disclosure remains usable. No public score is presented as an official theory-test result or paid-course completion.
+Selections remain editable until submission. Missing answers produce Hebrew feedback above the question form, including the count and question numbers, and focus the first unanswered question. Update that message as remaining answers are supplied. The visible position text is not a live region after enhancement, because focusing the question already announces navigation. Completed attempts show the number correct, a rounded percentage and text identifying whether the learner passed; the focused result heading also includes the percentage and pass/fail outcome. Passing requires at least 85% correct, with the required answer count rounded up and shown beside the result. Keep actions to review answers or start a new attempt. Review keeps the submitted choices locked and displays a native answer disclosure with a text result, the learner's chosen answer, correct answer and explanation. The introduction changes to explain locked review after submission and returns to its original wording on retry. Results list each incorrect question as a 44px button that opens that question. General review starts at the first mistake, or the first question for an all-correct attempt. A separate "לעבור על הטעויות (N)" action offers review restricted to incorrect questions; Previous/Next follow that subset and its end returns to results. Choosing a question from the selector or results list restores full question navigation. Do not show an empty mistake list or mistakes-only action for all-correct results. Correct feedback and the correct answer tile use the primary border; an incorrect selected tile uses `--tertiary` text/border and `--tertiary-wash` fill. Each marked tile includes a Hebrew state label. On phones, place that label below the answer text so the text retains its reading width. Hover does not overwrite submitted states. Text identifies correctness independently of color. Restart clears choices, results, mistake links, chosen-answer feedback and selector states, restores the introduction and returns to the first question. With JavaScript disabled or blocked, every fieldset and its native self-check disclosure remains usable. No public score is presented as an official theory-test result or paid-course completion.
 
 Each question shows its source number and marks adapted wording. A compact attribution below the quiz names the Ministry's source, links to the dataset and CC BY licence, and distinguishes course selection and explanations from Ministry endorsement. Keep keyboard focus visible on the answer disclosures and retry action, and pointer/touch outlines hidden.
 
@@ -393,10 +376,22 @@ Each question shows its source number and marks adapted wording. A compact attri
 
 The September 18 architecture changes preserve this layout, typography, motion and HTML formatting. Quiz forms marked `data-quiz-placeholder` retain the approved 20-question preview layout. The shared interaction follows authored question order and does not depend on numeric IDs or a fixed video position. The owner-authorized theory update uses `data-quiz-graded` in the real pages; placeholder fixtures continue to test ungraded behavior.
 
-Learning-section identity comes from its stable anchor and declared heading, not a heading-level assumption in a test. Site-wide media checks allow scaled ordinary brand images while preserving exact intrinsic metadata checks on marked road media. Gallery initialization receives its student photo list without changing cadence, loading feedback, or reduced-motion behavior. See [Architecture](docs/ARCHITECTURE.md) for implementation ownership and [README](README.md#add-learning-sections-and-quizzes) for authoring steps.
+Learning-section identity comes from its stable anchor and declared heading, not a heading-level assumption in a test. Site-wide media checks allow scaled ordinary brand images while preserving exact intrinsic metadata checks on marked road media. Gallery initialization receives its student photo list while preserving normal cadence and numeric order; reduced motion exposes a scrollable row and the readable static row has no loading overlay. See [Architecture](docs/ARCHITECTURE.md) for implementation ownership and [README](README.md#add-learning-sections-and-quizzes) for authoring steps.
 
 ### Protected learner area
 
-The protected learner area uses the existing account visual language in a wider 920px reading shell, with normal document scrolling. Use white cards, the existing pale canvas, Varela Round, 16px card corners and blue primary actions. Quiz questions use native fieldsets, legends and radio groups. Keep radio focus and arrow-key behavior during autosave. Results show a score, explanations and a separate optional completion action. Keep unavailable and conflict messages beside the affected controls.
+The protected learner area uses the existing account visual language in a wider 920px reading shell, with normal document scrolling. Use white cards, the existing pale canvas, Fredoka, 16px card corners and blue primary actions. Quiz questions use native fieldsets, legends and radio groups. Keep radio focus and arrow-key behavior during autosave. Results show a score, explanations and a separate optional completion action. Keep unavailable and conflict messages beside the affected controls.
 
-The reader renders approved text with preserved paragraph spacing and inline responsive private media. Saved reading position is derived from the text area. Account input-mode focus rules apply to both new entry modules. These screens require authenticated API content; their static shells contain no instructional body or answer keys. Course-library baseline descriptions remain independently usable without JavaScript.
+The reader renders approved text with preserved paragraph spacing and inline responsive private media. Saved reading position is derived from the text area. New readings, zero saved positions and changed content versions start at the document top so the section title remains visible; positive positions resume within the text. Account input-mode focus rules apply to both new entry modules. These screens require authenticated API content; their static shells contain no instructional body or answer keys. Course-library baseline descriptions remain independently usable without JavaScript.
+
+## Implemented shared roles and tokens
+
+`css/base.css` owns runtime colors, typography, spacing, shadows, durations and stacking levels. Use blue for actions and focus, charcoal for headings, `--success` for passing results, `--tertiary` with `--tertiary-wash` for errors, and amber for welcome emphasis and takeaways. Interactive boundaries use `--control-border`; card separators retain the quiet `--border`. Buttons share `.btn`, `.btn-primary` and `.btn-secondary`, with existing page classes retained for their interaction hooks. Header structure is shared by `.site-header` and `.course-header`. Keep native scrollbars visible.
+
+Meaningful text has a 13px minimum. Use rem for type, pretty paragraph wrapping, real font weights, and a restrained heading hierarchy. Shared print styling removes navigation and decorative motion; lesson text and all quiz questions remain printable. Keep light mode for this release; dark-mode direction remains an owner choice.
+
+Public quiz feedback remains after submission under the owner's 2026-10-08 decision. A completed answer set opens a pre-submit summary with a distinct "בדיקת השאלון" action. Phones collapse the introduction after starting, retain a slim sticky answered-progress bar and a one-row bottom navigation area. Navigation aligns the question card below that progress bar. Results show one clear score, outcome and threshold; lesson-section links connect review to the available teaching text. No shuffled answer order or immediate-feedback mode is implemented.
+
+## Copy and teaching review
+
+Use plural imperative for authored instructions, short action nouns or verbs for controls, and impersonal present for descriptions. Use "נושאי הלימוד" for the public library and "ניסיון חדש" for a fresh quiz attempt; "ניסיון נוסף" names a network retry. Keep Ministry source wording and documented adaptations distinguishable. New examples restate existing rules and remain subject to instructor approval before publication, as required by [Operations](docs/OPERATIONS.md#keep-evidence-approval-and-technical-checks-separate). The [coverage draft](docs/reference/design-teaching-coverage.md) separates valid navigation links from complete teaching coverage.

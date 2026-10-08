@@ -3,13 +3,14 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#f2f5fc" />
 		<meta
 			http-equiv="Content-Security-Policy"
 			content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
 		/>
 		<meta name="referrer" content="strict-origin-when-cross-origin" />
 		<meta name="robots" content="noindex" />
-		<title>שאלון: מעגלי תנועה וצמתים - קורס נהיגה נכונה עם אורן בכור</title>
+		<title>שאלון: מעגלי תנועה וצמתים - נהיגה נכונה עם אורן בכור</title>
 		<meta
 			name="description"
 			content="תרגול בנושא מעגלי תנועה וצמתים עם שאלות ממאגר התאוריה, ציון והסברים לתשובות."
@@ -21,19 +22,19 @@
 		/>
 		<link
 			rel="preload"
-			href="../../../assets/fonts/varela-round-v21-hebrew.woff2"
+			href="../../../assets/fonts/fredoka-v17-hebrew.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
 		/>
 		<link
 			rel="preload"
-			href="../../../assets/fonts/varela-round-v21-latin.woff2"
+			href="../../../assets/fonts/fredoka-v17-latin.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
 		/>
-		<link rel="stylesheet" href="../../../css/base.css" />
+		<link rel="stylesheet" href="../../../css/base.css?v=3" />
 		<link rel="stylesheet" href="../../css/course.css" />
 		<link rel="stylesheet" href="../../css/lesson.css" />
 		<link rel="stylesheet" href="../../css/quiz.css" />
@@ -41,7 +42,7 @@
 		<script type="module" src="../../js/account-link.js"></script>
 	</head>
 	<body>
-		<a class="skip-link" href="#main">דילוג לשאלון</a>
+		<a class="skip-link" href="#main">דילוג לתוכן הראשי</a>
 		<header class="course-header">
 			<div class="course-shell course-header-inner">
 				<a
@@ -65,6 +66,9 @@
 						><small>עם אורן בכור</small></span
 					>
 				</a>
+				<nav class="course-header-nav" aria-label="ניווט ראשי">
+					<a class="course-library-link" href="../../">נושאי הלימוד</a>
+				</nav>
 				<button
 					class="course-profile"
 					type="button"
@@ -87,12 +91,12 @@
 			<div class="lesson-intro">
 				<h1 data-quiz-title>שאלון: מעגלי תנועה וצמתים</h1>
 				<p>
-					12 שאלות בנושא. אפשר לעבור בין השאלות ולשנות תשובות לפני ההגשה. כדי לקבל
-					ציון יש לענות על כולן.
+					12 שאלות בנושא. זמן משוער: 12-18 דקות. ענו על השאלות וחזרו להסברים כדי
+					להבין את הבחירות.
 				</p>
 				<p class="quiz-note">
-					תרגול על בסיס מאגר התאוריה של משרד התחבורה. בסיום מוצגים הציון, התשובות
-					הנכונות והסברי הקורס.
+					תרגול על בסיס מאגר התאוריה של משרד התחבורה. בחישוב הציון נדרשת תשובה לכל
+					שאלה. לפני הבדיקה אפשר לשנות תשובות.
 				</p>
 			</div>
 			<p data-quiz-fallback>
@@ -182,9 +186,10 @@
 							<p data-quiz-explanation>
 								תמרור 303 מורה לתת זכות קדימה לתנועה החוצה במעגל ולעבור את המעגל מימין.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#single-lane">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0387 ממאגר משרד התחבורה.
+							מקור: שאלה 0387.
 						</p>
 					</fieldset>
 					<fieldset
@@ -253,9 +258,10 @@
 								תמרור האזהרה מתריע על מעגל תנועה בהמשך. בכניסה עצמה בודקים גם את הסדרי
 								זכות הקדימה.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#single-lane">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0430 ממאגר משרד התחבורה.
+							מקור: שאלה 0430.
 						</p>
 					</fieldset>
 					<fieldset
@@ -323,9 +329,10 @@
 							<p data-quiz-explanation>
 								מאטים מראש כדי להספיק לזהות את התנועה במעגל ולהיעצר אם צריך.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#single-lane">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0431 ממאגר משרד התחבורה.
+							מקור: שאלה 0431.
 						</p>
 					</fieldset>
 					<fieldset
@@ -395,9 +402,10 @@
 							<p data-quiz-explanation>
 								התמרור מחייב מתן זכות קדימה לתנועה במעגל ומורה לעבור מימין לאי המרכזי.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#single-lane">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0550 ממאגר משרד התחבורה.
+							מקור: שאלה 0550.
 						</p>
 					</fieldset>
 					<fieldset
@@ -469,9 +477,10 @@
 								לפני הכניסה ממתינים לפער בטוח בתנועה החוצה במעגל. אין לכפות עליה בלימה או
 								סטייה.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#single-lane">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0551 ממאגר משרד התחבורה.
+							מקור: שאלה 0551.
 						</p>
 					</fieldset>
 					<fieldset
@@ -539,9 +548,10 @@
 							<p data-quiz-explanation>
 								רוכב אופניים הוא חלק מהתנועה במעגל. בתרשים אין לכניסה שלך עדיפות עליו.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#single-lane">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0706 ממאגר משרד התחבורה.
+							מקור: שאלה 0706.
 						</p>
 					</fieldset>
 					<fieldset
@@ -610,9 +620,10 @@
 								הרכב האדום כבר נע במעגל. ממתינים לפני הכניסה עד שאפשר להשתלב בלי להפריע
 								לו.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#single-lane">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0721 ממאגר משרד התחבורה.
+							מקור: שאלה 0721.
 						</p>
 					</fieldset>
 					<fieldset
@@ -674,9 +685,10 @@
 								הולך רגל עלול להופיע או לשנות כיוון סמוך לצומת. מביטים מראש ומפחיתים
 								מהירות לפי הסיכון.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#approach">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0775 ממאגר משרד התחבורה.
+							מקור: שאלה 0775.
 						</p>
 					</fieldset>
 					<fieldset
@@ -738,9 +750,10 @@
 								מוודאים שאפשר לפנות את הצומת. זכות קדימה או אור ירוק אינם היתר לחסום
 								אותו.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#approach">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0779 ממאגר משרד התחבורה.
+							מקור: שאלה 0779.
 						</p>
 					</fieldset>
 					<fieldset
@@ -800,9 +813,10 @@
 							<p data-quiz-explanation>
 								ממתינים מחוץ לצומת כדי שלא לחסום תנועה חוצה או מעברי חצייה.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#approach">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0789 ממאגר משרד התחבורה.
+							מקור: שאלה 0789.
 						</p>
 					</fieldset>
 					<fieldset
@@ -863,9 +877,10 @@
 								אין צורך שהולך רגל כבר יהיה על הפסים כדי להאט ולבדוק אם מישהו מתכוון
 								לחצות.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#approach">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 0893 ממאגר משרד התחבורה.
+							מקור: שאלה 0893.
 						</p>
 					</fieldset>
 					<fieldset
@@ -926,9 +941,10 @@
 								הירוק אינו מבטל את החובה להשאיר את הצומת פנוי. נכנסים רק כשאפשר להשלים את
 								המעבר.
 							</p>
+							<p class="quiz-lesson-reference"><a data-quiz-lesson-link href="../#approach">חזרה להסבר בנושא</a></p>
 						</details>
 						<p class="quiz-source">
-							שאלת מקור 1751 ממאגר משרד התחבורה.
+							מקור: שאלה 1751.
 						</p>
 					</fieldset>
 				</form>
@@ -941,13 +957,13 @@
 				></p>
 				<div class="quiz-controls" data-quiz-controls hidden>
 					<button
-						class="quiz-previous"
+						class="quiz-previous btn btn-secondary"
 						type="button"
 						data-quiz-previous
 					>
 						השאלה הקודמת
 					</button>
-					<button class="course-button" type="button" data-quiz-next>
+					<button class="course-button btn btn-primary" type="button" data-quiz-next>
 						השאלה הבאה
 					</button>
 				</div>
@@ -959,12 +975,13 @@
 				hidden
 			>
 				<h2 id="quiz-result-title" tabindex="-1">תוצאות השאלון</h2>
+				<p class="quiz-score" data-quiz-score aria-hidden="true"></p>
 				<p data-quiz-count></p>
-				<p>אפשר לעבור על התשובות וההסברים או להתחיל ניסיון חדש.</p>
-				<p>זהו תרגול עצמי, ולא מבחן תאוריה רשמי. התוצאה אינה נשמרת בחשבון.</p>
+				<p data-quiz-threshold></p>
+				<p class="quiz-result-note">זהו תרגול עצמי, ולא מבחן תאוריה רשמי. התוצאה אינה נשמרת בחשבון.</p>
 				<div class="quiz-result-actions">
-					<button class="course-button" type="button" data-quiz-review>חזרה לשאלות</button>
-					<button class="quiz-previous" type="button" data-quiz-retry>ניסיון חדש</button>
+					<button class="course-button btn btn-primary" type="button" data-quiz-review>חזרה לשאלות</button>
+					<button class="quiz-previous btn btn-secondary" type="button" data-quiz-retry>ניסיון חדש</button>
 					<a data-lesson-link href="../#topic">חזרה לנושא הלימוד</a>
 				</div>
 			</section>
@@ -975,14 +992,17 @@
 					ברישיון <a href="https://opendefinition.org/licenses/cc-by/">Creative Commons Attribution</a>.
 				</p>
 				<p>
-					הותאמו העיצוב וסימני הפיסוק. שאלות שנוסחן עודכן מסומנות כעיבוד לשאלת
-					המקור. השיוך לנושאים וההסברים הם של הקורס, ואינם מטעם משרד התחבורה.
+					העיצוב והפיסוק הותאמו לאתר. שאלות שנוסחן עודכן מסומנות כך. השיוך לנושאים
+					וההסברים הם של הקורס, ואינם מטעם משרד התחבורה.
 				</p>
 			</aside>
 		</main>
 		<footer class="course-shell course-footer">
-			<p>אפשר לתרגל כל נושא בכל זמן. התרגול אינו נועל את המשך הלמידה.</p>
-			<a href="../../">לכל נושאי הלימוד</a>
+			<p>נהיגה נכונה עם אורן בכור.</p>
+			<nav aria-label="קישורי האתר">
+				<a href="../../../index.html">דף הבית</a>
+				<a href="../../">נושאי הלימוד</a>
+			</nav>
 		</footer>
 	</body>
 </html>

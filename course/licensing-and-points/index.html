@@ -3,13 +3,14 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#f2f5fc" />
 		<meta
 			http-equiv="Content-Security-Policy"
 			content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
 		/>
 		<meta name="referrer" content="strict-origin-when-cross-origin" />
 		<meta name="robots" content="noindex" />
-		<title>נהג חדש, רישוי ושיטת הניקוד - קורס נהיגה נכונה עם אורן בכור</title>
+		<title>נהג חדש, רישוי ושיטת הניקוד - נהיגה נכונה עם אורן בכור</title>
 		<meta
 			name="description"
 			content="מבוא לשיטת הניקוד, קבוצות עבירות, נהג חדש ומקורות מידע רשמיים בנושאי רישוי ותעבורה."
@@ -21,25 +22,25 @@
 		/>
 		<link
 			rel="preload"
-			href="../../assets/fonts/varela-round-v21-hebrew.woff2"
+			href="../../assets/fonts/fredoka-v17-hebrew.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
 		/>
 		<link
 			rel="preload"
-			href="../../assets/fonts/varela-round-v21-latin.woff2"
+			href="../../assets/fonts/fredoka-v17-latin.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
 		/>
-		<link rel="stylesheet" href="../../css/base.css" />
+		<link rel="stylesheet" href="../../css/base.css?v=3" />
 		<link rel="stylesheet" href="../css/course.css" />
 		<link rel="stylesheet" href="../css/lesson.css" />
 		<script type="module" src="../js/account-link.js"></script>
 	</head>
 	<body>
-		<a class="skip-link" href="#main">דילוג לתוכן הלמידה</a>
+		<a class="skip-link" href="#main">דילוג לתוכן הראשי</a>
 		<header class="course-header">
 			<div class="course-shell course-header-inner">
 				<a
@@ -59,7 +60,11 @@
 					/><span
 						><strong>נהיגה נכונה</strong><small>עם אורן בכור</small></span
 					></a
-				><button
+				>
+				<nav class="course-header-nav" aria-label="ניווט ראשי">
+					<a class="course-library-link" href="../">נושאי הלימוד</a>
+				</nav>
+				<button
 					class="course-profile"
 					type="button"
 					aria-label="הפרופיל עדיין אינו זמין"
@@ -84,25 +89,31 @@
 					מכירים את סוגי המידע שמנהלים מול משרד התחבורה ויודעים מתי נדרש לבדוק
 					פרט עדכני במקור רשמי.
 				</p>
+				<p class="lesson-meta" data-reading-minutes="4">
+					זמן קריאה משוער: 4 דקות.
+				</p>
 				<p class="lesson-draft">
-					פרקי קריאה. כללים ופרטים מנהליים עשויים להשתנות.
+					אפשר לקרוא ולתרגל. סרטונים ותרשימים יתווספו בהמשך.
 				</p>
 			</div>
 			<div class="lesson-layout">
-				<nav class="lesson-contents" aria-labelledby="contents-title">
+				<nav
+					class="lesson-contents"
+					aria-labelledby="contents-title"
+					id="contents"
+				>
 					<h2 id="contents-title">מה לומדים כאן?</h2>
-					<p>אפשר להתחיל בכל חלק.</p>
+
 					<ul>
-						<li><a href="#points">שיטת הניקוד</a></li>
+						<li><a href="#points">מהי שיטת הניקוד?</a></li>
 						<li><a href="#new-driver">נהג חדש ורישוי</a></li>
-						<li><a href="#official-information">מידע רשמי</a></li>
+						<li><a href="#official-information">איפה בודקים מידע?</a></li>
 					</ul>
 				</nav>
 				<article
 					class="lesson-content"
 					id="topic"
 					aria-labelledby="topic-title"
-					aria-label="הסברים על רישוי ושיטת הניקוד"
 				>
 					<section
 						class="lesson-section"
@@ -113,8 +124,9 @@
 						<p>
 							שיטת הניקוד מרכזת נקודות שנרשמות לחובת נהגים בשל עבירות והפרות
 							תעבורה שנכללות בשיטה. לכל עבירה או הפרה מוצמד מספר נקודות לפי
-							חומרתה, והצטברות נקודות תקפות יכולה לחייב אמצעי תיקון. מספרי הנקודות
-							ותקופות התוקף עשויים להשתנות, ולכן בודקים אותם במידע הממשלתי העדכני.
+							חומרתה, והצטברות נקודות תקפות יכולה לחייב אמצעי תיקון. מספרי
+							הנקודות ותקופות התוקף עשויים להשתנות, ולכן בודקים אותם במידע
+							הממשלתי העדכני.
 						</p>
 						<h3>קבוצות עבירות לדוגמה</h3>
 						<ul>
@@ -125,8 +137,8 @@
 							</li>
 							<li>שימוש באורות, הפרעה לתנועה או עיכובה.</li>
 							<li>
-								אי-ציות לתמרור עצור, מעבר מצדו הנכון של תמרור ומתן זכות קדימה
-								במעגל תנועה.
+								אי-ציות לתמרור עצור, מעבר משמאל לאי המרכזי במעגל תנועה או אי-מתן
+								זכות קדימה לתנועה במעגל.
 							</li>
 							<li>שימוש בטלפון בזמן נהיגה.</li>
 						</ul>
@@ -135,29 +147,45 @@
 							נקודות של עבירה מסוימת או מצב אישי משתמשים בטבלה הרשמית ובשירות
 							הממשלתי העדכני.
 						</p>
+						<aside
+							class="lesson-scenario"
+							aria-labelledby="points-scenario-title"
+						>
+							<h3 id="points-scenario-title">מצב מהכביש</h3>
+							<p>
+								אתם רוצים לברר כמה נקודות נרשמו על עבירה מסוימת. משתמשים בטבלה
+								הרשמית ובשירות הממשלתי, ולא מסיקים מספר מתוך רשימת הדוגמאות כאן.
+							</p>
+						</aside>
+						<details class="lesson-self-check">
+							<summary>איפה בודקים מספר נקודות ומצב אישי?</summary>
+							<p>בטבלה הרשמית ובשירות הממשלתי העדכני.</p>
+						</details>
+						<a class="lesson-return-contents" href="#contents"
+							>חזרה לתוכן העניינים</a
+						>
 					</section>
 					<section
 						class="lesson-section"
 						id="new-driver"
 						aria-labelledby="new-driver-title"
 					>
-						<h2 id="new-driver-title">נהג חדש, נהג חדש צעיר ורישוי</h2>
+						<h2 id="new-driver-title">נהג חדש ורישוי</h2>
 						<p>
 							ההסבר מתייחס למסלול הרגיל של רישיון לרכב פרטי. בודקים גם את התנאים
 							והתוקף הרשומים ברישיון או בהיתר האישי.
 						</p>
 						<h3>נהג חדש ונהג חדש צעיר</h3>
 						<p>
-							תקופת הנהג החדש היא בדרך כלל שנתיים מקבלת הרישיון הראשון. גם מי שהיה לו
-							קודם רק רישיון לאופנוע,
-							לטרקטור או למכונה ניידת ייחשב נהג חדש כשיקבל רישיון לרכב פרטי. עבירות
-							מסוימות עלולות להאריך את התקופה.
-							נהג חדש שעדיין לא מלאו לו 24 הוא נהג חדש צעיר. נהג חדש מגיל 24 פטור
-							מחובת הליווי הרגילה.
+							תקופת הנהג החדש היא בדרך כלל שנתיים מקבלת הרישיון הראשון. גם מי
+							שהיה לו קודם רק רישיון לאופנוע, לטרקטור או למכונה ניידת ייחשב נהג
+							חדש כשיקבל רישיון לרכב פרטי. עבירות מסוימות עלולות להאריך את
+							התקופה. נהג חדש שעדיין לא מלאו לו 24 הוא נהג חדש צעיר. נהג חדש
+							מגיל 24 פטור מחובת הליווי הרגילה.
 						</p>
 						<p>
-							בנהיגה ברכב פרטי מציגים שלט "נהג חדש" בשוליים התחתונים של החלון האחורי,
-							כך שייראה לנהגים שמאחור, כל עוד הנהג מוגדר נהג חדש.
+							בנהיגה ברכב פרטי מציגים שלט "נהג חדש" בשוליים התחתונים של החלון
+							האחורי, כך שייראה לנהגים שמאחור, כל עוד הנהג מוגדר נהג חדש.
 						</p>
 						<h3>תקופת הליווי</h3>
 						<p>התקופה נמנית ממועד מתן היתר הנהיגה.</p>
@@ -168,36 +196,52 @@
 								ל-<bdi>06:00</bdi>.
 							</li>
 							<li>
-								התוכנית הרגילה כוללת לפחות 50 שעות ליווי: 20 בדרך עירונית, 15 בדרך שאינה
-								עירונית ו-15 בלילה.
+								התוכנית הרגילה כוללת לפחות 50 שעות ליווי: 20 בדרך עירונית, 15
+								בדרך שאינה עירונית ו-15 בלילה.
 							</li>
 						</ul>
 						<p>
-							מלווה יושב לצד הנהג ומחזיק ברישיון תקף לאותו סוג רכב. במסלול הרגיל הוא
-							בן 24 לפחות עם ותק של 5 שנים,
-							או בן 30 לפחות עם ותק של 3 שנים. לבעלי רישיון להוראת נהיגה קיים חריג
-							לדרישת הגיל. אדם שיכור אינו יכול לשמש מלווה.
+							מלווה יושב לצד הנהג ומחזיק ברישיון תקף לאותו סוג רכב. במסלול הרגיל
+							הוא בן 24 לפחות עם ותק של 5 שנים, או בן 30 לפחות עם ותק של 3 שנים.
+							לבעלי רישיון להוראת נהיגה קיים חריג לדרישת הגיל. אדם שיכור אינו
+							יכול לשמש מלווה.
 						</p>
 						<p>
-							לאחר השלמת התוכנית מגישים הצהרת סיום ליווי בשירות משרד התחבורה. חלוף
-							שישה חודשים לבדו אינו מחליף את ההצהרה,
-							ואין לנהוג בהיתר שפג תוקפו. אם מלאו לנהג 24 במהלך התקופה, בודקים מול
-							רשות הרישוי את המשך ההליך והתוקף האישי.
+							לאחר השלמת התוכנית מגישים הצהרת סיום ליווי בשירות משרד התחבורה.
+							חלוף שישה חודשים לבדו אינו מחליף את ההצהרה, ואין לנהוג בהיתר שפג
+							תוקפו. אם מלאו לנהג 24 במהלך התקופה, בודקים מול רשות הרישוי את
+							המשך ההליך והתוקף האישי.
 						</p>
 						<h3>נוסעים וחידוש רישיון</h3>
 						<p>
-							נהג חדש שטרם מלאו לו 21 רשאי, לאחר תקופת הליווי המחייבת, להסיע ללא מלווה
-							עד שני נוסעים.
-							כדי להסיע יותר נדרש מלווה כשיר במושב שלצדו, ובכל מקרה לא חורגים ממספר
-							הנוסעים המותר ברכב.
+							נהג חדש שטרם מלאו לו 21 רשאי, לאחר תקופת הליווי המחייבת, להסיע ללא
+							מלווה עד שני נוסעים. כדי להסיע יותר נדרש מלווה כשיר במושב שלצדו,
+							ובכל מקרה לא חורגים ממספר הנוסעים המותר ברכב.
 						</p>
 						<p>
-							לקראת חידוש רישיון בודקים אם נדרשים תשלום, בדיקות או מבחנים בעקבות עבירה
-							או החלטת רשות הרישוי.
-							העתק רישיון מפיקים בשירות הייעודי במקרה של אובדן, גניבה או השחתה. לפני
-							הנהיגה בודקים שהרישיון בתוקף ושמקיימים את התנאים וההגבלות שבו.
-							פועלים לפי ההודעה האישית והשירותים הרשמיים שבהמשך.
+							לקראת חידוש רישיון בודקים אם נדרשים תשלום, בדיקות או מבחנים בעקבות
+							עבירה או החלטת רשות הרישוי. העתק רישיון מפיקים בשירות הייעודי
+							במקרה של אובדן, גניבה או השחתה. לפני הנהיגה בודקים שהרישיון בתוקף
+							ושמקיימים את התנאים וההגבלות שבו. פועלים לפי ההודעה האישית
+							והשירותים הרשמיים שבהמשך.
 						</p>
+						<aside
+							class="lesson-scenario"
+							aria-labelledby="new-driver-scenario-title"
+						>
+							<h3 id="new-driver-scenario-title">מצב מהכביש</h3>
+							<p>
+								לקראת חידוש רישיון אתם מקבלים הודעה אישית. בודקים את התנאים שבה
+								ואת השירות הרשמי המתאים לפני הנהיגה.
+							</p>
+						</aside>
+						<details class="lesson-self-check">
+							<summary>מה בודקים ברישיון או בהיתר האישי?</summary>
+							<p>את התוקף ואת התנאים וההגבלות שחלים על הנהיגה.</p>
+						</details>
+						<a class="lesson-return-contents" href="#contents"
+							>חזרה לתוכן העניינים</a
+						>
 					</section>
 					<section
 						class="lesson-section"
@@ -217,71 +261,86 @@
 							<li>הדין וההודעות הרשמיות גוברים על סיכום לימודי.</li>
 						</ul>
 						<h3>שירותים ומדריכים ממשלתיים</h3>
-						<ul>
-							<li>
-								<a
-									class="official-resource"
-									href="https://data.gov.il/he/datasets/ministry_of_transport/tavlat-simlei-averot/a2dd714b-e012-46e4-a996-6307f8b46fc5"
-									>טבלת סמלי עבירות וניקוד</a
-								>
-							</li>
-							<li>
-								<a
-									class="official-resource"
-									href="https://www.gov.il/he/pages/new_driver"
-									>מדריך לנהג חדש</a
-								>
-							</li>
-							<li>
-								<a
-									class="official-resource"
-									href="https://www.gov.il/BlobFolder/policy/tamrurim_7924_01_18/he/1694327856_%D7%9C%D7%95%D7%AA_%D7%9D_%D7%9E%D7%A9%D7%95%D7%9C%D7%91_0922.pdf"
-									>לוח התמרורים הרשמי</a
-								>
-							</li>
-							<li>
-								<a
-									class="official-resource"
-									href="https://www.gov.il/he/pages/traffic_courts_information_for_the_traffic_defendant"
-									>מידע לנאשם בדיני תעבורה</a
-								>
-							</li>
-							<li>
-								<a
-									class="official-resource"
-									href="https://www.gov.il/he/service/driving_license_renewal"
-									>חידוש רישיון נהיגה</a
-								>
-							</li>
-							<li>
-								<a
-									class="official-resource"
-									href="https://www.gov.il/he/service/duplicate_drivers_license_in_case_of_loss"
-									>הוצאת העתק רישיון נהיגה</a
-								>
-							</li>
-							<li>
-								<a
-									class="official-resource"
-									href="https://www.gov.il/he/pages/scoring_system_traffic_offens?chapterIndex=2"
-									>שיטת הניקוד לעבירות תנועה</a
-								>
-							</li>
-							<li>
-								<a
-									class="official-resource"
-									href="https://www.gov.il/he/pages/new_driver?chapterIndex=3"
-									>חובת ליווי לנהג חדש צעיר</a
-								>
-							</li>
-							<li>
-								<a
-									class="official-resource"
-									href="https://www.gov.il/he/pages/new_driver?chapterIndex=5"
-									>עבירות של נהג חדש</a
-								>
-							</li>
-						</ul>
+						<div class="official-resources">
+							<section aria-label="נהג חדש וליווי">
+								<h3>נהג חדש וליווי</h3>
+								<ul>
+									<li>
+										<a
+											class="official-resource"
+											href="https://www.gov.il/he/pages/new_driver"
+											>מדריך לנהג חדש - אתר ממשלתי</a
+										>
+									</li>
+									<li>
+										<a
+											class="official-resource"
+											href="https://www.gov.il/he/pages/new_driver?chapterIndex=3"
+											>חובת ליווי לנהג חדש צעיר - אתר ממשלתי</a
+										>
+									</li>
+									<li>
+										<a
+											class="official-resource"
+											href="https://www.gov.il/he/pages/new_driver?chapterIndex=5"
+											>עבירות של נהג חדש - אתר ממשלתי</a
+										>
+									</li>
+								</ul>
+							</section>
+							<section aria-label="רישוי אישי">
+								<h3>רישוי אישי</h3>
+								<ul>
+									<li>
+										<a
+											class="official-resource"
+											href="https://www.gov.il/he/service/driving_license_renewal"
+											>חידוש רישיון נהיגה - אתר ממשלתי</a
+										>
+									</li>
+									<li>
+										<a
+											class="official-resource"
+											href="https://www.gov.il/he/service/duplicate_drivers_license_in_case_of_loss"
+											>הוצאת העתק רישיון נהיגה - אתר ממשלתי</a
+										>
+									</li>
+								</ul>
+							</section>
+							<section aria-label="תמרורים, עבירות וניקוד">
+								<h3>תמרורים, עבירות וניקוד</h3>
+								<ul>
+									<li>
+										<a
+											class="official-resource"
+											href="https://data.gov.il/he/datasets/ministry_of_transport/tavlat-simlei-averot/a2dd714b-e012-46e4-a996-6307f8b46fc5"
+											>טבלת סמלי עבירות וניקוד - אתר ממשלתי</a
+										>
+									</li>
+									<li>
+										<a
+											class="official-resource"
+											href="https://www.gov.il/BlobFolder/policy/tamrurim_7924_01_18/he/1694327856_%D7%9C%D7%95%D7%AA_%D7%9D_%D7%9E%D7%A9%D7%95%D7%9C%D7%91_0922.pdf"
+											>לוח התמרורים הרשמי - PDF, אתר ממשלתי</a
+										>
+									</li>
+									<li>
+										<a
+											class="official-resource"
+											href="https://www.gov.il/he/pages/traffic_courts_information_for_the_traffic_defendant"
+											>מידע לנאשם בדיני תעבורה - אתר ממשלתי</a
+										>
+									</li>
+									<li>
+										<a
+											class="official-resource"
+											href="https://www.gov.il/he/pages/scoring_system_traffic_offens?chapterIndex=2"
+											>שיטת הניקוד לעבירות תנועה - אתר ממשלתי</a
+										>
+									</li>
+								</ul>
+							</section>
+						</div>
 						<aside class="lesson-takeaway">
 							<strong>פרט משתנה בודקים בזמן אמת</strong>
 							<p>
@@ -289,24 +348,44 @@
 								בודקים באתר הממשלתי לפני שפועלים.
 							</p>
 						</aside>
+						<aside
+							class="lesson-scenario"
+							aria-labelledby="official-information-scenario-title"
+						>
+							<h3 id="official-information-scenario-title">מצב מהכביש</h3>
+							<p>
+								אתם צריכים לברר תנאי רישוי. פותחים את השירות הממשלתי המתאים
+								ובודקים את הפרט העדכני לפני שפועלים.
+							</p>
+						</aside>
+						<details class="lesson-self-check">
+							<summary>מה גובר כאשר סיכום לימודי שונה מהודעה רשמית?</summary>
+							<p>הדין וההודעות הרשמיות.</p>
+						</details>
+						<a class="lesson-return-contents" href="#contents"
+							>חזרה לתוכן העניינים</a
+						>
 					</section>
 					<div class="lesson-quiz">
 						<p>תרגול בנושא נהג חדש, רישוי ושיטת הניקוד</p>
-						<a class="course-button lesson-quiz-link" href="quiz/">לשאלון התרגול</a>
+						<a
+							class="btn btn-primary course-button lesson-quiz-link"
+							href="quiz/"
+							>לשאלון התרגול</a
+						>
 						<small>17 שאלות בנושא, עם ציון והסברים לתשובות.</small>
 					</div>
 					<footer class="lesson-end">
-						<p>אפשר לחזור לספרייה ולבחור כל נושא אחר.</p>
-						<a class="course-button" href="../#licensing-and-points"
-							>חזרה לנושאי הלימוד</a
-						>
+						<a href="../#licensing-and-points">לכל הנושאים</a>
 					</footer>
 				</article>
 			</div>
 		</main>
 		<footer class="course-shell course-footer">
-			<p>הקורס משלים את התרגול בשיעורי הנהיגה ואינו מחליף את מורה הנהיגה.</p>
-			<a href="../../index.html">חזרה לדף הבית</a>
+			<p>נהיגה נכונה עם אורן בכור</p>
+			<nav aria-label="קישורי האתר">
+				<a href="../../index.html">לדף הבית</a><a href="../">לנושאי הלימוד</a>
+			</nav>
 		</footer>
 	</body>
 </html>

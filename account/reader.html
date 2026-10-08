@@ -3,35 +3,44 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#f2f5fc" />
 		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; media-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'" />
 		<meta name="referrer" content="no-referrer" />
 		<meta name="robots" content="noindex" />
-		<title>קריאת שיעור - נהיגה נכונה עם אורן בכור</title>
+		<title>קריאת קטע לימוד - נהיגה נכונה עם אורן בכור</title>
 		<meta name="description" content="קריאת חומרי הלימוד ושמירת מיקום הקריאה בחשבון שלכם." />
 		<link rel="icon" href="../assets/images/optimized/favicon.png?v=2" type="image/png" />
-		<link rel="preload" href="../assets/fonts/varela-round-v21-hebrew.woff2" as="font" type="font/woff2" crossorigin />
-		<link rel="preload" href="../assets/fonts/varela-round-v21-latin.woff2" as="font" type="font/woff2" crossorigin />
-		<link rel="stylesheet" href="../css/base.css" />
+		<link rel="preload" href="../assets/fonts/fredoka-v17-hebrew.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="../assets/fonts/fredoka-v17-latin.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="stylesheet" href="../css/base.css?v=3" />
 		<link rel="stylesheet" href="account.css" />
 		<link rel="stylesheet" href="learning.css" />
 		<script type="module" src="reader.js"></script>
 	</head>
 	<body>
-		<a class="skip-link" href="#main">דילוג לתוכן</a>
+		<a class="skip-link" href="#main">דילוג לתוכן הראשי</a>
 		<main id="main" class="account-shell learning-shell" tabindex="-1">
 			<a class="account-back" href="learning.html">חזרה ללמידה שלכם</a>
 			<section class="account-card" aria-labelledby="reader-heading">
-				<h1 id="reader-heading">קריאת שיעור</h1>
-				<p class="account-feedback" role="status" aria-live="polite" data-reader-status>כדי לטעון את השיעור נדרשים חשבון מחובר וחיבור לשירות.</p>
-				<noscript><p>כדי לטעון את השיעור יש להפעיל JavaScript בדפדפן.</p></noscript>
-				<button class="account-action account-action-secondary" type="button" data-reload>טעינת השיעור מחדש</button>
+				<h1 id="reader-heading">קריאת קטע לימוד</h1>
+				<div data-reader-interface hidden>
+				<p class="account-feedback" role="status" aria-live="polite" data-reader-status>טוענים את קטע הלימוד...</p>
+
+				<button class="account-action btn btn-secondary account-action-secondary" type="button" data-reload hidden>טעינת קטע הלימוד מחדש</button>
 				<article data-reading hidden>
+					<p class="account-hint" data-reading-progress aria-live="off">מיקום הקריאה נשמר בזמן הגלילה.</p>
+					<div class="reading-save-feedback">
+						<p class="account-feedback" role="status" aria-live="polite" data-position-status tabindex="-1"></p>
+						<button class="account-action btn btn-secondary account-action-secondary" type="button" data-save-position hidden>ניסיון נוסף לשמירת המיקום</button>
+					</div>
 					<div class="reading-body" data-reading-body></div>
 					<div class="reading-media" data-reading-media></div>
-					<button class="account-action" type="button" data-save-position>שמירת מיקום הקריאה</button>
-					<p class="account-feedback" role="status" aria-live="polite" data-position-status></p>
+					<nav class="learning-actions" aria-label="המשך הלמידה"><a class="account-action btn btn-primary" href="learning.html">לתרגולים הזמינים</a><a class="account-action btn btn-secondary account-action-secondary" href="learning.html">חזרה לרשימת קטעי הלימוד</a></nav>
 				</article>
-				<p class="account-links"><a href="login.html">כניסה לחשבון</a></p>
+				</div>
+				<noscript><p>כדי לטעון את קטע הלימוד יש להפעיל JavaScript בדפדפן.</p></noscript>
+				<p class="account-links"><a class="account-action btn btn-primary" href="login.html" data-sign-in hidden>כניסה לחשבון</a></p>
+				<p class="account-links"><a href="../course/">לנושאי הלימוד ולתרגול החינמי</a></p>
 			</section>
 		</main>
 	</body>

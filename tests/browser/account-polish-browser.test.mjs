@@ -43,7 +43,7 @@ async function assertDocumentFits(page, label) {
 		viewportHeight: document.documentElement.clientHeight,
 	}));
 	assert.ok(size.width <= size.viewportWidth, `${label}: document width ${size.width} exceeds ${size.viewportWidth}`);
-	assert.ok(size.height <= size.viewportHeight, `${label}: document height ${size.height} exceeds ${size.viewportHeight}`);
+	assert.equal(await page.locator(".account-card").evaluate(node => node.scrollHeight <= node.clientHeight + 1), true, `${label}: the document owns vertical scrolling`);
 }
 
 async function assertControlsReachable(page, label) {
@@ -54,7 +54,7 @@ async function assertControlsReachable(page, label) {
 			return [...node.getClientRects()].some(bounds => {
 				const x = bounds.left + bounds.width / 2;
 				const y = bounds.top + bounds.height / 2;
-				return bounds.top >= 0 && bounds.bottom <= innerHeight && bounds.left >= 0 && bounds.right <= innerWidth
+				return bounds.top >= -1 && bounds.bottom <= innerHeight + 1 && bounds.left >= -1 && bounds.right <= innerWidth + 1
 					&& node.contains(document.elementFromPoint(x, y));
 			});
 		});
@@ -163,7 +163,7 @@ test("account fields retain native pointer editing and show outlines only for ke
 	}
 });
 
-test("account documents fit desktop and short mobile viewports while controls remain reachable", async t => {
+test("account documents avoid horizontal overflow and keep controls reachable at desktop and short mobile sizes", async t => {
 	const { app, browser } = await fixture(t);
 	for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }, { width: 375, height: 667 }, { width: 320, height: 568 }]) {
 		const page = await browser.newPage({ viewport, reducedMotion: "reduce" });
@@ -179,7 +179,7 @@ test("account documents fit desktop and short mobile viewports while controls re
 	}
 });
 
-test("short account viewports retain keyboard access when content needs internal scrolling", async t => {
+test("short account viewports retain keyboard access while the document scrolls", async t => {
 	const { app, browser } = await fixture(t);
 	const page = await browser.newPage({ viewport: { width: 320, height: 284 } });
 	await openScreen(page, app, "register");
@@ -210,6 +210,35 @@ test("account navigation stays reachable without JavaScript or with a blocked en
 		await assertControlsReachable(page, "baseline registration");
 		await page.getByRole("link", { name: "חזרה לדף הבית" }).click();
 		await page.waitForURL(`${app.origin}/index.html`);
+		await page.close();
+	}
+});
+
+test("primary account links keep shared button geometry and readable text inside link containers", async t => {
+	const { app, browser } = await fixture(t);
+	for (const screen of ["index", "reset", "learning", "reader"]) {
+		const page = await browser.newPage();
+		if (screen === "index") await openScreen(page, app, screen);
+		else await page.goto(`${app.origin}/account/${screen}.html${screen === "reader" ? "?section=00000000-0000-0000-0000-000000000000&access=free" : ""}`);
+		const link = page.locator("a.btn-primary:visible").first();
+		await link.waitFor();
+		const result = await link.evaluate(node => {
+			const probe = document.createElement("button");
+			probe.className = "btn btn-primary";
+			document.body.append(probe);
+			const style = getComputedStyle(node), baseline = getComputedStyle(probe);
+			const properties = ["minHeight", "paddingTop", "paddingRight", "fontSize", "fontWeight", "lineHeight", "gap"];
+			const luminance = color => color.match(/[\d.]+/g).slice(0, 3).map(Number)
+				.map(value => value / 255).map(value => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4)
+				.reduce((total, value, index) => total + value * [0.2126, 0.7152, 0.0722][index], 0);
+			const values = [luminance(style.color), luminance(style.backgroundColor)].sort((a, b) => b - a);
+			const result = { actual: properties.map(property => style[property]), expected: properties.map(property => baseline[property]), contrast: (values[0] + 0.05) / (values[1] + 0.05), height: node.getBoundingClientRect().height };
+			probe.remove();
+			return result;
+		});
+		assert.deepEqual(result.actual, result.expected, `${screen}: account styles must preserve shared control geometry`);
+		assert.ok(result.contrast >= 4.5, `${screen}: primary action text must pass normal-text contrast`);
+		assert.ok(result.height >= 44);
 		await page.close();
 	}
 });

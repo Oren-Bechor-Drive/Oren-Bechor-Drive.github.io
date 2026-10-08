@@ -33,11 +33,14 @@
     "image-size": "^2.0.4",
     "jsdom": "30.0.1",
     "playwright": "^1.63.0",
-    "sharp": "^0.35.4",
+    "sharp": "^0.35.5",
     "supabase": "2.117.0",
     "wrangler": "4.143.1"
   },
   "allowScripts": {
     "@embedded-postgres/linux-x64@17.6.0-beta.15": true
+  },
+  "overrides": {
+    "sharp": "$sharp"
   }
 }

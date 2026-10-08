@@ -78,7 +78,7 @@
     },
     {
       "id": "driving-test",
-      "title": "טעויות נפוצות בטסט"
+      "title": "טעויות נפוצות בטסט המעשי"
     },
     {
       "id": "licensing-and-points",
@@ -115,7 +115,8 @@
         "bank",
         "licensing",
         "offense-catalogue"
-      ]
+      ],
+      "lessonSectionId": "new-driver"
     },
     {
       "officialId": "0004",
@@ -136,7 +137,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "explanation": "המלווה צריך רישיון תקף לאותו סוג רכב ולענות על דרישות הגיל והוותק. למורה נהיגה מוסמך יש חריג לדרישת הגיל.",
+      "explanation": "המלווה צריך רישיון מתאים ובתוקף ולעמוד בדרישות הגיל והוותק. למורה נהיגה מוסמך יש חריג לדרישת הגיל.",
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank",
@@ -159,7 +160,8 @@
         "sourceIds": [
           "accompaniment"
         ]
-      }
+      },
+      "lessonSectionId": "new-driver"
     },
     {
       "officialId": "0010",
@@ -188,7 +190,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "definitions"
     },
     {
       "officialId": "0011",
@@ -217,7 +220,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "definitions"
     },
     {
       "officialId": "0016",
@@ -246,7 +250,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "road-direction"
     },
     {
       "officialId": "0017",
@@ -275,7 +280,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "definitions"
     },
     {
       "officialId": "0019",
@@ -304,7 +310,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "definitions"
     },
     {
       "officialId": "0021",
@@ -334,7 +341,8 @@
       "sourceIds": [
         "bank",
         "definitions"
-      ]
+      ],
+      "lessonSectionId": "definitions"
     },
     {
       "officialId": "0027",
@@ -381,7 +389,9 @@
         "sourceIds": [
           "priority-definition"
         ]
-      }
+      },
+      "lessonSectionId": "definitions",
+      "lessonTopicId": "learning-foundations"
     },
     {
       "officialId": "0052",
@@ -397,7 +407,7 @@
         "1",
         "B"
       ],
-      "question": "\"שיטת הניקוד בעבירות תעבורה\" היא על פי החוק :",
+      "question": "\"שיטת הניקוד בעבירות תעבורה\" היא על פי החוק:",
       "options": [
         "מערכת לדווח לבית המשפט על אי תקינות של כלי רכב.",
         "מערכת לרישום נקודות חובה לנהגים המורשעים בעבירות תעבורה אחת לחמש שנים.",
@@ -406,7 +416,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "explanation": "הניקוד נרשם לפי הדין גם בהליך המתאים להפרת תעבורה מנהלית. לא כל רישום מחייב אותו אמצעי תיקון.",
+      "explanation": "הנקודות נרשמות לפי הדין, גם בהליך של הפרת תעבורה מנהלית. הרישום אינו מחייב תמיד אותו אמצעי תיקון.",
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank",
@@ -430,7 +440,8 @@
           "points",
           "points-reform"
         ]
-      }
+      },
+      "lessonSectionId": "points"
     },
     {
       "officialId": "0054",
@@ -456,7 +467,8 @@
       "sourceIds": [
         "bank",
         "road-safety-textbook"
-      ]
+      ],
+      "lessonSectionId": "new-driver"
     },
     {
       "officialId": "0055",
@@ -483,7 +495,8 @@
         "bank",
         "accompaniment",
         "new-driver-2026"
-      ]
+      ],
+      "lessonSectionId": "new-driver"
     },
     {
       "officialId": "0058",
@@ -512,7 +525,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "priority"
     },
     {
       "officialId": "0061",
@@ -543,7 +557,8 @@
         "bank",
         "sign-chart",
         "road-safety-textbook"
-      ]
+      ],
+      "lessonSectionId": "priority"
     },
     {
       "officialId": "0064",
@@ -574,7 +589,8 @@
         "bank",
         "sign-chart",
         "road-safety-textbook"
-      ]
+      ],
+      "lessonSectionId": "priority"
     },
     {
       "officialId": "0065",
@@ -605,7 +621,8 @@
         "bank",
         "sign-chart",
         "road-safety-textbook"
-      ]
+      ],
+      "lessonSectionId": "priority"
     },
     {
       "officialId": "0066",
@@ -636,7 +653,8 @@
         "bank",
         "sign-chart",
         "road-safety-textbook"
-      ]
+      ],
+      "lessonSectionId": "priority"
     },
     {
       "officialId": "0068",
@@ -667,7 +685,8 @@
         "bank",
         "sign-chart",
         "road-safety-textbook"
-      ]
+      ],
+      "lessonSectionId": "priority"
     },
     {
       "officialId": "0069",
@@ -698,7 +717,8 @@
         "bank",
         "sign-chart",
         "road-safety-textbook"
-      ]
+      ],
+      "lessonSectionId": "priority"
     },
     {
       "officialId": "0070",
@@ -723,13 +743,14 @@
       ],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "explanation": "רישיון מתאים אינו תחליף להכרת אופן הפעלת הרכב. הנהיגה כפופה גם לתנאים ולהגבלות שברישיון, כגון הגבלה לרכב אוטומטי.",
+      "explanation": "רישיון מתאים אינו מחליף היכרות עם אופן הפעלת הרכב. מקיימים גם את התנאים שברישיון, למשל הגבלה לנהיגה ברכב אוטומטי.",
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank",
         "licensing",
         "offense-catalogue"
-      ]
+      ],
+      "lessonSectionId": "new-driver"
     },
     {
       "officialId": "0090",
@@ -758,7 +779,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "road-direction"
     },
     {
       "officialId": "0109",
@@ -787,7 +809,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "right-turn"
     },
     {
       "officialId": "0118",
@@ -817,7 +840,8 @@
       "sourceIds": [
         "bank",
         "road-safety-textbook"
-      ]
+      ],
+      "lessonSectionId": "u-turn"
     },
     {
       "officialId": "0119",
@@ -847,7 +871,8 @@
       "sourceIds": [
         "bank",
         "road-safety-textbook"
-      ]
+      ],
+      "lessonSectionId": "u-turn"
     },
     {
       "officialId": "0127",
@@ -878,7 +903,8 @@
         "bank",
         "points",
         "courses"
-      ]
+      ],
+      "lessonSectionId": "points"
     },
     {
       "officialId": "0129",
@@ -908,7 +934,8 @@
       "sourceIds": [
         "bank",
         "new-driver-2026"
-      ]
+      ],
+      "lessonSectionId": "restrictions"
     },
     {
       "officialId": "0130",
@@ -938,7 +965,8 @@
       "sourceIds": [
         "bank",
         "new-driver-2026"
-      ]
+      ],
+      "lessonSectionId": "restrictions"
     },
     {
       "officialId": "0134",
@@ -986,7 +1014,8 @@
         "sourceIds": [
           "new-driver-2026"
         ]
-      }
+      },
+      "lessonSectionId": "restrictions"
     },
     {
       "officialId": "0135",
@@ -1016,7 +1045,8 @@
       "sourceIds": [
         "bank",
         "new-driver-2026"
-      ]
+      ],
+      "lessonSectionId": "restrictions"
     },
     {
       "officialId": "0164",
@@ -1045,7 +1075,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "lane-markings"
     },
     {
       "officialId": "0175",
@@ -1075,7 +1106,8 @@
       "sourceIds": [
         "bank",
         "road-safety-textbook"
-      ]
+      ],
+      "lessonSectionId": "left-turn"
     },
     {
       "officialId": "0191",
@@ -1104,7 +1136,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "obstacle"
     },
     {
       "officialId": "0192",
@@ -1134,7 +1167,8 @@
       "sourceIds": [
         "bank",
         "road-safety-textbook"
-      ]
+      ],
+      "lessonSectionId": "obstacle"
     },
     {
       "officialId": "0220",
@@ -1165,7 +1199,8 @@
         "bank",
         "points",
         "courses"
-      ]
+      ],
+      "lessonSectionId": "points"
     },
     {
       "officialId": "0221",
@@ -1193,7 +1228,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "control"
     },
     {
       "officialId": "0223",
@@ -1221,7 +1257,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "control"
     },
     {
       "officialId": "0246",
@@ -1258,7 +1295,8 @@
       "imageAlt": "שני איורים של אותו רמזור זה לצד זה: משמאל כל שלושת האורות כבויים, ומימין האור האמצעי צהוב והשאר כבויים.",
       "imagePath": "assets/images/theory/originals/TQ_PIC_3186.jpg",
       "imageWidth": 350,
-      "imageHeight": 230
+      "imageHeight": 230,
+      "lessonSectionId": "priority"
     },
     {
       "officialId": "0251",
@@ -1283,7 +1321,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "explanation": "הפטור מנשיאת רישיונות אינו פטור מרישיון תקף. נושאים תעודה מזהה רשמית של מדינת ישראל (תעודת זהות או דרכון), תעודת ביטוח ונספחים כנדרש.",
+      "explanation": "הרישיונות צריכים להיות בתוקף גם כשלא נושאים אותם. נושאים תעודה מזהה רשמית של מדינת ישראל (תעודת זהות או דרכון), וגם תעודת ביטוח ונספחים נדרשים.",
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank",
@@ -1305,7 +1343,8 @@
         "sourceIds": [
           "renewal"
         ]
-      }
+      },
+      "lessonSectionId": "new-driver"
     },
     {
       "officialId": "0257",
@@ -1330,12 +1369,13 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "explanation": "מפסיקים את העקיפה ונמנעים מהתנגשות חזיתית. החזרה לימין צריכה להיות מבוקרת ובטוחה, בלי לחתוך את הרכב הנעקף.",
+      "explanation": "מאטים ומפסיקים את העקיפה. חוזרים מהר לנתיב הימני, בשליטה ובלי לחתוך את הרכב הנעקף.",
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank",
         "new-driver-2026"
-      ]
+      ],
+      "lessonSectionId": "restrictions"
     },
     {
       "officialId": "0258",
@@ -1366,7 +1406,8 @@
         "bank",
         "speed",
         "new-driver-2026"
-      ]
+      ],
+      "lessonSectionId": "restrictions"
     },
     {
       "officialId": "0266",
@@ -1409,7 +1450,8 @@
         "sourceIds": [
           "accompaniment"
         ]
-      }
+      },
+      "lessonSectionId": "new-driver"
     },
     {
       "officialId": "0267",
@@ -1454,7 +1496,8 @@
           "accompaniment",
           "new-driver-2026"
         ]
-      }
+      },
+      "lessonSectionId": "new-driver"
     },
     {
       "officialId": "0268",
@@ -1481,7 +1524,8 @@
         "bank",
         "accompaniment",
         "new-driver-2026"
-      ]
+      ],
+      "lessonSectionId": "new-driver"
     },
     {
       "officialId": "0296",
@@ -1508,7 +1552,8 @@
         "bank",
         "accompaniment",
         "new-driver-2026"
-      ]
+      ],
+      "lessonSectionId": "new-driver"
     },
     {
       "officialId": "0332",
@@ -1537,7 +1582,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "speed"
     },
     {
       "officialId": "0333",
@@ -1557,7 +1603,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "explanation": "זהו גיל הזכאות המזערי לרישיון B, בכפוף לעמידה בכל יתר הדרישות. הוא שונה מגיל תחילת הלימוד או התאוריה.",
+      "explanation": "זהו הגיל המינימלי לקבלת רישיון B. עדיין נדרשת עמידה בשאר הדרישות. גיל תחילת הלימוד או התאוריה הוא תנאי נפרד.",
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank",
@@ -1583,7 +1629,8 @@
           "age-reform",
           "license-classes"
         ]
-      }
+      },
+      "lessonSectionId": "new-driver"
     },
     {
       "officialId": "0335",
@@ -1613,7 +1660,8 @@
       "sourceIds": [
         "bank",
         "medical"
-      ]
+      ],
+      "lessonSectionId": "official-information"
     },
     {
       "officialId": "0336",
@@ -1643,7 +1691,8 @@
       "sourceIds": [
         "bank",
         "courses"
-      ]
+      ],
+      "lessonSectionId": "points"
     },
     {
       "officialId": "0357",
@@ -1672,7 +1721,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "obstacle"
     },
     {
       "officialId": "0387",
@@ -1708,7 +1758,8 @@
       "imageAlt": "ארבעה תמרורים ממוספרים: למעלה משמאל 307, עיגול אדום עם חץ שחור מטה וחץ אדום מעלה; למעלה מימין 301, משולש אדום הפוך; למטה משמאל 121, משולש אדום ובתוכו שלושה חצים שחורים במעגל; למטה מימין 303, עיגול כחול ובתוכו שלושה חצים לבנים במעגל.",
       "imagePath": "assets/images/theory/originals/TQ_PIC_3387.jpg",
       "imageWidth": 350,
-      "imageHeight": 230
+      "imageHeight": 230,
+      "lessonSectionId": "single-lane"
     },
     {
       "officialId": "0401",
@@ -1737,7 +1788,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "common-signs"
     },
     {
       "officialId": "0430",
@@ -1773,7 +1825,8 @@
       "imageAlt": "תמרור משולש בעל מסגרת אדומה ורקע לבן, ובתוכו שלושה חצים שחורים במעגל.",
       "imagePath": "assets/images/theory/originals/TQ_PIC_3430.jpg",
       "imageWidth": 350,
-      "imageHeight": 230
+      "imageHeight": 230,
+      "lessonSectionId": "single-lane"
     },
     {
       "officialId": "0431",
@@ -1809,7 +1862,8 @@
       "imageAlt": "תמרור משולש בעל מסגרת אדומה ורקע לבן, ובתוכו שלושה חצים שחורים במעגל.",
       "imagePath": "assets/images/theory/originals/TQ_PIC_3430.jpg",
       "imageWidth": 350,
-      "imageHeight": 230
+      "imageHeight": 230,
+      "lessonSectionId": "single-lane"
     },
     {
       "officialId": "0444",
@@ -1839,7 +1893,8 @@
       "sourceIds": [
         "bank",
         "speed"
-      ]
+      ],
+      "lessonSectionId": "speed"
     },
     {
       "officialId": "0477",
@@ -1868,7 +1923,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "common-signs"
     },
     {
       "officialId": "0479",
@@ -1898,7 +1954,8 @@
       "sourceIds": [
         "bank",
         "new-driver-2026"
-      ]
+      ],
+      "lessonSectionId": "restrictions"
     },
     {
       "officialId": "0550",
@@ -1934,7 +1991,8 @@
       "imageAlt": "תמרור עגול כחול ובתוכו שלושה חצים לבנים במעגל.",
       "imagePath": "assets/images/theory/originals/TQ_PIC_3550.jpg",
       "imageWidth": 350,
-      "imageHeight": 180
+      "imageHeight": 180,
+      "lessonSectionId": "single-lane"
     },
     {
       "officialId": "0551",
@@ -1970,7 +2028,8 @@
       "imageAlt": "תמרור עגול כחול ובתוכו שלושה חצים לבנים במעגל.",
       "imagePath": "assets/images/theory/originals/TQ_PIC_3550.jpg",
       "imageWidth": 350,
-      "imageHeight": 180
+      "imageHeight": 180,
+      "lessonSectionId": "single-lane"
     },
     {
       "officialId": "0606",
@@ -1999,7 +2058,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "common-signs"
     },
     {
       "officialId": "0667",
@@ -2036,7 +2096,8 @@
       "imageAlt": "רמזור בעל שלושה אורות זה מעל זה. האור האמצעי צהוב והאורות העליון והתחתון כבויים.",
       "imagePath": "assets/images/theory/originals/TQ_PIC_3667.jpg",
       "imageWidth": 350,
-      "imageHeight": 226
+      "imageHeight": 226,
+      "lessonSectionId": "priority"
     },
     {
       "officialId": "0669",
@@ -2073,7 +2134,8 @@
       "imageAlt": "שני רמזורים זה לצד זה. בתחתית הרמזור השמאלי חץ ירוק הפונה שמאלה, ובתחתית הרמזור הימני חץ ירוק הפונה ימינה. יתר האורות כבויים.",
       "imagePath": "assets/images/theory/originals/TQ_PIC_3669.jpg",
       "imageWidth": 350,
-      "imageHeight": 230
+      "imageHeight": 230,
+      "lessonSectionId": "priority"
     },
     {
       "officialId": "0691",
@@ -2102,7 +2164,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "common-signs"
     },
     {
       "officialId": "0706",
@@ -2138,7 +2201,8 @@
       "imageAlt": "מבט מתוך רכב 3 המתקרב למעגל תנועה. משמאל רוכב אופניים המסומן 2 לצד האי המרכזי. סמוך לכניסה תמרור עגול כחול עם חצים לבנים במעגל, וחץ אדום מסמן את מסלול הכניסה של הרכב.",
       "imagePath": "assets/images/theory/originals/TQ_PIC_3706.jpg",
       "imageWidth": 350,
-      "imageHeight": 230
+      "imageHeight": 230,
+      "lessonSectionId": "single-lane"
     },
     {
       "officialId": "0721",
@@ -2174,7 +2238,8 @@
       "imageAlt": "מבט מתוך רכב 2 המתקרב למעגל תנועה. משמאל רכב אדום המסומן 1 נוסע בתוך המעגל. ליד האי מוצבים תמרורים עגולים כחולים עם חצים לבנים במעגל, וחץ אדום מסמן את מסלול הכניסה של רכב 2.",
       "imagePath": "assets/images/theory/originals/TQ_PIC_3721.jpg",
       "imageWidth": 350,
-      "imageHeight": 230
+      "imageHeight": 230,
+      "lessonSectionId": "single-lane"
     },
     {
       "officialId": "0731",
@@ -2203,7 +2268,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "merge"
     },
     {
       "officialId": "0733",
@@ -2250,7 +2316,8 @@
         "sourceIds": [
           "road-safety-textbook"
         ]
-      }
+      },
+      "lessonSectionId": "observation"
     },
     {
       "officialId": "0738",
@@ -2276,7 +2343,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "control"
     },
     {
       "officialId": "0739",
@@ -2302,7 +2370,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "control"
     },
     {
       "officialId": "0744",
@@ -2349,7 +2418,8 @@
         "sourceIds": [
           "narrow-road"
         ]
-      }
+      },
+      "lessonSectionId": "uphill-downhill"
     },
     {
       "officialId": "0747",
@@ -2380,7 +2450,8 @@
         "bank",
         "sign-chart",
         "road-safety-textbook"
-      ]
+      ],
+      "lessonSectionId": "priority"
     },
     {
       "officialId": "0750",
@@ -2409,7 +2480,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "road-direction"
     },
     {
       "officialId": "0752",
@@ -2438,7 +2510,9 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "restrictions",
+      "lessonTopicId": "overtaking"
     },
     {
       "officialId": "0755",
@@ -2467,7 +2541,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "lane-markings"
     },
     {
       "officialId": "0758",
@@ -2497,7 +2572,9 @@
       "sourceIds": [
         "bank",
         "definitions"
-      ]
+      ],
+      "lessonSectionId": "definitions",
+      "lessonTopicId": "learning-foundations"
     },
     {
       "officialId": "0760",
@@ -2526,7 +2603,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "lane-markings"
     },
     {
       "officialId": "0761",
@@ -2555,7 +2633,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "lane-markings"
     },
     {
       "officialId": "0762",
@@ -2584,7 +2663,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "lane-markings"
     },
     {
       "officialId": "0766",
@@ -2613,7 +2693,9 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "road-direction",
+      "lessonTopicId": "roads-and-lanes"
     },
     {
       "officialId": "0768",
@@ -2643,7 +2725,9 @@
       "sourceIds": [
         "bank",
         "new-driver-2026"
-      ]
+      ],
+      "lessonSectionId": "summary",
+      "lessonTopicId": "learning-foundations"
     },
     {
       "officialId": "0772",
@@ -2673,7 +2757,8 @@
       "sourceIds": [
         "bank",
         "new-driver-2026"
-      ]
+      ],
+      "lessonSectionId": "restrictions"
     },
     {
       "officialId": "0775",
@@ -2702,7 +2787,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "approach"
     },
     {
       "officialId": "0779",
@@ -2732,7 +2818,8 @@
       "sourceIds": [
         "bank",
         "road-safety-textbook"
-      ]
+      ],
+      "lessonSectionId": "approach"
     },
     {
       "officialId": "0782",
@@ -2761,7 +2848,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "right-turn"
     },
     {
       "officialId": "0783",
@@ -2785,7 +2873,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "lane-markings"
     },
     {
       "officialId": "0789",
@@ -2815,7 +2904,8 @@
       "sourceIds": [
         "bank",
         "road-safety-textbook"
-      ]
+      ],
+      "lessonSectionId": "approach"
     },
     {
       "officialId": "0790",
@@ -2845,7 +2935,9 @@
       "sourceIds": [
         "bank",
         "definitions"
-      ]
+      ],
+      "lessonSectionId": "definitions",
+      "lessonTopicId": "learning-foundations"
     },
     {
       "officialId": "0791",
@@ -2874,7 +2966,9 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "left-turn",
+      "lessonTopicId": "right-of-way"
     },
     {
       "officialId": "0792",
@@ -2904,7 +2998,8 @@
       "sourceIds": [
         "bank",
         "road-safety-textbook"
-      ]
+      ],
+      "lessonSectionId": "u-turn"
     },
     {
       "officialId": "0793",
@@ -2933,7 +3028,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "u-turn"
     },
     {
       "officialId": "0797",
@@ -2962,7 +3058,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "u-turn"
     },
     {
       "officialId": "0799",
@@ -2990,7 +3087,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "control"
     },
     {
       "officialId": "0800",
@@ -3018,7 +3116,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "observation"
     },
     {
       "officialId": "0801",
@@ -3046,7 +3145,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "control"
     },
     {
       "officialId": "0802",
@@ -3076,7 +3176,8 @@
       "sourceIds": [
         "bank",
         "speed"
-      ]
+      ],
+      "lessonSectionId": "speed"
     },
     {
       "officialId": "0803",
@@ -3106,7 +3207,8 @@
       "sourceIds": [
         "bank",
         "speed"
-      ]
+      ],
+      "lessonSectionId": "speed"
     },
     {
       "officialId": "0804",
@@ -3134,7 +3236,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "speed"
     },
     {
       "officialId": "0805",
@@ -3163,7 +3266,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "speed"
     },
     {
       "officialId": "0806",
@@ -3192,7 +3296,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "speed"
     },
     {
       "officialId": "0808",
@@ -3221,7 +3326,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "speed"
     },
     {
       "officialId": "0809",
@@ -3250,7 +3356,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "speed"
     },
     {
       "officialId": "0810",
@@ -3279,7 +3386,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "theory-and-practice"
     },
     {
       "officialId": "0816",
@@ -3308,7 +3416,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "theory-and-practice"
     },
     {
       "officialId": "0820",
@@ -3337,7 +3446,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "theory-and-practice"
     },
     {
       "officialId": "0822",
@@ -3367,7 +3477,8 @@
       "sourceIds": [
         "bank",
         "new-driver-2026"
-      ]
+      ],
+      "lessonSectionId": "restrictions"
     },
     {
       "officialId": "0823",
@@ -3397,7 +3508,8 @@
       "sourceIds": [
         "bank",
         "new-driver-2026"
-      ]
+      ],
+      "lessonSectionId": "restrictions"
     },
     {
       "officialId": "0828",
@@ -3427,7 +3539,8 @@
       "sourceIds": [
         "bank",
         "new-driver-2026"
-      ]
+      ],
+      "lessonSectionId": "restrictions"
     },
     {
       "officialId": "0835",
@@ -3456,7 +3569,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "merge"
     },
     {
       "officialId": "0865",
@@ -3485,7 +3599,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "merge"
     },
     {
       "officialId": "0872",
@@ -3513,7 +3628,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "control"
     },
     {
       "officialId": "0893",
@@ -3542,7 +3658,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "approach"
     },
     {
       "officialId": "0897",
@@ -3571,7 +3688,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "right-turn"
     },
     {
       "officialId": "0903",
@@ -3600,7 +3718,9 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "priority",
+      "lessonTopicId": "priority-hierarchy"
     },
     {
       "officialId": "0951",
@@ -3627,7 +3747,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "control"
     },
     {
       "officialId": "0988",
@@ -3656,7 +3777,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "obstacle"
     },
     {
       "officialId": "1045",
@@ -3681,7 +3803,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "control"
     },
     {
       "officialId": "1064",
@@ -3708,7 +3831,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "junction"
     },
     {
       "officialId": "1065",
@@ -3735,7 +3859,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "junction"
     },
     {
       "officialId": "1383",
@@ -3764,7 +3889,9 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "speed",
+      "lessonTopicId": "signs-and-speed"
     },
     {
       "officialId": "1484",
@@ -3794,7 +3921,8 @@
         "bank",
         "speed",
         "new-driver-2026"
-      ]
+      ],
+      "lessonSectionId": "restrictions"
     },
     {
       "officialId": "1486",
@@ -3819,7 +3947,8 @@
       "sourceIds": [
         "bank",
         "speed"
-      ]
+      ],
+      "lessonSectionId": "speed"
     },
     {
       "officialId": "1492",
@@ -3848,7 +3977,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "junction"
     },
     {
       "officialId": "1518",
@@ -3877,7 +4007,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "theory-and-practice"
     },
     {
       "officialId": "1532",
@@ -3907,7 +4038,8 @@
       "sourceIds": [
         "bank",
         "new-driver-2026"
-      ]
+      ],
+      "lessonSectionId": "restrictions"
     },
     {
       "officialId": "1543",
@@ -3937,7 +4069,8 @@
       "sourceIds": [
         "bank",
         "new-driver-2026"
-      ]
+      ],
+      "lessonSectionId": "restrictions"
     },
     {
       "officialId": "1548",
@@ -3967,7 +4100,8 @@
       "sourceIds": [
         "bank",
         "road-safety-textbook"
-      ]
+      ],
+      "lessonSectionId": "left-turn"
     },
     {
       "officialId": "1561",
@@ -3996,7 +4130,9 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "restrictions",
+      "lessonTopicId": "overtaking"
     },
     {
       "officialId": "1641",
@@ -4027,7 +4163,8 @@
         "bank",
         "licensing",
         "offense-catalogue"
-      ]
+      ],
+      "lessonSectionId": "new-driver"
     },
     {
       "officialId": "1741",
@@ -4057,7 +4194,8 @@
       "sourceIds": [
         "bank",
         "road-safety-textbook"
-      ]
+      ],
+      "lessonSectionId": "left-turn"
     },
     {
       "officialId": "1751",
@@ -4087,7 +4225,8 @@
       "sourceIds": [
         "bank",
         "road-safety-textbook"
-      ]
+      ],
+      "lessonSectionId": "approach"
     },
     {
       "officialId": "1752",
@@ -4134,7 +4273,8 @@
         "sourceIds": [
           "narrow-road"
         ]
-      }
+      },
+      "lessonSectionId": "uphill-downhill"
     },
     {
       "officialId": "1761",
@@ -4165,7 +4305,8 @@
         "bank",
         "sign-chart",
         "road-safety-textbook"
-      ]
+      ],
+      "lessonSectionId": "priority"
     },
     {
       "officialId": "1763",
@@ -4196,7 +4337,8 @@
         "bank",
         "sign-chart",
         "road-safety-textbook"
-      ]
+      ],
+      "lessonSectionId": "priority"
     },
     {
       "officialId": "1764",
@@ -4225,7 +4367,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "right-turn"
     },
     {
       "officialId": "1765",
@@ -4250,7 +4393,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "control"
     },
     {
       "officialId": "1772",
@@ -4281,7 +4425,8 @@
         "bank",
         "sign-chart",
         "road-safety-textbook"
-      ]
+      ],
+      "lessonSectionId": "priority"
     },
     {
       "officialId": "1781",
@@ -4310,7 +4455,8 @@
       "explanationSource": "course-authored",
       "sourceIds": [
         "bank"
-      ]
+      ],
+      "lessonSectionId": "road-direction"
     },
     {
       "officialId": "1783",
@@ -4340,7 +4486,8 @@
       "sourceIds": [
         "bank",
         "road-safety-textbook"
-      ]
+      ],
+      "lessonSectionId": "u-turn"
     },
     {
       "officialId": "1784",
@@ -4370,7 +4517,8 @@
       "sourceIds": [
         "bank",
         "new-driver-2026"
-      ]
+      ],
+      "lessonSectionId": "restrictions"
     },
     {
       "officialId": "1785",
@@ -4400,7 +4548,8 @@
       "sourceIds": [
         "bank",
         "new-driver-2026"
-      ]
+      ],
+      "lessonSectionId": "restrictions"
     },
     {
       "officialId": "1787",
@@ -4431,7 +4580,8 @@
         "bank",
         "sign-chart",
         "road-safety-textbook"
-      ]
+      ],
+      "lessonSectionId": "priority"
     }
   ]
 }

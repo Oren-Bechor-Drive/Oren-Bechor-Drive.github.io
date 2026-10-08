@@ -54,10 +54,7 @@ for (const [filename, suffix, returnPath] of [
 		assert.equal(content.lessons.length, 1);
 		assert.equal(content.quizzes.length, 1);
 		assert.equal(content.lessons[0].file, `course/topic/${filename}`);
-		assert.equal(
-			content.quizzes[0].file,
-			`course/topic/quiz/${filename}`,
-		);
+		assert.equal(content.quizzes[0].file, `course/topic/quiz/${filename}`);
 	});
 }
 
@@ -65,8 +62,7 @@ test("malformed nested returns report the quiz file and intended lesson anchor",
 	const root = await fixture(t, {
 		"lesson.html": null,
 		"practice.html": null,
-		"course/index.html":
-			'<a class="subject-learn" href="topic/">ללמידה</a>',
+		"course/index.html": '<a class="subject-learn" href="topic/">ללמידה</a>',
 		"course/topic/index.html": lesson.replace(
 			'href="practice.html"',
 			'href="quiz/"',
@@ -157,10 +153,7 @@ for (const [name, changes, expected] of [
 	[
 		"wrong quiz title",
 		{
-			"practice.html": quiz.replace(
-				"<h1>שאלון: פנייה</h1>",
-				"<h1>שם אחר</h1>",
-			),
+			"practice.html": quiz.replace("<h1>שאלון: פנייה</h1>", "<h1>שם אחר</h1>"),
 		},
 		/practice\.html:.*title/,
 	],
@@ -209,6 +202,44 @@ test("multiple sections belong to one topic quiz", async (t) => {
 	assert.equal(content.lessons[0].quizFile, "practice.html");
 });
 
+test("one reading section needs no redundant contents list", async (t) => {
+	const content = await readLearningContent(
+		await fixture(t, {
+			"lesson.html": lesson.replace(/<nav[\s\S]*?<\/nav>/, ""),
+		}),
+	);
+	assert.deepEqual(content.issues, []);
+	assert.equal(content.lessons[0].sections.length, 1);
+});
+
+test("multiple reading sections still require a complete contents list", async (t) => {
+	const second =
+		'<section class="lesson-section" id="another" aria-labelledby="another-title"><h2 id="another-title">עוד חלק</h2></section>';
+	const content = await readLearningContent(
+		await fixture(t, {
+			"lesson.html": lesson
+				.replace(/<nav[\s\S]*?<\/nav>/, "")
+				.replace("</main>", `${second}</main>`),
+		}),
+	);
+	assert.deepEqual(content.issues, [
+		"lesson.html: contents must link to each section exactly once",
+	]);
+});
+
+test("reading media notes retain their video identity without image semantics", async (t) => {
+	const content = await readLearningContent(
+		await fixture(t, {
+			"lesson.html": lesson.replace(
+				"</section>",
+				'<p class="video-placeholder" role="note">סרטון יתווסף בהמשך.</p></section>',
+			),
+		}),
+	);
+	assert.deepEqual(content.issues, []);
+	assert.equal(content.lessons[0].sections[0].videoCount, 1);
+});
+
 test("explicit reading-only sections need no fabricated quiz", async (t) => {
 	const reading =
 		'<section class="lesson-section" id="reading" aria-labelledby="reading-title"><h2 id="reading-title">קריאה מודרכת</h2><p>תוכן לימוד מלא ללא שאלון.</p><a class="official-resource" href="https://www.gov.il/he/pages/example">מידע רשמי</a></section>';
@@ -252,24 +283,73 @@ test("official government-data resources bypass the source-link count", async (t
 });
 
 for (const [name, change, expected] of [
-	["quiz link inside a section", lesson.replace('</section><a class="lesson-quiz-link"', '<a class="lesson-quiz-link"').replace('>תרגול</a></main>', '>תרגול</a></section></main>'), /lesson\.html#topic:.*outside.*section/],
-	["duplicate topic quiz link", lesson.replace('</main>', '<a class="lesson-quiz-link" href="practice.html">תרגול</a></main>'), /lesson\.html#topic:.*exactly one quiz link/],
-	["missing topic anchor", lesson.replace('id="topic" ', ''), /lesson\.html:.*stable ID/],
-	["missing topic heading", lesson.replace('<h1 id="topic-title">פנייה</h1>', ''), /lesson\.html#topic:.*heading/],
-	["wrong topic heading reference", lesson.replace('aria-labelledby="topic-title"', 'aria-labelledby="turn-title"'), /lesson\.html#topic:.*heading/],
+	[
+		"quiz link inside a section",
+		lesson
+			.replace(
+				'</section><a class="lesson-quiz-link"',
+				'<a class="lesson-quiz-link"',
+			)
+			.replace(">תרגול</a></main>", ">תרגול</a></section></main>"),
+		/lesson\.html#topic:.*outside.*section/,
+	],
+	[
+		"duplicate topic quiz link",
+		lesson.replace(
+			"</main>",
+			'<a class="lesson-quiz-link" href="practice.html">תרגול</a></main>',
+		),
+		/lesson\.html#topic:.*exactly one quiz link/,
+	],
+	[
+		"missing topic anchor",
+		lesson.replace('id="topic" ', ""),
+		/lesson\.html:.*stable ID/,
+	],
+	[
+		"missing topic heading",
+		lesson.replace('<h1 id="topic-title">פנייה</h1>', ""),
+		/lesson\.html#topic:.*heading/,
+	],
+	[
+		"wrong topic heading reference",
+		lesson.replace(
+			'aria-labelledby="topic-title"',
+			'aria-labelledby="turn-title"',
+		),
+		/lesson\.html#topic:.*heading/,
+	],
 ]) {
 	test(`learning content reports ${name}`, async (t) => {
-		const content = await readLearningContent(await fixture(t, { "lesson.html": change }));
-		assert.ok(content.issues.some((issue) => expected.test(issue)), content.issues.join("\n"));
+		const content = await readLearningContent(
+			await fixture(t, { "lesson.html": change }),
+		);
+		assert.ok(
+			content.issues.some((issue) => expected.test(issue)),
+			content.issues.join("\n"),
+		);
 	});
 }
 
 test("two topics cannot assign the same quiz page", async (t) => {
-	const content = await readLearningContent(await fixture(t, {
-		"course/index.html": '<a class="subject-learn" href="../lesson.html">ללמידה</a><a class="subject-learn" href="../second.html">ללמידה</a>',
-		"second.html": lesson.replace('<h1 id="topic-title">פנייה</h1>', '<h1 id="topic-title">פנייה שנייה</h1>').replace('href="practice.html"', 'href="practice.html"'),
-	}));
-	assert.ok(content.issues.some((issue) => /second\.html#topic:.*already assigned quiz/.test(issue)), content.issues.join("\n"));
+	const content = await readLearningContent(
+		await fixture(t, {
+			"course/index.html":
+				'<a class="subject-learn" href="../lesson.html">ללמידה</a><a class="subject-learn" href="../second.html">ללמידה</a>',
+			"second.html": lesson
+				.replace(
+					'<h1 id="topic-title">פנייה</h1>',
+					'<h1 id="topic-title">פנייה שנייה</h1>',
+				)
+				.replace('href="practice.html"', 'href="practice.html"'),
+		}),
+	);
+	assert.ok(
+		content.issues.some((issue) =>
+			/second\.html#topic:.*already assigned quiz/.test(issue),
+		),
+		content.issues.join("\n"),
+	);
 });
 
 test("unreadable library destinations and partial lesson markup produce diagnostics", async (t) => {
@@ -277,10 +357,7 @@ test("unreadable library destinations and partial lesson markup produce diagnost
 		await fixture(t, {
 			"course/index.html":
 				'<a class="subject-learn" href="missing.html">ללמידה</a>',
-			"lesson.html": lesson.replace(
-				'class="lesson-content"',
-				'class="other"',
-			),
+			"lesson.html": lesson.replace('class="lesson-content"', 'class="other"'),
 		}),
 	);
 	assert.ok(
@@ -289,35 +366,70 @@ test("unreadable library destinations and partial lesson markup produce diagnost
 		),
 	);
 	assert.ok(
-		content.issues.some((issue) =>
-			/lesson\.html:.*lesson-content/.test(issue),
-		),
+		content.issues.some((issue) => /lesson\.html:.*lesson-content/.test(issue)),
 	);
 });
 
-const gradedQuiz = quiz.replace('class="quiz-form"', 'class="quiz-form" data-quiz-graded')
-	.replace('id="scenario"', 'id="scenario" data-correct-answer="wait" data-source-question="1234"')
-	.replace('</fieldset>', '<details data-quiz-feedback><summary>בדיקת התשובה</summary><p>ממתינים</p><p data-quiz-explanation>נותנים לתנועה לעבור.</p></details></fieldset>');
+const gradedQuiz = quiz
+	.replace('class="quiz-form"', 'class="quiz-form" data-quiz-graded')
+	.replace(
+		'id="scenario"',
+		'id="scenario" data-correct-answer="wait" data-source-question="1234"',
+	)
+	.replace(
+		"</fieldset>",
+		"<details data-quiz-feedback><summary>בדיקת התשובה</summary><p>ממתינים</p><p data-quiz-explanation>נותנים לתנועה לעבור.</p></details></fieldset>",
+	);
 
-test("graded content exposes the authored answer and source identity for publication checks", async t => {
-	const content = await readLearningContent(await fixture(t, { "practice.html": gradedQuiz }));
+test("graded content exposes the authored answer and source identity for publication checks", async (t) => {
+	const content = await readLearningContent(
+		await fixture(t, { "practice.html": gradedQuiz }),
+	);
 	assert.deepEqual(content.issues, []);
 	assert.equal(content.quizzes[0].graded, true);
 	assert.equal(content.quizzes[0].questions[0].correctAnswer, "wait");
 	assert.equal(content.quizzes[0].questions[0].officialId, "1234");
 	assert.deepEqual(content.quizzes[0].questions[0].choices, [
-		{ value: "stop", text: "עוצרים" }, { value: "wait", text: "ממתינים" },
+		{ value: "stop", text: "עוצרים" },
+		{ value: "wait", text: "ממתינים" },
 	]);
 });
 
 for (const [name, authored, expected] of [
-	["missing answer", gradedQuiz.replace(' data-correct-answer="wait"', ''), /correct answer/],
-	["answer outside the choices", gradedQuiz.replace('data-correct-answer="wait"', 'data-correct-answer="missing"'), /correct answer/],
-	["missing self-check disclosure", gradedQuiz.replace(/<details[\s\S]*?<\/details>/, ''), /feedback/],
-	["empty explanation", gradedQuiz.replace('נותנים לתנועה לעבור.', ''), /explanation/],
+	[
+		"missing answer",
+		gradedQuiz.replace(' data-correct-answer="wait"', ""),
+		/correct answer/,
+	],
+	[
+		"answer outside the choices",
+		gradedQuiz.replace(
+			'data-correct-answer="wait"',
+			'data-correct-answer="missing"',
+		),
+		/correct answer/,
+	],
+	[
+		"missing self-check disclosure",
+		gradedQuiz.replace(/<details[\s\S]*?<\/details>/, ""),
+		/feedback/,
+	],
+	[
+		"empty explanation",
+		gradedQuiz.replace("נותנים לתנועה לעבור.", ""),
+		/explanation/,
+	],
 ]) {
-	test(`graded content reports ${name} with its question location`, async t => {
-		const { issues } = await readLearningContent(await fixture(t, { "practice.html": authored }));
-		assert.ok(issues.some(issue => issue.startsWith("practice.html#scenario:") && expected.test(issue)), issues.join("\n"));
+	test(`graded content reports ${name} with its question location`, async (t) => {
+		const { issues } = await readLearningContent(
+			await fixture(t, { "practice.html": authored }),
+		);
+		assert.ok(
+			issues.some(
+				(issue) =>
+					issue.startsWith("practice.html#scenario:") && expected.test(issue),
+			),
+			issues.join("\n"),
+		);
 	});
 }

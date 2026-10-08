@@ -3,13 +3,14 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#f2f5fc" />
 		<meta
 			http-equiv="Content-Security-Policy"
 			content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
 		/>
 		<meta name="referrer" content="strict-origin-when-cross-origin" />
 		<meta name="robots" content="noindex" />
-		<title>מדרג הציות - קורס נהיגה נכונה עם אורן בכור</title>
+		<title>מדרג הציות - נהיגה נכונה עם אורן בכור</title>
 		<meta
 			name="description"
 			content="מדרג הציות בדרך: הוראת שוטר, רמזור, תמרור וכללי התנועה, כולל רמזור כבוי או צהוב מהבהב."
@@ -21,25 +22,25 @@
 		/>
 		<link
 			rel="preload"
-			href="../../assets/fonts/varela-round-v21-hebrew.woff2"
+			href="../../assets/fonts/fredoka-v17-hebrew.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
 		/>
 		<link
 			rel="preload"
-			href="../../assets/fonts/varela-round-v21-latin.woff2"
+			href="../../assets/fonts/fredoka-v17-latin.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
 		/>
-		<link rel="stylesheet" href="../../css/base.css" />
+		<link rel="stylesheet" href="../../css/base.css?v=3" />
 		<link rel="stylesheet" href="../css/course.css" />
 		<link rel="stylesheet" href="../css/lesson.css" />
 		<script type="module" src="../js/account-link.js"></script>
 	</head>
 	<body>
-		<a class="skip-link" href="#main">דילוג לתוכן הלמידה</a>
+		<a class="skip-link" href="#main">דילוג לתוכן הראשי</a>
 		<header class="course-header">
 			<div class="course-shell course-header-inner">
 				<a
@@ -60,6 +61,9 @@
 					/>
 					<span><strong>נהיגה נכונה</strong><small>עם אורן בכור</small></span>
 				</a>
+				<nav class="course-header-nav" aria-label="ניווט ראשי">
+					<a class="course-library-link" href="../">נושאי הלימוד</a>
+				</nav>
 				<button
 					class="course-profile"
 					type="button"
@@ -85,21 +89,19 @@
 					מזהים איזו הוראה מסדירה את התנועה לפני שמחליטים להתקדם. הסדר עוזר
 					לקרוא מצבים שבהם שוטר, רמזור, תמרור וכללי הדרך מופיעים יחד.
 				</p>
+				<p class="lesson-meta" data-reading-minutes="2">
+					זמן קריאה משוער: 2 דקות.
+				</p>
 				<p class="lesson-draft">
-					ההסברים ושאלון התרגול זמינים. ההמחשה תתווסף בהמשך.
+					אפשר לקרוא ולתרגל. סרטונים ותרשימים יתווספו בהמשך.
 				</p>
 			</div>
-			<div class="lesson-layout">
-				<nav class="lesson-contents" aria-labelledby="contents-title">
-					<h2 id="contents-title">מה לומדים כאן?</h2>
-					<p>הפרק עומד בפני עצמו.</p>
-					<ul>
-						<li><a href="#priority">מדרג הציות</a></li>
-					</ul>
-				</nav>
-				<article class="lesson-content"
+			<div class="lesson-layout lesson-layout-single">
+				<article
+					class="lesson-content"
 					id="topic"
-					aria-labelledby="topic-title" aria-label="הסבר על מדרג הציות">
+					aria-labelledby="topic-title"
+				>
 					<section
 						class="lesson-section"
 						id="priority"
@@ -112,39 +114,39 @@
 							איזו הוראה חלה כאשר כמה סוגי הוראות נמצאים באותו מקום. בכל שלב
 							עדיין בודקים הולכי רגל, רכב שכבר נמצא בצומת וסכנה מיידית.
 						</p>
-						<dl class="priority-list">
-							<div>
-								<dt>שוטר</dt>
-								<dd>
+						<ol class="priority-list">
+							<li>
+								<h3>שוטר</h3>
+								<p>
 									כאשר שוטר מכוון את התנועה, פועלים לפי הוראותיו גם אם הרמזור או
 									התמרור מורים אחרת. מחפשים את ההוראה המופנית אל נתיב הנסיעה
 									שלנו ולא מסתמכים על תנועת רכב אחר.
-								</dd>
-							</div>
-							<div>
-								<dt>רמזור</dt>
-								<dd>
+								</p>
+							</li>
+							<li>
+								<h3>רמזור</h3>
+								<p>
 									כאשר אין שוטר והרמזור פועל כרגיל, מצייתים לאור ולחצים שלו.
 									תמרור עצור או תן זכות קדימה שמוצב לצד הרמזור מסדיר בדרך כלל את
 									המצב שבו הרמזור אינו פועל כרגיל.
-								</dd>
-							</div>
-							<div>
-								<dt>תמרור</dt>
-								<dd>
+								</p>
+							</li>
+							<li>
+								<h3>תמרור</h3>
+								<p>
 									אם הרמזור כבוי או מציג צהוב מהבהב, מאטים ובודקים את התמרורים
 									בצומת. צהוב מהבהב אינו אור ירוק; הוא דורש זהירות ופעולה לפי
 									ההסדר שמופיע בדרך.
-								</dd>
-							</div>
-							<div>
-								<dt>כללי התנועה</dt>
-								<dd>
+								</p>
+							</li>
+							<li>
+								<h3>כללי התנועה</h3>
+								<p>
 									כשאין שוטר, אין רמזור פעיל ואין תמרור שמסדיר את זכות הקדימה,
 									קוראים את מבנה הצומת ופועלים לפי כללי התנועה שחלים עליו.
-								</dd>
-							</div>
-						</dl>
+								</p>
+							</li>
+						</ol>
 						<h3>כך קוראים את המצב</h3>
 						<ul>
 							<li>מחפשים שוטר או אדם מוסמך שמכוון את התנועה.</li>
@@ -159,13 +161,7 @@
 								לפני כל תנועה, מוודאים שהדרך פנויה ושאפשר להשלים את המעבר בבטחה.
 							</li>
 						</ul>
-						<div
-							class="image-placeholder"
-							role="img"
-							aria-label="מקום לתמונה או לתרשים: השוואה בין רמזור פעיל, רמזור כבוי ותמרור בצומת"
-						>
-							<span>תמונה או תרשים: השוואה בין רמזור פעיל, רמזור כבוי ותמרור בצומת</span>
-						</div>
+
 						<aside class="lesson-takeaway">
 							<strong>היתר להתקדם אינו הבטחה שהדרך פנויה</strong>
 							<p>
@@ -173,24 +169,50 @@
 								רגל או משתמש דרך אחר נמצא במסלול.
 							</p>
 						</aside>
+						<aside
+							class="lesson-scenario"
+							aria-labelledby="priority-scenario-title"
+						>
+							<h3 id="priority-scenario-title">מצב מהכביש</h3>
+							<p>
+								שוטר מכוון אתכם לעצור בזמן שהרמזור ירוק. פועלים לפי הוראת השוטר
+								וממשיכים לבדוק את המתרחש בצומת.
+							</p>
+						</aside>
+						<details class="lesson-self-check">
+							<summary>איזו הוראה קובעת במקרה הזה?</summary>
+							<p>הוראת השוטר, גם אם הרמזור או התמרור מורים אחרת.</p>
+						</details>
+						<p class="image-placeholder" role="note">
+							המחשה תתווסף בהמשך: רמזור פעיל, רמזור כבוי ותמרור בצומת.
+						</p>
 					</section>
 					<div class="lesson-quiz">
 						<p>תרגול בנושא מדרג הציות</p>
-						<a class="course-button lesson-quiz-link" href="quiz/">לשאלון התרגול</a>
+						<a
+							class="btn btn-primary course-button lesson-quiz-link"
+							href="quiz/"
+							>לשאלון התרגול</a
+						>
 						<small>15 שאלות בנושא, עם ציון והסברים לתשובות.</small>
 					</div>
 					<footer class="lesson-end">
-						<p>אפשר לחזור לספרייה ולבחור כל נושא אחר.</p>
-						<a class="course-button" href="../#priority-hierarchy"
-							>חזרה לנושאי הלימוד</a
-						>
+						<a class="lesson-next" href="../roundabouts/"
+							>הנושא הבא: מעגלי תנועה וצמתים<span
+								class="direction-icon icon-arrow-left-long"
+								aria-hidden="true"
+							></span
+						></a>
+						<a href="../#priority-hierarchy">לכל הנושאים</a>
 					</footer>
 				</article>
 			</div>
 		</main>
 		<footer class="course-shell course-footer">
-			<p>הקורס משלים את התרגול בשיעורי הנהיגה ואינו מחליף את מורה הנהיגה.</p>
-			<a href="../../index.html">חזרה לדף הבית</a>
+			<p>נהיגה נכונה עם אורן בכור</p>
+			<nav aria-label="קישורי האתר">
+				<a href="../../index.html">לדף הבית</a><a href="../">לנושאי הלימוד</a>
+			</nav>
 		</footer>
 	</body>
 </html>

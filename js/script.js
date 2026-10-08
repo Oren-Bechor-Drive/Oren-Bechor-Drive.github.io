@@ -1,3 +1,4 @@
+import "./input-mode.js";
 import { initTopicExplorer } from "./topic-explorer.js";
 import { initDisclosureMotion } from "./disclosure-motion.js";
 import { initScrollReveals } from "./scroll-reveal.js";
@@ -7,7 +8,15 @@ import { initFaqDisclosures } from "./faq-disclosures.js";
 const menuToggle = document.querySelector("[data-menu-toggle]");
 const menu = document.querySelector("[data-menu]");
 const topicExplorer = document.querySelector("[data-topic-explorer]");
-const courseSection = document.querySelector("#about");
+const courseSection = document.querySelector("#topics");
+
+try {
+	const visited = sessionStorage.getItem("hero-seen") === "true";
+	document.documentElement.dataset.heroEntrance = String(!visited);
+	sessionStorage.setItem("hero-seen", "true");
+} catch {
+	document.documentElement.dataset.heroEntrance = "true";
+}
 
 initScrollReveals(document);
 initHeroRoadCar(document.querySelector(".hero"));
@@ -50,6 +59,14 @@ document.addEventListener("keydown", (event) => {
 		closeMenu({ returnFocus: true });
 	}
 });
+
+document.addEventListener("pointerdown", (event) => {
+	if (!menu?.contains(event.target) && !menuToggle?.contains(event.target)) closeMenu();
+});
+menu?.closest(".nav-shell")?.addEventListener("focusout", (event) => {
+	if (!event.currentTarget.contains(event.relatedTarget)) closeMenu();
+});
+window.addEventListener("scroll", () => closeMenu(), { passive: true });
 
 document.querySelectorAll("[data-topics-link]").forEach((link) => {
 	link.addEventListener("click", () => {

@@ -3,38 +3,52 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#f2f5fc" />
 		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'" />
 		<meta name="referrer" content="no-referrer" />
 		<meta name="robots" content="noindex" />
 		<title>שכחתם את הסיסמה? - נהיגה נכונה עם אורן בכור</title>
 		<meta name="description" content="הזינו את כתובת האימייל של החשבון ונשלח קישור לאיפוס." />
 		<link rel="icon" href="../assets/images/optimized/favicon.png?v=2" type="image/png" />
-		<link rel="preload" href="../assets/fonts/varela-round-v21-hebrew.woff2" as="font" type="font/woff2" crossorigin />
-		<link rel="preload" href="../assets/fonts/varela-round-v21-latin.woff2" as="font" type="font/woff2" crossorigin />
-		<link rel="stylesheet" href="../css/base.css" />
+		<link rel="preload" href="../assets/fonts/fredoka-v17-hebrew.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="../assets/fonts/fredoka-v17-latin.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="stylesheet" href="../css/base.css?v=3" />
 		<link rel="stylesheet" href="account.css" />
 		<script type="module" src="account.js"></script>
 	</head>
 	<body data-account="recovery">
-		<a class="skip-link" href="#main">דילוג לתוכן</a>
+		<a class="skip-link" href="#main">דילוג לתוכן הראשי</a>
 		<main id="main" class="account-shell" tabindex="-1">
 			<a class="account-back" href="../index.html">חזרה לדף הבית</a>
+			<a class="account-brand" href="../index.html"><img src="../assets/images/optimized/course-icon.webp" srcset="../assets/images/optimized/course-icon.webp 42w, ../assets/images/optimized/course-icon-84.webp 84w" sizes="42px" width="42" height="42" alt="" /><span class="account-brand-copy"><strong>נהיגה נכונה</strong><small>עם אורן בכור</small></span></a>
 			<section class="account-card" aria-labelledby="account-heading">
 				<h1 id="account-heading">שכחתם את הסיסמה?</h1>
 				<p class="account-intro">הזינו את כתובת האימייל של החשבון ונשלח קישור לאיפוס.</p>
 				<noscript><p class="account-feedback">כדי להתחבר לחשבון יש להפעיל JavaScript בדפדפן.</p></noscript>
+				<div class="account-feedback-space">
 				<p class="account-feedback" role="alert" tabindex="-1" hidden></p>
 				<p class="account-feedback" role="status" aria-live="polite" hidden></p>
-				<button class="account-action account-action-secondary account-retry" type="button" data-retry hidden>ניסיון נוסף</button>
-				<form data-account-form>
+				<p class="account-hint" data-startup role="status" hidden>בודקים את החיבור לשירות...</p>
+				</div>
+				<p class="account-links" data-unavailable-library hidden><a href="../course/">לנושאי הלימוד ולתרגול החינמי</a></p>
+				<button class="account-action btn btn-secondary account-action-secondary account-retry" type="button" data-retry hidden>ניסיון נוסף</button>
+				<form data-account-form novalidate>
 					<fieldset class="account-fields">
 						<div class="account-field">
 						<label for="email">כתובת אימייל</label>
-						<input id="email" name="email" type="email" dir="ltr" autocomplete="email" inputmode="email" maxlength="254" required spellcheck="false" autocapitalize="none" />
+						<input id="email" aria-invalid="false" aria-describedby="email-error" name="email" type="email" dir="ltr" autocomplete="email" inputmode="email" maxlength="254" required spellcheck="false" autocapitalize="none" />
+						<p id="email-error" class="account-field-error" hidden></p>
 					</div>
-						<button class="account-action" type="submit" disabled>שליחת קישור לאיפוס</button>
+						<button class="account-action btn btn-primary" type="submit" disabled>שליחת קישור לאיפוס</button>
 					</fieldset>
-				</form><p class="account-links"><a href="login.html">חזרה לכניסה לחשבון</a></p>
+				</form>
+				<section class="account-detail" data-recovery-confirmation hidden aria-labelledby="recovery-confirmation-heading">
+					<h2 id="recovery-confirmation-heading" tabindex="-1">בדקו את האימייל שלכם</h2>
+					<p>אם קיים חשבון עם הכתובת שהזנתם, יישלח אליו קישור לאיפוס הסיסמה.</p>
+					<p class="account-hint">פתחו את הקישור באותו דפדפן שבו ביקשתם את האיפוס. בדקו גם בתיקיית הספאם.</p>
+					<button class="account-action btn btn-secondary account-action-secondary" type="button" data-resend>שליחת קישור נוסף</button>
+					<button class="account-text-action" type="button" data-change-email>שינוי כתובת האימייל</button>
+				</section><p class="account-links"><a href="login.html">חזרה לכניסה לחשבון</a></p>
 			</section>
 			<p class="account-footer">נהיגה נכונה עם אורן בכור</p>
 		</main>

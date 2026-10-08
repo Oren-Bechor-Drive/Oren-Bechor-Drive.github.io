@@ -161,6 +161,19 @@ async function prepareMedia(rootDir, stagingDir) {
 		{ quality: 80 },
 		"(max-width: 768px) clamp(96px, 16svh, 144px), clamp(220px, 40svh, 400px)",
 	);
+	// Keep the supplied blue source and publish the separately approved red artwork.
+	const redSource = await lstat(path.join(rootDir, "assets/images/stop-sign-red.png")).catch((error) => {
+		if (error.code !== "ENOENT") throw error;
+		return null;
+	});
+	// An existing source's delivery failures must abort preparation.
+	if (redSource) {
+		await delivery(
+			"assets/images/stop-sign-red.png", "stop-sign-red", [144, 380, 760, 800],
+			{ quality: 80 },
+			"(max-width: 768px) clamp(96px, 16svh, 144px), clamp(220px, 40svh, 400px)",
+		);
+	}
 	await delivery(
 		"assets/icons/course-icon.png",
 		"course-icon",
@@ -178,11 +191,30 @@ async function prepareMedia(rootDir, stagingDir) {
 		"(max-width: 440px) calc(100vw - 32px), (max-width: 768px) calc(100vw - 40px), (max-width: 1024px) calc((100vw - 104px) / 2), (max-width: 1216px) calc((100vw - 136px) / 2), 540px",
 	);
 	// A separate favicon prevents the browser tab from downloading the full-size original.
-	await sharp(path.join(rootDir, "assets/icons/course-icon.png"))
-		.resize({ width: 32, withoutEnlargement: true })
+	const favicon = await sharp(path.join(rootDir, "assets/icons/course-icon.png"))
+		.resize({
+			width: 32,
+			height: 32,
+			fit: "contain",
+			background: { r: 0, g: 0, b: 0, alpha: 0 },
+		})
 		.png()
-		.toFile(path.join(stagingDir, outputDirectory, "favicon.png"));
+		.toBuffer();
+	await writeFile(path.join(stagingDir, outputDirectory, "favicon.png"), favicon);
 	generatedPaths.add(`${outputDirectory}/favicon.png`);
+	// Browsers can request /favicon.ico without consulting the HTML icon link.
+	// One ICO directory entry points to the same 32px PNG payload.
+	const iconDirectory = Buffer.alloc(22);
+	iconDirectory.writeUInt16LE(1, 2);
+	iconDirectory.writeUInt16LE(1, 4);
+	iconDirectory[6] = 32;
+	iconDirectory[7] = 32;
+	iconDirectory.writeUInt16LE(1, 10);
+	iconDirectory.writeUInt16LE(32, 12);
+	iconDirectory.writeUInt32LE(favicon.length, 14);
+	iconDirectory.writeUInt32LE(iconDirectory.length, 18);
+	await writeFile(path.join(stagingDir, "favicon.ico"), Buffer.concat([iconDirectory, favicon]));
+	generatedPaths.add("favicon.ico");
 
 	// Home-screen and pinned-site icons reuse the supplied square course artwork.
 	for (const [name, size] of [

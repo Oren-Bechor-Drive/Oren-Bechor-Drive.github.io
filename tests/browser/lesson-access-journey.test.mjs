@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { chromium } from "playwright";
 import { startLessonGateway } from "../helpers/test-lessons.mjs";
-import { endpoint, login, openReader, readerUrl, restoredNear, saveAt } from "./reader-journey-helpers.mjs";
+import { endpoint, login, openReader, readerUrl, restoredNear, saveAt, scrollToFraction } from "./reader-journey-helpers.mjs";
 
 for (const width of [1440, 390]) {
 	test(`reader access expires, renews, and stays learner scoped at ${width}px`, async t => {
@@ -42,7 +42,7 @@ for (const width of [1440, 390]) {
 
 		// Cancelling a renewal leaves the finite paid period readable and writable until its end.
 		await app.grant(email, new Date(Date.now() + 3_600_000).toISOString());
-		await first.getByRole("button", { name: "טעינת השיעור מחדש" }).click();
+		await first.getByRole("button", { name: "טעינת קטע הלימוד מחדש" }).click();
 		await first.locator("[data-reading-body]").filter({ hasText: "תוכן בדיקה בתשלום" }).waitFor();
 		await saveAt(first, 0, 200, "paid");
 		const saved = await direct(first, "paid", 200);
@@ -54,7 +54,7 @@ for (const width of [1440, 390]) {
 		// Access ends while the reader remains open. The next save must clear the private text.
 		await app.expire(email);
 		const failedSave = first.waitForResponse(response => response.url().endsWith(`${endpoint("paid")}/position`) && response.request().method() === "POST");
-		await first.locator("[data-save-position]").click();
+		await scrollToFraction(first, 0.15);
 		assert.equal((await failedSave).status(), 404);
 		await unavailable(first, "אינו זמין לחשבון");
 		assert.deepEqual(await direct(first, "paid", 404), { error: "lesson_unavailable" });
@@ -69,7 +69,7 @@ for (const width of [1440, 390]) {
 		await first.goto(readerUrl(app.origin, "paid"));
 		await unavailable(first, "אינו זמין לחשבון");
 		await app.grant(email);
-		await first.getByRole("button", { name: "טעינת השיעור מחדש" }).click();
+		await first.getByRole("button", { name: "טעינת קטע הלימוד מחדש" }).click();
 		await first.locator("[data-reading]:visible").waitFor();
 		assert.equal((await direct(first, "paid", 200)).position, null);
 		await saveAt(first, 0, 200, "paid");
@@ -78,7 +78,7 @@ for (const width of [1440, 390]) {
 		await second.goto(readerUrl(app.origin, "paid"));
 		await unavailable(second, "אינו זמין לחשבון");
 		await app.grant(otherEmail);
-		await second.getByRole("button", { name: "טעינת השיעור מחדש" }).click();
+		await second.getByRole("button", { name: "טעינת קטע הלימוד מחדש" }).click();
 		await second.locator("[data-reading]:visible").waitFor();
 		assert.equal((await direct(second, "paid", 200)).position, null);
 		await saveAt(second, 0, 200, "paid");

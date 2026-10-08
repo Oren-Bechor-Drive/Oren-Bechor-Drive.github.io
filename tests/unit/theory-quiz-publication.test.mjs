@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
+import { JSDOM } from "jsdom";
 import { readLearningContent } from "../../scripts/learning-content.mjs";
 
 const load = async file => JSON.parse(await readFile(`docs/reference/${file}`, "utf8"));
@@ -30,6 +31,28 @@ test("every selected theory question is published once in its assigned topic wit
 		assert.deepEqual(authored.choices.map(choice => choice.text), source.options.map(normalize), source.officialId);
 		assert.equal(authored.correctAnswer, String(source.correctOptionIndex), source.officialId);
 		assert.equal(normalize(authored.explanation), normalize(source.explanation), source.officialId);
+	}
+});
+
+test("every reviewed explanation link reaches its selected authored topic and section", async () => {
+	const bank = await load("theory-quiz-content.json");
+	const { lessons, issues } = await readLearningContent(process.cwd());
+	assert.deepEqual(issues, []);
+	for (const topic of bank.topics) {
+		const quizFile = `course/${topic.id}/quiz/index.html`;
+		const dom = new JSDOM(await readFile(quizFile, "utf8"));
+		try {
+			for (const question of bank.questions.filter(question => question.topicId === topic.id)) {
+				const targetTopic = question.lessonTopicId ?? question.topicId;
+				const link = dom.window.document.querySelector(`#question-${question.officialId} [data-quiz-lesson-link]`);
+				assert.ok(link, question.officialId);
+				const destination = new URL(link.getAttribute("href"), `https://example.test/course/${topic.id}/quiz/`);
+				assert.equal(destination.pathname, `/course/${targetTopic}/`, question.officialId);
+				assert.equal(destination.hash, `#${question.lessonSectionId}`, question.officialId);
+				const targetLesson = lessons.find(lesson => lesson.file === `course/${targetTopic}/index.html`);
+				assert.ok(targetLesson.sections.some(section => section.id === question.lessonSectionId), question.officialId);
+			}
+		} finally { dom.window.close(); }
 	}
 });
 

@@ -1,10 +1,10 @@
-// Shared by the registration screen and gateway. Login accepts existing passwords.
-export function registrationPasswordChecks(password) {
-	return {
-		length: password.length >= 9 && password.length <= 128,
-		letters: /[A-Z]/.test(password) && /[a-z]/.test(password),
-		digit: /[0-9]/.test(password),
-		// Printable ASCII punctuation, excluding whitespace and other alphabets.
-		special: /[\x21-\x2f\x3a-\x40\x5b-\x60\x7b-\x7e]/.test(password),
-	};
+// Inspect unchanged passwords, counting Unicode code points rather than UTF-16 units.
+// Registration and recovery share the provider's byte limit; login accepts old passwords.
+export function inspectPassword(password, { existing = false } = {}) {
+	const length = [...password].length;
+	let error = null;
+	if (!length) error = "required";
+	else if (!existing && length < 12) error = "too_short";
+	else if (existing ? length > 128 : new TextEncoder().encode(password).length > 72) error = "too_long";
+	return { length, error };
 }

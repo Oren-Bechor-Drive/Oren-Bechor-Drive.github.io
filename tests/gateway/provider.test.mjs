@@ -2,6 +2,22 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { createSupabaseProvider } from "../../server/supabase.mjs";
 
+test("verification resend uses the original PKCE challenge and callback without forwarding private flow data", async () => {
+	let sent;
+	const provider = createSupabaseProvider({ url: "https://project.supabase.co", publishableKey: "public", secretKey: "secret",
+		fetcher: async (url, options) => { sent = { url: new URL(url), ...options, body: JSON.parse(options.body) }; return Response.json({}); } });
+	const flow = { verifier: "server-only-verifier", challenge: "original-challenge", state: "original-state", email: "learner@example.test",
+		redirect: "https://site.test/api/account/callback?state=original-state", expires: 999999999, nextResendAt: 9999 };
+	await provider.resend(flow.email, flow);
+	assert.equal(sent.url.pathname, "/auth/v1/resend");
+	assert.equal(sent.url.searchParams.get("redirect_to"), flow.redirect);
+	assert.equal(sent.method, "POST");
+	assert.equal(sent.headers.apikey, "public");
+	assert.equal(sent.headers.authorization, undefined);
+	assert.deepEqual(sent.body, { type: "signup", email: flow.email, code_challenge: flow.challenge, code_challenge_method: "s256" });
+	assert.doesNotMatch(JSON.stringify(sent.body), /verifier|password|expires|nextResendAt/);
+});
+
 test("Supabase REST adapter keeps secrets scoped and uses PKCE and learner-context queries", async () => {
 	const calls = [];
 	const provider = createSupabaseProvider({ url: "https://project.supabase.co", publishableKey: "sb_publishable_test", secretKey: "sb_secret_test",
@@ -45,6 +61,26 @@ test("Supabase REST adapter keeps secrets scoped and uses PKCE and learner-conte
 	assert.equal(google.searchParams.get("code_challenge"), flow.challenge);
 	assert.equal(google.searchParams.get("provider"), "google");
 	assert.equal(google.searchParams.get("redirect_to"), flow.redirect);
+});
+
+test("Auth requests preserve accepted ASCII, Hebrew, emoji and combining passwords unchanged", async () => {
+	const calls = [];
+	const provider = createSupabaseProvider({ url: "https://project.supabase.co", publishableKey: "public", secretKey: "secret",
+		fetcher: async (url, options) => { calls.push({ url: new URL(url), ...options, body: JSON.parse(options.body) }); return Response.json({}); } });
+	const flow = { challenge: "synthetic-challenge", redirect: "https://site.test/api/account/callback?state=test" };
+	const passwords = ["a".repeat(72), "א".repeat(36), "😀".repeat(18), "a\u0301".repeat(6)];
+	for (const password of passwords) {
+		await provider.signup("learner@example.test", password, flow);
+		await provider.updatePassword("learner-token", password);
+	}
+	assert.deepEqual(calls.map(call => call.body.password), passwords.flatMap(password => [password, password]));
+	for (let index = 0; index < calls.length; index += 2) {
+		assert.equal(calls[index].method, "POST");
+		assert.equal(calls[index].url.pathname, "/auth/v1/signup");
+		assert.equal(calls[index + 1].method, "PUT");
+		assert.equal(calls[index + 1].url.pathname, "/auth/v1/user");
+		assert.equal(calls[index + 1].headers.authorization, "Bearer learner-token");
+	}
 });
 
 test("provider errors exclude payload secrets and distinguish outages from failed credentials", async () => {

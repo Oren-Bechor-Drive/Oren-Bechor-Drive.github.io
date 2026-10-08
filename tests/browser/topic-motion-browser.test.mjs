@@ -48,7 +48,7 @@ test(
 	async (t) => {
 		const browser = await chromium.launch();
 		t.after(() => browser.close());
-		for (const width of [1366, 390]) {
+		for (const width of [1366]) {
 			const page = await browser.newPage({
 				viewport: { width, height: 844 },
 			});
@@ -59,11 +59,8 @@ test(
 				.locator(".topic-card")
 				.nth(1)
 				.dispatchEvent("click", { detail: 1 });
-			if (width < 640) {
-				await page.locator(".topic-select").focus();
-				await page.keyboard.press("ArrowDown");
-				await page.keyboard.press("End");
-			} else await page.locator(".topic-card").last().focus();
+			await page.locator(".topic-card").first().focus();
+			await page.keyboard.press("End");
 			await page.keyboard.press("Enter");
 			assert.equal(
 				await page.locator("[data-topic-panel-title]").textContent(),
@@ -138,3 +135,55 @@ test(
 		);
 	},
 );
+
+ test("phone topics stay complete and static for pointer and keyboard users", async t => {
+  const browser = await chromium.launch();
+  t.after(() => browser.close());
+  for(const width of [390,320]) {
+   const page = await browser.newPage({viewport:{width,height:844},reducedMotion:"reduce"});
+   await page.route("**/*",serveRoadMedia);
+   await page.goto("http://gallery.test/");
+   assert.equal(await page.locator("[data-topic-summaries] h3 a:visible").count(),10);
+   assert.equal(await page.locator(".topic-card:visible, .topic-panel:visible").count(),0);
+   await page.locator("[data-topic-summaries] h3 a").first().focus();
+   await page.keyboard.press("Tab");
+   assert.equal(await page.locator("[data-topic-summaries] h3 a").nth(1).evaluate(element=>element===document.activeElement),true);
+   await page.close();
+  }
+ });
+
+test("topic focus follows its visible presentation when the viewport changes", async t => {
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	const page = await browser.newPage({ viewport: { width: 390, height: 844 }, reducedMotion: "reduce" });
+	await page.route("**/*", serveRoadMedia);
+	await page.goto("http://gallery.test/");
+	const link = page.locator("[data-topic-summaries] h3 a").nth(3);
+	const card = page.locator(".topic-card").nth(3);
+	await page.locator("[data-topic-summaries] h3 a").nth(2).focus();
+	await page.keyboard.press("Tab");
+	assert.equal(await link.evaluate(element => element === document.activeElement), true);
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await card.waitFor({ state: "visible" });
+	assert.equal(await card.evaluate(element => element === document.activeElement), true);
+	assert.equal(await card.evaluate(element => getComputedStyle(element).outlineStyle), "solid");
+	assert.equal(await card.getAttribute("aria-selected"), "true");
+	assert.equal(await page.locator("[data-topic-panel-title]").textContent(), (await link.textContent()).trim());
+	assert.equal(await page.locator("[data-topic-panel-link]").getAttribute("href"), await link.evaluate(element => element.href));
+	await page.setViewportSize({ width: 390, height: 844 });
+	await link.waitFor({ state: "visible" });
+	assert.equal(await link.evaluate(element => element === document.activeElement), true);
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await card.waitFor({ state: "visible" });
+	await page.keyboard.press("Tab");
+	assert.equal(await page.locator("[data-topic-panel]").evaluate(element => element === document.activeElement), true);
+	await page.setViewportSize({ width: 390, height: 844 });
+	await link.waitFor({ state: "visible" });
+	assert.equal(await link.evaluate(element => element === document.activeElement), true);
+	const brand = page.locator(".brand");
+	await brand.focus();
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await card.waitFor({ state: "visible" });
+	assert.equal(await brand.evaluate(element => element === document.activeElement), true);
+	assert.equal(await card.getAttribute("aria-selected"), "true");
+});

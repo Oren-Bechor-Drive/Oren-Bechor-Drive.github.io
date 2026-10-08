@@ -1,4 +1,5 @@
 import { createDetailsMotion } from "../../js/details-motion.js";
+import "../../js/input-mode.js";
 
 const subjects = [...document.querySelectorAll(".subject")];
 const subjectsById = new Map(subjects.map((subject) => [subject.id, subject]));
@@ -39,10 +40,16 @@ function renderSubject(subject, animate = false) {
 	reader.dataset.subject = subject.id;
 	reader.setAttribute("aria-labelledby", tabs.get(subject.id).id);
 	reader.replaceChildren(
-		...["summary h3", "summary > p", ".subject-outline"].map((selector) =>
-			subject.querySelector(selector).cloneNode(true),
-		),
+		...[
+			"summary h3",
+			"summary > p",
+			".subject-meta",
+			".subject-learn",
+			".subject-outline",
+		].map((selector) => subject.querySelector(selector).cloneNode(true)),
 	);
+	reader.querySelector(".subject-outline .subject-meta").remove();
+	reader.querySelector(".subject-outline .subject-learn").remove();
 	for (const [id, tab] of tabs) {
 		const selected = id === subject.id;
 		tab.setAttribute("aria-selected", String(selected));
@@ -56,36 +63,90 @@ function updatePresentation() {
 	subjectList.hidden = desktop.matches;
 }
 
-function normalize(value) {
-	return value
+// These are course words, not a general Hebrew stemmer. Unknown words stay intact.
+const wordGroups = [
+	["פנייה", "פניה", "פניות", "פניית"],
+	["מעגל", "מעגלים", "מעגלי"],
+	["כיכר", "כיכרות"],
+	["הולך", "הולכי"],
+	["רגל", "רגליים"],
+	["תיאוריה", "תאוריה", "תיאורייה"],
+	["מבחן", "מבחנים", "מבחני"],
+	["תמרור", "תמרורים", "תמרורי"],
+	["נתיב", "נתיבים", "נתיבי"],
+	["כביש", "כבישים", "כבישי"],
+	["מהירות", "מהירויות"],
+	["נהג", "נהגים", "נהגי"],
+	["רכב", "רכבים"],
+	["צומת", "צמתים"],
+];
+const spelling = (value) =>
+	value
 		.normalize("NFKD")
 		.replace(/[\u0591-\u05c7]/g, "")
-		.replace(/[-־]/g, " ")
-		.toLocaleLowerCase("he")
-		.trim();
+		.replace(/יי+/g, "י")
+		.replace(/וו+/g, "ו")
+		.toLocaleLowerCase("he");
+const aliases = new Map();
+for (const [term, ...variants] of wordGroups) {
+	const canonical = spelling(term);
+	for (const variant of [term, ...variants]) {
+		const word = spelling(variant);
+		aliases.set(word, canonical);
+		for (const prefix of ["ב", "ל", "ה"])
+			aliases.set(`${prefix}${word}`, canonical);
+	}
+}
+
+function normalize(value) {
+	return value
+		.split(/\s+/)
+		.map((word) => spelling(word).replace(/[^\p{L}\p{N}]/gu, " "))
+		.join(" ")
+		.split(/\s+/)
+		.filter(Boolean)
+		.map((word) => aliases.get(word) ?? word)
+		.join(" ");
 }
 
 // Search the baseline HTML, including the outlines. It remains usable without JS.
 const searchable = subjects.map((subject) => ({
 	subject,
-	text: normalize(`${subject.textContent} ${subject.dataset.keywords}`),
+	title: normalize(subject.querySelector("h3").textContent),
+	text: normalize(
+		`${subject.querySelector("summary").textContent} ${subject.querySelector(".subject-outline ul").textContent} ${subject.dataset.keywords}`,
+	),
 }));
 
 function filterSubjects() {
 	const words = normalize(input.value).split(/\s+/).filter(Boolean);
-	let count = 0;
-	for (const { subject, text } of searchable) {
+	const matches = [];
+	for (const { subject, title, text } of searchable) {
 		subject.hidden = !words.every((word) => text.includes(word));
 		tabs.get(subject.id).hidden = subject.hidden;
-		if (!subject.hidden) count++;
+		if (!subject.hidden)
+			matches.push({
+				subject,
+				score: words.filter((word) => title.includes(word)).length,
+			});
 	}
-	if (count && selectedSubject.hidden)
-		renderSubject(subjects.find((subject) => !subject.hidden));
+	matches.sort((a, b) => b.score - a.score);
+	const count = matches.length;
+	for (const { subject } of matches) {
+		topicList.append(tabs.get(subject.id));
+		subjectList.append(subject);
+	}
+	if (count && (words.length || selectedSubject.hidden))
+		renderSubject(matches[0].subject);
 	updatePresentation();
 	clearButton.hidden = words.length === 0;
 	empty.hidden = count !== 0;
 	status.textContent = words.length
-		? `נמצאו ${count} נושאים`
+		? count === 0
+			? "לא נמצאו נושאים"
+			: count === 1
+				? "נמצא נושא אחד"
+				: `נמצאו ${count} נושאים`
 		: `${subjects.length} נושאים לבחירה`;
 	topicDisclosures.filterChanged();
 }
@@ -207,7 +268,7 @@ document.addEventListener(
 );
 
 topicList.addEventListener("keydown", (event) => {
-	const visible = [...tabs.values()].filter((tab) => !tab.hidden);
+	const visible = [...topicList.querySelectorAll(".topic-tab")].filter((tab) => !tab.hidden);
 	const index = visible.indexOf(event.target);
 	if (index < 0) return;
 	let next;

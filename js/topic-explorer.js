@@ -1,186 +1,94 @@
-import { initDisclosureMotion } from "./disclosure-motion.js";
-
 export function initTopicExplorer(root) {
-	const cards = [...root.querySelectorAll(".topic-card")];
-	const panel = root.querySelector("[data-topic-panel]");
-	const title = panel?.querySelector("[data-topic-panel-title]");
-	const description = panel?.querySelector("[data-topic-panel-description]");
-	const summaries = root.querySelector("[data-topic-summaries]");
-	const descriptions = [...(summaries?.querySelectorAll("p") ?? [])];
-
-	if (
-		cards.length === 0 ||
-		!panel ||
-		!title ||
-		!description ||
-		descriptions.length !== cards.length
-	) {
-		throw new Error("Missing required topic panel elements");
-	}
-
-	const browserWindow = root.ownerDocument.defaultView;
-	const motionPreference = browserWindow?.matchMedia?.(
-		"(prefers-reduced-motion: reduce)",
-	);
+	const cards = [...root.querySelectorAll('.topic-card')];
+	const panel = root.querySelector('[data-topic-panel]');
+	const title = panel?.querySelector('[data-topic-panel-title]');
+	const description = panel?.querySelector('[data-topic-panel-description]');
+	const link = panel?.querySelector('[data-topic-panel-link]');
+	const summaries = root.querySelector('[data-topic-summaries]');
+	const descriptions = [...(summaries?.querySelectorAll('p') ?? [])];
+	const links = [...(summaries?.querySelectorAll('h3 a') ?? [])];
+	if (!cards.length || !panel || !title || !description || descriptions.length !== cards.length)
+		throw new Error('Missing required topic panel elements');
 	const document = root.ownerDocument;
-	const picker = document.createElement("div");
-	picker.className = "topic-picker";
-	const label = document.createElement("span");
-	label.id = "topic-picker-label";
-	label.textContent = "בחרו נושא לימוד";
-	const dropdown = document.createElement("button");
-	dropdown.type = "button";
-	dropdown.className = "topic-select";
-	dropdown.id = "topic-picker-value";
-	dropdown.setAttribute("aria-haspopup", "listbox");
-	dropdown.setAttribute("aria-expanded", "false");
-	dropdown.setAttribute("aria-labelledby", `${label.id} ${dropdown.id}`);
-	const menu = document.createElement("div");
-	menu.className = "topic-options";
-	menu.id = "topic-options";
-	menu.hidden = true;
-	menu.setAttribute("role", "listbox");
-	menu.setAttribute("aria-labelledby", label.id);
-	dropdown.setAttribute("aria-controls", menu.id);
-	const options = cards.map((card) => {
-		const option = document.createElement("button");
-		option.type = "button";
-		option.className = "topic-option";
-		option.tabIndex = -1;
-		option.setAttribute("role", "option");
-		option.textContent = card.textContent.trim();
-		option.addEventListener("click", (event) => {
-			select(card, { animate: event.detail > 0 });
-			setOpen(false, true);
-		});
-		menu.append(option);
-		return option;
-	});
-	picker.append(label, dropdown, menu);
-	root.prepend(picker);
-	root.dataset.topicDropdown = "true";
-	const setDisclosureOpen = initDisclosureMotion(
-		dropdown,
-		menu,
-		"(max-width: 639px)",
-	);
-
-	function setOpen(open, restoreFocus = false) {
-		setDisclosureOpen(open);
-		if (open)
-			options
-				.find(
-					(option) => option.getAttribute("aria-selected") === "true",
-				)
-				.focus();
-		else if (restoreFocus) dropdown.focus();
-	}
-
-	dropdown.addEventListener("click", () => setOpen(menu.hidden));
-	picker.addEventListener("keydown", (event) => {
-		if (event.key === "Escape" && !menu.hidden) {
-			event.preventDefault();
-			setOpen(false, true);
-			return;
-		}
-		if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key))
-			return;
-		event.preventDefault();
-		if (menu.hidden) {
-			setOpen(true);
-			return;
-		}
-		const index = options.indexOf(document.activeElement);
-		const next =
-			event.key === "Home"
-				? 0
-				: event.key === "End"
-					? options.length - 1
-					: (index +
-							(event.key === "ArrowDown" ? 1 : -1) +
-							options.length) %
-						options.length;
-		options[next].focus();
-	});
-	document.addEventListener("pointerdown", (event) => {
-		if (!picker.contains(event.target)) setOpen(false);
-	});
-	picker.addEventListener("focusout", (event) => {
-		if (!picker.contains(event.relatedTarget)) setOpen(false);
-	});
+	const window = document.defaultView;
+	const reducedMotion = window?.matchMedia?.('(prefers-reduced-motion: reduce)');
+	const mobile = window?.matchMedia?.('(max-width: 639px)');
+	const rail = root.querySelector('.topic-rail');
 	let pendingUpdate;
 	let selectedCard;
-
-	function updateContent(card) {
-		browserWindow?.clearTimeout(pendingUpdate);
-		title.textContent = card.textContent.trim();
-		description.textContent =
-			descriptions[cards.indexOf(card)].textContent.trim();
-		panel.dataset.updating = "false";
+	panel.id ||= 'home-topic-panel';
+	panel.setAttribute('role', 'tabpanel');
+	panel.tabIndex = 0;
+	panel.removeAttribute('aria-live');
+	if (rail) {
+		rail.setAttribute('role', 'tablist');
+		rail.setAttribute('aria-label', 'נושאי הלימוד');
+		rail.hidden = false;
 	}
-
+	cards.forEach((card, index) => {
+		card.id ||= `home-topic-${index + 1}`;
+		card.setAttribute('role', 'tab');
+		card.setAttribute('aria-controls', panel.id);
+		card.removeAttribute('aria-expanded');
+	});
+	function updateContent(card) {
+		window?.clearTimeout(pendingUpdate);
+		const index = cards.indexOf(card);
+		title.textContent = card.textContent.trim();
+		description.textContent = descriptions[index].textContent.trim();
+		const source = links[index];
+		if (link && source) link.href = source.href;
+		panel.dataset.updating = 'false';
+	}
 	function select(card, { animate = true } = {}) {
 		if (card === selectedCard && animate) return;
 		selectedCard = card;
-		const withMotion = animate && !motionPreference?.matches;
-		panel.dataset.motion = withMotion ? "pointer" : "instant";
-		dropdown.textContent = card.textContent.trim();
-		options.forEach((option, index) => {
-			option.setAttribute("aria-selected", String(cards[index] === card));
-		});
-		cards.forEach((candidate) => {
+		panel.setAttribute('aria-labelledby', card.id);
+		cards.forEach(candidate => {
 			const selected = candidate === card;
 			candidate.dataset.active = String(selected);
-			candidate.setAttribute("aria-expanded", String(selected));
+			candidate.setAttribute('aria-selected', String(selected));
+			candidate.tabIndex = selected ? 0 : -1;
 		});
-
-		browserWindow?.clearTimeout(pendingUpdate);
-		if (!withMotion) {
-			updateContent(card);
-			return;
-		}
-
-		panel.dataset.updating = "true";
-		pendingUpdate = browserWindow?.setTimeout(
-			() => updateContent(card),
-			110,
-		);
+		const withMotion = animate && !reducedMotion?.matches;
+		panel.dataset.motion = withMotion ? 'pointer' : 'instant';
+		window?.clearTimeout(pendingUpdate);
+		if (!withMotion) return updateContent(card);
+		panel.dataset.updating = 'true';
+		pendingUpdate = window?.setTimeout(() => updateContent(card), 110);
 	}
-
-	motionPreference?.addEventListener?.("change", () => {
-		if (motionPreference.matches) {
-			panel.dataset.motion = "instant";
+	cards.forEach((card, index) => {
+		card.addEventListener('click', event => select(card, { animate: event.detail > 0 }));
+		card.addEventListener('keydown', event => {
+			const delta = { ArrowLeft: 1, ArrowRight: -1, ArrowDown: 2, ArrowUp: -2 }[event.key];
+			const next = event.key === 'Home' ? 0 : event.key === 'End' ? cards.length - 1 : delta === undefined ? undefined : (index + delta + cards.length) % cards.length;
+			if (next === undefined) return;
+			event.preventDefault();
+			select(cards[next], { animate: false });
+			cards[next].focus();
+		});
+	});
+	function updateLayout() {
+		const focusedLink = links.indexOf(document.activeElement);
+		const focusedPreview = rail?.contains(document.activeElement) || panel.contains(document.activeElement);
+		summaries.hidden = !mobile?.matches;
+		panel.hidden = Boolean(mobile?.matches);
+		if (rail) rail.hidden = Boolean(mobile?.matches);
+		if (mobile?.matches && focusedPreview) {
+			(links[cards.indexOf(selectedCard)] ?? root).focus({ preventScroll: true });
+		} else if (!mobile?.matches && focusedLink >= 0 && cards[focusedLink]) {
+			select(cards[focusedLink], { animate: false });
+			cards[focusedLink].focus({ preventScroll: true });
+		}
+	}
+	reducedMotion?.addEventListener?.('change', () => {
+		if (reducedMotion.matches) {
+			panel.dataset.motion = 'instant';
 			updateContent(selectedCard);
 		}
 	});
-
-	cards.forEach((card, index) => {
-		card.addEventListener("click", (event) =>
-			select(card, { animate: event.detail > 0 }),
-		);
-		card.addEventListener("keydown", (event) => {
-			let nextIndex;
-			if (event.key === "ArrowLeft")
-				nextIndex = (index + 1) % cards.length;
-			if (event.key === "ArrowRight")
-				nextIndex = (index - 1 + cards.length) % cards.length;
-			if (event.key === "Home") nextIndex = 0;
-			if (event.key === "End") nextIndex = cards.length - 1;
-			if (nextIndex === undefined) return;
-			event.preventDefault();
-			cards[nextIndex].focus();
-		});
-	});
-
-	const initiallyActive =
-		cards.find((card) => card.dataset.active === "true") ?? cards[0];
-	select(initiallyActive, { animate: false });
-	summaries.hidden = true;
-	panel.hidden = false;
-	const rail = root.querySelector(".topic-rail");
-	if (rail) rail.hidden = false;
-	const prompt = root
-		.closest(".course-topics")
-		?.querySelector(".topic-prompt");
-	if (prompt) prompt.textContent = "בחרו נושא וראו מה תלמדו";
+	mobile?.addEventListener?.('change', updateLayout);
+	select(cards.find(card => card.dataset.active === 'true') ?? cards[0], { animate: false });
+	updateLayout();
+	root.dataset.topicEnhanced = 'true';
 }

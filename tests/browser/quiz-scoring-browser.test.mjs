@@ -52,15 +52,27 @@ test("a graded quiz scores mixed answers, locks review and resets a fresh attemp
 	await page.locator("[data-quiz-next]").click();
 	await page.locator('#case-2 input[value="go"]').check();
 	await page.locator("[data-quiz-next]").click();
-	assert.match(await page.locator("[data-quiz-count]").innerText(), /2 מתוך 3.*67%/);
+	await page.locator("[data-quiz-submit]").click();
+	assert.match(await page.locator("[data-quiz-count]").innerText(), /2 מתוך 3/);
+	assert.equal(await page.locator("[data-quiz-score]").innerText(), "67%");
 	assert.equal(await page.locator("#quiz-result-title").evaluate(el => el === document.activeElement), true);
 	await page.locator("[data-quiz-review]").click();
+	assert.equal(await page.locator("#case-1").isVisible(), true, "review starts at the first mistake");
+	await page.locator("[data-quiz-next]").click();
 	assert.equal(await page.locator('#case-2 [data-quiz-feedback]').isVisible(), true);
 	assert.match(await page.locator('#case-2 summary').innerText(), /תשובה נכונה/);
 	assert.equal(await page.locator('#case-2 input[value="go"]').isDisabled(), true);
+	assert.match(await page.locator('#case-2 label[data-answer-result="correct"]').innerText(), /התשובה שבחרתם - נכונה/);
 	await page.locator("[data-quiz-previous]").click();
 	assert.match(await page.locator('#case-1 summary').innerText(), /תשובה שגויה/);
 	assert.match(await page.locator('#case-1 [data-quiz-feedback]').innerText(), /wait/);
+	const wrong = page.locator('#case-1 label[data-answer-result="incorrect"]');
+	const correct = page.locator('#case-1 label[data-answer-result="correct"]');
+	assert.match(await wrong.innerText(), /go.*התשובה שבחרתם - שגויה/s);
+	assert.match(await correct.innerText(), /wait.*התשובה הנכונה/s);
+	assert.notEqual(await wrong.evaluate(el => getComputedStyle(el).borderColor), await correct.evaluate(el => getComputedStyle(el).borderColor));
+	await wrong.hover();
+	assert.notEqual(await wrong.evaluate(el => getComputedStyle(el).backgroundColor), await correct.evaluate(el => getComputedStyle(el).backgroundColor));
 	await page.locator("[data-quiz-next]").click();
 	await page.locator("[data-quiz-next]").click();
 	await page.locator("[data-quiz-retry]").click();
@@ -69,11 +81,14 @@ test("a graded quiz scores mixed answers, locks review and resets a fresh attemp
 	assert.equal(await page.locator(".quiz-question input:disabled").count(), 0);
 	assert.equal(await page.locator("[data-quiz-feedback]:visible").count(), 0);
 	assert.equal(await page.locator("[data-quiz-count]").textContent(), "");
+	assert.equal(await page.locator("[data-answer-result], .quiz-answer-state").count(), 0);
 	for (const [index, answer] of ["stop", "wait", "go"].entries()) {
 		await page.locator(`#case-${index} input[value="${answer}"]`).check();
 		await page.locator("[data-quiz-next]").click();
 	}
-	assert.match(await page.locator("[data-quiz-count]").innerText(), /3 מתוך 3.*100%/);
+	await page.locator("[data-quiz-submit]").click();
+	assert.match(await page.locator("[data-quiz-count]").innerText(), /3 מתוך 3/);
+	assert.equal(await page.locator("[data-quiz-score]").innerText(), "100%");
 });
 
 for (const mode of ["disabled", "blocked"]) {
@@ -98,7 +113,8 @@ for (const width of [1440, 390]) {
 					await page.locator(`#case-${index} input[value="${answer}"]`).check();
 					await page.locator("[data-quiz-next]").click();
 				}
-				const text = await page.locator("[data-quiz-count]").innerText();
+				await page.locator("[data-quiz-submit]").click();
+				const text = await page.locator("#quiz-result-title").innerText() + ". " + await page.locator("[data-quiz-threshold]").innerText();
 				assert.match(text, score >= minimum ? /(?:^|\.\s)עברתם את התרגול/ : /לא עברתם את התרגול/);
 				assert.ok(text.includes(`${minimum} מתוך ${count}`));
 				assert.match(text, /85%/);

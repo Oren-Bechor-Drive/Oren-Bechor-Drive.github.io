@@ -5,7 +5,7 @@ import { startDatabase, actAs } from "../support/database.mjs";
 import { quizQuestions } from "../fixtures/protected-quiz.mjs";
 
 // Owns deterministic Auth and its disposable PostgreSQL roles, RLS and learner RPCs.
-export async function startLessonGateway({ quiz = false, quizCount = 20, longLesson = false, ...gatewayOptions } = {}) {
+export async function startLessonGateway({ quiz = false, quizCount = 20, quizTopics = [], longLesson = false, ...gatewayOptions } = {}) {
 	const database = await startDatabase();
 	const identities = new Map();
 	const sessions = new Map();
@@ -77,17 +77,23 @@ export async function startLessonGateway({ quiz = false, quizCount = 20, longLes
 	provider.quizHistory = (token, key, before = null) => rpc(token, "my_quiz_history", [key, before]);
 	provider.completeTopic = (token, key) => rpc(token, "complete_my_topic", [key]);
 	try {
-		if (quiz) {
+		if (quiz || quizTopics.length) {
 			const questions = quizQuestions(quizCount);
-			await connected(client => client.query("select public.publish_quiz($1,$2,$3,$4)", ["synthetic-topic", "תרגול בדיקה", JSON.stringify(questions), "synthetic-test-only"]));
+			for (const key of [...(quiz ? ["synthetic-topic"] : []), ...quizTopics]) {
+				await connected(client => client.query("select public.publish_quiz($1,$2,$3,$4)", [key, "תרגול בדיקה", JSON.stringify(questions), "synthetic-test-only"]));
+			}
 		}
 		const seed = await readFile(new URL("../../supabase/development/test-lessons.sql", import.meta.url), "utf8");
 		const grant = await readFile(new URL("../../supabase/development/grant-test-access.sql", import.meta.url), "utf8");
 		await connected(client => client.query(seed));
 		await connected(client => client.query("update public.learning_sections set title=case source_key when 'development-test-free' then 'הגדרה לבדיקה' else 'שיעור לבדיקה' end"));
-		if (longLesson) await connected(client => client.query(
-			"select public.publish_learning_section($1,$2,1,$3,$4,null)",
-			["a524e32d-2640-4d94-a51c-000000000001", "development-test-free", "הגדרה לבדיקה", Array.from({ length: 80 }, (_, i) => `פסקת בדיקה ${i + 1}. טקסט סינתטי לבדיקת מיקום הקריאה ושמירתו בחשבון.`).join("\n\n")]));
+		if (longLesson) await connected(async client => {
+			const paragraphs = Array.from({ length: 80 }, (_, i) => `פסקת בדיקה ${i + 1}. טקסט סינתטי לבדיקת מיקום הקריאה ושמירתו בחשבון.`).join("\n\n");
+			await client.query("select public.publish_learning_section($1,$2,1,$3,$4,null)",
+				["a524e32d-2640-4d94-a51c-000000000001", "development-test-free", "הגדרה לבדיקה", paragraphs]);
+			await client.query("select public.publish_learning_section($1,$2,1,$3,null,$4)",
+				["a524e32d-2640-4d94-a51c-000000000002", "development-test-paid", "שיעור לבדיקה", `תוכן בדיקה בתשלום. זהו טקסט לדוגמה בלבד, ללא חומר מהקורס. פתיחת הטקסט דורשת הרשאת בדיקה זמנית. לא בוצע חיוב.\n\n${paragraphs}`]);
+		});
 		app = await startAccountGateway({ provider, ...gatewayOptions });
 		return {
 			origin: app.origin,
