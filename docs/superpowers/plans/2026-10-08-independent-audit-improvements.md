@@ -10,6 +10,23 @@
 
 **Spec:** [Website missing-pieces audit](../../reviews/website-missing-pieces-2026-10-08.md), checked against checkout `b6fabef`. Read the audit with this plan. Existing product decisions take precedence over speculative improvements.
 
+## Implementation progress
+
+Local work started on 2026-10-08 in `t3/audit-missing-website-pieces`.
+
+| Task | Current evidence |
+| --- | --- |
+| 1 | Committed `4bda41f`: scope/retention/hosted teardown documentation corrected. Final dated evidence follows Task 13. |
+| 2 | Committed `0fe5a7f`: 36 focused tests and collaborative desktop/mobile checks pass. Restoration reauthorizes immediately, reconciling an exact observed in-flight acknowledgement without waiting for network completion; stale UI effects remain isolated. |
+| 3 | Committed `820a9f5`: 56 focused cases pass after correcting a test locator; synthetic browser Google callback returns to the authorized reader, durable encrypted return flow verified. Live Google remains disabled. |
+| 4 | Committed `b7ce402`, `94fe5d5`: ten browser-helper/lifetime unit cases and 48 focused cooldown cases pass. Integrated full suite follows parallel protected-media/withdrawal work. |
+| 5 | Committed `4bb1e27`: 81 topic / 59 explanation references, 74 focused tests, links and media audits pass. Teaching/question/source bytes preserved. |
+| 6-7 | In progress with separate media and withdrawal owners. |
+| 8 | Pending safe diagnostics integration. |
+| 9 | Baseline committed `66574f1`: 88 database tests and ten rehearsal checks pass. Withdrawal recovery is being added after Task 7. |
+| 10 | Unpublished instructor/owner packets in progress. |
+| 11-13 | Pending final browser, performance and readiness integration. |
+
 ## Global Constraints
 
 - Write all visitor-facing website copy in Hebrew and preserve right-to-left layout and reading order. Communicate with the user in English.

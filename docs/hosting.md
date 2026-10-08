@@ -19,6 +19,8 @@ Images, CSS and JavaScript in the configured static exclusions bypass the Worker
 
 The local Worker serves the public site even without credentials; its account API returns unavailable. Runtime tests use synthetic identities. They do not authenticate against hosted Supabase or send emails.
 
+The [local recovery rehearsal](local-recovery.md) checks owned synthetic databases and private-media copies. It is separate from provider backup formats and does not establish a hosted recovery path.
+
 ## Configuration
 
 Copy [.env.hosted.example](../.env.hosted.example) to ignored `.env.hosted.local`, fill the selected environment's values, then run `npm run check:hosting`. This validates structure locally and makes no network requests. It does not verify a provider plan or prove that authentication works.
@@ -55,7 +57,7 @@ A database lease serializes operations on a session across Worker instances. It 
 
 Rotation and revocation commit through service-only RPCs. Password reset invalidates the user's other sessions and authentication already in flight. If the provider's password-update result is uncertain, a durable reset barrier blocks new authentication publication until an operator reconciles it. It never expires into an automatic authorization decision. See the recovery procedure below.
 
-The default store holds at most 1000 sessions, with at most 800 anonymous sessions. Capacity exhaustion returns unavailable rather than switching to an unbounded or process-local store. Rate windows permit 150 API requests per minute and 20 account mutations per fifteen minutes per client address. PostgreSQL shares counters across instances and caps their storage at 4000 buckets. Counters store HMAC values, never raw IP addresses. Exhaustion denies requests; storage errors fail closed.
+The default store holds at most 1000 sessions, with at most 800 anonymous sessions. Capacity exhaustion returns unavailable rather than switching to an unbounded or process-local store. Rate windows permit 150 API requests per minute and 20 account mutations per fifteen minutes per client address. PostgreSQL shares counters across instances and caps their storage at 4000 buckets. Counters store HMAC values, never raw IP addresses. Exhaustion denies requests with the remaining positive whole seconds; storage errors fail closed. The decision RPC and retained boolean compatibility RPC share a single counter. Apply the decision migration before deploying the new caller. A provider throttle without known wait metadata has no fabricated `Retry-After` header.
 
 Cloudflare supplies `CF-Connecting-IP`; generic forwarded headers cannot select a different identity. Do not place this adapter behind a proxy that lets callers choose that header. Provider Auth/email limits remain additional limits. Application limits do not implement provider billing caps; selected accounts must remain on their Free plans.
 

@@ -17,6 +17,8 @@ Use [local account setup](local-accounts.md) for the configured development gate
 
 Run `npm test`, `npm run check:media`, `npm run check:links` and `git diff --check` before publishing these changes. Record local fixture results separately from [hosted verification](../supabase/tests/README.md). Pushing files to GitHub Pages does not deploy the gateway, apply migrations, grant access, or configure Auth providers. Keep real restricted course content out of public delivery.
 
+Use the [local recovery rehearsal](local-recovery.md) to verify synthetic state export, atomic restoration, learner isolation and encryption-key handling against checked-in migrations. It accepts no hosted target. A real backup destination, schedule, key custody and authorized hosted restoration remain owner inputs.
+
 ## Keep evidence, approval, and technical checks separate
 
 A source review checks evidence and wording limits. Instructor approval accepts the teaching adaptation. Automated checks test repository behavior. One result does not replace another.
