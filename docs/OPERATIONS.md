@@ -1,6 +1,6 @@
 # Operations runbook
 
-This runbook covers content review, publication, support intake, and recovery for the current static site. GitHub Pages serves the root of `main` at `https://oren-bechor-drive.github.io/`. The published static site has no running account backend. The repository includes a local account gateway and a Supabase development database foundation; neither supplies a production account service. Payments, a staff console, a public support channel and application monitoring remain unimplemented.
+This runbook covers content review, publication, support intake, and recovery for the current static site. GitHub Pages serves the root of `main` at `https://oren-bechor-drive.github.io/`. The published static site has no running account backend. The repository includes a local account gateway and a Supabase development database foundation; neither supplies a production account service. Payments, a staff console, a public support channel and hosted monitoring remain unimplemented. Safe local diagnostic categories are implemented; they do not establish alert delivery or a responder.
 
 Use these project sources when a change touches their scope:
 
@@ -34,6 +34,8 @@ Instructor reviewer:
 Instructor review date:
 Approved scope and required corrections:
 ```
+
+Use the [teaching and media review packet](reference/teaching-review-packet-2026-10-08.md) for all 81 incomplete placements, proposed Hebrew passages and 28 production briefs. The packet records source-unverified passages separately and stays outside public output. [Launch inputs](launch-inputs.md) lists the exact owner values and policy decisions still needed.
 
 Oren's approval remains required before adapted teaching copy, real quiz content, answer explanations, or teaching media becomes final. If the approved files change, obtain approval for the new revision. A passing test run does not mean that teaching content is approved.
 
@@ -174,3 +176,9 @@ Before accepting payment or storing learner data:
 During a future billing or access incident, preserve provider event identifiers and local correlation identifiers without copying credentials or unnecessary learner data. Compare the provider's transaction state, verified webhook history, local subscription state, and enforced entitlement. Do not grant access from a checkout return URL or replay an event until signature, idempotency, and target account checks pass. Route refunds, retention decisions, legal notices, and learner communications through the approved policy and authorized owner.
 
 Do not claim that monitoring, a staff console, backups, reconciliation, or an incident response team exists until each item is implemented and tested.
+
+## Verify diagnostic signals
+
+Locally simulate failed Auth, learner RPC, position, private-media and rate-store requests. Confirm a generic safe error with `private, no-store` and an approved category/operation/status event; no request values or provider details may appear. Repeat the same failure within 60 seconds to check suppression, then check the accumulated count after the window. A configuration error may name only its approved field and `missing`/`invalid` reason.
+
+For an incident, verify the public homepage separately from account session/login, an authorized learning read/save and private-media GET/HEAD/range behavior. Use owned synthetic fixtures locally. Hosted probes require an authorized tester and the owner's operational setup. Local stderr and Worker-emitted events are implemented; cloud collection remains disabled and alert destinations, retention and responder are unresolved. See [hosting diagnostics](hosting.md#safe-diagnostics).

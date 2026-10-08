@@ -3,6 +3,20 @@ import test from "node:test";
 import { createProductionGatewayOptions } from "../../server/production.mjs";
 const env = { APP_ORIGIN: "https://course.example.test", SUPABASE_URL: "https://project.supabase.co", SUPABASE_PUBLISHABLE_KEY: "sb_publishable_test", SUPABASE_SECRET_KEY: "sb_secret_test", SESSION_SECRET: Buffer.alloc(32, 3).toString("base64") };
 
+test("configuration errors identify only the approved field and missing/invalid reason", () => {
+	for (const field of Object.keys(env)) {
+		assert.throws(() => createProductionGatewayOptions({ ...env, [field]: "" }), error => error.configurationField === field && error.configurationReason === "missing");
+	}
+	for (const [field, value] of [["APP_ORIGIN", "https://private-user:private-password@example.test"], ["SUPABASE_URL", "private invalid url"], ["SESSION_SECRET", "private secret"], ["GOOGLE_AUTH_ENABLED", "private value"], ["PRIVATE_MEDIA_ENTRIES", "private JSON"]]) {
+		assert.throws(() => createProductionGatewayOptions({ ...env, [field]: value, ...(field === "PRIVATE_MEDIA_ENTRIES" ? { PRIVATE_MEDIA_BUCKET: "course" } : {}) }), error => {
+			assert.equal(error.configurationField, field);
+			assert.equal(error.configurationReason, "invalid");
+			assert.doesNotMatch(error.message, /private/);
+			return true;
+		});
+	}
+});
+
 test("production composition requires exact HTTPS origins and server configuration", () => {
  for (const name of Object.keys(env)) assert.throws(() => createProductionGatewayOptions({ ...env, [name]: "" }));
  for (const APP_ORIGIN of ["http://localhost:3000", "https://course.example.test/", "https://user:password@course.example.test", "https://course.example.test/path"]) assert.throws(() => createProductionGatewayOptions({ ...env, APP_ORIGIN }));

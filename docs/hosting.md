@@ -97,9 +97,9 @@ Create a private bucket only after selecting the hosted project and confirming i
 
 The hosted adapter supports full delivery, HEAD and single byte ranges, validates upstream MIME type and range metadata, and streams without buffering a video in memory. Disconnects and fifteen seconds without upstream progress abort the download. Invalid upstream responses fail closed. This adapter currently accepts the standard `https://<project>.supabase.co` host, not custom Storage domains.
 
-The registry has the same `id`, `sectionId`, `contentVersionId`, `type`, `title` and `file` fields as the [local media manifest](protected-learning.md). `file` is now a private object path. Use opaque ASCII object names with letters, digits, `_`, `-` and `.`, separated by `/`; no dot-leading, empty or escaped path segments. Titles remain Hebrew. Accepted types are MP4/WebM and PNG/JPEG/WebP. The registry is server configuration, not learner-supplied data or a public file.
+The registry has the same `id`, `sectionId`, `contentVersionId`, `type`, `title` and `file` fields as the [local media manifest](protected-learning.md). `file` is now a private object path. Use opaque ASCII object names with letters, digits, `_`, `-` and `.`, separated by `/`; no dot-leading, empty or escaped path segments. Titles remain Hebrew. Accepted root types are MP4/WebM and PNG/JPEG/WebP. A video can reference Hebrew `text/vtt` captions and a `text/plain; charset=utf-8` transcript as separate same-section/version registry entries, using the [local manifest contract](protected-learning.md#private-media). Only root image/video descriptors appear in the section response; sidecars are nested opaque URLs. Invalid, repeated, orphan or wrong-version references prevent registry construction. Storage responses preserve precise text MIME types and the same authorization/cache boundary. The registry is server configuration, not learner-supplied data or a public file.
 
-No videos or registry entries have been uploaded. Captions, transcripts, approved media, browser playback and actual storage/egress capacity remain release work. The current adapter does not add adaptive streaming or remove the selected plan's per-file limit.
+No videos or registry entries have been uploaded. Caption/transcript delivery and native reader controls are locally implemented and tested with synthetic media. Real approved captions/transcripts, rights, hosted playback, physical-device accessibility and actual storage/egress capacity remain release work. The current adapter does not add adaptive streaming or remove the selected plan's per-file limit.
 
 ## Private pilot and public opening
 
@@ -113,3 +113,9 @@ No videos or registry entries have been uploaded. Captions, transcripts, approve
 For rollback, select `closed` and keep secrets stable. Session use will reject identities under the closed gate. Already delivered bytes cannot be recalled; provider account deletion and content unpublication are separate actions. Preserve the schema while investigating rather than dropping learner data.
 
 Backups are still unresolved: no backup destination has been supplied. Durable sessions and passing tests do not establish recoverability of learner data. Live provider setup, hosted verification, approved content and the owner's opening decision remain outside this local implementation.
+
+## Safe diagnostics
+
+`server/diagnostics.mjs` emits only approved category/operation/status values and optional configuration field/reason. It never accepts arbitrary messages, stacks, URLs, learner IDs, cookies, request bodies, provider payloads or credentials. The first matching event is emitted; repeats are suppressed for 60 seconds, and the next event reports an internally accumulated count. Reporter failure cannot change a response. Local Node emits to stderr. Worker initialization emits one safe configuration event per environment and keeps its public-site/unavailable-API behavior.
+
+Gateway dependency failures distinguish account, learning, position, media and rate-store operations; unexpected failures use the same safe generic learner response. `wrangler.jsonc` cloud observability remains disabled. Local emitted events are not hosted log collection, alert delivery or a response commitment. The owner must supply log retention, alert destinations and a responder before configuring those services.

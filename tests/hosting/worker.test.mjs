@@ -99,6 +99,19 @@ test("production entry serves public files while missing configuration disables 
 	}
 });
 
+test("production Worker emits one safe configuration signal per environment", { timeout: 60_000 }, async t => {
+	const { request } = await start(t, "tests/fixtures/hosting/diagnostics-worker.mjs");
+	assert.equal((await request("/")).status, 200);
+	for (let i = 0; i < 3; i++) {
+		const response = await request("/api/account/session?token=do-not-log");
+		assert.equal(response.status, 503);
+		assert.deepEqual(await response.json(), { error: "unavailable" });
+	}
+	const events = await (await request("/__test/diagnostics")).json();
+	assert.deepEqual(events, [{ category: "configuration", operation: "startup", status: 503, field: "APP_ORIGIN", reason: "missing" }]);
+	assert.equal((await request("/tests/fixtures/hosting/diagnostics-worker.mjs")).status, 404);
+});
+
 test("Worker streams authorized Storage media and cancels the upstream on disconnect", { timeout: 60_000 }, async t => {
 	const { request, networkOrigin } = await start(t);
 	assert.equal((await request("/api/media/stream")).status, 401);

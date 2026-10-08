@@ -41,7 +41,7 @@ async function input(req, route) {
 	return body;
 }
 
-export function createGateway({ origin, provider = null, media = null, googleEnabled = false, now = Date.now, authLimit = 20, sessionLimit = 1000, sessions, admit, requestLimiter, mutationLimiter }) {
+export function createGateway({ origin, provider = null, media = null, googleEnabled = false, now = Date.now, authLimit = 20, sessionLimit = 1000, sessions, admit, requestLimiter, mutationLimiter, diagnostics }) {
 	const address = new URL(origin);
 	if (address.origin !== origin || (address.protocol !== "https:" && !(address.protocol === "http:" && ["127.0.0.1", "localhost", "[::1]"].includes(address.hostname)))) throw new Error("An exact HTTPS origin or loopback HTTP origin is required");
 	const secure = address.protocol === "https:";
@@ -69,13 +69,14 @@ export function createGateway({ origin, provider = null, media = null, googleEna
 		res.setHeader("Pragma", "no-cache");
 		res.setHeader("Referrer-Policy", "no-referrer");
 		res.setHeader("X-Content-Type-Options", "nosniff");
-		let route;
+		let route, diagnosticOperation = "account";
 		try {
 			await enforceLimit(requestLimit, req.socket.remoteAddress);
 			const url = new URL(req.url, origin);
 			const cookies = (req.headers.cookie ?? "").split(";").map(part => part.trim()).filter(part => part.startsWith(`${cookieName}=`));
 			const token = cookies.length === 1 ? cookies[0].slice(cookieName.length + 1) : null;
 			if (url.pathname === "/api/sections" || url.pathname.startsWith("/api/sections/")) {
+				diagnosticOperation = url.pathname.endsWith("/position") ? "position" : "learning";
 				if (url.search) fail(400, "invalid_input");
 				if (!provider) fail(503, "unavailable");
 				if (url.pathname === "/api/sections") {
@@ -95,6 +96,7 @@ export function createGateway({ origin, provider = null, media = null, googleEna
 				return respond(res, result);
 			}
 			if (url.pathname.startsWith("/api/media/")) {
+				diagnosticOperation = "media";
 				if (!["GET", "HEAD"].includes(req.method)) fail(405, "method_not_allowed");
 				if (url.search) fail(400, "invalid_input");
 				const entry = media?.lookup(url.pathname.slice("/api/media/".length));
@@ -103,6 +105,7 @@ export function createGateway({ origin, provider = null, media = null, googleEna
 				return await media.send(req, res, entry);
 			}
 			if (/^\/api\/(learning|quizzes|attempts|topics)(\/|$)/.test(url.pathname)) {
+				diagnosticOperation = "learning";
 				if (!provider) fail(503, "unavailable");
 				const [, , resource, key, action] = url.pathname.split("/");
 				if (url.pathname.split("/").length > 5) fail(404, "not_found");
@@ -146,6 +149,10 @@ export function createGateway({ origin, provider = null, media = null, googleEna
 			const body = await readMutation(req, token, route, mutationLimit);
 			return respond(res, await accounts.perform(token, route, body));
 		} catch (error) {
+			if ((error.status ?? 503) >= 500) {
+				try { diagnostics?.emit({ category: Number.isInteger(error.status) ? "dependency" : "unexpected", operation: error.diagnosticOperation === "rate_limit" ? "rate_limit" : diagnosticOperation, status: 503 }); }
+				catch { /* Reporter failures are nonfatal. */ }
+			}
 			if (res.writableEnded || res.destroyed) return;
 			if (res.headersSent) { res.destroy(); return; }
 			let status = error.status ?? 503;
@@ -153,7 +160,7 @@ export function createGateway({ origin, provider = null, media = null, googleEna
 			if (route === "login" && [400, 401, 403, 422].includes(status) && !["invalid_input", "invalid_email", "invalid_password", "request_rejected"].includes(code)) { status = 401; code = "sign_in_failed"; }
 			else if (status >= 500) { status = 503; code = "unavailable"; }
 			else if (status === 429) { code = "rate_limited"; }
-			else if (!["invalid_input", "invalid_email", "invalid_password", "request_rejected", "recovery_required", "session_expired", "too_large", "not_found", "lesson_unavailable", "learning_unavailable", "quiz_conflict", "method_not_allowed", "google_unavailable"].includes(code)) code = "request_failed";
+			else if (!["invalid_input", "invalid_email", "invalid_password", "request_rejected", "recovery_required", "session_expired", "too_large", "not_found", "lesson_unavailable", "learning_unavailable", "quiz_conflict", "quiz_withdrawn", "method_not_allowed", "google_unavailable"].includes(code)) code = "request_failed";
 			if (status === 429 && Number.isInteger(error.retryAfterSeconds) && error.retryAfterSeconds >= 1 && error.retryAfterSeconds <= 86400) res.setHeader("Retry-After", String(error.retryAfterSeconds));
 			json(res, { error: code }, status);
 		}
@@ -178,8 +185,10 @@ function createRateLimit({ now = Date.now, limit = 20, windowMs = 900_000, capac
 }
 
 async function enforceLimit(limiter, address) {
-	const decision = await limiter(address);
+	let decision;
+	try { decision = await limiter(address); }
+	catch (error) { throw Object.assign(new Error("unavailable"), { status: error?.status ?? 503, code: error?.code, diagnosticOperation: "rate_limit" }); }
 	if (!decision || typeof decision.allowed !== "boolean" || !Number.isInteger(decision.retryAfterSeconds)
-		|| (decision.allowed ? decision.retryAfterSeconds !== 0 : decision.retryAfterSeconds < 1 || decision.retryAfterSeconds > 86400)) fail(503, "unavailable");
+		|| (decision.allowed ? decision.retryAfterSeconds !== 0 : decision.retryAfterSeconds < 1 || decision.retryAfterSeconds > 86400)) throw Object.assign(new Error("unavailable"), { status: 503, code: "unavailable", diagnosticOperation: "rate_limit" });
 	if (!decision.allowed) fail(429, "rate_limited", decision.retryAfterSeconds);
 }
