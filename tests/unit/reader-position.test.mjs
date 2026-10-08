@@ -6,6 +6,33 @@ const version = "11111111-1111-4111-8111-111111111111";
 const snapshot = (changes = {}) => ({ contentVersionId: version, position: 2000, revision: 1, csrf: "fixture-csrf", ...changes });
 const deferred = () => { let resolve, reject; const promise = new Promise((yes, no) => { resolve = yes; reject = no; }); return { promise, resolve, reject }; };
 
+test("an explicit initial zero position is persisted only after the server acknowledges it", async () => {
+	const requests = [];
+	const saver = createReaderPosition({ send: async input => {
+		requests.push(input);
+		return { position: { contentVersionId: input.contentVersionId, position: input.position, revision: 1 } };
+	} });
+	const initial = snapshot({ position: 0, revision: 0 });
+	saver.hydrate(initial);
+	await saver.flush();
+	assert.equal(requests.length, 0, "loading a new section alone does not claim saved progress");
+	saver.update(0);
+	assert.equal(saver.hydrate(initial), 0, "restoration preserves the explicit pending save");
+	await saver.flush();
+	assert.deepEqual(requests.map(({ position, expectedRevision }) => [position, expectedRevision]), [[0, 0]]);
+	await saver.flush();
+	assert.equal(requests.length, 1, "acknowledged zero is not saved repeatedly");
+});
+
+test("a missing initial revision cannot masquerade as an acknowledged position", async () => {
+	const saver = createReaderPosition({ send: async input => ({ position: {
+		contentVersionId: input.contentVersionId, position: input.position, revision: 0,
+	} }) });
+	saver.hydrate(snapshot({ position: 0, revision: 0 }));
+	saver.update(0);
+	await assert.rejects(saver.flush(), { status: 503 });
+});
+
 test("flush drains a newer position after an in-flight save using its acknowledged revision", async () => {
 	const first = deferred(), requests = [];
 	const saver = createReaderPosition({ send: async input => {

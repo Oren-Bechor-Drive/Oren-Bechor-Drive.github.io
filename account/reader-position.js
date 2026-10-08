@@ -4,13 +4,14 @@ export function createReaderPosition({ send }) {
 	function hydrate(input) {
 		const old = state;
 		const same = old && old.contentVersionId === input.contentVersionId && old.csrf === input.csrf;
-		const dirty = same && old.latest !== old.saved;
+		const dirty = same && (old.latest !== old.saved || old.pendingInitial);
 		const unchanged = same && old.revision === input.revision && old.saved === input.position;
 		const observedWrite = same && inFlight
 			&& old.contentVersionId === inFlight.input.contentVersionId && old.csrf === inFlight.input.csrf
 			&& old.revision === inFlight.input.expectedRevision
 			&& input.revision === inFlight.input.expectedRevision + 1 && input.position === inFlight.input.position;
-		state = { ...input, saved: input.position, latest: dirty ? old.latest : input.position };
+		state = { ...input, saved: input.position, latest: dirty ? old.latest : input.position,
+			pendingInitial: Boolean(dirty && old.pendingInitial && input.revision === 0) };
 		if (dirty && (!unchanged && !observedWrite || old.error)) {
 			state.error = Object.assign(new Error("position_conflict"), { status: 409 });
 			throw state.error;
@@ -20,7 +21,7 @@ export function createReaderPosition({ send }) {
 	async function drain() {
 		while (state) {
 			if (state.error) throw state.error;
-			if (state.latest === state.saved) return;
+			if (state.latest === state.saved && !state.pendingInitial) return;
 			const owner = state;
 			const input = { contentVersionId: owner.contentVersionId, position: owner.latest,
 				expectedRevision: owner.revision, csrf: owner.csrf };
@@ -28,7 +29,7 @@ export function createReaderPosition({ send }) {
 			try {
 				const { position } = await send(input);
 				if (!position || position.contentVersionId !== input.contentVersionId || position.position !== input.position
-					|| !Number.isSafeInteger(position.revision) || ![input.expectedRevision, input.expectedRevision + 1].includes(position.revision)) {
+					|| !Number.isSafeInteger(position.revision) || position.revision < 1 || ![input.expectedRevision, input.expectedRevision + 1].includes(position.revision)) {
 					throw Object.assign(new Error("unavailable"), { status: 503 });
 				}
 				// A fresh GET can acknowledge this write before its transport reply arrives.
@@ -37,6 +38,7 @@ export function createReaderPosition({ send }) {
 						|| state.revision === position.revision && state.saved === position.position)) {
 					state.saved = position.position;
 					state.revision = position.revision;
+					state.pendingInitial = false;
 				}
 			} catch (error) {
 				if (state === owner) {
@@ -50,7 +52,10 @@ export function createReaderPosition({ send }) {
 		hydrate,
 		update(position) {
 			if (!Number.isInteger(position) || position < 0 || position > 10000) throw new Error("Invalid reading position");
-			if (state && !state.error) state.latest = position;
+			if (state && !state.error) {
+				state.latest = position;
+				if (state.revision === 0) state.pendingInitial = true;
+			}
 		},
 		flush() {
 			if (!active) active = drain().finally(() => { active = undefined; });
