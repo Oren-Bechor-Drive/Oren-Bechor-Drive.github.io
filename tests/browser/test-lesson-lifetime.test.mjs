@@ -77,6 +77,20 @@ async function cleared(r) {
 }
 
 for (const width of [1440, 390]) {
+	test(`reader flushes a scroll before debounce on suspension at ${width}px`, async t => {
+		const r = await reader(t, width);
+		await r.open();
+		await r.reading.waitFor({ state: "visible" });
+		await scrollToFraction(r.page, 0.75);
+		const saved = r.page.waitForResponse(response => response.url().endsWith("/position") && response.request().method() === "POST", { timeout: 3000 });
+		await hide(r.page);
+		await cleared(r);
+		await saved;
+		assert.ok(Math.abs(r.position.position - 7500) < 120);
+		await restore(r.page);
+		await restoredNear(r.page, 0.75);
+	});
+
 	test(`reader loads its catalog and one section response, then saves scroll at ${width}px`, async t => {
 		const r = await reader(t, width);
 		const requests = [];

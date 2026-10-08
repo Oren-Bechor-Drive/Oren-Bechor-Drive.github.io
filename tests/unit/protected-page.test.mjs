@@ -2,16 +2,25 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { createProtectedPage } from "../../account/protected-page.js";
 
-function fixture() {
+function fixture(options = {}) {
 	const events = new EventTarget();
 	const visibility = new EventTarget();
 	visibility.hidden = false;
 	const cleared = [];
 	let restored = 0;
-	const page = createProtectedPage({ clear: options => cleared.push(options), restore: () => { restored++; }, window: events, document: visibility });
+	const page = createProtectedPage({ clear: options => cleared.push(options), restore: () => { restored++; }, window: events, document: visibility, ...options });
 	return { page, events, visibility, cleared, restored: () => restored };
 }
 const deferred = () => { let resolve, reject; const promise = new Promise((yes, no) => { resolve = yes; reject = no; }); return { promise, resolve, reject }; };
+
+test("suspension snapshots once before clearing private rendering", () => {
+	const order = [];
+	const f = fixture({ beforeSuspend: () => order.push("snapshot"), clear: () => order.push("clear") });
+	f.visibility.hidden = true;
+	f.visibility.dispatchEvent(new Event("visibilitychange"));
+	f.events.dispatchEvent(new Event("pagehide"));
+	assert.deepEqual(order, ["snapshot", "clear"]);
+});
 
 test("reset rejects a received response before parsing finishes and suppresses stale error/finalization", async () => {
 	const f = fixture();

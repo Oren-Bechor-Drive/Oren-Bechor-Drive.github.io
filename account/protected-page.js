@@ -1,6 +1,6 @@
 // One page lifetime owns requests and their completion effects. Page modules own
 // rendering and editing policy; suspended pages cannot accept old work.
-export function createProtectedPage({ clear, restore, window: events = window, document: visibility = document }) {
+export function createProtectedPage({ clear, restore, beforeSuspend = () => {}, window: events = window, document: visibility = document }) {
 	let lifetime = new AbortController();
 	let suspended = visibility.hidden;
 	let restoring = false;
@@ -10,8 +10,10 @@ export function createProtectedPage({ clear, restore, window: events = window, d
 		clear({ preserveState });
 	}
 	function suspend() {
+		if (suspended) return;
 		suspended = true;
-		invalidate(true);
+		try { beforeSuspend(); }
+		finally { invalidate(true); }
 	}
 	function resume() {
 		if (visibility.hidden || restoring) return;
