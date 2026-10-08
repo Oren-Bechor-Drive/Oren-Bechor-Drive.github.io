@@ -1,4 +1,5 @@
 import { createHmac } from "node:crypto";
+import { isIP } from "node:net";
 
 export function createDatabaseRateLimit({ url, serviceKey, secret, scope, limit, windowSeconds, fetchImpl = fetch }) {
 	const address = new URL(url);
@@ -7,7 +8,7 @@ export function createDatabaseRateLimit({ url, serviceKey, secret, scope, limit,
 		|| !serviceKey || !["requests", "mutations"].includes(scope) || !Number.isInteger(limit) || limit < 1 || limit > 10000
 		|| !Number.isInteger(windowSeconds) || windowSeconds < 1 || windowSeconds > 86400) throw new Error("Invalid persistent rate-limit configuration.");
 	return async clientAddress => {
-		if (typeof clientAddress !== "string" || !clientAddress || clientAddress.length > 100) throw Object.assign(new Error("invalid_input"), { status: 400, code: "invalid_input" });
+		if (typeof clientAddress !== "string" || clientAddress.length > 100 || !isIP(clientAddress)) throw Object.assign(new Error("invalid_input"), { status: 400, code: "invalid_input" });
 		const bucketKey = createHmac("sha256", key).update(`rate:${scope}\0${clientAddress}`).digest("hex");
 		try {
 			const response = await fetchImpl(`${url}/rest/v1/rpc/gateway_rate_limit_decision`, {

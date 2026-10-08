@@ -22,6 +22,8 @@ test("persistent limits hash addresses and share keys across independent instanc
  assert.equal(requests[0].headers.apikey,options.serviceKey);
  assert.equal(requests[0].headers.Authorization,undefined);
  await assert.rejects(first(undefined), error => error.status === 400);
+ for (const address of ["not-an-address", "127.0.0.1/private", "2001:db8::invalid", "192.0.2.999"]) await assert.rejects(first(address), error => error.status === 400 && error.code === "invalid_input");
+ assert.equal(requests.length, 3, "Invalid addresses cannot consume persistent buckets.");
 });
 
 test("quota denial and provider failure never fall back to process-local counters", async () => {
