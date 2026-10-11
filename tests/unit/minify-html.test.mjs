@@ -11,9 +11,9 @@ import { JSDOM } from "jsdom";
 const run = promisify(execFile);
 
 test("HTML minification preserves word boundaries, literal whitespace, SVG and metadata", async (t) => {
-	const cwd = await mkdtemp(path.join(os.tmpdir(), "minify-page-"));
-	t.after(() => rm(cwd, { recursive: true, force: true }));
-	const original = `<!doctype html>
+  const cwd = await mkdtemp(path.join(os.tmpdir(), "minify-page-"));
+  t.after(() => rm(cwd, { recursive: true, force: true }));
+  const original = `<!doctype html>
 <html lang="he" dir="rtl">
 	<head>
 		<title>קורס נהיגה נכונה</title>
@@ -28,37 +28,37 @@ test("HTML minification preserves word boundaries, literal whitespace, SVG and m
 		<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M 0 0 L 10 10" /></svg>
 	</body>
 </html>`;
-	await writeFile(path.join(cwd, "index.html"), original);
-	const minify = () =>
-		run(
-			process.execPath,
-			[
-				fileURLToPath(
-					new URL("../../scripts/minify-html.mjs", import.meta.url),
-				),
-			],
-			{ cwd },
-		);
-	await minify();
-	const result = await readFile(path.join(cwd, "index.html"), "utf8");
-	assert.ok(Buffer.byteLength(result) < Buffer.byteLength(original));
-	const before = new JSDOM(original);
-	const after = new JSDOM(result);
-	t.after(() => {
-		before.window.close();
-		after.window.close();
-	});
-	for (const selector of ["pre", "textarea", "title", "script", "img", "svg"])
-		assert.equal(
-			after.window.document.querySelector(selector).outerHTML,
-			before.window.document.querySelector(selector).outerHTML,
-		);
-	assert.equal(
-		after.window.document.querySelector("p").textContent.trim(),
-		"נהיגה נכונה עם אורן",
-	);
-	assert.equal(after.window.document.documentElement.lang, "he");
-	assert.equal(after.window.document.documentElement.dir, "rtl");
-	await minify();
-	assert.equal(await readFile(path.join(cwd, "index.html"), "utf8"), result);
+  await writeFile(path.join(cwd, "index.html"), original);
+  const minify = () =>
+    run(
+      process.execPath,
+      [
+        fileURLToPath(
+          new URL("../../scripts/minify-html.mjs", import.meta.url),
+        ),
+      ],
+      { cwd },
+    );
+  await minify();
+  const result = await readFile(path.join(cwd, "index.html"), "utf8");
+  assert.ok(Buffer.byteLength(result) < Buffer.byteLength(original));
+  const before = new JSDOM(original);
+  const after = new JSDOM(result);
+  t.after(() => {
+    before.window.close();
+    after.window.close();
+  });
+  for (const selector of ["pre", "textarea", "title", "script", "img", "svg"])
+    assert.equal(
+      after.window.document.querySelector(selector).outerHTML,
+      before.window.document.querySelector(selector).outerHTML,
+    );
+  assert.equal(
+    after.window.document.querySelector("p").textContent.trim(),
+    "נהיגה נכונה עם אורן",
+  );
+  assert.equal(after.window.document.documentElement.lang, "he");
+  assert.equal(after.window.document.documentElement.dir, "rtl");
+  await minify();
+  assert.equal(await readFile(path.join(cwd, "index.html"), "utf8"), result);
 });

@@ -1,105 +1,105 @@
 ---
 name: Solar Serenity
 colors:
-  surface: '#f2f5fc'
-  surface-low: '#ecf0fa'
-  surface-container: '#e5ebf7'
-  surface-high: '#dee5f3'
-  white: '#ffffff'
-  text: '#131d1f'
-  text-soft: '#3e494a'
-  text-muted: '#596568'
-  primary: '#264796'
-  on-primary: '#ffffff'
-  primary-hover: '#1e3978'
-  primary-wash: '#edf1fa'
-  secondary: '#705d00'
-  secondary-bright: '#f6db78'
-  secondary-wash: '#fffdf5'
-  tertiary: '#9e3f41'
-  tertiary-bright: '#d96c6c'
-  tertiary-wash: '#fdf3f3'
-  border: '#dfe5f0'
-  border-strong: '#c5cfe2'
-  border-card: 'rgb(197 207 226 / 0.72)'
-  control-border: '#75839c'
-  success: '#246a45'
-  success-wash: '#edf6f0'
-  amber-text: '#554600'
-  header-surface: 'rgb(242 245 252 / 0.94)'
-  header-border: 'rgb(190 201 223 / 0.65)'
-  inverse-text: '#eaf0ff'
+  surface: "#f2f5fc"
+  surface-low: "#ecf0fa"
+  surface-container: "#e5ebf7"
+  surface-high: "#dee5f3"
+  white: "#ffffff"
+  text: "#131d1f"
+  text-soft: "#3e494a"
+  text-muted: "#596568"
+  primary: "#264796"
+  on-primary: "#ffffff"
+  primary-hover: "#1e3978"
+  primary-wash: "#edf1fa"
+  secondary: "#705d00"
+  secondary-bright: "#f6db78"
+  secondary-wash: "#fffdf5"
+  tertiary: "#9e3f41"
+  tertiary-bright: "#d96c6c"
+  tertiary-wash: "#fdf3f3"
+  border: "#dfe5f0"
+  border-strong: "#c5cfe2"
+  border-card: "rgb(197 207 226 / 0.72)"
+  control-border: "#75839c"
+  success: "#246a45"
+  success-wash: "#edf6f0"
+  amber-text: "#554600"
+  header-surface: "rgb(242 245 252 / 0.94)"
+  header-border: "rgb(190 201 223 / 0.65)"
+  inverse-text: "#eaf0ff"
 typography:
   display-lg:
     fontFamily: '"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif'
     fontSize: 3.5rem
-    fontWeight: '600'
+    fontWeight: "600"
     lineHeight: 4rem
     letterSpacing: -0.025em
   display-lg-mobile:
     fontFamily: '"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif'
     fontSize: 2.25rem
-    fontWeight: '600'
+    fontWeight: "600"
     lineHeight: 2.75rem
     letterSpacing: -0.02em
   headline-lg:
     fontFamily: '"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif'
     fontSize: 2.25rem
-    fontWeight: '600'
+    fontWeight: "600"
     lineHeight: 2.75rem
     letterSpacing: -0.02em
   headline-lg-mobile:
     fontFamily: '"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif'
     fontSize: 1.75rem
-    fontWeight: '600'
+    fontWeight: "600"
     lineHeight: 2.25rem
     letterSpacing: -0.015em
   headline-md:
     fontFamily: '"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif'
     fontSize: 1.5rem
-    fontWeight: '600'
+    fontWeight: "600"
     lineHeight: 2rem
     letterSpacing: -0.01em
   headline-sm:
     fontFamily: '"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif'
     fontSize: 1.25rem
-    fontWeight: '600'
+    fontWeight: "600"
     lineHeight: 1.75rem
     letterSpacing: -0.005em
   body-lg:
     fontFamily: '"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif'
     fontSize: 1.125rem
-    fontWeight: '400'
+    fontWeight: "400"
     lineHeight: 1.75rem
     letterSpacing: 0em
   body-md:
     fontFamily: '"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif'
     fontSize: 1rem
-    fontWeight: '400'
+    fontWeight: "400"
     lineHeight: 1.625rem
     letterSpacing: 0em
   body-sm:
     fontFamily: '"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif'
     fontSize: 0.875rem
-    fontWeight: '400'
+    fontWeight: "400"
     lineHeight: 1.375rem
     letterSpacing: 0em
   label-lg:
     fontFamily: '"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif'
     fontSize: 0.9375rem
-    fontWeight: '600'
+    fontWeight: "600"
     lineHeight: 1.25rem
     letterSpacing: 0.01em
   label-md:
     fontFamily: '"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif'
     fontSize: 0.8125rem
-    fontWeight: '600'
+    fontWeight: "600"
     lineHeight: 1.125rem
     letterSpacing: 0.02em
   label-sm:
     fontFamily: '"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif'
     fontSize: 0.8125rem
-    fontWeight: '600'
+    fontWeight: "600"
     lineHeight: 1rem
     letterSpacing: 0.03em
 rounded:
@@ -127,11 +127,13 @@ spacing:
 This design system blends **Clean Minimalism** with **Warm Sunny Modernism**. It pairs pristine white foundations and soft tinted surfaces with an energized, sunlit palette: vibrant royal blue, radiant golden amber, and lively poppy coral. Replacing cooler secondary tones with luminous sunny colors shifts the emotional tone from quiet, introspective calm to an optimistic, warm, and inviting clarity.
 
 ### Brand Personality & Tone
+
 - **Optimistic & Radiant:** Warm amber-yellow secondary tones infuse warmth and vitality, turning clinical cleanliness into an inviting, daylight-inspired ambiance.
 - **Crisp & Modern:** Elevated saturation on key chromatic accents ensures actionable elements feel intentional, lively, and immediately responsive.
 - **Effortless & Balanced:** Generous white breathing room, muted base surfaces, and balanced visual hierarchies prevent the enriched saturation from overwhelming the senses.
 
 ### Design Style
+
 The aesthetic marries Scandinavian white-space restraint with optimistic, tactile contemporary UI: pure `#FFFFFF` primary cards floating over soft, light-tinted backgrounds, complemented by warm golden amber accents and punchy royal blue interactive primaries.
 
 ## Colors
@@ -141,15 +143,19 @@ The primary blue `#264796` is sampled from the user-supplied learner-sign refere
 The palette transitions former deeper notes into luminous sunny tones, while elevating the chroma of the blue, yellow/amber, and coral accents for heightened presence against luminous white and soft off-white canvas surfaces.
 
 ### Primary Color (`#264796` - Reference Blue)
+
 The primary driver for high-priority actions, focus rings, and primary interactive components. Luminous and modern, it provides crisp contrast and clear visual weight against clean white canvases. Its tint surface wash is `#edf1fa`.
 
 ### Amber Highlight (`--secondary-bright`, `#f6db78`)
+
 Use amber for welcome-page emphasis, the instructor band and lesson takeaways. Its companion surface is `--secondary-wash` (`#fffdf5`); dark amber text uses `--secondary` (`#705d00`). Secondary action buttons use the blue outlined variant. Passing results use success green.
 
 ### Error Coral (`--tertiary`, `#9e3f41`)
+
 Use `--tertiary` for error text and incorrect-answer borders, `--tertiary-wash` (`#fdf3f3`) for error fills, and `--tertiary-bright` (`#d96c6c`) for supporting decorative borders. Text identifies errors independently of color.
 
 ### Neutral & Surfaces
+
 - **Canvas Base (`#FFFFFF`):** High-luminescence ground layer for cards, inputs, and modal dialogs.
 - **Backdrop Surface (`#f2f5fc`):** Soft, clean, ultra-light blue-gray for canvas grounds, sidebars, and grouped lists.
 - **Borders:** Card separators use `--border` (`#dfe5f0`) and `--border-strong` (`#c5cfe2`). Interactive boundaries use `--control-border` (`#75839c`) for at least 3:1 contrast on white and pale controls, including hover.
@@ -160,6 +166,7 @@ Use `--tertiary` for error text and incorrect-answer borders, `--tertiary-wash` 
 Use `"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif` for all Hebrew and Latin text. Fredoka uses locally hosted WOFF2 subsets from Google Fonts, declared in `css/base.css` with `font-display: swap`. The HTML preloads the Hebrew and Latin subsets. Preserve the supplied Varela Round bytes and original license; active font provenance is documented in `assets/fonts/README.md`.
 
 ### Hierarchy & Typesetting
+
 - **Display & Headlines:** Use Fredoka at the documented sizes and weights, checking Hebrew line wrapping at desktop and mobile widths. Fredoka provides real variable weights `400` through `700`; use `400` for sustained reading and `500` or `600` for headings and controls.
 - **Body & Continuous Text:** Retains an airy 1.55 to 1.65 line-height ratio, preventing reader fatigue and harmonizing with spacious layouts.
 - **Labels & Micro-copy:** Micro-typography shifts to semi-bold weights (`600`) with subtle positive tracking (`+0.01em` to `+0.03em`), guaranteeing crisp legibility in badges, buttons, and navigation tags.
@@ -169,11 +176,13 @@ Use `"Fredoka", Arial, "Helvetica Neue", Helvetica, sans-serif` for all Hebrew a
 A fluid responsive grid paired with rhythmic spatial steps prioritizes spaciousness, allowing pure white surfaces to breathe.
 
 ### Grid & Breakpoints
+
 - **Desktop (1024px+):** 12-column grid constrained to a 1280px container, with `3rem` outer margins and `1.5rem` gutters.
 - **Tablet (640px - 1023px):** 8-column flexible layout, `2rem` outer margins, and `1.5rem` gutters.
 - **Mobile (<640px):** 4-column flow with `1.25rem` outer margins and compact `1rem` gutters.
 
 ### Layout Principles
+
 - **Generous Voids:** Spacing tokens (`space-lg`, `space-xl`) define modular sections to maintain an uncluttered aesthetic.
 - **Density Separation:** High-density data tables and toolbars employ `space-xs` and `space-sm` for compact internal padding while preserving outer canvas breathability.
 
@@ -182,6 +191,7 @@ A fluid responsive grid paired with rhythmic spatial steps prioritizes spaciousn
 Visual hierarchy uses tonal surface layering combined with soft, warm-tinted ambient drop shadows rather than heavy borders.
 
 ### Elevation Levels
+
 - **Level 0 (Inset Ground):** Surface `#f2f5fc` with an inner 1px border `#dfe5f0`. Ideal for input wells, search panels, and code callouts.
 - **Level 1 (Default Containers):** Solid `#FFFFFF` card surface, 1px border `#dfe5f0`, and diffused shadow: `0 2px 8px -2px rgba(20, 29, 30, 0.04), 0 1px 3px 0 rgba(20, 29, 30, 0.02)`.
 - **Level 2 (Hovered Cards & Dropdowns):** Solid `#FFFFFF`, 1px border `#c5cfe2`, and elevated ambient shadow: `0 12px 28px -6px rgba(20, 29, 30, 0.07), 0 4px 10px -2px rgba(20, 29, 30, 0.03)`.
@@ -192,6 +202,7 @@ Visual hierarchy uses tonal surface layering combined with soft, warm-tinted amb
 The design system maintains a balanced, rounded shape profile (`roundedness: 2`) that softens modern architectural grid layouts while maintaining structured utility.
 
 ### Geometry Tiers
+
 - **Interactive Controls (Inputs, Buttons, Segmented Blocks):** Standard 0.5rem (8px) radius for clean, ergonomic tactile forms.
 - **Containers & Cards:** 1rem (16px) radius for structured frame boundaries.
 - **Overlays, Dialogs & Flyouts:** 1.5rem (24px) radius for prominent, floating canvases.
@@ -200,11 +211,13 @@ The design system maintains a balanced, rounded shape profile (`roundedness: 2`)
 ## Components
 
 ### Buttons
+
 - **Primary:** Shared `.btn.btn-primary`, blue fill, white text, 8px radius, 10px 20px padding and a 44px minimum target. Hover uses `--primary-hover`. Keyboard focus uses a solid 3px blue outline with 4px offset; pointer input keeps it hidden.
 - **Secondary:** Shared `.btn.btn-secondary`, white fill, blue text and `--control-border` boundary. Match primary geometry and weight 600. Amber remains an emphasis color.
 - **Tertiary / Ghost:** Borderless `#FFFFFF` surface, `#131D1F` text with subtle border `#dfe5f0`. Hover: `#f2f5fc` background.
 
 ### Cards
+
 - **Base Style:** Pure `#FFFFFF` surface with Level 1 elevation and 1px `#dfe5f0` border.
 - **Featured Card (Sunny Accent):** Pure `#FFFFFF` background, 2px top accent line or 1px border in `#F6DB78`, accompanied by a subtle `#FFFDF5` header banner.
 - **Interactive Cards:** Transition smoothly to Level 2 elevation on hover with a 200ms ease curve.
@@ -216,6 +229,7 @@ Use the selected Font Awesome Classic Solid family for interface arrows and chev
 Course-only utility icons use the same local Font Awesome Classic Solid source. `assets/icons/interface/user.svg` is available for configured account navigation, and `magnifying-glass.svg` marks the library search field. Render both as CSS masks in the current interface color and keep glyphs decorative. Hide profile navigation in static pages until account support is configured.
 
 ### Chips & Badges
+
 - **Sunny Amber (Highlighting):** Background `#FFFDF5`, text `#705D00`, border `1px solid rgba(246, 219, 120, 0.30)`.
 - **Reference Blue (Informational):** Background `#edf1fa`, text `#264796`, border `1px solid rgba(38, 71, 150, 0.25)`.
 - **Poppy Coral (Alerts / Critical):** Background `#FDF3F3`, text `#9e3f41`, border `1px solid rgba(217, 108, 108, 0.25)`.
@@ -223,6 +237,7 @@ Course-only utility icons use the same local Font Awesome Classic Solid source. 
 - Formatted as full pills (`9999px`), `label-sm` font, padding 4px 10px.
 
 ### Input Fields & Selects
+
 - **Text Inputs:** `#FFFFFF` fill, 1px border `--control-border`, `0.5rem` radius, padding 12px 16px, text `#131D1F`, placeholder `#596568`. Reserve the outer focus indicator for keyboard navigation, following Focus behavior below.
 
 ### Focus behavior
@@ -236,10 +251,12 @@ Course-only utility icons use the same local Font Awesome Classic Solid source. 
 - Verify clicks, touch taps, label activation, typing after a click, and keyboard navigation when adding or changing controls. Include switching from keyboard navigation back to pointer input.
 
 ### Checkboxes, Radios & Switches
+
 - **Checkboxes & Radios:** Unchecked state features an empty `#FFFFFF` fill and `--control-border` boundary. Checked state transitions to a royal blue `#264796` fill with a crisp check/bullet.
 - **Toggle Switches:** Unchecked track in `#dfe5f0` with white thumb; checked track transitions to `#F6DB78` (warm sunny accent) to signal active status.
 
 ### Lists & Navigation Rails
+
 - Row dividers utilize 1px `#dfe5f0`. Active navigation list items feature a `#FFFDF5` surface background with `#F6DB78` left accent edge (3px) and bold `#131D1F` label copy.
 
 ## Current Welcome Page

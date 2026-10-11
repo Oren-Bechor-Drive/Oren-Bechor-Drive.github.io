@@ -30,25 +30,25 @@ These block or reshape many items below.
 
 - [x] Expose `/course/` and public practice through welcome-page navigation and the closing action. Approved by the owner on 2026-10-08; retain the library recovery link in `404.html`.
 - [x] Record the gallery decision: the owner chose on 2026-10-08 to keep continuous motion without a pause control. Normal gallery cadence is retained; reduced motion now makes the complete row scrollable.
-- [x] Decide on the hero stop sign: keep the blue sign, use the correct red Israeli sign, use real photography, or use a learner "ל" / "נהג חדש" plate.  Owner approved red. A separate red master and delivery files are implemented; blue original is preserved.
+- [x] Decide on the hero stop sign: keep the blue sign, use the correct red Israeli sign, use real photography, or use a learner "ל" / "נהג חדש" plate. Owner approved red. A separate red master and delivery files are implemented; blue original is preserved.
 - [ ] Supply a photo of Oren in a teaching context and higher-resolution student photos. Confirm whether the phone number visible in student photo 1 may be shown. Still outstanding: no teaching-context portrait, higher-resolution student originals or phone-display consent was supplied.
 - [x] Use the existing public library as the next step, approved on 2026-10-08. The welcome header and closing action now link there and explain the preview boundary. Contact and enrollment destinations remain outstanding.
-- [x] Decide whether Varela Round is required. Options: Rubik (one family with real weights), or Varela Round headings with Assistant body text.  Owner rejected Rubik and requested shapes closer to the original. Fredoka is implemented with locally hosted real variable weights.
+- [x] Decide whether Varela Round is required. Options: Rubik (one family with real weights), or Varela Round headings with Assistant body text. Owner rejected Rubik and requested shapes closer to the original. Fredoka is implemented with locally hosted real variable weights.
 - [ ] Approve concrete, dated teaching figures (speed limits by vehicle type, penalty points, new-driver penalties, roundabout scanning and signalling rules) so lessons stop deferring to gov.il. Coverage was audited instead of inventing figures. Existing speed/accompaniment values are already taught; new figures and 21 proposed teaching blocks need Oren review. See [coverage draft](docs/reference/design-teaching-coverage.md).
-- [x] Choose the quiz feedback model: per-question feedback by default with an optional end-only exam mode, or the reverse. Decide whether answer order may be shuffled.  Owner retained feedback after submission only. No immediate-feedback mode or shuffled answer order.
-- [x] Decide whether quiz copy should reference the real theory-test format and supply the authoritative figures. Clarify whether 85% mirrors the real exam or is a course bar.  Practice now identifies its own 85% bar and is not presented as an official exam result. Real-exam format claims remain outside the preview.
+- [x] Choose the quiz feedback model: per-question feedback by default with an optional end-only exam mode, or the reverse. Decide whether answer order may be shuffled. Owner retained feedback after submission only. No immediate-feedback mode or shuffled answer order.
+- [x] Decide whether quiz copy should reference the real theory-test format and supply the authoritative figures. Clarify whether 85% mirrors the real exam or is a course bar. Practice now identifies its own 85% bar and is not presented as an official exam result. Real-exam format claims remain outside the preview.
 - [ ] Decide whether signs-and-speed gains image-based sign questions and inline sign images (reusing the CC BY Ministry diagrams), or is retitled to focus on speed. Still outstanding: reviewed sign plates/questions and instructor approval. The existing Ministry diagrams cannot be relabeled as a new signs question bank.
-- [x] Pick one password policy for registration, reset and the gateway. Suggested: 12+ characters without composition rules.  Owner approved at least 12 Unicode code points, maximum 72 UTF-8 bytes, no composition rules. Shared registration/reset/gateway validation is implemented; login retains existing-password compatibility. Hosted settings remain unverified.
-- [x] Decide what a free account shows until billing exists, and whether Google sign-in is planned for launch.  Free accounts get truthful available-reading copy and public practice navigation. Unconfigured Google controls stay hidden; actual launch-provider configuration remains separate.
-- [x] Decide whether the account "no document scroll" rule may be relaxed on small or short screens.  Owner approved document scrolling on short screens; implemented.
-- [x] Choose canonical names: library ("נושאי הלימוד" or "ספריית הלימוד"), and whether the protected reader stops using "שיעור" for learning sections.  Public library is "נושאי הלימוד"; protected reader uses "קטע לימוד". Catalog titles and supplied Ministry wording remain unchanged.
-- [x] Decide whether the home page and FAQ keep promising videos while every lesson says they will be added later.  Earlier requested completed-course marketing answers are retained. The nearby availability note and sixth FAQ answer explicitly identify current reading/practice and unavailable videos/enrollment.
-- [x] Decide whether the hidden page scrollbar is a deliberate brand choice.  Owner approved visible native scrollbars; implemented.
-- [x] Decide whether a local-only "best score per topic" in `localStorage` is acceptable for public practice.  RETAINED: public attempts remain unsaved under the existing preview boundary. No local best-score persistence or account-progress claim was added.
-- [x] Decide whether the legacy quiz URLs auto-forward.  RETAINED: native transition links keep recovery and no-JS navigation; no automatic forwarding.
-- [x] Decide whether the hero entrance plays on every visit or once per session.  Short entrance now runs once per browser session when storage works; blocked storage uses the same short motion.
-- [x] Decide whether each gallery photo gets distinct alt text (with student consent) or the set is described as one group.  One group description with decorative empty alts is implemented. This does not supply missing student-image consent.
-- [x] Decide whether print support for lessons and quizzes matters, and whether dark mode is in scope.  Owner approved print support; implemented. RETAINED: the release remains light mode; no dark-mode redesign.
+- [x] Pick one password policy for registration, reset and the gateway. Suggested: 12+ characters without composition rules. Owner approved at least 12 Unicode code points, maximum 72 UTF-8 bytes, no composition rules. Shared registration/reset/gateway validation is implemented; login retains existing-password compatibility. Hosted settings remain unverified.
+- [x] Decide what a free account shows until billing exists, and whether Google sign-in is planned for launch. Free accounts get truthful available-reading copy and public practice navigation. Unconfigured Google controls stay hidden; actual launch-provider configuration remains separate.
+- [x] Decide whether the account "no document scroll" rule may be relaxed on small or short screens. Owner approved document scrolling on short screens; implemented.
+- [x] Choose canonical names: library ("נושאי הלימוד" or "ספריית הלימוד"), and whether the protected reader stops using "שיעור" for learning sections. Public library is "נושאי הלימוד"; protected reader uses "קטע לימוד". Catalog titles and supplied Ministry wording remain unchanged.
+- [x] Decide whether the home page and FAQ keep promising videos while every lesson says they will be added later. Earlier requested completed-course marketing answers are retained. The nearby availability note and sixth FAQ answer explicitly identify current reading/practice and unavailable videos/enrollment.
+- [x] Decide whether the hidden page scrollbar is a deliberate brand choice. Owner approved visible native scrollbars; implemented.
+- [x] Decide whether a local-only "best score per topic" in `localStorage` is acceptable for public practice. RETAINED: public attempts remain unsaved under the existing preview boundary. No local best-score persistence or account-progress claim was added.
+- [x] Decide whether the legacy quiz URLs auto-forward. RETAINED: native transition links keep recovery and no-JS navigation; no automatic forwarding.
+- [x] Decide whether the hero entrance plays on every visit or once per session. Short entrance now runs once per browser session when storage works; blocked storage uses the same short motion.
+- [x] Decide whether each gallery photo gets distinct alt text (with student consent) or the set is described as one group. One group description with decorative empty alts is implemented. This does not supply missing student-image consent.
+- [x] Decide whether print support for lessons and quizzes matters, and whether dark mode is in scope. Owner approved print support; implemented. RETAINED: the release remains light mode; no dark-mode redesign.
 
 ## Quick wins
 
@@ -73,13 +73,13 @@ No owner decision needed.
 
 - [x] P0 [decision]: Resolved on 2026-10-08 through public-library links and an explicit closing availability notice. Original finding: the welcome page shows only disabled "start" buttons and never links to the ten live lessons and quizzes, while `404.html` links to the library.
 - [x] P2: Add a "נושאי הלימוד" link to the course header. Library, lesson and quiz pages currently offer only the logo and a disabled profile button.
-- [x] P2: Use one footer pattern on public pages, with "לדף הבית" and "לנושאי הלימוד". Today the home, library/lesson, quiz, account and 404 footers all differ.  Shared home/library footer navigation is implemented. The focused 404 remains an intentional chrome-free exception.
+- [x] P2: Use one footer pattern on public pages, with "לדף הבית" and "לנושאי הלימוד". Today the home, library/lesson, quiz, account and 404 footers all differ. Shared home/library footer navigation is implemented. The focused 404 remains an intentional chrome-free exception.
 - [x] P2: Align the home topic preview (7 topics) with the library's 10 topics, in the same order and grouping.
 
 ### Typography
 
 - [x] P1 [decision]: Replace synthesized bold. Varela Round ships only weight 400; Chromium and WebKit draw 600 and 700 identically, WebKit smears small bold labels, and Firefox bold is barely distinguishable. Either adopt a Hebrew family with real weights, or use 400 everywhere and build hierarchy with size, color and spacing. Remove 600 from the spec if the font stays.
-- [x] P2: Define h1, h2 and h3 once (size, leading, text color). Today h1 is text-colored on home, library, account and 404 but blue on lessons and quizzes, and h2 sizes range from 22px to 48px.  Shared semantic defaults are implemented; documented display/reading roles retain contextual sizes.
+- [x] P2: Define h1, h2 and h3 once (size, leading, text color). Today h1 is text-colored on home, library, account and 404 but blue on lessons and quizzes, and h2 sizes range from 22px to 48px. Shared semantic defaults are implemented; documented display/reading roles retain contextual sizes.
 - [x] P2: Use the amber underline for one purpose only. It is currently word emphasis on home, the section-heading style on lessons and the h1 style on account pages.
 - [x] P2: Convert fixed `px` font sizes to `rem` so browser font-size settings work.
 - [x] P2: Apply `text-wrap: pretty` to body paragraphs to reduce widows.
@@ -115,7 +115,7 @@ No owner decision needed.
 - [x] P2: Use one name for the library and one wording per back-link type. Today the library has five names and back links have five wordings.
 - [x] P2: Use one skip-link wording everywhere: "דילוג לתוכן הראשי".
 - [x] P2: Use "ניסיון חדש" for quiz retry in both public and protected quizzes; keep "ניסיון נוסף" for network retry only.
-- [x] P2: Set an address-form rule: plural imperative for instructions, nouns for buttons, impersonal present for descriptions, no first person.  Authored UI follows the documented rule. Twelve original Ministry questions retain supplied singular address and source fidelity.
+- [x] P2: Set an address-form rule: plural imperative for instructions, nouns for buttons, impersonal present for descriptions, no first person. Authored UI follows the documented rule. Twelve original Ministry questions retain supplied singular address and source fidelity.
 - [x] P2: Reduce repetition on the welcome page. "להבין" appears 10 times, "סרטונים" 6, "אמיתי" 5, "בקצב שלכם" 4; "complements, does not replace the instructor" appears three times. Keep it in the learning note and FAQ 2 only.
 
 ### Sharing metadata
@@ -123,7 +123,7 @@ No owner decision needed.
 - [x] P2: Create a 1200x630 sharing image with the brand, headline and "אורן בכור - מורה נהיגה מוסמך", and switch to `summary_large_image`. The current image is the bridge photo with Oren filling about 15% of the frame.
 - [x] P2: Use one title pattern, "<עמוד> - נהיגה נכונה עם אורן בכור". Brand names and separators currently vary, and the legacy quiz pages have no brand in the title.
 - [x] P3: Serve `/favicon.ico` or confirm the 404 is acceptable.
-- [x] P3 [decision]: Revisit dark mode after type and spacing tokens exist.  RETAINED: light mode remains the documented release direction.
+- [x] P3 [decision]: Revisit dark mode after type and spacing tokens exist. RETAINED: light mode remains the documented release direction.
 
 ## Welcome page
 
@@ -142,7 +142,7 @@ No owner decision needed.
 
 ### Motion
 
-- [x] P0 [decision]: Add a pause/play control to the student gallery (Hebrew label, `aria-pressed`), pause on hover and focus, and optionally stop after one loop and remember the choice. `.hero-road` has `pointer-events: none` today.  RETAINED by explicit owner decision: continuous gallery motion without a pause control. Reduced motion now exposes every photo through scrolling.
+- [x] P0 [decision]: Add a pause/play control to the student gallery (Hebrew label, `aria-pressed`), pause on hover and focus, and optionally stop after one loop and remember the choice. `.hero-road` has `pointer-events: none` today. RETAINED by explicit owner decision: continuous gallery motion without a pause control. Reduced motion now exposes every photo through scrolling.
 - [x] P0: Stop the hero red car from looping forever (`iterations: Infinity` in `js/hero-road-car.js`). Run it once or a few times and then park it, or tie it to the gallery pause control.
 - [x] P1: Shorten the hero entrance. The heading travels from `100vw`, the copy from `100vh`, and the sign sweeps half the screen; text settles at about 1.3s. Use a 16-40px move with a fade, one direction, and skip it on repeat visits in a session.
 - [x] P1: With reduced motion, make all student photos reachable (scroll-snap row or previous/next buttons). Only about 4 of 15 are visible at 1440px.
@@ -171,7 +171,7 @@ No owner decision needed.
 - [x] P1: Rebuild the desktop topic explorer as tabs, like the course library: `tablist`, `tab` with `aria-selected` and `aria-controls`, `tabpanel`, one tab stop with arrow selection, and no `aria-live`. Buttons currently announce `aria-expanded` but control nothing (`js/topic-explorer.js`).
 - [x] P2: Point "צפו בנושאי הקורס" at the topic block instead of three long paragraphs, or rename it "על הקורס".
 - [x] P2: Close the mobile menu on outside tap, on focus leaving the panel and on scroll (`js/script.js`).
-- [x] P2: Fit the mobile topic dropdown on screen at 320x568 (open upward or cap the height), and show its scrollbar.  SUPERSEDED: phones show all ten linked descriptions as a visible list; the dropdown is removed.
+- [x] P2: Fit the mobile topic dropdown on screen at 320x568 (open upward or cap the height), and show its scrollbar. SUPERSEDED: phones show all ten linked descriptions as a visible list; the dropdown is removed.
 - [x] P2: Make the gallery quieter for screen readers: `alt=""` on car sprites, a meaningful region name, and either distinct photo alt text or one group description.
 - [x] P3: Add `tabindex="-1"` to the skip-link target `main`.
 - [x] P3: Reduce named landmark noise (hero and `#start`).
@@ -215,7 +215,7 @@ No owner decision needed.
 ## Practice quizzes
 
 - [x] P1: Help learners find their mistakes. List wrong questions on the results screen, start review at the first mistake (the review button currently returns to the last visited question), offer "לעבור על הטעויות (N)", and mark selector options correct or wrong.
-- [x] P1 [decision]: Offer per-question feedback. With JavaScript on, every self-check disclosure is hidden; without JavaScript, every question has one.  RETAINED by explicit owner decision: feedback after submission only, with native no-JS self-check disclosures.
+- [x] P1 [decision]: Offer per-question feedback. With JavaScript on, every self-check disclosure is hidden; without JavaScript, every question has one. RETAINED by explicit owner decision: feedback after submission only, with native no-JS self-check disclosures.
 - [x] P1: Fix the phone layout. Collapse the intro after the quiz starts, use a slim sticky progress bar, put Previous/Next in a sticky bottom bar under 640px, and scroll to the card top instead of the page top. At 320x568 no answer choice is visible on arrival.
 - [x] P1: Show the missing-answer message above the card, with the count and question numbers: "נשארו 3 שאלות בלי תשובה: 2, 7, 11. אפשר לענות עליהן ואז לסיים."
 - [x] P1: Redesign the results screen: large score and percentage, a pass or fail heading, one threshold line, the mistakes list, and the disclaimer as small text. Drop "(85% בעיגול כלפי מעלה)".
@@ -224,17 +224,17 @@ No owner decision needed.
 - [x] P2: Fix the type hierarchy. The question text is 16px regular while the "שאלה 1" legend is 22px bold blue.
 - [x] P2: Keep the progress indicator visible below the sticky header after navigation, and add a progress bar.
 - [x] P2: State the learner's chosen answer in the review feedback. Submitted radios remain disabled under the current grading design.
-- [x] P2 [partial]: Chosen-answer feedback "התשובה שלכם: ..." is implemented. Remaining: rewrite dense legal explanations, fix the overtaking explanation that contradicts its answer, and link to the matching lesson section.  Explanation wording is concise and all 140 questions link to a lesson section. The claimed overtaking contradiction was not reproduced; source wording for 0257 was clarified. Linking does not imply complete teaching coverage.
+- [x] P2 [partial]: Chosen-answer feedback "התשובה שלכם: ..." is implemented. Remaining: rewrite dense legal explanations, fix the overtaking explanation that contradicts its answer, and link to the matching lesson section. Explanation wording is concise and all 140 questions link to a lesson section. The claimed overtaking contradiction was not reproduced; source wording for 0257 was clarified. Linking does not imply complete teaching coverage.
 - [x] P2: Avoid doubled announcements on navigation, and include the score in the focused results heading.
-- [x] P2 [decision]: Shuffle choice order per attempt; correct answers cluster by position (choice 3 in 7 of 14 signs-and-speed questions). Add "לתרגל רק את הטעויות".  RETAINED by explicit owner decision: answer order and end-only feedback stay unchanged. Mistakes-only review is implemented.
+- [x] P2 [decision]: Shuffle choice order per attempt; correct answers cluster by position (choice 3 in 7 of 14 signs-and-speed questions). Add "לתרגל רק את הטעויות". RETAINED by explicit owner decision: answer order and end-only feedback stay unchanged. Mistakes-only review is implemented.
 - [x] P2: Add a pre-submit summary step with a distinct "בדיקת השאלון" action.
 - [x] P2: Replace the intro text after submission; it still says answers can be changed.
 - [x] P2: Keep Previous and Next on one row at 320px, and hide Previous on question 1.
 - [x] P2: Add a time estimate and one sentence on how to use the set.
-- [x] P3: Add tap-to-enlarge for diagrams only if higher-resolution sources exist.  RETAINED: original diagrams remain at natural resolution with responsive sizing; no higher-resolution replacement sources were supplied.
+- [x] P3: Add tap-to-enlarge for diagrams only if higher-resolution sources exist. RETAINED: original diagrams remain at natural resolution with responsive sizing; no higher-resolution replacement sources were supplied.
 - [x] P3: Shorten the per-question source line to "מקור: שאלה 0332" or "מקור: שאלה 0332 (נוסח מעודכן)".
 - [x] P3: Reword the attribution: "העיצוב והפיסוק הותאמו לאתר. שאלות שנוסחן עודכן מסומנות כך."
-- [x] P3: Add spacing above the button on legacy transition pages, and consider auto-forwarding while keeping the link.  Spacing is implemented. RETAINED: native transition links, without automatic forwarding.
+- [x] P3: Add spacing above the button on legacy transition pages, and consider auto-forwarding while keeping the link. Spacing is implemented. RETAINED: native transition links, without automatic forwarding.
 - [x] P3: Word the no-JS intro neutrally so it does not contradict the fallback note.
 - [x] P3: Normalize the space before colons preserved from Ministry text.
 - [x] P3: Drop the 1px hover lift on answer rows if simplifying.
@@ -253,7 +253,7 @@ No owner decision needed.
 - [x] P2: Make the same-browser requirement the main point of the verify page, with a tip for links opened inside email apps, plus the masked address and a resend action. Guidance leads the page; active pending registrations show a session-bound masked address and real resend with a persistent 60-second cooldown. Expiry clears the context. Static guidance and recovery remain usable without JavaScript. Local gateway, durable-session and browser checks passed; actual email delivery remains unverified.
 - [x] P2: Make "ללמידה ולתרגול" the primary action on the account page, the library secondary and sign-out a quiet text button. Add a library link to the unavailable state, and fix the "ההתחברות אינה זמינה" wording on register and recovery.
 - [x] P3: Add the logo lockup above the card, linking home.
-- [x] P3: Consider right-aligning empty LTR fields so the caret sits near the label.  RETAINED: email/password keep native LTR caret/editing behavior; RTL labels and keyboard/pointer focus remain correct.
+- [x] P3: Consider right-aligning empty LTR fields so the caret sits near the label. RETAINED: email/password keep native LTR caret/editing behavior; RTL labels and keyboard/pointer focus remain correct.
 
 ### Learner area
 
