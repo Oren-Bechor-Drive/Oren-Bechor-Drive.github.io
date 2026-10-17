@@ -119,6 +119,13 @@ body {
     height: auto;
     border-radius: var(--radius-control);
 }
+.reading-media iframe {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: var(--radius-control);
+}
 .reading-media figcaption {
     margin-block: 12px;
 }

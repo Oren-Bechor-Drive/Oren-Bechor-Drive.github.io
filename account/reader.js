@@ -266,6 +266,20 @@ async function load(preservePosition = false) {
       body.textContent = data.lesson.body;
       for (const item of data.media) {
         const figure = document.createElement("figure");
+        if (item.type === "video/vimeo") {
+          if (!item.url.startsWith("https://player.vimeo.com/video/")) continue;
+          const player = document.createElement("iframe");
+          player.src = item.url;
+          player.title = item.title;
+          player.allow = "fullscreen; picture-in-picture";
+          // Vimeo's domain privacy needs the origin; the page otherwise sends no referrer.
+          player.referrerPolicy = "strict-origin";
+          const caption = document.createElement("figcaption");
+          caption.textContent = item.title;
+          figure.append(player, caption);
+          media.append(figure);
+          continue;
+        }
         const content = document.createElement(
           item.type.startsWith("video/") ? "video" : "img",
         );

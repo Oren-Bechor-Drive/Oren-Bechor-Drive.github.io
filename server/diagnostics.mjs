@@ -18,6 +18,7 @@ const fields = new Set([
   "PILOT_EMAILS",
   "PRIVATE_MEDIA_BUCKET",
   "PRIVATE_MEDIA_ENTRIES",
+  "VIMEO_MEDIA_ENTRIES",
 ]);
 
 // Only this finite vocabulary can reach the reporter. Caller payloads never do.
