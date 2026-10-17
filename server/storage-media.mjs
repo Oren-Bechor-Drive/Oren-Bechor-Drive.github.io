@@ -1,6 +1,7 @@
 import { Readable, Transform } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import { createMediaPolicy } from "./media-policy.mjs";
+import { configurationError } from "./diagnostics.mjs";
 
 const unavailable = () => {
   throw Object.assign(new Error("unavailable"), {
@@ -8,11 +9,6 @@ const unavailable = () => {
     code: "unavailable",
   });
 };
-const configurationError = (field, message) =>
-  Object.assign(new Error(message), {
-    configurationField: field,
-    configurationReason: "invalid",
-  });
 const integer = (value) =>
   typeof value === "string" &&
   /^\d+$/.test(value) &&
@@ -45,7 +41,7 @@ function storageOrigin(value) {
   try {
     url = new URL(value);
   } catch {
-    throw configurationError("SUPABASE_URL", "Invalid Storage origin.");
+    throw configurationError("SUPABASE_URL");
   }
   const hosted =
     url.protocol === "https:" &&
@@ -63,10 +59,7 @@ function storageOrigin(value) {
     url.pathname !== "/" ||
     ![url.origin, `${url.origin}/`].includes(value)
   )
-    throw configurationError(
-      "SUPABASE_URL",
-      "An exact Supabase HTTPS origin or loopback HTTP origin is required.",
-    );
+    throw configurationError("SUPABASE_URL");
   return url.origin;
 }
 
@@ -89,15 +82,9 @@ export function createStorageMedia({
       /^[\w-]+\.[\w-]+\.[\w-]+$/.test(secretKey)
     )
   )
-    throw configurationError(
-      "SUPABASE_SECRET_KEY",
-      "A server Storage key is required.",
-    );
+    throw configurationError("SUPABASE_SECRET_KEY");
   if (typeof bucket !== "string" || !/^[a-z0-9][a-z0-9_-]{0,99}$/.test(bucket))
-    throw configurationError(
-      "PRIVATE_MEDIA_BUCKET",
-      "Invalid Storage configuration.",
-    );
+    throw configurationError("PRIVATE_MEDIA_BUCKET");
   if (typeof fetcher !== "function")
     throw new Error("Invalid Storage transport.");
   let policy;
@@ -111,10 +98,7 @@ export function createStorageMedia({
           .every((part) => /^[A-Za-z0-9_-][A-Za-z0-9_.-]*$/.test(part)),
     );
   } catch {
-    throw configurationError(
-      "PRIVATE_MEDIA_ENTRIES",
-      "Invalid private media descriptor.",
-    );
+    throw configurationError("PRIVATE_MEDIA_ENTRIES");
   }
   return {
     lookup: policy.lookup,

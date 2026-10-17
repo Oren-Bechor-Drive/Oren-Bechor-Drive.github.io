@@ -1,3 +1,5 @@
+import { configurationError } from "./diagnostics.mjs";
+
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const fields = new Set([
   "id",
@@ -9,10 +11,7 @@ const fields = new Set([
   "captions",
 ]);
 const invalid = () => {
-  throw Object.assign(new Error("Invalid Vimeo media descriptor."), {
-    configurationField: "VIMEO_MEDIA_ENTRIES",
-    configurationReason: "invalid",
-  });
+  throw configurationError("VIMEO_MEDIA_ENTRIES");
 };
 
 // Paid sections embed Vimeo players. The gateway returns a player URL only with an

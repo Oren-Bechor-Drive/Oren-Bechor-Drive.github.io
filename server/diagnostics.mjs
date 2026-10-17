@@ -21,6 +21,23 @@ const fields = new Set([
   "VIMEO_MEDIA_ENTRIES",
 ]);
 
+// Constructors throw this shape; startup reporters read only its field and reason.
+export function configurationError(field, reason = "invalid") {
+  return Object.assign(
+    new Error(
+      `${field ?? "Configuration"} ${reason === "missing" ? "is required" : "is invalid"}.`,
+    ),
+    { configurationField: field, configurationReason: reason },
+  );
+}
+export const startupEvent = (error) => ({
+  category: error?.configurationReason ? "configuration" : "unexpected",
+  operation: "startup",
+  status: 503,
+  field: error?.configurationField,
+  reason: error?.configurationReason,
+});
+
 // Only this finite vocabulary can reach the reporter. Caller payloads never do.
 export function createDiagnostics({ write, now = Date.now }) {
   const recent = new Map();

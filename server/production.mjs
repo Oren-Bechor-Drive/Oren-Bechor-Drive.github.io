@@ -4,6 +4,7 @@ import { createDatabaseRateLimit } from "./rate-limit.mjs";
 import { createStorageMedia } from "./storage-media.mjs";
 import { createVimeoMedia } from "./vimeo-media.mjs";
 import { createAdmission } from "./admission.mjs";
+import { configurationError } from "./diagnostics.mjs";
 
 function httpsOrigin(value, name) {
   if (
@@ -30,14 +31,6 @@ function parseEntries(value, field) {
   } catch {
     throw configurationError(field, "invalid");
   }
-}
-function configurationError(field, reason) {
-  return Object.assign(
-    new Error(
-      `${field ?? "Hosting configuration"} ${reason === "missing" ? "is required" : "is invalid"}.`,
-    ),
-    { configurationField: field, configurationReason: reason },
-  );
 }
 
 // Configuration validation is local. It does not create resources or open registration.
