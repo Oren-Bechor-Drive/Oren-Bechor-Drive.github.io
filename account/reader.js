@@ -72,21 +72,7 @@ function clear({ preserveState = false } = {}) {
   conflict = restoring = false;
   heading.textContent = defaultHeading;
   body.textContent = "";
-  media
-    .querySelectorAll("track, source, img")
-    .forEach((item) => item.removeAttribute("src"));
-  media.querySelectorAll("video").forEach((video) => {
-    video.pause();
-    video.removeAttribute("src");
-    video.load();
-  });
-  media.querySelectorAll(".reading-transcript").forEach((details) => {
-    details.open = false;
-    details.querySelectorAll("p").forEach((text) => {
-      text.textContent = "";
-    });
-  });
-  media.replaceChildren();
+  clearMedia();
   element("[data-reading]").hidden = true;
   saveButton.disabled = true;
   positionStatus.textContent = "";
@@ -240,6 +226,53 @@ function addVideoAlternatives(video, descriptor, figure) {
   });
   figure.append(details);
 }
+function renderMedia(item) {
+  const figure = document.createElement("figure");
+  const caption = document.createElement("figcaption");
+  caption.textContent = item.title;
+  if (item.type === "video/vimeo") {
+    if (!item.url.startsWith("https://player.vimeo.com/video/")) return null;
+    const player = document.createElement("iframe");
+    player.src = item.url;
+    player.title = item.title;
+    player.allow = "fullscreen; picture-in-picture";
+    // Vimeo's domain privacy needs the origin; the page otherwise sends no referrer.
+    player.referrerPolicy = "strict-origin";
+    figure.append(player, caption);
+  } else if (item.type.startsWith("video/")) {
+    const video = document.createElement("video");
+    video.src = item.url;
+    video.controls = true;
+    video.preload = "metadata";
+    figure.append(video, caption);
+    addVideoAlternatives(video, item, figure);
+  } else {
+    const image = document.createElement("img");
+    image.src = item.url;
+    image.alt = item.title;
+    image.loading = "lazy";
+    figure.append(image, caption);
+  }
+  return figure;
+}
+// Unload every private source before detaching, so nothing keeps playing or fetching.
+function clearMedia() {
+  media
+    .querySelectorAll("track, img, iframe")
+    .forEach((item) => item.removeAttribute("src"));
+  media.querySelectorAll("video").forEach((video) => {
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
+  });
+  media.querySelectorAll(".reading-transcript").forEach((details) => {
+    details.open = false;
+    details.querySelectorAll("p").forEach((text) => {
+      text.textContent = "";
+    });
+  });
+  media.replaceChildren();
+}
 async function load(preservePosition = false) {
   lifetime.reset({ preserveState: preservePosition });
   if (!valid) {
@@ -265,38 +298,8 @@ async function load(preservePosition = false) {
       heading.textContent = descriptor.title;
       body.textContent = data.lesson.body;
       for (const item of data.media) {
-        const figure = document.createElement("figure");
-        if (item.type === "video/vimeo") {
-          if (!item.url.startsWith("https://player.vimeo.com/video/")) continue;
-          const player = document.createElement("iframe");
-          player.src = item.url;
-          player.title = item.title;
-          player.allow = "fullscreen; picture-in-picture";
-          // Vimeo's domain privacy needs the origin; the page otherwise sends no referrer.
-          player.referrerPolicy = "strict-origin";
-          const caption = document.createElement("figcaption");
-          caption.textContent = item.title;
-          figure.append(player, caption);
-          media.append(figure);
-          continue;
-        }
-        const content = document.createElement(
-          item.type.startsWith("video/") ? "video" : "img",
-        );
-        content.src = item.url;
-        if (content.tagName === "VIDEO") {
-          content.controls = true;
-          content.preload = "metadata";
-        } else {
-          content.alt = item.title;
-          content.loading = "lazy";
-        }
-        const caption = document.createElement("figcaption");
-        caption.textContent = item.title;
-        figure.append(content, caption);
-        if (content.tagName === "VIDEO")
-          addVideoAlternatives(content, item, figure);
-        media.append(figure);
+        const figure = renderMedia(item);
+        if (figure) media.append(figure);
       }
       element("[data-reading]").hidden = false;
       saveButton.disabled = false;
