@@ -1,6 +1,6 @@
 import { configurationError } from "./diagnostics.mjs";
+import { inVersion, validMediaIdentity } from "./media-policy.mjs";
 
-const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const fields = new Set([
   "id",
   "sectionId",
@@ -26,17 +26,9 @@ export function createVimeoMedia({ entries, files = null }) {
       typeof input !== "object" ||
       Array.isArray(input) ||
       Object.keys(input).some((key) => !fields.has(key)) ||
-      typeof input.id !== "string" ||
-      !/^[a-z0-9][a-z0-9_-]{0,79}$/.test(input.id) ||
+      !validMediaIdentity(input) ||
       ids.has(input.id) ||
       files?.lookup(input.id) ||
-      typeof input.sectionId !== "string" ||
-      !uuid.test(input.sectionId) ||
-      typeof input.contentVersionId !== "string" ||
-      !uuid.test(input.contentVersionId) ||
-      typeof input.title !== "string" ||
-      !input.title.trim() ||
-      input.title.length > 300 ||
       typeof input.vimeoId !== "string" ||
       !/^[1-9]\d{0,14}$/.test(input.vimeoId) ||
       (Object.hasOwn(input, "hash") &&
@@ -67,11 +59,7 @@ export function createVimeoMedia({ entries, files = null }) {
       return [
         ...(files?.forSection(sectionId, contentVersionId) ?? []),
         ...videos
-          .filter(
-            (video) =>
-              video.sectionId === sectionId &&
-              video.contentVersionId === contentVersionId,
-          )
+          .filter((video) => inVersion(video, sectionId, contentVersionId))
           .map(({ id, title, url }) => ({
             id,
             title,
