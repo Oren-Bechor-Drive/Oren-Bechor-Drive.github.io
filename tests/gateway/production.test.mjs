@@ -85,6 +85,8 @@ test("admission and Storage configuration errors retain their constructor-owned 
       "invalid",
       { PRIVATE_MEDIA_BUCKET: "course" },
     ],
+    ["VIMEO_MEDIA_ENTRIES", "private invalid JSON", "invalid", {}],
+    ["VIMEO_MEDIA_ENTRIES", "[{}]", "invalid", {}],
   ]) {
     assert.throws(
       () =>
@@ -129,6 +131,40 @@ test("production composition requires exact HTTPS origins and server configurati
   assert.throws(() =>
     createProductionGatewayOptions({ ...env, PRIVATE_MEDIA_ENTRIES: "[]" }),
   );
+});
+
+test("Vimeo players compose with private Storage media", () => {
+  const common = {
+    sectionId: "a524e32d-2640-4d94-a51c-000000000001",
+    contentVersionId: "a524e32d-2640-4d94-a51c-000000000002",
+  };
+  const { media } = createProductionGatewayOptions({
+    ...env,
+    PRIVATE_MEDIA_BUCKET: "course",
+    PRIVATE_MEDIA_ENTRIES: JSON.stringify([
+      {
+        ...common,
+        id: "diagram",
+        file: "diagram.png",
+        type: "image/png",
+        title: "תרשים",
+      },
+    ]),
+    VIMEO_MEDIA_ENTRIES: JSON.stringify([
+      { ...common, id: "video", vimeoId: "123456789", title: "סרטון" },
+    ]),
+  });
+  assert.deepEqual(
+    media
+      .forSection(common.sectionId, common.contentVersionId)
+      .map((item) => [item.id, item.url]),
+    [
+      ["diagram", "/api/media/diagram"],
+      ["video", "https://player.vimeo.com/video/123456789?dnt=1"],
+    ],
+  );
+  assert.equal(media.lookup("diagram").file, "diagram.png");
+  assert.equal(media.lookup("video"), undefined);
 });
 
 test("hosted private media rejects loopback, private-network and non-Supabase provider origins", () => {

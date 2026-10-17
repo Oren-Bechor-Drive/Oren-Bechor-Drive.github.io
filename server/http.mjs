@@ -3,14 +3,11 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import {
   publicTypes as types,
-  publicTopFiles,
-  publicDirectories,
+  publicRelativePath,
   publicSecurityHeaders,
 } from "./public-files.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
-const topFiles = new Set(publicTopFiles);
-const directories = new Set(publicDirectories);
 
 export async function servePublicFile(req, res) {
   for (const [name, value] of Object.entries(publicSecurityHeaders))
@@ -23,17 +20,8 @@ export async function servePublicFile(req, res) {
     const pathname = decodeURIComponent(
       new URL(req.url, "http://local.test").pathname,
     );
-    const parts = pathname.slice(1).split("/");
-    if (
-      parts.some(
-        (part) =>
-          part.startsWith(".") || part.includes("\\") || part.includes("\0"),
-      )
-    )
-      throw new Error();
-    let relative = pathname.slice(1) || "index.html";
-    if (!topFiles.has(relative) && !directories.has(parts[0]))
-      throw new Error();
+    const relative = publicRelativePath(pathname);
+    if (relative === null) throw new Error();
     let absolute = path.join(root, relative);
     if ((await stat(absolute)).isDirectory()) {
       if (!pathname.endsWith("/")) {
@@ -54,7 +42,7 @@ export async function servePublicFile(req, res) {
       "Content-Type": types[path.extname(actual)],
       "Content-Length": data.length,
       "Cache-Control":
-        parts[0] === "account" ? "private, no-store" : "no-cache",
+        relative.split("/")[0] === "account" ? "private, no-store" : "no-cache",
     });
     res.end(req.method === "HEAD" ? undefined : data);
   } catch {

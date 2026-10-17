@@ -42,6 +42,7 @@ Copy [.env.hosted.example](../.env.hosted.example) to ignored `.env.hosted.local
 | `PILOT_EMAILS` | Private comma-separated list of one or two distinct verified tester emails. Required only in pilot mode. |
 | `GOOGLE_AUTH_ENABLED` | Literal `true` only after Google configuration. Public mode requires it. Email/password remains enabled through Supabase Auth. |
 | `PRIVATE_MEDIA_BUCKET`, `PRIVATE_MEDIA_ENTRIES` | Optional paired settings for a private bucket and JSON registry. Omit both until media exists. |
+| `VIMEO_MEDIA_ENTRIES` | Optional JSON registry of Vimeo course videos. See [Vimeo videos](#vimeo-videos). |
 
 Put credentials, `SESSION_SECRET`, tester emails and the media registry in Cloudflare secret bindings. Keep them out of `wrangler.jsonc`, public assets, logs and Git. The local `.env.hosted.local` file belongs only to `check:hosting`; Wrangler uses its own ignored `.dev.vars` for local bindings. Never copy production secrets into test fixtures.
 
@@ -106,6 +107,12 @@ The hosted adapter supports full delivery, HEAD and single byte ranges, validate
 The registry has the same `id`, `sectionId`, `contentVersionId`, `type`, `title` and `file` fields as the [local media manifest](protected-learning.md). `file` is now a private object path. Use opaque ASCII object names with letters, digits, `_`, `-` and `.`, separated by `/`; no dot-leading, empty or escaped path segments. Titles remain Hebrew. Accepted root types are MP4/WebM and PNG/JPEG/WebP. A video can reference Hebrew `text/vtt` captions and a `text/plain; charset=utf-8` transcript as separate same-section/version registry entries, using the [local manifest contract](protected-learning.md#private-media). Only root image/video descriptors appear in the section response; sidecars are nested opaque URLs. Invalid, repeated, orphan or wrong-version references prevent registry construction. Storage responses preserve precise text MIME types and the same authorization/cache boundary. The registry is server configuration, not learner-supplied data or a public file.
 
 No videos or registry entries have been uploaded. Caption/transcript delivery and native reader controls are locally implemented and tested with synthetic media. Real approved captions/transcripts, rights, hosted playback, physical-device accessibility and actual storage/egress capacity remain release work. The current adapter does not add adaptive streaming or remove the selected plan's per-file limit.
+
+### Vimeo videos
+
+Course videos play in Vimeo players under [ADR 1](adr/0001-vimeo-video-delivery.md). Each `VIMEO_MEDIA_ENTRIES` item has `id`, `sectionId`, `contentVersionId`, a Hebrew `title` and the numeric `vimeoId`. Optional `hash` is the private-link hash. Optional `captions` is the Vimeo text-track language to enable by default, such as `he`. IDs must not repeat Storage registry IDs. Invalid entries prevent startup. The registry works alone or with the Storage registry.
+
+The paid section response includes `{ id, title, type: "video/vimeo", url }` with a `player.vimeo.com` URL. `/api/media/<id>` does not serve these videos. Before adding an entry, set the video in Vimeo to hidden from Vimeo, embeddable only on the `APP_ORIGIN` domain, with downloads off. Keep the registry in a secret binding.
 
 ## Private pilot and public opening
 

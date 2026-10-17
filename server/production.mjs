@@ -2,7 +2,9 @@ import { createSupabaseProvider } from "./supabase.mjs";
 import { createSupabaseSessions } from "./session-store.mjs";
 import { createDatabaseRateLimit } from "./rate-limit.mjs";
 import { createStorageMedia } from "./storage-media.mjs";
+import { createVimeoMedia } from "./vimeo-media.mjs";
 import { createAdmission } from "./admission.mjs";
+import { configurationError } from "./diagnostics.mjs";
 
 function httpsOrigin(value, name) {
   if (
@@ -22,13 +24,13 @@ function httpsOrigin(value, name) {
     throw configurationError(name, "invalid");
   return value;
 }
-function configurationError(field, reason) {
-  return Object.assign(
-    new Error(
-      `${field ?? "Hosting configuration"} ${reason === "missing" ? "is required" : "is invalid"}.`,
-    ),
-    { configurationField: field, configurationReason: reason },
-  );
+function parseEntries(value, field) {
+  try {
+    if (typeof value !== "string" || value.length > 131072) throw new Error();
+    return JSON.parse(value);
+  } catch {
+    throw configurationError(field, "invalid");
+  }
 }
 
 // Configuration validation is local. It does not create resources or open registration.
@@ -70,26 +72,21 @@ export function createProductionGatewayOptions(
       bucket ? "PRIVATE_MEDIA_ENTRIES" : "PRIVATE_MEDIA_BUCKET",
       "missing",
     );
-  let entries;
-  if (manifest) {
-    try {
-      if (typeof manifest !== "string" || manifest.length > 131072)
-        throw new Error();
-      entries = JSON.parse(manifest);
-    } catch {
-      throw configurationError("PRIVATE_MEDIA_ENTRIES", "invalid");
-    }
-  }
   let media = null;
   if (bucket) {
     media = createStorageMedia({
       url,
       secretKey: serviceKey,
       bucket,
-      entries,
+      entries: parseEntries(manifest, "PRIVATE_MEDIA_ENTRIES"),
       fetcher: fetchImpl,
     });
   }
+  if (env.VIMEO_MEDIA_ENTRIES)
+    media = createVimeoMedia({
+      entries: parseEntries(env.VIMEO_MEDIA_ENTRIES, "VIMEO_MEDIA_ENTRIES"),
+      files: media,
+    });
   const rateOptions = { url, serviceKey, secret, fetchImpl };
   return {
     origin,

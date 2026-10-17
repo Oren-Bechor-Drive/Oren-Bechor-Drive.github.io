@@ -30,6 +30,29 @@ export const publicDirectories = Object.freeze([
   "js",
   "course",
 ]);
+// The single public-path rule for serving, packaging and readiness checks.
+// Takes a decoded "/..." pathname; returns its relative path or null. Extensionless
+// paths may name directories, so adapters still resolve index files and check types.
+export function publicRelativePath(pathname) {
+  const parts = pathname.slice(1).split("/");
+  if (
+    parts.some(
+      (part) =>
+        part.startsWith(".") || part.includes("\\") || part.includes("\0"),
+    )
+  )
+    return null;
+  const relative = pathname.slice(1) || "index.html";
+  if (
+    !publicTopFiles.includes(relative) &&
+    !publicDirectories.includes(parts[0])
+  )
+    return null;
+  const last = parts.at(-1);
+  if (last.includes(".") && !publicTypes[last.slice(last.lastIndexOf("."))])
+    return null;
+  return relative;
+}
 export const publicSecurityHeaders = Object.freeze({
   "X-Content-Type-Options": "nosniff",
   "Referrer-Policy": "no-referrer",

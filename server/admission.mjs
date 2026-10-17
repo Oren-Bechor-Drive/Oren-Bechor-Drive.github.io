@@ -1,15 +1,9 @@
+import { configurationError } from "./diagnostics.mjs";
+
 const validEmail = (email) =>
   typeof email === "string" &&
   email.length <= 254 &&
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-function configurationError(field, reason = "invalid") {
-  return Object.assign(
-    new Error(
-      `${field} ${reason === "missing" ? "is required" : "is invalid"}.`,
-    ),
-    { configurationField: field, configurationReason: reason },
-  );
-}
 
 // Hosting configuration owns rollout. Elapsed time never opens registration.
 export function createAdmission(env) {

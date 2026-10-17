@@ -18,6 +18,19 @@ const descriptorFields = new Set([
 const invalid = () => {
   throw new Error("Invalid private media descriptor.");
 };
+// Every media registry shares the /api/media id namespace and exact paid-version match.
+export const validMediaIdentity = (input) =>
+  typeof input.id === "string" &&
+  /^[a-z0-9][a-z0-9_-]{0,79}$/.test(input.id) &&
+  typeof input.sectionId === "string" &&
+  uuid.test(input.sectionId) &&
+  typeof input.contentVersionId === "string" &&
+  uuid.test(input.contentVersionId) &&
+  typeof input.title === "string" &&
+  Boolean(input.title.trim()) &&
+  input.title.length <= 300;
+export const inVersion = (entry, sectionId, contentVersionId) =>
+  entry.sectionId === sectionId && entry.contentVersionId === contentVersionId;
 const privateHeaders = {
   "Cache-Control": "private, no-store",
   Pragma: "no-cache",
@@ -33,17 +46,9 @@ export function createMediaPolicy(entries, validFile) {
   for (const input of entries) {
     if (
       !input ||
-      typeof input.id !== "string" ||
-      !/^[a-z0-9][a-z0-9_-]{0,79}$/.test(input.id) ||
+      !validMediaIdentity(input) ||
       registry.has(input.id) ||
-      typeof input.sectionId !== "string" ||
-      !uuid.test(input.sectionId) ||
-      typeof input.contentVersionId !== "string" ||
-      !uuid.test(input.contentVersionId) ||
       (!rootTypes.has(input.type) && !sidecarTypes.has(input.type)) ||
-      typeof input.title !== "string" ||
-      !input.title.trim() ||
-      input.title.length > 300 ||
       typeof input.file !== "string" ||
       !validFile(input.file)
     )
@@ -127,8 +132,7 @@ export function createMediaPolicy(entries, validFile) {
         .filter(
           (entry) =>
             rootTypes.has(entry.type) &&
-            entry.sectionId === sectionId &&
-            entry.contentVersionId === contentVersionId,
+            inVersion(entry, sectionId, contentVersionId),
         )
         .map(({ id, title, type, captions, transcript }) => ({
           id,

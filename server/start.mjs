@@ -2,7 +2,11 @@ import { startLocalApplication } from "./application.mjs";
 import { createSupabaseProvider } from "./supabase.mjs";
 import { createPrivateMedia } from "./private-media.mjs";
 import { readFile } from "node:fs/promises";
-import { createDiagnostics } from "./diagnostics.mjs";
+import {
+  configurationError,
+  createDiagnostics,
+  startupEvent,
+} from "./diagnostics.mjs";
 
 const diagnostics = createDiagnostics({ write: (line) => console.error(line) });
 async function start() {
@@ -21,10 +25,7 @@ async function start() {
     try {
       if (new URL(url).protocol !== "https:") throw new Error();
     } catch {
-      throw Object.assign(new Error(), {
-        configurationField: "SUPABASE_URL",
-        configurationReason: "invalid",
-      });
+      throw configurationError("SUPABASE_URL");
     }
   } else {
     const field = !url
@@ -52,10 +53,7 @@ async function start() {
     address.protocol !== "http:" ||
     !["127.0.0.1", "localhost"].includes(address.hostname)
   ) {
-    throw Object.assign(new Error(), {
-      configurationField: "APP_ORIGIN",
-      configurationReason: "invalid",
-    });
+    throw configurationError("APP_ORIGIN");
   }
   const {
     PRIVATE_MEDIA_ROOT: mediaRoot,
@@ -70,10 +68,7 @@ async function start() {
         entries: JSON.parse(await readFile(mediaManifest, "utf8")),
       });
     } catch {
-      throw Object.assign(new Error(), {
-        configurationField: "PRIVATE_MEDIA_ENTRIES",
-        configurationReason: "invalid",
-      });
+      throw configurationError("PRIVATE_MEDIA_ENTRIES");
     }
   }
   const app = await startLocalApplication({
@@ -99,13 +94,7 @@ async function start() {
 try {
   await start();
 } catch (error) {
-  diagnostics.emit({
-    category: error.configurationReason ? "configuration" : "unexpected",
-    operation: "startup",
-    status: 503,
-    field: error.configurationField,
-    reason: error.configurationReason,
-  });
+  diagnostics.emit(startupEvent(error));
   console.error(
     "Local gateway startup failed. Check the configuration and local port.",
   );

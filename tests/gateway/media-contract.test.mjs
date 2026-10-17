@@ -271,7 +271,7 @@ for (const kind of ["file", "storage"]) {
     for (const entries of invalid)
       await assert.rejects(
         async () => create(entries),
-        /Invalid private media/,
+        /Invalid private media|PRIVATE_MEDIA_ENTRIES is invalid/,
       );
   });
 

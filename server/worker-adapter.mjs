@@ -2,12 +2,7 @@ import { createServer } from "node:http";
 import { isIP } from "node:net";
 import { httpServerHandler } from "cloudflare:node";
 import { createGateway } from "./gateway.mjs";
-import {
-  publicTypes,
-  publicTopFiles,
-  publicDirectories,
-  publicSecurityHeaders,
-} from "./public-files.mjs";
+import { publicRelativePath, publicSecurityHeaders } from "./public-files.mjs";
 
 const privateHeaders = {
   ...publicSecurityHeaders,
@@ -33,24 +28,7 @@ function clientAddress(request) {
 function publicPath(pathname) {
   try {
     const decoded = decodeURIComponent(pathname);
-    const parts = decoded.slice(1).split("/");
-    if (
-      parts.some(
-        (part) =>
-          part.startsWith(".") || part.includes("\\") || part.includes("\0"),
-      )
-    )
-      return null;
-    const relative = decoded.slice(1) || "index.html";
-    if (
-      !publicTopFiles.includes(relative) &&
-      !publicDirectories.includes(parts[0])
-    )
-      return null;
-    const last = parts.at(-1);
-    if (last.includes(".") && !publicTypes[last.slice(last.lastIndexOf("."))])
-      return null;
-    return decoded;
+    return publicRelativePath(decoded) === null ? null : decoded;
   } catch {
     return null;
   }
