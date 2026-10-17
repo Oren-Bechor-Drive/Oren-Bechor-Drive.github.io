@@ -15,11 +15,7 @@ import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { createProductionGatewayOptions } from "../server/production.mjs";
 import { createPrivateMedia } from "../server/private-media.mjs";
-import {
-  publicDirectories,
-  publicTopFiles,
-  publicTypes,
-} from "../server/public-files.mjs";
+import { publicRelativePath, publicTypes } from "../server/public-files.mjs";
 import { subscriptionOffer } from "../server/subscription-offer.mjs";
 import { packageWorkerAssets } from "./package-worker.mjs";
 import { startLessonGateway } from "../tests/helpers/test-lessons.mjs";
@@ -173,14 +169,8 @@ export async function checkLocalPilotReadiness() {
       assert.ok(files.includes("index.html"));
       assert.ok(files.includes("account/learning.js"));
       for (const file of files) {
-        assert.ok(
-          publicTopFiles.includes(file) ||
-            publicDirectories.some((directory) =>
-              file.startsWith(directory + "/"),
-            ),
-        );
+        assert.equal(publicRelativePath(`/${file}`), file);
         assert.ok(publicTypes[path.extname(file)]);
-        assert.ok(!file.split("/").some((part) => part.startsWith(".")));
       }
       assert.deepEqual(
         await readFile(path.join(output, "index.html")),

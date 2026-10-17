@@ -15,6 +15,7 @@ import {
   publicTypes,
   publicTopFiles,
   publicDirectories,
+  publicRelativePath,
   publicSecurityHeaders,
 } from "../server/public-files.mjs";
 
@@ -54,11 +55,7 @@ export async function packageWorkerAssets({ root = siteRoot, output } = {}) {
   let retainRecovery = false;
   const files = [];
   async function copy(relative) {
-    if (
-      relative
-        .split(path.sep)
-        .some((part) => part.startsWith(".") || part.includes("\\"))
-    )
+    if (publicRelativePath("/" + relative.split(path.sep).join("/")) === null)
       return;
     const source = path.join(root, relative);
     const entry = await lstat(source).catch((error) => {
