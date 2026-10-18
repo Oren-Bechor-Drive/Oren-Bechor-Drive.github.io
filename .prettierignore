@@ -1,0 +1,4 @@
+# Prose and reference documents keep their authored layout.
+*.md
+# scripts/publish-theory-quizzes.mjs owns these pages byte for byte.
+course/*/quiz/index.html

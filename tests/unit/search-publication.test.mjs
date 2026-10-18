@@ -138,7 +138,8 @@ test("production gate verifies deployed HTML, verification values, crawler files
   for (const [target, mutation] of [
     [
       "/",
-      (body) => body.replace(/<meta name="google-site-verification"[^>]+>/, ""),
+      (body) =>
+        body.replace(/<meta\s+name="google-site-verification"[^>]+>/, ""),
     ],
     [
       "/",

@@ -26,7 +26,7 @@
 - Keep navigation and all topic descriptions usable when JavaScript is disabled or the entry module fails to load. Use the baseline HTML descriptions as the interactive preview's content source.
 - When adding learning sections or practice quizzes, follow [Add learning sections and quizzes](README.md#add-learning-sections-and-quizzes). Each quiz owns its static content and return links; `course/js/quiz.js` owns shared interaction. Preserve the current HTML formatting.
 - For public theory-question changes, edit the reviewed maintenance source and regenerate the owned HTML regions through [Maintain public theory quizzes](README.md#maintain-public-theory-quizzes). Keep source provenance, documented adaptations, and original diagrams aligned.
-- After editing `index.html`, follow [Page source maintenance](README.md#page-source-maintenance): run `npm run minify:html` after any media optimization. Preserve formatting in other HTML pages.
+- Follow [Page source maintenance](README.md#page-source-maintenance) for formatting: run `npm run format` after editing source files and after any media optimization. Leave quiz pages to the theory-quiz publisher.
 - Keep course copy, search and sharing metadata, structured data, and `llms.txt` consistent with supplied facts. Add real contact details, profile URLs, or enrollment destinations only when supplied.
 - Preserve user-supplied image bytes unless the user explicitly requests an image edit. Keep marked road-media metadata accurate when paths or images change.
 - When changing image sources, delivery widths, compression, or sizing hints, follow [Optimize delivery images](README.md#optimize-delivery-images) for regeneration, publishing, and browser delivery checks. Run optimizers sequentially within a checkout.

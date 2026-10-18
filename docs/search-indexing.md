@@ -12,7 +12,7 @@ The homepage's existing Hebrew title, description, canonical, Open Graph, X card
 
 1. Update the authored HTML. Keep preview and account `noindex` directives until their release prerequisites are met. An indexable page needs an absolute self-canonical matching its directory URL, a descriptive Hebrew title and description, and matching sharing metadata.
 2. Run `npm run generate:sitemap`. It discovers authored pages through `scripts/site-pages.mjs`, excludes noindex, refresh redirects and `404.html`, and rejects missing or mismatched canonicals. It does not add fragments, queries, guessed modification dates or private URLs. `npm run check:search` detects sitemap drift without writing.
-3. Run `npm run minify:html` after homepage changes, then `npm run check:links`, `npm run check:media`, `npm test`, `npm audit` and `git diff --check`.
+3. Run `npm run format` after homepage changes, then `npm run check:links`, `npm run check:media`, `npm test`, `npm audit` and `git diff --check`.
 4. Publish through the [operations review process](OPERATIONS.md#review-and-publish-a-change). Merge the tested revision to `main` and wait for Pages to finish successfully. The Tests workflow does not deploy the site.
 5. Run `npm run check:search:production` from the deployed revision. It checks HTTPS redirection, exact homepage HTML, all authored pages' metadata and noindex state, verification tags, sharing-image responses, robots, sitemap and real 404 responses at root and nested missing paths. A failure can indicate a stale CDN response or newer deployment; compare the latest Pages build SHA before retrying.
 
