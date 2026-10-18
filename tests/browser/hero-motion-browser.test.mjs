@@ -9,7 +9,7 @@ test("hero keeps its two sentences and yellow word underlines", async (t) => {
   const page = await browser.newPage({ reducedMotion: "reduce" });
   await page.route("**/*", serveRoadMedia);
   await page.goto("http://gallery.test/");
-  assert.deepEqual(await page.locator(".hero-sentence").allTextContents(), [
+  assert.deepEqual(await page.locator(".hero-sentence").allInnerTexts(), [
     "להבין את הכביש.",
     "לקבל החלטות.",
   ]);

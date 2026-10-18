@@ -133,7 +133,7 @@ Theory diagrams in `assets/images/theory/originals/` are small, unmodified 350px
 
 ## Page source maintenance
 
-`index.html` is checked in with compact whitespace and remains directly editable and servable. After editing `index.html`, run `npm run minify:html` before publishing. This command only formats the welcome page. Preserve the existing formatting in course, learning and quiz HTML; content changes do not require a formatting pass. Run it after `npm run optimize:media` when updating images. The command preserves single spaces between inline elements, literal whitespace in `pre` and `textarea`, SVG attribute casing, and image metadata. It reports both raw and gzip byte counts; gzip is a comparison here, not a server configuration change.
+Source files are formatted with [Prettier](https://prettier.io/): 4-space indentation for HTML and CSS, Prettier defaults for JavaScript and JSON. Run `npm run format` after editing, and after `npm run optimize:media` because the optimizer rewrites `js/road-photo-sources.js` and image attributes in `index.html`. CI runs `npm run check:format`. `.prettierignore` excludes Markdown and the quiz pages, whose regions `scripts/publish-theory-quizzes.mjs` owns byte for byte.
 
 The entry script uses `type="module"`, so browsers defer its execution automatically. The small classic `js/menu-bootstrap.js` script runs before stylesheets to reserve the compact header during that delay, with an error and timeout fallback. Keeping it in the head lets its download start early. Every HTML image has an `alt` attribute. The brand icon uses the requested Hebrew alternative `alt="לוגו"`; the enclosing link retains its descriptive accessible name.
 
@@ -145,7 +145,7 @@ The public canonical URL is `https://oren-bechor-drive.github.io/`. If the site 
 
 `llms.txt` provides a short Hebrew overview, links to the existing course, instructor, topic and FAQ sections on the homepage, and links to the public course preview, following the [llms.txt proposal](https://llmstxt.org/). The page links it with `rel="describedby"`. Keep the summary and links aligned with the page when course facts, section IDs, or available enrollment/playback capabilities change. It is maintained directly, with no generation or runtime step, and does not replace the page or sitemap.
 
-After editing metadata, run `npm run minify:html`, `npm test`, and `git diff --check`. Run `npm run check:media` as well when changing HTML image declarations, preload metadata, or assets. Publish `index.html`, `robots.txt`, `sitemap.xml`, and `llms.txt` together. After deployment, check those public URLs and use Search Console URL Inspection to verify what Google can fetch. Repository tests cannot confirm indexing or social-platform preview caches.
+After editing metadata, run `npm run format`, `npm test`, and `git diff --check`. Run `npm run check:media` as well when changing HTML image declarations, preload metadata, or assets. Publish `index.html`, `robots.txt`, `sitemap.xml`, and `llms.txt` together. After deployment, check those public URLs and use Search Console URL Inspection to verify what Google can fetch. Repository tests cannot confirm indexing or social-platform preview caches.
 
 Run `npm run generate:sitemap` to regenerate the sitemap from canonical, indexable HTML, or `npm run check:search` to detect drift. The homepage includes the owner-supplied Google verification tag; Bing supports either importing the verified Google property or adding its supplied `msvalidate.01` tag. `npm run check:search:production` checks the actual deployed responses and verification tags. The Search publication workflow verifies the successful Pages revision before sending IndexNow notifications. See [search configuration and ownership](docs/search-indexing.md) for account verification, sitemap submission, live URL tests, notification responses and maintenance.
 
@@ -190,7 +190,7 @@ After adding, replacing, removing, or renumbering photos:
 
    ```bash
    npm run optimize:media
-   npm run minify:html
+   npm run format
    npm run check:media
    npm test
    ```
@@ -229,7 +229,7 @@ The photo-maintenance command above also regenerates responsive delivery copies 
 
 ```bash
 npm run optimize:media
-npm run minify:html
+npm run format
 npm run check:media
 npm test
 ```
@@ -317,6 +317,7 @@ Development checks require Node.js 22.22.2 or newer in the 22.x line, 24.15.0 or
 npm ci
 npx playwright install --with-deps chromium firefox webkit
 npm audit
+npm run check:format
 npm run check:media
 npm run check:links
 npm test
@@ -598,7 +599,7 @@ The referrer policy and supported CSP directives are implemented in HTML. Header
 
 ### Design critique implementation
 
-The owner-approved design refinements are tracked in [todo.md](todo.md). The welcome page and library share ten topics, public headers and course footers support return navigation, native scrollbars stay visible, and print exposes lesson reading and every quiz question. Fredoka supplies real weights with rounded Hebrew shapes; the supplied Varela Round font files remain preserved. The red stop sign is a separate approved edit of the supplied blue original. Regenerate its delivery variants through `npm run optimize:media`, then minify the welcome HTML.
+The owner-approved design refinements are tracked in [todo.md](todo.md). The welcome page and library share ten topics, public headers and course footers support return navigation, native scrollbars stay visible, and print exposes lesson reading and every quiz question. Fredoka supplies real weights with rounded Hebrew shapes; the supplied Varela Round font files remain preserved. The red stop sign is a separate approved edit of the supplied blue original. Regenerate its delivery variants through `npm run optimize:media`, then run `npm run format`.
 
 Public scoring still uses feedback after submission. A completed set opens a review summary before the separate grading action. Question-to-section links are maintained in the reviewed source, verified by the publisher, and do not assert complete teaching coverage. Protected learning continues to use authorized APIs and synthetic local verification. The local password policy is at least 12 Unicode characters and at most 72 UTF-8 bytes without composition requirements; hosted provider settings have not been verified or changed.
 

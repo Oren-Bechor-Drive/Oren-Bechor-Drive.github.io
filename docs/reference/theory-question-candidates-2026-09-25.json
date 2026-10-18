@@ -213,14 +213,7 @@
     {
       "topicId": "licensing-and-points",
       "title": "נהג חדש, רישוי ושיטת הניקוד",
-      "questionIds": [
-        "0004",
-        "0268",
-        "0296",
-        "0054",
-        "0055",
-        "1641"
-      ],
+      "questionIds": ["0004", "0268", "0296", "0054", "0055", "1641"],
       "coverageNote": "Six candidates cover accompaniment, passengers, the new-driver sign and licence restrictions. No archived points-threshold, penalty-count or licence-age question was selected."
     }
   ],
@@ -230,14 +223,8 @@
       "sourceRowId": 425,
       "sourcePublishedAt": "2011-09-11T10:44:26",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "B"],
+      "sourceLicenseClasses": ["C1", "В"],
       "question": "מי רשאי להיות \"מלווה\" ל\"נוהג חדש\" (גם אם הוא אינו מורה נהיגה)?",
       "options": [
         "כל מי שברשותו רישיון נהיגה תקף לאותו סוג רכב ומלאו לו 24 שנים.",
@@ -247,9 +234,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "licensing-and-points"
-      ],
+      "topicIds": ["licensing-and-points"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -257,22 +242,8 @@
       "sourceRowId": 196,
       "sourcePublishedAt": "2011-09-11T10:44:22",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מהי \"דרך\" על פי החוק?",
       "options": [
         "כל מסילה, דרך, רחוב, סמטה, כיכר, מעבר, גשר או מקום פתוח שיש לציבור זכות לעבור בהם.",
@@ -282,9 +253,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "learning-foundations"
-      ],
+      "topicIds": ["learning-foundations"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -292,22 +261,8 @@
       "sourceRowId": 1612,
       "sourcePublishedAt": "2011-09-11T10:44:51",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "הגדר \"כביש חד-סטרי\":",
       "options": [
         "כל כביש שתנועת כלי רכב מותרת בו בכיוון אחד בלבד.",
@@ -317,10 +272,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "learning-foundations",
-        "roads-and-lanes"
-      ],
+      "topicIds": ["learning-foundations", "roads-and-lanes"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -328,22 +280,8 @@
       "sourceRowId": 1347,
       "sourcePublishedAt": "2011-09-11T10:44:46",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מהו \"מחלף\"?",
       "options": [
         "מפגש דרכים במפלס אחד המצוי בדרך עירונית בלבד.",
@@ -353,9 +291,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "learning-foundations"
-      ],
+      "topicIds": ["learning-foundations"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -363,22 +299,8 @@
       "sourceRowId": 1796,
       "sourcePublishedAt": "2011-09-11T10:44:55",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "תחום הצומת נקבע על ידי:",
       "options": [
         "מפגש של שני מעברי חצייה או יותר בצומת.",
@@ -388,9 +310,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "learning-foundations"
-      ],
+      "topicIds": ["learning-foundations"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -398,22 +318,8 @@
       "sourceRowId": 1413,
       "sourcePublishedAt": "2011-09-11T10:44:47",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "כשהנהג \"נותן זכות קדימה\" הכוונה היא:",
       "options": [
         "שהוא משתלב בתנועה בלי לגרום לתאונה.",
@@ -423,10 +329,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "learning-foundations",
-        "right-of-way"
-      ],
+      "topicIds": ["learning-foundations", "right-of-way"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -434,14 +337,8 @@
       "sourceRowId": 1048,
       "sourcePublishedAt": "2011-09-11T10:44:39",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "B"],
+      "sourceLicenseClasses": ["C1", "В"],
       "question": "היכן יוצג השלט \"נהג חדש\" ברכב?",
       "options": [
         "בחלון האחורי של הרכב, בשוליו העליונים, כך שייראה לנוהג אחריו.",
@@ -451,9 +348,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "licensing-and-points"
-      ],
+      "topicIds": ["licensing-and-points"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -461,14 +356,8 @@
       "sourceRowId": 886,
       "sourcePublishedAt": "2011-09-11T10:44:36",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "B"],
+      "sourceLicenseClasses": ["C1", "В"],
       "question": "כמה זמן חייב נהג להציג שלט \"נהג חדש\" בעת הנהיגה?",
       "options": [
         "שלושה חודשים.",
@@ -478,9 +367,7 @@
       ],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "topicIds": [
-        "licensing-and-points"
-      ],
+      "topicIds": ["licensing-and-points"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -488,22 +375,8 @@
       "sourceRowId": 13,
       "sourcePublishedAt": "2011-09-11T10:44:18",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "האם כל עובר דרך חייב לציית לתמרורים?",
       "options": [
         "כן. כל עובר דרך חייב בציות לתמרורים.",
@@ -513,9 +386,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "priority-hierarchy"
-      ],
+      "topicIds": ["priority-hierarchy"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -523,22 +394,8 @@
       "sourceRowId": 1036,
       "sourcePublishedAt": "2011-09-11T10:44:39",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "האם חובה לציית להוראות שוטר שהזדהה בתעודת מינוי?",
       "options": [
         "כן, אף אם ההוראות מנוגדות להוראות תמרור.",
@@ -548,9 +405,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "priority-hierarchy"
-      ],
+      "topicIds": ["priority-hierarchy"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -558,22 +413,8 @@
       "sourceRowId": 84,
       "sourcePublishedAt": "2011-09-11T10:44:19",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "האם חובה לציית להוראות ולאותות של שוטר צבאי במדים?",
       "options": [
         "לא - פרט להוראה של עצירת רכב.",
@@ -583,9 +424,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "priority-hierarchy"
-      ],
+      "topicIds": ["priority-hierarchy"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -593,22 +432,8 @@
       "sourceRowId": 186,
       "sourcePublishedAt": "2011-09-11T10:44:21",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "האם חובה לציית להוראות שוטר, גם כשההוראה או האות מנוגדים לתמרורים?",
       "options": [
         "לא, אין חובה לציית.",
@@ -618,9 +443,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "priority-hierarchy"
-      ],
+      "topicIds": ["priority-hierarchy"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -628,22 +451,8 @@
       "sourceRowId": 1741,
       "sourcePublishedAt": "2011-09-11T10:44:54",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "האם חובה לציית להוראות שוטר צבאי, גם כשההוראה או האות מנוגדים לתמרורים?",
       "options": [
         "לא, אין חובה לציית.",
@@ -653,9 +462,7 @@
       ],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "topicIds": [
-        "priority-hierarchy"
-      ],
+      "topicIds": ["priority-hierarchy"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -663,22 +470,8 @@
       "sourceRowId": 782,
       "sourcePublishedAt": "2011-09-11T10:44:34",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "האם תמרור זמני שמוצב לפי הוראת קצין משטרה הוא תמרור חוקי?",
       "options": [
         "כן, הוא תמרור חוקי.",
@@ -688,9 +481,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "priority-hierarchy"
-      ],
+      "topicIds": ["priority-hierarchy"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -698,22 +489,8 @@
       "sourceRowId": 751,
       "sourcePublishedAt": "2011-09-11T10:44:33",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "אילו הוראות עדיפות בצומת שבו מוצבים רמזורים ותמרורים?",
       "options": [
         "הוראת תמרור \"תן זכות קדימה\" עדיפה מהוראת רמזור שאינו מהבהב.",
@@ -723,9 +500,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "priority-hierarchy"
-      ],
+      "topicIds": ["priority-hierarchy"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -733,22 +508,8 @@
       "sourceRowId": 1619,
       "sourcePublishedAt": "2011-09-11T10:44:51",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "אתה נוהג בכביש חד-סטרי ומולך יש מבנה, עמוד או שטח סגור. כיצד עליך לנהוג?",
       "options": [
         "יש לעבור את המקום מימין בלבד.",
@@ -758,9 +519,7 @@
       ],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "topicIds": [
-        "roads-and-lanes"
-      ],
+      "topicIds": ["roads-and-lanes"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -768,22 +527,8 @@
       "sourceRowId": 521,
       "sourcePublishedAt": "2011-09-11T10:44:28",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מה עלי לבדוק לפני תחילת הפנייה ימינה?",
       "options": [
         "שלא חונה כל רכב בצד שמאל של הדרך.",
@@ -793,9 +538,7 @@
       ],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "topicIds": [
-        "right-of-way"
-      ],
+      "topicIds": ["right-of-way"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -803,22 +546,8 @@
       "sourceRowId": 902,
       "sourcePublishedAt": "2011-09-11T10:44:36",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "אסור לנהג לפנות פניית פרסה כאשר:",
       "options": [
         "הוא נוהג ברכב שאורכו יותר משמונה מטרים.",
@@ -828,9 +557,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "right-of-way"
-      ],
+      "topicIds": ["right-of-way"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -838,22 +565,8 @@
       "sourceRowId": 812,
       "sourcePublishedAt": "2011-09-11T10:44:35",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מאיזה נתיב מותר לפנות פניית פרסה לשמאל?",
       "options": [
         "מנתיב לפנייה שמאלה או מכל נתיב אחר שאין בו סימון או תמרור האוסר פנייה שכזו.",
@@ -863,9 +576,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "right-of-way"
-      ],
+      "topicIds": ["right-of-way"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -873,22 +584,8 @@
       "sourceRowId": 1212,
       "sourcePublishedAt": "2011-09-11T10:44:43",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "באילו תנאים מותר לעקוף רכב אחר?",
       "options": [
         "רק כשהרכב הנעקף הוא רכב איטי.",
@@ -898,9 +595,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "overtaking"
-      ],
+      "topicIds": ["overtaking"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -908,22 +603,8 @@
       "sourceRowId": 1070,
       "sourcePublishedAt": "2011-09-11T10:44:40",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "באילו מקרים אסור לעקוף או לנסות לעקוף רכב אחר?",
       "options": [
         "כשנוסעים בעלייה.",
@@ -933,9 +614,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "overtaking"
-      ],
+      "topicIds": ["overtaking"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -943,22 +622,8 @@
       "sourceRowId": 1525,
       "sourcePublishedAt": "2011-09-11T10:44:49",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "באילו מקרים אסור לך לעקוף רכב אחר?",
       "options": [
         "בכביש בין-עירוני דו-סטרי.",
@@ -968,9 +633,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "overtaking"
-      ],
+      "topicIds": ["overtaking"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -978,22 +641,8 @@
       "sourceRowId": 1642,
       "sourcePublishedAt": "2011-09-11T10:44:52",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "כיצד ינהג נהג רכב שנעקף?",
       "options": [
         "לנהג הנעקף אין עניין ברכב העוקף, והוא ממשיך בנסיעתו כרגיל.",
@@ -1003,9 +652,7 @@
       ],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "topicIds": [
-        "overtaking"
-      ],
+      "topicIds": ["overtaking"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1013,22 +660,8 @@
       "sourceRowId": 511,
       "sourcePublishedAt": "2011-09-11T10:44:28",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "האם חובה לאותת בעת סטייה מנתיב הנסיעה ימינה או שמאלה?",
       "options": [
         "אין חובה לאותת אם הסטייה משמעותית וכל הנהגים מבחינים בה.",
@@ -1038,10 +671,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "roads-and-lanes",
-        "roundabouts"
-      ],
+      "topicIds": ["roads-and-lanes", "roundabouts"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1049,22 +679,8 @@
       "sourceRowId": 786,
       "sourcePublishedAt": "2011-09-11T10:44:34",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "למי עליך לתת זכות קדימה כשאתה פונה שמאלה בצומת שבו לא הוצב כל תמרור?",
       "options": [
         "לרכב המהיר ביותר.",
@@ -1074,9 +690,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "right-of-way"
-      ],
+      "topicIds": ["right-of-way"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1084,22 +698,8 @@
       "sourceRowId": 791,
       "sourcePublishedAt": "2011-09-11T10:44:34",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "כיצד תנהג אם נחסם נתיב נסיעתך בכביש?",
       "options": [
         "ציית לאות הניתן על ידי שוטר, אתת או תמרור.",
@@ -1109,9 +709,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "trip-planning"
-      ],
+      "topicIds": ["trip-planning"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1119,22 +717,8 @@
       "sourceRowId": 803,
       "sourcePublishedAt": "2011-09-11T10:44:34",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "כיצד יש לנהוג כאשר נחסם נתיב נסיעתך?",
       "options": [
         "יש לתת זכות קדימה לרכב הבא מנגד (ממול).",
@@ -1144,10 +728,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "right-of-way",
-        "trip-planning"
-      ],
+      "topicIds": ["right-of-way", "trip-planning"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1155,20 +736,8 @@
       "sourceRowId": 926,
       "sourcePublishedAt": "2011-09-11T10:44:37",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "1", "В"],
       "question": "באיזה אופן יש להעמיד רכב בכביש?",
       "options": [
         "אין הגבלה לאופן העמדת רכב בכביש.",
@@ -1178,9 +747,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "driving-test"
-      ],
+      "topicIds": ["driving-test"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1188,20 +755,8 @@
       "sourceRowId": 912,
       "sourcePublishedAt": "2011-09-11T10:44:37",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "1", "В"],
       "question": "מהו המרחק המרבי ממדרכה שבו מותר להעמיד רכב במקביל לשפת הכביש?",
       "options": [
         "60 סנטימטרים.",
@@ -1211,9 +766,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "driving-test"
-      ],
+      "topicIds": ["driving-test"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1221,22 +774,8 @@
       "sourceRowId": 748,
       "sourcePublishedAt": "2011-09-11T10:44:33",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "התחלת עקיפה בכביש דו-סטרי ארוך וישר. באמצע העקיפה ממש מופיע מולך רכב באותו נתיב:",
       "options": [
         "הבהב באורות לנהג שממול והשלם את העקיפה כפי שתכננת.",
@@ -1246,9 +785,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "overtaking"
-      ],
+      "topicIds": ["overtaking"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1256,22 +793,8 @@
       "sourceRowId": 219,
       "sourcePublishedAt": "2011-09-11T10:44:22",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "האם מותר לנהג לנסוע בשעת עקיפה מהר יותר מן המהירות המרבית המותרת?",
       "options": [
         "מותר, בדרך מהירה בלבד.",
@@ -1281,9 +804,7 @@
       ],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "topicIds": [
-        "overtaking"
-      ],
+      "topicIds": ["overtaking"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1291,14 +812,8 @@
       "sourceRowId": 330,
       "sourcePublishedAt": "2011-09-11T10:44:24",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "B"],
+      "sourceLicenseClasses": ["C1", "В"],
       "question": "\"נוהג חדש\" שטרם מלאו לו 21 שנים אינו רשאי להסיע ברכב:",
       "options": [
         "יותר מארבעה נוסעים מלבדו, אלא אם כן יושב לצדו מלווה.",
@@ -1308,9 +823,7 @@
       ],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "topicIds": [
-        "licensing-and-points"
-      ],
+      "topicIds": ["licensing-and-points"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1318,14 +831,8 @@
       "sourceRowId": 1108,
       "sourcePublishedAt": "2011-09-11T10:44:41",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "B"],
+      "sourceLicenseClasses": ["C1", "В"],
       "question": "האם מלווה של \"נוהג חדש\" רשאי להיות תחת השפעת אלכוהול?",
       "options": [
         "רשאי. מלווה של נוהג חדש אינו נוהג ברכב ולכן אין חשיבות לשאלת שכרותו.",
@@ -1335,9 +842,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "licensing-and-points"
-      ],
+      "topicIds": ["licensing-and-points"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1345,22 +850,8 @@
       "sourceRowId": 1298,
       "sourcePublishedAt": "2011-09-11T10:44:45",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מתי, על פי חוק, חייב נהג \"להאט את מהירות הרכב\"?",
       "options": [
         "כשהוא עייף.",
@@ -1370,9 +861,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "signs-and-speed"
-      ],
+      "topicIds": ["signs-and-speed"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1380,22 +869,8 @@
       "sourceRowId": 129,
       "sourcePublishedAt": "2011-09-11T10:44:20",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "בכביש דו-סטרי החסום על ידי מבנה או עמוד, כיצד יש לעקוף את המכשול?",
       "options": [
         "אין חשיבות לצד, העיקר לעקוף את המכשול.",
@@ -1405,9 +880,7 @@
       ],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "topicIds": [
-        "trip-planning"
-      ],
+      "topicIds": ["trip-planning"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1415,22 +888,8 @@
       "sourceRowId": 1247,
       "sourcePublishedAt": "2011-09-11T10:44:44",
       "category": "תמרורים",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מטרתו של תמרור מודיעין:",
       "options": [
         "לספק מידע על מקומות ועל כיוונים.",
@@ -1440,9 +899,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "signs-and-speed"
-      ],
+      "topicIds": ["signs-and-speed"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1450,22 +907,8 @@
       "sourceRowId": 1542,
       "sourcePublishedAt": "2011-09-11T10:44:50",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "המהירות הסבירה בדרך מהירה:",
       "options": [
         "היא מהירות שאינה נמוכה מן המהירות המרבית המותרת בכל מקרה.",
@@ -1475,9 +918,7 @@
       ],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "topicIds": [
-        "signs-and-speed"
-      ],
+      "topicIds": ["signs-and-speed"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1485,22 +926,8 @@
       "sourceRowId": 1003,
       "sourcePublishedAt": "2011-09-11T10:44:39",
       "category": "תמרורים",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "תמרור שצורתו עיגול בדרך כלל הוא:",
       "options": [
         "תמרור מודיעין.",
@@ -1510,9 +937,7 @@
       ],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "topicIds": [
-        "signs-and-speed"
-      ],
+      "topicIds": ["signs-and-speed"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1520,22 +945,8 @@
       "sourceRowId": 1286,
       "sourcePublishedAt": "2011-09-11T10:44:44",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "כשרכב עוקף אותך ולפתע בא רכב מולך, אתה חייב:",
       "options": [
         "לצפור לאות אזהרה כדי להזהיר את הנהג העוקף.",
@@ -1545,9 +956,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "overtaking"
-      ],
+      "topicIds": ["overtaking"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1555,22 +964,8 @@
       "sourceRowId": 1754,
       "sourcePublishedAt": "2011-09-11T10:44:54",
       "category": "תמרורים",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "צורתם של תמרורי אזהרה היא:",
       "options": [
         "בדרך כלל משולש שקודקודו כלפי מטה.",
@@ -1580,9 +975,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "signs-and-speed"
-      ],
+      "topicIds": ["signs-and-speed"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1590,22 +983,8 @@
       "sourceRowId": 1692,
       "sourcePublishedAt": "2011-09-11T10:44:53",
       "category": "תמרורים",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "כשהתמרורים או הסימון שעל הכביש בצבע כתום:",
       "options": [
         "אלה תמרורים זמניים בדרך שאינה עירונית בלבד, שתוקפם מוגבל לשלושה חודשים.",
@@ -1615,9 +994,7 @@
       ],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "topicIds": [
-        "signs-and-speed"
-      ],
+      "topicIds": ["signs-and-speed"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1625,22 +1002,8 @@
       "sourceRowId": 882,
       "sourcePublishedAt": "2011-09-11T10:44:36",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "כיצד נימנע ממצבי סכנה בעת התחלת הנסיעה בהשתלבות בתנועה?",
       "options": [
         "ניכנס במהירות אל הנתיב שבו זורמת התנועה, וכך נמנע מצבי סכנה.",
@@ -1650,9 +1013,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "trip-planning"
-      ],
+      "topicIds": ["trip-planning"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1660,22 +1021,8 @@
       "sourceRowId": 824,
       "sourcePublishedAt": "2011-09-11T10:44:35",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מהו סדר הפעולות שעל הנוהג ברכב לעשות לפני האטה?",
       "options": [
         "להפנות את הראש לאחור, ללחוץ על דוושת הבלם להאטה ולהעיף מבט במראות לסיום.",
@@ -1685,9 +1032,7 @@
       ],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "topicIds": [
-        "driving-test"
-      ],
+      "topicIds": ["driving-test"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1695,16 +1040,8 @@
       "sourceRowId": 318,
       "sourcePublishedAt": "2011-09-11T10:44:24",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "D",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "D",
-        "В"
-      ],
+      "licenseClasses": ["C1", "D", "B"],
+      "sourceLicenseClasses": ["C1", "D", "В"],
       "question": "מהי הפעולה שעל הנהג לבצע לפני הזזת ידית תיבת ההילוכים האוטומטית לצורך התחלת הנסיעה?",
       "options": [
         "שחרור הלחיצה מדוושת המצמד, כדי לחבר בין המנוע לבין תיבת ההילוכים.",
@@ -1714,9 +1051,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "driving-test"
-      ],
+      "topicIds": ["driving-test"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1724,16 +1059,8 @@
       "sourceRowId": 572,
       "sourcePublishedAt": "2011-09-11T10:44:30",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "D",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "D",
-        "В"
-      ],
+      "licenseClasses": ["C1", "D", "B"],
+      "sourceLicenseClasses": ["C1", "D", "В"],
       "question": "מהי הפעולה שעל הנהג לבצע לפני שחרור בלם עזר (חנייה) ברכב בעל תיבת הילוכים אוטומטית לצורך התחלת נסיעה?",
       "options": [
         "לחיצה על דוושת בלם הרגל, כדי למנוע את תזוזת הרכב.",
@@ -1743,9 +1070,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "driving-test"
-      ],
+      "topicIds": ["driving-test"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1753,22 +1078,8 @@
       "sourceRowId": 366,
       "sourcePublishedAt": "2011-09-11T10:44:25",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "כאשר אתה נוסע בדרך צרה במורד, עליך לתת זכות קדימה לרכב עולה במקרים האלה:",
       "options": [
         "רק אם משקל הרכב העולה גדול מארבע טונות.",
@@ -1778,9 +1089,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "right-of-way"
-      ],
+      "topicIds": ["right-of-way"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1788,22 +1097,8 @@
       "sourceRowId": 1362,
       "sourcePublishedAt": "2011-09-11T10:44:46",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "על פי החוק כשאתה עומד לפני צומת באור אדום ורכב ביטחון צופר בסירנה ומפעיל אורות מהבהבים מאחוריך:",
       "options": [
         "אתה חייב לעלות על המדרכה כדי לפנות דרך לרכב הביטחון.",
@@ -1813,9 +1108,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "priority-hierarchy"
-      ],
+      "topicIds": ["priority-hierarchy"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1823,22 +1116,8 @@
       "sourceRowId": 1418,
       "sourcePublishedAt": "2011-09-11T10:44:47",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "באילו מקרים ניסע ברכב נוסעים פרטי שלא בנתיב הימני?",
       "options": [
         "כשרכב אחר הנמצא מצד שמאל של הכביש מאותת על כוונתו להתחיל בנסיעה.",
@@ -1848,9 +1127,7 @@
       ],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "topicIds": [
-        "roads-and-lanes"
-      ],
+      "topicIds": ["roads-and-lanes"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1858,22 +1135,8 @@
       "sourceRowId": 1703,
       "sourcePublishedAt": "2011-09-11T10:44:53",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מהו נתיב?",
       "options": [
         "כביש שיועד לתנועת רכב מנועי בלבד.",
@@ -1883,10 +1146,7 @@
       ],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "topicIds": [
-        "learning-foundations",
-        "roads-and-lanes"
-      ],
+      "topicIds": ["learning-foundations", "roads-and-lanes"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1894,22 +1154,8 @@
       "sourceRowId": 70,
       "sourcePublishedAt": "2011-09-11T10:44:19",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מה הן הסכנות של סטייה פתאומית שלך מנתיב לנתיב בכביש?",
       "options": [
         "שהסטייה נמשכת זמן רב.",
@@ -1919,9 +1165,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "roads-and-lanes"
-      ],
+      "topicIds": ["roads-and-lanes"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1929,22 +1173,8 @@
       "sourceRowId": 1620,
       "sourcePublishedAt": "2011-09-11T10:44:51",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מה נחוץ למעבר בין נתיבים ללא הפרעה או סיכון?",
       "options": [
         "יש רק לוודא שניתן אות במחוון הכיוון בעת המעבר.",
@@ -1954,11 +1184,7 @@
       ],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "topicIds": [
-        "roads-and-lanes",
-        "roundabouts",
-        "trip-planning"
-      ],
+      "topicIds": ["roads-and-lanes", "roundabouts", "trip-planning"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -1966,22 +1192,8 @@
       "sourceRowId": 1560,
       "sourcePublishedAt": "2011-09-11T10:44:50",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מהי הדרך הנכונה לעבור מנתיב לנתיב?",
       "options": [
         "המעבר חייב להיעשות באלכסון קצר ביותר ובזמן קצר ככל האפשר.",
@@ -1991,11 +1203,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "roads-and-lanes",
-        "roundabouts",
-        "trip-planning"
-      ],
+      "topicIds": ["roads-and-lanes", "roundabouts", "trip-planning"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2003,22 +1211,8 @@
       "sourceRowId": 823,
       "sourcePublishedAt": "2011-09-11T10:44:35",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מהו סדר הפעולות לעצירה או לחנייה?",
       "options": [
         "לבדוק אם מותר, לבצע בדיקה היקפית ולהאט בזהירות.",
@@ -2028,9 +1222,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "driving-test"
-      ],
+      "topicIds": ["driving-test"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2038,22 +1230,8 @@
       "sourceRowId": 63,
       "sourcePublishedAt": "2011-09-11T10:44:19",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מתי חייבים לאותת כשמתכוונים לסטות לצורך עקיפה?",
       "options": [
         "אין חובה לאותת כשמתכוונים לסטות, אם אין רכב אחר בסביבה.",
@@ -2063,9 +1241,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "overtaking"
-      ],
+      "topicIds": ["overtaking"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2073,22 +1249,8 @@
       "sourceRowId": 1276,
       "sourcePublishedAt": "2011-09-11T10:44:44",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "כדי להשלים עקיפה בבטיחות, על העוקף:",
       "options": [
         "לעקוף תמיד במהירות נמוכה ובסבלנות.",
@@ -2098,9 +1260,7 @@
       ],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "topicIds": [
-        "overtaking"
-      ],
+      "topicIds": ["overtaking"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2108,22 +1268,8 @@
       "sourceRowId": 1175,
       "sourcePublishedAt": "2011-09-11T10:44:42",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "איך משפיעה התנהגותו של הולך הרגל על הנהג באזור הצומת?",
       "options": [
         "על הנהג לצפות מראש אפשרות של התנהגות מסוכנת של הולך הרגל באזור הצומת.",
@@ -2133,9 +1279,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "roundabouts"
-      ],
+      "topicIds": ["roundabouts"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2143,22 +1287,8 @@
       "sourceRowId": 1652,
       "sourcePublishedAt": "2011-09-11T10:44:52",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מהי הפעולה הראשונה שמבצעים נהגים בסדר הפעולות לחציית צמתים?",
       "options": [
         "מסתכלים מעבר לצומת, כדי לזהות את נתיבי הכניסה לכיוונים הנגדיים ואת התנועה בהם.",
@@ -2168,11 +1298,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "roundabouts",
-        "trip-planning",
-        "driving-test"
-      ],
+      "topicIds": ["roundabouts", "trip-planning", "driving-test"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2180,22 +1306,8 @@
       "sourceRowId": 97,
       "sourcePublishedAt": "2011-09-11T10:44:20",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מהי הסכנה הצפויה לנוהג ברכב הפונה ימינה, במהלך ביצוע הפנייה?",
       "options": [
         "אין כל בעיה, כי הולכי רגל ונוהגים ברכב דו-גלגלי לא ייכנסו מימין לרכב הפונה ימינה עקב מרווח גדול.",
@@ -2205,9 +1317,7 @@
       ],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "topicIds": [
-        "right-of-way"
-      ],
+      "topicIds": ["right-of-way"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2215,12 +1325,8 @@
       "sourceRowId": 1258,
       "sourcePublishedAt": "2011-09-11T10:44:44",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "В"
-      ],
+      "licenseClasses": ["B"],
+      "sourceLicenseClasses": ["В"],
       "question": "באיזה מצב מותר לרכב נוסעים פרטי לפנות ימינה שלא מהנתיב הימני?",
       "options": [
         "בכביש שבו מסומן יותר מנתיב אחד לפנייה ימינה.",
@@ -2230,10 +1336,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "roads-and-lanes",
-        "right-of-way"
-      ],
+      "topicIds": ["roads-and-lanes", "right-of-way"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2241,22 +1344,8 @@
       "sourceRowId": 267,
       "sourcePublishedAt": "2011-09-11T10:44:23",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "הגעת לצומת שאינו פנוי:",
       "options": [
         "אם ברמזור דולק אור ירוק, מותר לך להיכנס גם לצומת שאינו פנוי.",
@@ -2266,9 +1355,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "roundabouts"
-      ],
+      "topicIds": ["roundabouts"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2276,22 +1363,8 @@
       "sourceRowId": 656,
       "sourcePublishedAt": "2011-09-11T10:44:31",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "שוטר רשם לך דוח על \"סטייה מנתיב\" ובכביש אין כל סימון נתיבים. האם צדק?",
       "options": [
         "לא. אי אפשר \"לסטות\" מנתיב שאינו מסומן.",
@@ -2301,9 +1374,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "roads-and-lanes"
-      ],
+      "topicIds": ["roads-and-lanes"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2311,22 +1382,8 @@
       "sourceRowId": 1230,
       "sourcePublishedAt": "2011-09-11T10:44:43",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מתי מותר לפנות פנייה שמאלה מכביש חד-סטרי, שלא מהנתיב השמאלי?",
       "options": [
         "הפנייה אסורה.",
@@ -2336,10 +1393,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "roads-and-lanes",
-        "right-of-way"
-      ],
+      "topicIds": ["roads-and-lanes", "right-of-way"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2347,22 +1401,8 @@
       "sourceRowId": 378,
       "sourcePublishedAt": "2011-09-11T10:44:25",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "האם מותר לנוהג ברכב לחצות קו הפרדה רצוף לצורך פניית פרסה?",
       "options": [
         "אסור.",
@@ -2372,9 +1412,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "right-of-way"
-      ],
+      "topicIds": ["right-of-way"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2382,22 +1420,8 @@
       "sourceRowId": 1202,
       "sourcePublishedAt": "2011-09-11T10:44:43",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מהי \"פניית פרסה\"?",
       "options": [
         "פנייה שכתוצאה ממנה נהג רכב חוזר על עקבותיו לכיוון שממנו הגיע (מסתובב ונוסע בכיוון הנגדי).",
@@ -2407,9 +1431,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "right-of-way"
-      ],
+      "topicIds": ["right-of-way"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2417,22 +1439,8 @@
       "sourceRowId": 241,
       "sourcePublishedAt": "2011-09-11T10:44:23",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מה חייב הנהג לעשות תמיד לפני פניית פרסה שמאלה?",
       "options": [
         "לוודא שהפנייה מותרת ושאין בה הפרעה לתנועה.",
@@ -2442,9 +1450,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "right-of-way"
-      ],
+      "topicIds": ["right-of-way"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2452,20 +1458,8 @@
       "sourceRowId": 870,
       "sourcePublishedAt": "2011-09-11T10:44:36",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "1", "В"],
       "question": "מהי הסכנה העיקרית בעת נסיעה לאחור?",
       "options": [
         "הימצאות עוברי דרך בתחום \"השטחים המתים\" ופגיעה בהם.",
@@ -2475,9 +1469,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "driving-test"
-      ],
+      "topicIds": ["driving-test"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2485,20 +1477,8 @@
       "sourceRowId": 641,
       "sourcePublishedAt": "2011-09-11T10:44:31",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "1", "В"],
       "question": "מהו \"שטח מת\"?",
       "options": [
         "השטח מסביב לרכב הנראה לנהג רק במראות.",
@@ -2508,10 +1488,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "learning-foundations",
-        "driving-test"
-      ],
+      "topicIds": ["learning-foundations", "driving-test"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2519,20 +1496,8 @@
       "sourceRowId": 344,
       "sourcePublishedAt": "2011-09-11T10:44:25",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "1", "В"],
       "question": "מהי הדרך המיטבית לצמצום הסכנות בעת נסיעה לאחור?",
       "options": [
         "הורדת כל הנוסעים מהרכב בעת הנסיעה לאחור.",
@@ -2542,9 +1507,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "driving-test"
-      ],
+      "topicIds": ["driving-test"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2552,22 +1515,8 @@
       "sourceRowId": 149,
       "sourcePublishedAt": "2011-09-11T10:44:21",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מהי מהירות סבירה בעת נהיגה?",
       "options": [
         "כל מהירות שבה שולט הנהג ברכבו שליטה מלאה.",
@@ -2577,10 +1526,7 @@
       ],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "topicIds": [
-        "learning-foundations",
-        "signs-and-speed"
-      ],
+      "topicIds": ["learning-foundations", "signs-and-speed"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2588,22 +1534,8 @@
       "sourceRowId": 1539,
       "sourcePublishedAt": "2011-09-11T10:44:50",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מתי המהירות הסבירה תהיה גבוהה יותר מן המהירות המרבית המותרת?",
       "options": [
         "בעקיפת רכב הנוסע במהירות המרבית המותרת.",
@@ -2613,9 +1545,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "signs-and-speed"
-      ],
+      "topicIds": ["signs-and-speed"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2623,20 +1553,8 @@
       "sourceRowId": 1718,
       "sourcePublishedAt": "2011-09-11T10:44:54",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "В"],
       "question": "מה הן הסכנות בנהיגה במהירויות גבוהות?",
       "options": [
         "בלאי מהיר של מנוע הרכב.",
@@ -2646,9 +1564,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "signs-and-speed"
-      ],
+      "topicIds": ["signs-and-speed"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2656,22 +1572,8 @@
       "sourceRowId": 975,
       "sourcePublishedAt": "2011-09-11T10:44:38",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מהו היתרון שיש לנהג בנסיעה במהירות נמוכה במצבים מסוכנים?",
       "options": [
         "מרחק התגובה יהיה ארוך יותר ויספיק לעצירה.",
@@ -2681,9 +1583,7 @@
       ],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "topicIds": [
-        "signs-and-speed"
-      ],
+      "topicIds": ["signs-and-speed"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2691,22 +1591,8 @@
       "sourceRowId": 1052,
       "sourcePublishedAt": "2011-09-11T10:44:40",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מהי השפעתה של מהירות גבוהה בעת תאונת דרכים?",
       "options": [
         "הדבר מאריך את זמן- התגובה ומשפר בכך את הבטיחות.",
@@ -2716,9 +1602,7 @@
       ],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "topicIds": [
-        "signs-and-speed"
-      ],
+      "topicIds": ["signs-and-speed"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2726,22 +1610,8 @@
       "sourceRowId": 383,
       "sourcePublishedAt": "2011-09-11T10:44:25",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "בפני איזו בעיה עומד נוהג ברכב הנוהג במהירות גבוהה?",
       "options": [
         "הזמן העומד לרשות הנהג להגיב נכון על אירועים בדרך מצומצם מאוד.",
@@ -2751,9 +1621,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "signs-and-speed"
-      ],
+      "topicIds": ["signs-and-speed"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2761,22 +1629,8 @@
       "sourceRowId": 869,
       "sourcePublishedAt": "2011-09-11T10:44:36",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מה הקשר בין מהירות הנסיעה למרחק העצירה של הרכב?",
       "options": [
         "אין קשר. מרחק העצירה קבוע ואינו תלוי במהירות הרכב.",
@@ -2786,9 +1640,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "signs-and-speed"
-      ],
+      "topicIds": ["signs-and-speed"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2796,22 +1648,8 @@
       "sourceRowId": 1788,
       "sourcePublishedAt": "2011-09-11T10:44:55",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מהו \"מרחק העצירה\" של רכב?",
       "options": [
         "המרחק שעובר הרכב מרגע שנהג הרכב מבחין בסכנה שלפניו ועד לעצירתו של הרכב.",
@@ -2821,9 +1659,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "learning-foundations"
-      ],
+      "topicIds": ["learning-foundations"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2831,22 +1667,8 @@
       "sourceRowId": 86,
       "sourcePublishedAt": "2011-09-11T10:44:19",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מהי ההשפעה של שמירת רווח על שדה הראייה של הנהג?",
       "options": [
         "הרווח משפיע על שדה הראייה בנהיגה במצב של גודש תנועה בלבד (\"פקקי תנועה\").",
@@ -2856,9 +1678,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "learning-foundations"
-      ],
+      "topicIds": ["learning-foundations"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2866,22 +1686,8 @@
       "sourceRowId": 695,
       "sourcePublishedAt": "2011-09-11T10:44:32",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מהי השיטה הבדוקה והמומלצת לשמירת רווח מתאים מהרכב הנוסע לפנינו?",
       "options": [
         "אומדן מרחק סביר בינינו ובין הרכב הנוסע לפנינו.",
@@ -2891,9 +1697,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "learning-foundations"
-      ],
+      "topicIds": ["learning-foundations"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2901,22 +1705,8 @@
       "sourceRowId": 389,
       "sourcePublishedAt": "2011-09-11T10:44:26",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מתי מותר לעקוף יותר מרכב אחד בעקיפה אחת?",
       "options": [
         "אף פעם: החוק מחייב לעקוף רכב אחד בכל עקיפה ולחזור שוב לנתיב הימני.",
@@ -2926,9 +1716,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "overtaking"
-      ],
+      "topicIds": ["overtaking"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2936,22 +1724,8 @@
       "sourceRowId": 943,
       "sourcePublishedAt": "2011-09-11T10:44:37",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "אסור להתחיל בעקיפה בלי לבדוק:",
       "options": [
         "האם קיים שול בצד הכביש?",
@@ -2961,9 +1735,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "overtaking"
-      ],
+      "topicIds": ["overtaking"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -2971,22 +1743,8 @@
       "sourceRowId": 1624,
       "sourcePublishedAt": "2011-09-11T10:44:52",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "אתה נוהג בכביש חד-סטרי דו-נתיבי ומנסה לעקוף רכב הנוסע לפניך. הסכנה העיקרית בסטייה שמאלה היא:",
       "options": [
         "חציית קו הפרדה רצוף.",
@@ -2996,9 +1754,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "overtaking"
-      ],
+      "topicIds": ["overtaking"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3006,22 +1762,8 @@
       "sourceRowId": 507,
       "sourcePublishedAt": "2011-09-11T10:44:28",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מהן הפעולות המקדימות שנוהג ברכב חייב לבצע בעת העלייה משול הדרך אל הכביש?",
       "options": [
         "הטיית הרכב למצב אלכסוני והפעלת אורות המצוקה ברכב.",
@@ -3031,9 +1773,7 @@
       ],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "topicIds": [
-        "trip-planning"
-      ],
+      "topicIds": ["trip-planning"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3041,22 +1781,8 @@
       "sourceRowId": 1385,
       "sourcePublishedAt": "2011-09-11T10:44:46",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מהו האופן הנכון של בדיקת הדרך בעת השתלבות בנסיעה, עם התחלת הנסיעה?",
       "options": [
         "להסתכל לפנים, רחוק ככל האפשר.",
@@ -3066,9 +1792,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "trip-planning"
-      ],
+      "topicIds": ["trip-planning"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3076,20 +1800,8 @@
       "sourceRowId": 474,
       "sourcePublishedAt": "2011-09-11T10:44:27",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "1", "В"],
       "question": "מהי חשיבותה של אחיזת הגה נכונה לשליטה על הרכב וליציבותו?",
       "options": [
         "אחיזת הגה נכונה חשובה רק בכלי רכב גדולים וכבדים, כמו משאיות ואוטובוסים.",
@@ -3099,9 +1811,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "driving-test"
-      ],
+      "topicIds": ["driving-test"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3109,22 +1819,8 @@
       "sourceRowId": 230,
       "sourcePublishedAt": "2011-09-11T10:44:22",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "נהג מתקרב למעבר חצייה המסומן בכביש. במעבר אין הולכי רגל. לכן על הנהג:",
       "options": [
         "להאט ולוודא שאין הולכי רגל קרובים לחצייה.",
@@ -3134,9 +1830,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "roundabouts"
-      ],
+      "topicIds": ["roundabouts"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3144,22 +1838,8 @@
       "sourceRowId": 155,
       "sourcePublishedAt": "2011-09-11T10:44:21",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "נוהג ברכב פונה ימינה והולכי רגל חוצים את נתיב נסיעתו במעבר החצייה. מה עליו לעשות?",
       "options": [
         "יצפור להולכי הרגל וימשיך בנסיעתו אל תוך הצומת.",
@@ -3169,10 +1849,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "roundabouts",
-        "driving-test"
-      ],
+      "topicIds": ["roundabouts", "driving-test"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3180,22 +1857,8 @@
       "sourceRowId": 734,
       "sourcePublishedAt": "2011-09-11T10:44:33",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מהו המשפט הנכון?",
       "options": [
         "נהגים המפעילים איתות תמיד ממתינים לפני שהם פונים לכיוון שאליו הם מאותתים.",
@@ -3205,10 +1868,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "learning-foundations",
-        "driving-test"
-      ],
+      "topicIds": ["learning-foundations", "driving-test"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3216,18 +1876,8 @@
       "sourceRowId": 657,
       "sourcePublishedAt": "2011-09-11T10:44:31",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "В"],
       "question": "החנית את הרכב ליד המדרכה בימין הכביש בדרך עירונית:",
       "options": [
         "עליך לוודא לפני שתצא מהרכב שיציאתך אינה מפריעה או מסכנת איש מעוברי הדרך.",
@@ -3237,9 +1887,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "driving-test"
-      ],
+      "topicIds": ["driving-test"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3247,14 +1895,8 @@
       "sourceRowId": 340,
       "sourcePublishedAt": "2011-09-11T10:44:25",
       "category": "הכרת הרכב",
-      "licenseClasses": [
-        "C1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "B"],
+      "sourceLicenseClasses": ["C1", "В"],
       "question": "מהו תפקיד בלם עזר (חנייה) ברכב?",
       "options": [
         "להבטיח שהרכב לא יזוז ממקומו ולא יתדרדר בעת חנייה.",
@@ -3264,9 +1906,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "driving-test"
-      ],
+      "topicIds": ["driving-test"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3274,18 +1914,8 @@
       "sourceRowId": 295,
       "sourcePublishedAt": "2011-09-11T10:44:24",
       "category": "הכרת הרכב",
-      "licenseClasses": [
-        "C1",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "A", "1", "В"],
       "question": "מהי הסכנה בשימוש בנווטן (ג'י-פי-אס - GPS) בעת נהיגה?",
       "options": [
         "הסחת דעתו של הנהג מן הדרך.",
@@ -3295,9 +1925,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "learning-foundations"
-      ],
+      "topicIds": ["learning-foundations"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3305,18 +1933,8 @@
       "sourceRowId": 367,
       "sourcePublishedAt": "2011-09-11T10:44:25",
       "category": "הכרת הרכב",
-      "licenseClasses": [
-        "C1",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "A", "1", "В"],
       "question": "מהו נווטן (ג'י-פי-אס - GPS) ברכב?",
       "options": [
         "זו תת-מערכת בתוך מערכת ההיגוי המגבירה את יעילות ההיגוי.",
@@ -3326,9 +1944,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "trip-planning"
-      ],
+      "topicIds": ["trip-planning"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3336,22 +1952,8 @@
       "sourceRowId": 1116,
       "sourcePublishedAt": "2011-09-11T10:44:41",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "נהג המתקרב ברכבו לפסגה או למקום שבו שדה הראייה חסום:",
       "options": [
         "יפעיל את ארבעת מחווני הכיוון (פנסי מצוקה), כדי להזהיר נהגים אחרים.",
@@ -3361,9 +1963,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "trip-planning"
-      ],
+      "topicIds": ["trip-planning"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3371,20 +1971,8 @@
       "sourceRowId": 549,
       "sourcePublishedAt": "2011-09-11T10:44:29",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "В"],
       "question": "בזמן עקיפה או מעבר על פני רכב אחר:",
       "options": [
         "יש לנסוע בדיוק במהירות של הרכב הנעקף.",
@@ -3394,9 +1982,7 @@
       ],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "topicIds": [
-        "overtaking"
-      ],
+      "topicIds": ["overtaking"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3404,24 +1990,13 @@
       "sourceRowId": 800,
       "sourcePublishedAt": "2011-09-11T10:44:34",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "В"
-      ],
+      "licenseClasses": ["B"],
+      "sourceLicenseClasses": ["В"],
       "question": "מהי המהירות המרבית המותרת לרכב נוסעים פרטי בדרך עירונית (אם אין תמרור המורה אחרת)?",
-      "options": [
-        "60 קמ\"ש.",
-        "70 קמ\"ש.",
-        "50 קמ\"ש.",
-        "40 קמ\"ש."
-      ],
+      "options": ["60 קמ\"ש.", "70 קמ\"ש.", "50 קמ\"ש.", "40 קמ\"ש."],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "topicIds": [
-        "signs-and-speed"
-      ],
+      "topicIds": ["signs-and-speed"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3429,22 +2004,8 @@
       "sourceRowId": 760,
       "sourcePublishedAt": "2011-09-11T10:44:33",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "אתה נוהג בכביש דו-סטרי ולפניך נוסע רכב המאותת במחוון הכיוון השמאלי שלו:",
       "options": [
         "מותר לעקוף אותו אם צפרת כדי להזהירו. האיתות שלו אינו מחייב אותך.",
@@ -3454,9 +2015,7 @@
       ],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "topicIds": [
-        "trip-planning"
-      ],
+      "topicIds": ["trip-planning"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3464,22 +2023,8 @@
       "sourceRowId": 233,
       "sourcePublishedAt": "2011-09-11T10:44:22",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מהו הפתרון היעיל לבעיית העייפות של הנהג?",
       "options": [
         "להפעיל מגבים ולפתור תשבץ היגיון.",
@@ -3489,9 +2034,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "learning-foundations"
-      ],
+      "topicIds": ["learning-foundations"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3499,22 +2042,8 @@
       "sourceRowId": 513,
       "sourcePublishedAt": "2011-09-11T10:44:28",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "מה משפיע על המרחק הדרוש לשם עקיפה?",
       "options": [
         "המרחק הדרוש תלוי רק במהירות המרבית המותרת באותו הקטע.",
@@ -3524,9 +2053,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "overtaking"
-      ],
+      "topicIds": ["overtaking"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3534,22 +2061,8 @@
       "sourceRowId": 653,
       "sourcePublishedAt": "2011-09-11T10:44:31",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "האם מותר לעלות על מדרכה ולנסוע בה כדי לעקוף מכשול בדרך?",
       "options": [
         "לא. אין לנסוע על המדרכה כדי לעקוף מכשול.",
@@ -3559,9 +2072,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "overtaking"
-      ],
+      "topicIds": ["overtaking"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3569,22 +2080,8 @@
       "sourceRowId": 1630,
       "sourcePublishedAt": "2011-09-11T10:44:52",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "כאשר אתה יוצא לכביש מדרך עפר:",
       "options": [
         "תן זכות קדימה לרכב שבכביש רק כאשר הכביש הוא דו-סטרי.",
@@ -3594,9 +2091,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "right-of-way"
-      ],
+      "topicIds": ["right-of-way"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3604,22 +2099,8 @@
       "sourceRowId": 281,
       "sourcePublishedAt": "2011-09-11T10:44:23",
       "category": "תמרורים",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "כאשר על הכביש מסומן משמאלך קו הפרדה רצוף ולשמאלו קו מרוסק:",
       "options": [
         "אסור לך לעבור את הקווים, אבל לרכב שממול מותר - כשהדרך פנויה.",
@@ -3629,9 +2110,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "roads-and-lanes"
-      ],
+      "topicIds": ["roads-and-lanes"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3639,22 +2118,8 @@
       "sourceRowId": 1653,
       "sourcePublishedAt": "2011-09-11T10:44:52",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "אם ברישיון הנהיגה רשומות הגבלות:",
       "options": [
         "הן נוגעות לתקן האופנוע ולא לאופן הרכיבה עליו.",
@@ -3664,9 +2129,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "licensing-and-points"
-      ],
+      "topicIds": ["licensing-and-points"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3674,22 +2137,8 @@
       "sourceRowId": 1729,
       "sourcePublishedAt": "2011-09-11T10:44:54",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "בצומת ללא תמרור צריך לתת זכות קדימה:",
       "options": [
         "לרכב הבא משמאל.",
@@ -3699,9 +2148,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "right-of-way"
-      ],
+      "topicIds": ["right-of-way"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3709,22 +2156,8 @@
       "sourceRowId": 1005,
       "sourcePublishedAt": "2011-09-11T10:44:39",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "ברמזור דולק אור ירוק אך הצומת חסום בכלי רכב:",
       "options": [
         "יש להיכנס לצומת כפי שמורה האור הירוק.",
@@ -3734,9 +2167,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "roundabouts"
-      ],
+      "topicIds": ["roundabouts"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3744,22 +2175,8 @@
       "sourceRowId": 206,
       "sourcePublishedAt": "2011-09-11T10:44:22",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "בכביש צר, כששני כלי רכב הבאים מכיוונים נגדיים אינם יכולים לעבור בעת ובעונה אחת:",
       "options": [
         "יש זכות קדימה לרכב המהיר.",
@@ -3769,9 +2186,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "right-of-way"
-      ],
+      "topicIds": ["right-of-way"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3779,22 +2194,8 @@
       "sourceRowId": 380,
       "sourcePublishedAt": "2011-09-11T10:44:25",
       "category": "תמרורים",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "תמרור \"עצור\" המוצב בצדו הימני של כביש חד-סטרי בעל שני נתיבים, פירושו:",
       "options": [
         "עצור רק אם אתה נמצא בנתיב השמאלי.",
@@ -3804,9 +2205,7 @@
       ],
       "correctOptionIndex": 2,
       "imageUrls": [],
-      "topicIds": [
-        "priority-hierarchy"
-      ],
+      "topicIds": ["priority-hierarchy"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3814,22 +2213,8 @@
       "sourceRowId": 537,
       "sourcePublishedAt": "2011-09-11T10:44:29",
       "category": "תמרורים",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "האם תמרור נייד שבידי חבר משמרות הזהירות בדרכים (הזה\"ב) מחייב ציות של הנהג בכביש?",
       "options": [
         "לא, כי מידותיו קטנות ממידותיהם של התמרורים הרגילים.",
@@ -3839,9 +2224,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "priority-hierarchy"
-      ],
+      "topicIds": ["priority-hierarchy"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3849,22 +2232,8 @@
       "sourceRowId": 239,
       "sourcePublishedAt": "2011-09-11T10:44:23",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "נהג רכב היוצא מתחנת דלק חייב לתת זכות קדימה:",
       "options": [
         "רק לרכב הנוסע במהירות גבוהה.",
@@ -3874,9 +2243,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "right-of-way"
-      ],
+      "topicIds": ["right-of-way"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3884,14 +2251,8 @@
       "sourceRowId": 26,
       "sourcePublishedAt": "2011-09-11T10:44:18",
       "category": "בטיחות",
-      "licenseClasses": [
-        "C1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "B"],
+      "sourceLicenseClasses": ["C1", "В"],
       "question": "מהי הדרך הנכונה לכוונון משענת הראש ברכב?",
       "options": [
         "לייצב אותה במצב הנמוך ביותר האפשרי.",
@@ -3901,9 +2262,7 @@
       ],
       "correctOptionIndex": 1,
       "imageUrls": [],
-      "topicIds": [
-        "learning-foundations"
-      ],
+      "topicIds": ["learning-foundations"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3911,22 +2270,8 @@
       "sourceRowId": 128,
       "sourcePublishedAt": "2011-09-11T10:44:20",
       "category": "תמרורים",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "האם סימון על גבי הכביש שנעשה על פי החוק נחשב לתמרור?",
       "options": [
         "רק אם צבעו לבן.",
@@ -3936,9 +2281,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "priority-hierarchy"
-      ],
+      "topicIds": ["priority-hierarchy"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3946,22 +2289,8 @@
       "sourceRowId": 462,
       "sourcePublishedAt": "2011-09-11T10:44:27",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "אתה נוסע בכביש דו-סטרי ועל הכביש מסומן \"אי תנועה\". עליך לעבור על פניו:",
       "options": [
         "תמיד מהצד שהתנועה בו רבה יותר.",
@@ -3971,9 +2300,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "roads-and-lanes"
-      ],
+      "topicIds": ["roads-and-lanes"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -3981,22 +2308,8 @@
       "sourceRowId": 915,
       "sourcePublishedAt": "2011-09-11T10:44:37",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "כשיש תמרור האוסר פנייה שמאלה בצומת:",
       "options": [
         "מותר לפנות פניית פרסה שמאלה, רק אם מסומן בנתיב חץ המכוון ימינה.",
@@ -4006,9 +2319,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "right-of-way"
-      ],
+      "topicIds": ["right-of-way"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -4016,22 +2327,8 @@
       "sourceRowId": 459,
       "sourcePublishedAt": "2011-09-11T10:44:27",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "אסור לעקוף בדרך תלולה לפני פסגה:",
       "options": [
         "כאשר שדה הראייה מוגבל או חסום.",
@@ -4041,9 +2338,7 @@
       ],
       "correctOptionIndex": 0,
       "imageUrls": [],
-      "topicIds": [
-        "overtaking"
-      ],
+      "topicIds": ["overtaking"],
       "reviewStatus": "candidate_for_content_review"
     },
     {
@@ -4051,22 +2346,8 @@
       "sourceRowId": 846,
       "sourcePublishedAt": "2011-09-11T10:44:35",
       "category": "חוקי התנועה",
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
-      "sourceLicenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "В"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "sourceLicenseClasses": ["C1", "C", "D", "A", "1", "В"],
       "question": "לפני מעבר חצייה אסור לעקוף:",
       "options": [
         "רק אם הוצב תמרור \"מעבר חצייה לפניך\".",
@@ -4076,9 +2357,7 @@
       ],
       "correctOptionIndex": 3,
       "imageUrls": [],
-      "topicIds": [
-        "overtaking"
-      ],
+      "topicIds": ["overtaking"],
       "reviewStatus": "candidate_for_content_review"
     }
   ],
@@ -4087,28 +2366,14 @@
       "officialId": "0387",
       "sourceRowId": 1753,
       "question": "איזה תמרור מורה על מתן זכות קדימה במעגל תנועה?",
-      "options": [
-        "307",
-        "303",
-        "121",
-        "301"
-      ],
+      "options": ["307", "303", "121", "301"],
       "correctOptionIndex": 1,
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
       "imageUrls": [
         "https://www.gov.il/BlobFolder/generalpage/tq_pic_01/he/TQ_PIC_3387.jpg"
       ],
       "reviewStatus": "requires_original_image_and_content_review",
-      "topicIds": [
-        "roundabouts"
-      ]
+      "topicIds": ["roundabouts"]
     },
     {
       "officialId": "0430",
@@ -4121,21 +2386,12 @@
         "אין זכות קדימה בכיכר הקרובה."
       ],
       "correctOptionIndex": 1,
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
       "imageUrls": [
         "https://www.gov.il/BlobFolder/generalpage/tq_pic_01/he/TQ_PIC_3430.jpg"
       ],
       "reviewStatus": "requires_original_image_and_content_review",
-      "topicIds": [
-        "roundabouts"
-      ]
+      "topicIds": ["roundabouts"]
     },
     {
       "officialId": "0431",
@@ -4148,21 +2404,12 @@
         "עצור לפני הכניסה למעגל ועבור את המעגל במהירות."
       ],
       "correctOptionIndex": 1,
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
       "imageUrls": [
         "https://www.gov.il/BlobFolder/generalpage/tq_pic_01/he/TQ_PIC_3430.jpg"
       ],
       "reviewStatus": "requires_original_image_and_content_review",
-      "topicIds": [
-        "roundabouts"
-      ]
+      "topicIds": ["roundabouts"]
     },
     {
       "officialId": "0706",
@@ -4175,21 +2422,12 @@
         "לא חייב - תלוי ברצון הטוב שלך."
       ],
       "correctOptionIndex": 1,
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
       "imageUrls": [
         "https://www.gov.il/BlobFolder/generalpage/tq_pic_02/he/TQ_PIC_3706.jpg"
       ],
       "reviewStatus": "requires_original_image_and_content_review",
-      "topicIds": [
-        "roundabouts"
-      ]
+      "topicIds": ["roundabouts"]
     },
     {
       "officialId": "0721",
@@ -4202,21 +2440,12 @@
         "עליך לתת זכות קדימה לרכב האדום (1), שבמעגל התנועה."
       ],
       "correctOptionIndex": 3,
-      "licenseClasses": [
-        "C1",
-        "C",
-        "D",
-        "A",
-        "1",
-        "B"
-      ],
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
       "imageUrls": [
         "https://www.gov.il/BlobFolder/generalpage/tq_pic_02/he/TQ_PIC_3721.jpg"
       ],
       "reviewStatus": "requires_original_image_and_content_review",
-      "topicIds": [
-        "roundabouts"
-      ]
+      "topicIds": ["roundabouts"]
     }
   ],
   "excludedQuestions": [

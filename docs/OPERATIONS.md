@@ -64,7 +64,7 @@ The repository does not deploy pull request branches. Preview the exact pull req
 
    A checkout with current installed browsers can skip the Playwright installation. Repeat it when Playwright or the required browser versions change.
 3. For an image or gallery change, follow the [image maintenance procedure](../README.md#optimize-delivery-images). Run `npm run optimize:media` before the remaining steps. Commit the originals, generated files, `js/road-photo-sources.js`, image declarations, and any deletions together.
-4. After image optimization, run `npm run minify:html` when `index.html` changed. Preserve the formatting of course, lesson, and quiz HTML.
+4. After image optimization, run `npm run format`. It leaves the publisher-owned quiz pages unchanged.
 5. Update the pull request so its head contains the complete generated and formatted change. Serve that exact revision with `python3 -m http.server 8000`. Review the affected path on desktop and phone sizes. For navigation or topic changes, also block JavaScript and confirm that the baseline content and links work. Add the exact revision to the instructor approval record.
 6. Run the release checks from the repository root:
 

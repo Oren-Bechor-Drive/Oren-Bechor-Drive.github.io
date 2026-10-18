@@ -41,7 +41,9 @@ test("homepage FAQ answers course questions and current availability with native
       "course/",
     );
     assert.match(
-      faq.querySelector(".faq-item:last-child").textContent,
+      faq
+        .querySelector(".faq-item:last-child")
+        .textContent.replace(/\s+/g, " "),
       /מועד פתיחה עדיין לא פורסם/,
     );
 
@@ -60,7 +62,7 @@ test("homepage FAQ answers course questions and current availability with native
       /ממלאי מקום|ללא ציון|אינן נשמרות|תשלום|חשבון|JavaScript/,
     );
     assert.match(
-      faq.querySelector(".faq-availability").textContent,
+      faq.querySelector(".faq-availability").textContent.replace(/\s+/g, " "),
       /הסרטונים וההרשמה לקורס המלא עדיין אינם זמינים/,
     );
     assert.ok(
