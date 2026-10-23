@@ -57,34 +57,20 @@ const firstQuiz = "course/learning-foundations/quiz/index.html";
 const lastQuiz = "course/licensing-and-points/quiz/index.html";
 const lastLesson = "course/licensing-and-points/index.html";
 
-test("prepared library content is validated without restoring its obsolete owned region", async (t) => {
+test("prepared library links are validated without editing the library", async (t) => {
   const f = await fixture(t);
   const publish = await publisher();
   const libraryFile = "course/index.html";
   const library = await f.read(libraryFile);
-  const obsolete = library.replace(
-    /(<[^>]*data-topic-question-count[^>]*>)([^<]*)/,
-    '$1<a class="subject-learn" href="missing-topic/">תוכן ישן להחלפה</a>',
-  );
-  assert.notEqual(obsolete, library);
-  await f.write(libraryFile, obsolete);
-  const before = await f.snapshot();
-  await assert.rejects(
-    publish(f.root, { check: true }),
-    /Outdated authored quiz:.*course\/index.html/,
-  );
-  assert.deepEqual(await f.snapshot(), before);
   const result = await publish(f.root);
-  assert.ok(result.changedFiles.includes(libraryFile));
-  assert.equal((await f.read(libraryFile)).includes("missing-topic/"), false);
-  assert.deepEqual((await readLearningContent(f.root)).issues, []);
-  await publish(f.root, { check: true });
+  assert.equal(result.changedFiles.includes(libraryFile), false);
+  assert.equal(await f.read(libraryFile), library);
 
-  // An invalid link outside the owned region must still reject all writes.
+  // An invalid library link must reject all writes.
   const dom = new JSDOM(library);
   try {
     dom.window.document
-      .querySelector(".subject-learn")
+      .querySelector(".topic-grid a")
       .setAttribute("href", "missing-retained-topic/");
     await f.write(libraryFile, dom.serialize());
   } finally {
@@ -296,7 +282,6 @@ test("root-scoped publication preserves reviewed source fidelity, escaping, medi
   assert.deepEqual(
     result.changedFiles.sort(),
     [
-      "course/index.html",
       firstQuiz,
       "course/learning-foundations/index.html",
       lastQuiz,

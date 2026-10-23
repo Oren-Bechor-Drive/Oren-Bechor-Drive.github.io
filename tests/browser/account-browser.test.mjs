@@ -326,7 +326,7 @@ test("course profile opens accounts only when the gateway is configured", async 
     await fallback.route("**/api/account/session", (route) => route.abort());
     await fallback.goto(app.origin + "/course/");
     assert.equal(await fallback.locator(".course-profile").isVisible(), false);
-    assert.ok(await fallback.locator(".subject summary").first().isVisible());
+    assert.ok(await fallback.locator(".topic-grid a").first().isVisible());
   }
 });
 

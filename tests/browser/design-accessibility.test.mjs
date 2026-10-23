@@ -144,16 +144,7 @@ test("forced colors preserve course, quiz, account and recovery controls", async
     };
     const course = await staticPage(browser, "/course/", options);
     assert.equal(await course.locator(".course-profile").isVisible(), false);
-    await assertVisibleMask(course.locator(".search-icon"));
-    if (width === 390)
-      await assertVisibleMask(course.locator(".subject-chevron").first());
-    else
-      await assertVisibleMask(
-        course.locator('.topic-tab[aria-selected="true"]'),
-        "::after",
-      );
-    await course.locator("#topic-search").fill("zzzz");
-    await assertVisibleBorder(course.locator(".clear-search"));
+    await assertVisibleBorder(course.locator(".topic-grid a").first());
     await course.close();
     const lesson = await staticPage(
       browser,
@@ -414,18 +405,13 @@ async function assertControlBorderContrast(locator, name) {
   );
 }
 
-test("search, quiz choices and account control borders retain 3:1 contrast including hover", async (t) => {
+test("topic tiles, quiz choices and account control borders retain 3:1 contrast including hover", async (t) => {
   const browser = await browserFixture(t);
   const course = await staticPage(browser, "/course/");
-  await assertControlBorderContrast(
-    course.locator(".search-field"),
-    "library search",
-  );
-  await course.locator("#topic-search").fill("zzzz");
-  await assertControlBorderContrast(
-    course.locator(".search-field"),
-    "search with an active query",
-  );
+  const tile = course.locator(".topic-grid a").first();
+  await assertControlBorderContrast(tile, "topic tile");
+  await tile.hover();
+  await assertControlBorderContrast(tile, "hovered topic tile");
   await course.close();
   const quiz = await staticPage(browser, "/course/learning-foundations/quiz/");
   await assertControlBorderContrast(
@@ -468,7 +454,7 @@ test("320px pages reflow with 200 percent browser root text", async (t) => {
   for (const javaScriptEnabled of [true, false]) {
     for (const [path, textSelector] of [
       ["/", ".hero-copy > p"],
-      ["/course/", ".library-intro p"],
+      ["/course/", ".topic-grid a"],
       ["/course/learning-foundations/", ".lesson-intro p"],
       ["/course/learning-foundations/quiz/", ".lesson-intro > p"],
       ["/account/login.html", ".account-intro"],

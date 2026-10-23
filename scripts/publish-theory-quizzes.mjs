@@ -510,15 +510,8 @@ export async function publishTheoryQuizzes(rootDir, { check = false } = {}) {
   }
   const libraryFile = "course/index.html";
   const library = await readFile(path.join(rootDir, libraryFile), "utf8");
-  const libraryHtml = editShell(library, libraryFile, ({ one, replace }) => {
-    for (const topic of topics)
-      replace(
-        one(`.subject#${topic.id} [data-topic-question-count]`),
-        `${topic.questionCount} שאלות לתרגול`,
-        true,
-      );
-  });
-  prepared.push({ file: libraryFile, before: library, html: libraryHtml });
+  // The library owns no generated region; it is staged so its links are validated.
+  prepared.push({ file: libraryFile, before: library, html: library });
   await validatePrepared(prepared);
   const changed = prepared.filter((page) => page.before !== page.html);
   if (check && changed.length)
