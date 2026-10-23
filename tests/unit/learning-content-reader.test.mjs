@@ -13,7 +13,7 @@ async function fixture(t, changes = {}) {
   t.after(() => rm(root, { recursive: true, force: true }));
   const files = {
     "course/index.html":
-      '<a class="subject-learn" href="../lesson.html">ללמידה</a>',
+      '<ul class="topic-grid"><li><a href="../lesson.html">ללמידה</a></li></ul>',
     "lesson.html": lesson,
     "practice.html": quiz,
     ...changes,
@@ -37,7 +37,7 @@ for (const [filename, suffix, returnPath] of [
     const root = await fixture(t, {
       "lesson.html": null,
       "practice.html": null,
-      "course/index.html": `<a class="subject-learn" href="topic${suffix}">ללמידה</a>`,
+      "course/index.html": `<ul class="topic-grid"><li><a href="topic${suffix}">ללמידה</a></li></ul>`,
       [`course/topic/${filename}`]: lesson.replace(
         'href="practice.html"',
         `href="quiz${suffix}"`,
@@ -62,7 +62,8 @@ test("malformed nested returns report the quiz file and intended lesson anchor",
   const root = await fixture(t, {
     "lesson.html": null,
     "practice.html": null,
-    "course/index.html": '<a class="subject-learn" href="topic/">ללמידה</a>',
+    "course/index.html":
+      '<ul class="topic-grid"><li><a href="topic/">ללמידה</a></li></ul>',
     "course/topic/index.html": lesson.replace(
       'href="practice.html"',
       'href="quiz/"',
@@ -335,7 +336,7 @@ test("two topics cannot assign the same quiz page", async (t) => {
   const content = await readLearningContent(
     await fixture(t, {
       "course/index.html":
-        '<a class="subject-learn" href="../lesson.html">ללמידה</a><a class="subject-learn" href="../second.html">ללמידה</a>',
+        '<ul class="topic-grid"><li><a href="../lesson.html">ללמידה</a></li><li><a href="../second.html">ללמידה</a></li></ul>',
       "second.html": lesson
         .replace(
           '<h1 id="topic-title">פנייה</h1>',
@@ -356,7 +357,7 @@ test("unreadable library destinations and partial lesson markup produce diagnost
   const content = await readLearningContent(
     await fixture(t, {
       "course/index.html":
-        '<a class="subject-learn" href="missing.html">ללמידה</a>',
+        '<ul class="topic-grid"><li><a href="missing.html">ללמידה</a></li></ul>',
       "lesson.html": lesson.replace('class="lesson-content"', 'class="other"'),
     }),
   );

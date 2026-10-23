@@ -104,13 +104,7 @@ async function exerciseDesktopJourney(browser) {
   await assertNoHorizontalOverflow(page);
 
   await openPage(page, "/course/");
-  await page.locator("#topic-search").fill("מדרג");
-  assert.equal(
-    await page.locator("[data-search-status]").innerText(),
-    "נמצא נושא אחד",
-  );
-  await page.locator('.topic-tab[data-topic="priority-hierarchy"]').click();
-  await page.locator(".topic-reader .subject-learn").click();
+  await page.getByRole("link", { name: "מדרג הציות", exact: true }).click();
   await page.waitForURL("**/course/priority-hierarchy/", { waitUntil: "load" });
   assert.equal(new URL(page.url()).pathname, "/course/priority-hierarchy/");
 
@@ -168,12 +162,7 @@ async function exerciseMobileJourney(browser) {
   assert.equal(await page.locator(".topic-select").count(), 0);
 
   await openPage(page, "/course/");
-  await page.locator("#priority-hierarchy > summary").click();
-  assert.equal(
-    await page.locator("#priority-hierarchy .subject-outline").isVisible(),
-    true,
-  );
-  await page.locator("#priority-hierarchy .subject-learn").click();
+  await page.locator("#priority-hierarchy").click();
   await page.waitForURL("**/course/priority-hierarchy/", { waitUntil: "load" });
   assert.equal(await page.locator("#priority").isVisible(), true);
   await page
@@ -209,11 +198,9 @@ async function exerciseFallback(browser, mode) {
     const pathname = new URL(route.request().url()).pathname;
     if (
       mode === "blocked" &&
-      [
-        "/js/script.js",
-        "/course/js/course-library.js",
-        "/course/js/quiz.js",
-      ].includes(pathname)
+      ["/js/script.js", "/js/input-mode.js", "/course/js/quiz.js"].includes(
+        pathname,
+      )
     )
       return route.abort();
     // Keep the quiz's first layout pending after its document commits.
@@ -229,13 +216,8 @@ async function exerciseFallback(browser, mode) {
   assert.equal(new URL(page.url()).hash, "#about");
 
   await openPage(page, "/course/");
-  assert.equal(await page.locator(".subject").count(), 10);
-  await page.locator("#priority-hierarchy > summary").click();
-  assert.equal(
-    await page.locator("#priority-hierarchy .subject-outline").isVisible(),
-    true,
-  );
-  await page.locator("#priority-hierarchy .subject-learn").click();
+  assert.equal(await page.locator(".topic-grid a").count(), 10);
+  await page.locator("#priority-hierarchy").click();
   await page.waitForURL("**/course/priority-hierarchy/", { waitUntil: "load" });
   assert.equal(await page.locator("#priority").isVisible(), true);
   await page

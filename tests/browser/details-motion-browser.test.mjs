@@ -3,10 +3,7 @@ import test from "node:test";
 import { chromium } from "playwright";
 import { serveRoadMedia } from "../helpers/road-media.mjs";
 
-const disclosures = [
-  { path: "/#faq", selector: ".faq-item", simultaneous: 2 },
-  { path: "/course/", selector: ".subject", simultaneous: 1 },
-];
+const disclosures = [{ path: "/#faq", selector: ".faq-item", simultaneous: 2 }];
 
 test("completed details transitions release their height and retain each page's opening policy", async (t) => {
   const browser = await chromium.launch();

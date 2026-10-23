@@ -36,17 +36,7 @@ for (const width of [1440, 390]) {
       const navigation = page.locator(".nav-action");
       await navigation.click();
       await page.waitForURL("http://gallery.test/course/");
-      if (mode !== "disabled") {
-        await page.locator(".library-search").waitFor({ state: "visible" });
-        if (width < 900)
-          await page.locator("#learning-foundations > summary").click();
-      } else await page.locator("#learning-foundations > summary").click();
-      await page
-        .getByRole("link", {
-          name: "ללמידה: יסודות הנהיגה והלמידה",
-          exact: true,
-        })
-        .click();
+      await page.locator("#learning-foundations").click();
       await page.waitForURL("http://gallery.test/course/learning-foundations/");
       assert.ok((await page.locator(".lesson-section").count()) > 0);
       await page.locator(".lesson-quiz-link").click();
@@ -66,23 +56,4 @@ for (const width of [1440, 390]) {
       );
     });
   }
-  test(`library announces zero, one and multiple search results at ${width}px`, async (t) => {
-    const browser = await chromium.launch();
-    t.after(() => browser.close());
-    const page = await browser.newPage({ viewport: { width, height: 844 } });
-    await page.route("**/*", serveRoadMedia);
-    await page.goto("http://gallery.test/course/");
-    const input = page.locator("#topic-search");
-    const status = page.locator("[data-search-status]");
-    await input.fill("zzzz-no-topic");
-    assert.equal(await status.innerText(), "לא נמצאו נושאים");
-    await input.fill("יסודות הלמידה");
-    assert.equal(await status.innerText(), "נמצא נושא אחד");
-    await input.fill("תנועה");
-    const count = await page.locator(".subject:not([hidden])").count();
-    assert.ok(count > 1);
-    assert.equal(await status.innerText(), `נמצאו ${count} נושאים`);
-    await page.locator(".clear-search").click();
-    assert.equal(await status.innerText(), "10 נושאים לבחירה");
-  });
 }

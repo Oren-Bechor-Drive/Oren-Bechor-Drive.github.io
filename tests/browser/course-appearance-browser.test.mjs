@@ -80,7 +80,7 @@ test("course pages use the same canvas as the home page and keep reading surface
   await homePage.close();
 
   for (const [path, surface] of [
-    ["course/", ".topic-reader"],
+    ["course/", ".topic-grid a"],
     ["course/right-of-way/", ".lesson-section"],
     ["course/priority-hierarchy/quiz/", ".quiz-question"],
   ]) {

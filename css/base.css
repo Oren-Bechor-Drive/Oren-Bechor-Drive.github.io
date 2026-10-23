@@ -143,8 +143,6 @@ textarea {
 
 /* Font Awesome Classic Solid, locally hosted with its upstream license. */
 .direction-icon,
-.subject-chevron,
-.topic-tab::after,
 .question-select::after {
     display: inline-block;
     width: 16px;
@@ -171,17 +169,14 @@ textarea {
 .icon-chevron-right {
     mask-image: url("../assets/icons/directions/chevron-right.svg");
 }
-.icon-chevron-left,
-.topic-tab::after {
+.icon-chevron-left {
     mask-image: url("../assets/icons/directions/chevron-left.svg");
 }
 .icon-chevron-down,
-.subject-chevron,
 .question-select::after {
     mask-image: url("../assets/icons/directions/chevron-down.svg");
 }
-.icon-chevron-up,
-.subject[open] .subject-chevron {
+.icon-chevron-up {
     mask-image: url("../assets/icons/directions/chevron-up.svg");
 }
 
@@ -210,11 +205,8 @@ textarea {
 }
 
 @media (forced-colors: active) {
-    :root .search-icon,
     :root .course-profile-icon,
     .direction-icon,
-    .subject-chevron,
-    .topic-tab::after,
     .question-select::after {
         forced-color-adjust: none;
         background-color: CanvasText;

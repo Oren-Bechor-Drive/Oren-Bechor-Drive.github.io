@@ -409,3 +409,21 @@ html.lesson-page {
         break-inside: auto;
     }
 }
+.lesson-outline {
+    margin-block-start: var(--space-lg);
+    padding-block-start: var(--space-lg);
+    border-block-start: 1px solid var(--border);
+}
+.lesson-outline h2 {
+    margin: 0 0 12px;
+    font-size: var(--font-body);
+}
+.lesson-outline ul {
+    max-width: 75ch;
+    margin: 0;
+    padding-inline-start: 20px;
+    color: var(--text-soft);
+}
+.lesson-outline li {
+    margin-block: 8px;
+}

@@ -296,7 +296,7 @@ export async function readLearningContent(rootDir) {
   if (!lessons.length) report(libraryFile, "no learning pages discovered");
   const library = pages.get(libraryFile);
   if (!library) report(libraryFile, "missing course library");
-  for (const link of library?.querySelectorAll(".subject-learn") ?? []) {
+  for (const link of library?.querySelectorAll(".topic-grid a") ?? []) {
     const file = await localPage(link.getAttribute("href"), libraryFile);
     if (!lessons.some((lesson) => lesson.file === file))
       report(
