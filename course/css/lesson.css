@@ -318,6 +318,60 @@ html.lesson-page {
 .priority-list h3 {
     margin-block: 0 8px;
 }
+.lesson-content .curb-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 16px;
+}
+.lesson-content .curb-list li {
+    display: grid;
+    grid-template-columns: min(168px, 34%) 1fr;
+    gap: 16px;
+    align-items: center;
+    margin: 0;
+}
+.curb-list img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+.lesson-content .curb-list p {
+    margin: 0;
+}
+.lesson-figure {
+    margin: 24px 0;
+}
+.parking-type {
+    margin-block-start: 24px;
+    padding-block-start: 24px;
+    border-block-start: 1px solid var(--border-strong);
+}
+.parking-type h3 {
+    margin-block: 0;
+    font-size: 1.125rem;
+}
+.parking-type .lesson-figure {
+    margin-block: 16px 0;
+}
+.lesson-figure img {
+    display: block;
+    width: 100%;
+    max-width: 480px;
+    height: auto;
+    margin-inline: auto;
+}
+.lesson-figure-tall img {
+    max-width: 360px;
+}
+.lesson-figure figcaption {
+    margin-block-start: 12px;
+    max-width: 72ch;
+}
+.lesson-figure ol {
+    padding-inline-start: 22px;
+    margin-block: 8px 0;
+}
 .lesson-scenario {
     border-inline-start: 3px solid var(--primary);
     padding-inline-start: 16px;
@@ -326,21 +380,6 @@ html.lesson-page {
 .lesson-scenario h3 {
     margin-block: 0 8px;
     font-size: 1.125rem;
-}
-.lesson-self-check {
-    margin-block: 16px;
-    border: 1px solid var(--control-border);
-    border-radius: var(--radius-control);
-}
-.lesson-self-check summary {
-    padding: 12px 16px;
-    min-height: 48px;
-    cursor: pointer;
-    color: var(--primary);
-    border-radius: var(--radius-control);
-}
-.lesson-self-check p {
-    padding: 0 16px 12px;
 }
 .official-resources {
     display: grid;
@@ -396,17 +435,13 @@ html.lesson-page {
     .image-placeholder {
         display: none;
     }
-    .lesson-self-check {
-        border: 0;
-    }
-    .lesson-self-check::details-content {
-        content-visibility: visible;
-    }
-    .lesson-self-check > p {
-        display: block;
-    }
     .lesson-section {
         break-inside: auto;
+    }
+    .lesson-figure img {
+        break-inside: avoid;
+        max-height: 90vh;
+        width: auto;
     }
 }
 .lesson-outline {

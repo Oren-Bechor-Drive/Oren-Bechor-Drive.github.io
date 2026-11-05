@@ -41,7 +41,7 @@ for (const failure of ["disabled", "module unavailable"]) {
         );
         assert.equal(
           await page.locator("[data-topic-summaries] h3 a:visible").count(),
-          10,
+          11,
         );
         const dividers = await page
           .locator("[data-topic-summaries] section")
@@ -52,7 +52,7 @@ for (const failure of ["disabled", "module unavailable"]) {
           );
         assert.deepEqual(
           dividers,
-          ["0px", ...Array(9).fill("1px")],
+          ["0px", ...Array(10).fill("1px")],
           "consecutive topics have dividers in the baseline experience",
         );
         const content = await page.locator("#about").innerText();
@@ -122,7 +122,7 @@ test(
       if (width < 640) {
         assert.equal(
           await page.locator("[data-topic-summaries] h3 a:visible").count(),
-          10,
+          11,
         );
         assert.equal(
           await page
@@ -144,7 +144,7 @@ test(
         );
       } else {
         const tabs = page.getByRole("tab");
-        assert.equal(await tabs.count(), 10);
+        assert.equal(await tabs.count(), 11);
         await tabs.first().focus();
         await page.keyboard.press("End");
         assert.equal(await tabs.last().getAttribute("aria-selected"), "true");

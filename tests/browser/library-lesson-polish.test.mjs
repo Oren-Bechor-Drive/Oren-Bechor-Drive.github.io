@@ -9,7 +9,7 @@ import { serveRoadMedia } from "../helpers/road-media.mjs";
 const content = await readLearningContent(process.cwd());
 const normalized = (element) => element.textContent.replace(/\s+/g, " ").trim();
 
-test("reading sections use compact notes, usable checks and accurate contents labels", async () => {
+test("reading sections use compact notes, scenarios and accurate contents labels", async () => {
   for (const lesson of content.lessons) {
     const document = new JSDOM(await readFile(lesson.file, "utf8")).window
       .document;
@@ -44,10 +44,6 @@ test("reading sections use compact notes, usable checks and accurate contents la
         assert.ok(normalized(note).length < 105);
       }
       assert.equal(section.querySelectorAll(".lesson-scenario").length, 1);
-      assert.equal(
-        section.querySelectorAll("details.lesson-self-check").length,
-        1,
-      );
       if (sections.length > 1) {
         assert.equal(
           normalized(
@@ -102,11 +98,6 @@ test("reading contents, checks and endings work on phones and with reduced motio
       .evaluate((node) => getComputedStyle(node).gridTemplateColumns);
     assert.equal(contents.split(" ").length, 1);
     await page.locator('.lesson-contents a[href="#right-turn"]').click();
-    await page.locator("#right-turn .lesson-self-check summary").click();
-    assert.equal(
-      await page.locator("#right-turn .lesson-self-check p").isVisible(),
-      true,
-    );
     await page.locator("#right-turn .lesson-return-contents").click();
     assert.equal(new URL(page.url()).hash, "#contents");
     assert.equal(await page.locator(".lesson-quiz-link").isVisible(), true);
@@ -132,7 +123,6 @@ test("lessons print all reading and self-check text without navigation or media 
   await page.goto("http://gallery.test/course/right-of-way/");
   await page.emulateMedia({ media: "print" });
   assert.equal(await page.locator(".lesson-section:visible").count(), 4);
-  assert.equal(await page.locator(".lesson-self-check p:visible").count(), 4);
   assert.equal(await page.locator(".lesson-contents").isVisible(), false);
   assert.equal(await page.locator(".course-header").isVisible(), false);
   assert.equal(

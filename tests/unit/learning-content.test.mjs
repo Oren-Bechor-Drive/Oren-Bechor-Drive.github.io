@@ -10,6 +10,7 @@ test("authored learning content has valid section, quiz and return relationships
     "learning-foundations",
     "licensing-and-points",
     "overtaking",
+    "parking",
     "priority-hierarchy",
     "right-of-way",
     "roads-and-lanes",

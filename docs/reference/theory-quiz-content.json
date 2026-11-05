@@ -77,6 +77,10 @@
       "title": "תכנון נסיעה"
     },
     {
+      "id": "parking",
+      "title": "עצירה וחנייה"
+    },
+    {
       "id": "driving-test",
       "title": "טעויות נפוצות בטסט המעשי"
     },
@@ -914,8 +918,9 @@
       "explanation": "אם סומן אופן חנייה מסוים פועלים לפיו. בהיעדרו מעמידים במקביל לשפת הכביש, במקום שמותר לחנות בו.",
       "explanationSource": "course-authored",
       "sourceIds": ["bank"],
-      "lessonReferenceKind": "topic",
-      "lessonSectionId": "control"
+      "lessonReferenceKind": "explanation",
+      "lessonSectionId": "parking-position",
+      "lessonTopicId": "parking"
     },
     {
       "officialId": "0223",
@@ -936,8 +941,9 @@
       "explanation": "המרחק נמדד מגלגלי הרכב הקרובים לשפת הכביש, ולא ממרכז הרכב.",
       "explanationSource": "course-authored",
       "sourceIds": ["bank"],
-      "lessonReferenceKind": "topic",
-      "lessonSectionId": "control"
+      "lessonReferenceKind": "explanation",
+      "lessonSectionId": "parking-position",
+      "lessonTopicId": "parking"
     },
     {
       "officialId": "0246",
@@ -2782,8 +2788,9 @@
       "explanation": "פתיחת דלת או יציאה מהרכב עלולות לפגוע ברוכב או ברכב חולף. בודקים לפני הפתיחה.",
       "explanationSource": "course-authored",
       "sourceIds": ["bank"],
-      "lessonReferenceKind": "topic",
-      "lessonSectionId": "control"
+      "lessonReferenceKind": "explanation",
+      "lessonSectionId": "parking-position",
+      "lessonTopicId": "parking"
     },
     {
       "officialId": "0988",
@@ -3390,6 +3397,346 @@
       "sourceIds": ["bank", "sign-chart", "road-safety-textbook"],
       "lessonReferenceKind": "topic",
       "lessonSectionId": "priority"
+    },
+    {
+      "officialId": "0609",
+      "topicId": "parking",
+      "sourceRowId": 220,
+      "sourcePublishedAt": "2011-09-11T10:44:22",
+      "category": "תמרורים",
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "question": "מה משמעות סימון אדום-צהוב על אבני שפה?",
+      "options": [
+        "סימון להבלטה ולהדגשה של מדרכות בגבהים שונים.",
+        "אסורה כל עצירה, למעט סוג רכב שעצירתו הותרה על ידי תמרור.",
+        "החנייה מותרת באמצעות כרטיסי חנייה.",
+        "החנייה לרכב ציבורי מותרת ובלתי מוגבלת."
+      ],
+      "correctOptionIndex": 1,
+      "imageUrls": [
+        "https://www.gov.il/BlobFolder/generalpage/tq_pic_02/he/TQ_PIC_3609.jpg"
+      ],
+      "explanation": "אדום-צהוב שמור לסוג הרכב שהתמרור במקום מתיר, בדרך כלל תחבורה ציבורית. כל רכב אחר לא עוצר שם, גם לא לרגע.",
+      "explanationSource": "course-authored",
+      "sourceIds": ["bank", "sign-chart"],
+      "lessonReferenceKind": "explanation",
+      "lessonSectionId": "curb-markings"
+    },
+    {
+      "officialId": "0657",
+      "topicId": "parking",
+      "sourceRowId": 247,
+      "sourcePublishedAt": "2011-09-11T10:44:23",
+      "category": "תמרורים",
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "question": "מה משמעותן של אבני שפה הצבועות לסירוגין בצבעי כחול?",
+      "options": [
+        "מקום חנייה לכלי רכב לפי הסדר שקבעה הרשות המקומית.",
+        "החנייה או העצירה ליד אבני השפה אסורות, למעט מוניות בדרך עירונית.",
+        "הבלטה והדגשה של מדרכות ושל איי תנועה בנויים.",
+        "מקום חנייה מוסדר לרכב ציבורי בלבד."
+      ],
+      "correctOptionIndex": 0,
+      "imageUrls": [
+        "https://www.gov.il/BlobFolder/generalpage/tq_pic_02/he/TQ_PIC_3657.jpg"
+      ],
+      "explanation": "כחול-לבן מסמן חנייה מותרת לפי ההסדר של הרשות המקומית, למשל תשלום או תו אזורי. בודקים את השלט שבמקום.",
+      "explanationSource": "course-authored",
+      "sourceIds": ["bank", "sign-chart"],
+      "lessonReferenceKind": "explanation",
+      "lessonSectionId": "curb-markings"
+    },
+    {
+      "officialId": "1403",
+      "topicId": "parking",
+      "sourceRowId": 1199,
+      "sourcePublishedAt": "2011-09-11T10:44:43",
+      "category": "תמרורים",
+      "licenseClasses": ["C1", "C", "D", "B"],
+      "question": "חנייה בתחנת אוטובוס:",
+      "options": [
+        "מותרת בשבתות ובחגים לאופנועים בלבד, בהתאם לרשום בתמרור המוצב בתחנת האוטובוס.",
+        "מותרת בשבתות ובחגים לרכב פרטי בלבד, בהתאם לרשום בתמרור המוצב בתחנת האוטובוס",
+        "מותרת בשבתות ובחגים לכל סוגי כלי הרכב.",
+        "מותרת בשבתות ובחגים לרכב מסחרי בלבד, בהתאם לרשום בתמרור המוצב בתחנת האוטובוס."
+      ],
+      "correctOptionIndex": 1,
+      "imageUrls": [],
+      "explanation": "התמרור בתחנה קובע אם ומתי מותר לחנות בה. כשרשום שהחנייה מותרת בשבתות ובחגים, ההיתר הוא לרכב פרטי בלבד.",
+      "explanationSource": "course-authored",
+      "sourceIds": ["bank"],
+      "lessonReferenceKind": "explanation",
+      "lessonSectionId": "curb-markings"
+    },
+    {
+      "officialId": "0203",
+      "topicId": "parking",
+      "sourceRowId": 1228,
+      "sourcePublishedAt": "2011-09-11T10:44:43",
+      "category": "חוקי התנועה",
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "question": "האם מותר להעמיד רכב בתחום 12 מטרים מצומת?",
+      "options": [
+        "אסור, אלא אם כן התירה זאת רשות התמרור בתמרור או בסימון מתאים.",
+        "מותר, אם לא סומן אחרת.",
+        "מותר, בתנאי שהרכב יעמוד נגד כיוון הנסיעה.",
+        "מותר, בכביש בעל שני נתיבים."
+      ],
+      "correctOptionIndex": 0,
+      "imageUrls": [],
+      "explanation": "ליד צומת רכב עומד מסתיר את התנועה ואת הולכי הרגל. לכן אסור להעמיד רכב בתחום 12 מטרים מהצומת, אלא אם תמרור או סימון מתירים זאת.",
+      "explanationSource": "course-authored",
+      "sourceIds": ["bank"],
+      "lessonReferenceKind": "explanation",
+      "lessonSectionId": "no-parking-zones"
+    },
+    {
+      "officialId": "1766",
+      "topicId": "parking",
+      "sourceRowId": 740,
+      "sourcePublishedAt": "2011-09-11T10:44:33",
+      "category": "חוקי התנועה",
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "question": "אסור לעצור, להחנות או להעמיד רכב בתוך מעבר חצייה או לפניו בתחום של:",
+      "options": [
+        "20 מטרים ממנו.",
+        "15 מטרים ממנו.",
+        "12 מטרים ממנו.",
+        "24 מטרים ממנו."
+      ],
+      "correctOptionIndex": 2,
+      "imageUrls": [],
+      "explanation": "רכב שעומד לפני מעבר חצייה מסתיר הולכי רגל מהנהגים שמתקרבים. האיסור חל על המעבר עצמו ועל 12 המטרים שלפניו.",
+      "explanationSource": "course-authored",
+      "sourceIds": ["bank"],
+      "lessonReferenceKind": "explanation",
+      "lessonSectionId": "no-parking-zones"
+    },
+    {
+      "officialId": "0206",
+      "topicId": "parking",
+      "sourceRowId": 1069,
+      "sourcePublishedAt": "2011-09-11T10:44:40",
+      "category": "חוקי התנועה",
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "question": "האם מותר להעמיד רכב אחרי מעבר חצייה להולכי רגל?",
+      "options": [
+        "מותר - בלילה בלבד.",
+        "מותר.",
+        "אסור בתחום 12 מטרים אחרי המעבר.",
+        "אסור."
+      ],
+      "correctOptionIndex": 1,
+      "imageUrls": [],
+      "explanation": "האיסור הוא על המעבר ועל 12 המטרים שלפניו. אחרי המעבר מותר להעמיד רכב אם אין איסור אחר במקום.",
+      "explanationSource": "course-authored",
+      "sourceIds": ["bank"],
+      "lessonReferenceKind": "explanation",
+      "lessonSectionId": "no-parking-zones"
+    },
+    {
+      "officialId": "0212",
+      "topicId": "parking",
+      "sourceRowId": 111,
+      "sourcePublishedAt": "2011-09-11T10:44:20",
+      "category": "חוקי התנועה",
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "question": "באיזה תחום מתחנת אוטובוס אסור להעמיד רכב?",
+      "options": [
+        "בתחום של 12 מטרים לפני תמרור תחנת אוטובוס ועד 12 מטרים אחרי התמרור, אלא אם סומן אחרת.",
+        "בתחום של 20 מטרים לפני תמרור תחנת אוטובוס ועד 20 מטרים אחרי התמרור, אלא אם סומן אחרת.",
+        "בתחום של 20 מטרים לפני תמרור תחנת האוטובוס בלבד.",
+        "בתחום של 20 מטרים אחרי תמרור תחנת האוטובוס בלבד."
+      ],
+      "correctOptionIndex": 1,
+      "imageUrls": [],
+      "explanation": "האוטובוס צריך מקום להיכנס לתחנה ולצאת ממנה. לכן אסור להעמיד רכב 20 מטרים לפני תמרור התחנה ועד 20 מטרים אחריו, אלא אם סומן אחרת.",
+      "explanationSource": "course-authored",
+      "sourceIds": ["bank"],
+      "lessonReferenceKind": "explanation",
+      "lessonSectionId": "no-parking-zones"
+    },
+    {
+      "officialId": "0213",
+      "topicId": "parking",
+      "sourceRowId": 750,
+      "sourcePublishedAt": "2011-09-11T10:44:33",
+      "category": "חוקי התנועה",
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "question": "האם מותר להעמיד רכב מול תחנת אוטובוס?",
+      "options": [
+        "מותר, בתנאי שרוחב הכביש הוא 12 מטרים או יותר.",
+        "מותר, רק באור יום ולצורך העלאת נוסעים.",
+        "אסור בהחלט.",
+        "מותר, בתנאי שרוחב הכביש 20 מטרים לפחות."
+      ],
+      "correctOptionIndex": 0,
+      "imageUrls": [],
+      "explanation": "מול תחנה צריך להשאיר מקום לאוטובוס לעבור. מותר להעמיד שם רכב רק כשרוחב הכביש 12 מטרים או יותר.",
+      "explanationSource": "course-authored",
+      "sourceIds": ["bank"],
+      "lessonReferenceKind": "explanation",
+      "lessonSectionId": "no-parking-zones"
+    },
+    {
+      "officialId": "0204",
+      "topicId": "parking",
+      "sourceRowId": 515,
+      "sourcePublishedAt": "2011-09-11T10:44:28",
+      "category": "חוקי התנועה",
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "question": "באיזה תחום מברז כיבוי אש (הידרנט) אסור להעמיד רכב?",
+      "options": [
+        "בתחום של שישה מטרים.",
+        "בתחום של 12 מטרים.",
+        "בתחום של 20 מטרים.",
+        "בתחום של שני מטרים."
+      ],
+      "correctOptionIndex": 3,
+      "imageUrls": [],
+      "explanation": "כבאים צריכים גישה מיידית לברז. אסור להעמיד רכב בתחום של שני מטרים ממנו.",
+      "explanationSource": "course-authored",
+      "sourceIds": ["bank"],
+      "lessonReferenceKind": "explanation",
+      "lessonSectionId": "no-parking-zones"
+    },
+    {
+      "officialId": "0214",
+      "topicId": "parking",
+      "sourceRowId": 1605,
+      "sourcePublishedAt": "2011-09-11T10:44:51",
+      "category": "חוקי התנועה",
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "question": "האם מותר להעמיד רכב בצד מעקה בטיחות להולכי רגל?",
+      "options": [
+        "מותר, בדרך עירונית.",
+        "מותר, בתחום בית ספר יסודי בלבד.",
+        "אסור, אלא אם כן מוצב תמרור המורה אחרת.",
+        "מותר, בתחום בית ספר תיכון בלבד."
+      ],
+      "correctOptionIndex": 2,
+      "imageUrls": [
+        "https://www.gov.il/BlobFolder/generalpage/tq_pic_01/he/TQ_PIC_3214.jpg"
+      ],
+      "explanation": "מעקה בטיחות מכוון הולכי רגל למקום חצייה בטוח. רכב שעומד לצדו חוסם את הראייה ואת המעבר, ולכן הדבר אסור אלא אם תמרור מתיר.",
+      "explanationSource": "course-authored",
+      "sourceIds": ["bank"],
+      "lessonReferenceKind": "explanation",
+      "lessonSectionId": "no-parking-zones"
+    },
+    {
+      "officialId": "0210",
+      "topicId": "parking",
+      "sourceRowId": 287,
+      "sourcePublishedAt": "2011-09-11T10:44:24",
+      "category": "חוקי התנועה",
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "question": "האם מותר להעמיד רכב לצד רכב אחר החונה בצד הדרך?",
+      "options": [
+        "מותר, כשהנתיב רחב משניים וחצי מטרים.",
+        "מותר, רק ב\"זמן תאורה\".",
+        "אסור לחלוטין.",
+        "מותר, בדרך עירונית בלבד."
+      ],
+      "correctOptionIndex": 2,
+      "imageUrls": [
+        "https://www.gov.il/BlobFolder/generalpage/tq_pic_01/he/TQ_PIC_3210.jpg"
+      ],
+      "explanation": "רכב שעומד לצד רכב חונה, בטור שני, חוסם את הנתיב ומסכן את מי שעוקף אותו. הדבר אסור לחלוטין.",
+      "explanationSource": "course-authored",
+      "sourceIds": ["bank"],
+      "lessonReferenceKind": "explanation",
+      "lessonSectionId": "no-parking-zones"
+    },
+    {
+      "officialId": "0211",
+      "topicId": "parking",
+      "sourceRowId": 1222,
+      "sourcePublishedAt": "2011-09-11T10:44:43",
+      "category": "חוקי התנועה",
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "question": "מתי מותר להעמיד רכב על גשר או בתוך מנהרה?",
+      "options": [
+        "אסור לחלוטין.",
+        "מותר ביום בלבד.",
+        "מותר, ב\"זמן תאורה\" בלבד.",
+        "מותר, כשהכביש בעל שני נתיבים או יותר."
+      ],
+      "correctOptionIndex": 0,
+      "imageUrls": [
+        "https://www.gov.il/BlobFolder/generalpage/tq_pic_01/he/TQ_PIC_3211.jpg"
+      ],
+      "explanation": "על גשר או בתוך מנהרה אין שוליים ואין מקום לעקוף בבטחה רכב שעומד. לכן אסור להעמיד שם רכב.",
+      "explanationSource": "course-authored",
+      "sourceIds": ["bank"],
+      "lessonReferenceKind": "explanation",
+      "lessonSectionId": "no-parking-zones"
+    },
+    {
+      "officialId": "1398",
+      "topicId": "parking",
+      "sourceRowId": 79,
+      "sourcePublishedAt": "2011-09-11T10:44:19",
+      "category": "חוקי התנועה",
+      "licenseClasses": ["C1", "C", "D", "A", "B"],
+      "question": "האם מותר לעצור רכב בדרך מהירה?",
+      "options": [
+        "כן, אבל רק בצד הדרך ולצורך רענון הנהג.",
+        "לא. אסור לעצור רכב בדרך מהירה, למעט עצירה בשול הדרך כשהרכב התקלקל ואי אפשר להמשיך בנסיעה.",
+        "כן, אבל רק לשם העלאת נוסעים.",
+        "כן, אבל רק לשם הורדת נוסעים."
+      ],
+      "correctOptionIndex": 1,
+      "imageUrls": [],
+      "explanation": "בדרך מהירה התנועה מהירה ואין מקום לעצירה בטוחה. עוצרים רק בשול, וזאת רק כשהרכב התקלקל ואי אפשר להמשיך.",
+      "explanationSource": "course-authored",
+      "sourceIds": ["bank"],
+      "lessonReferenceKind": "explanation",
+      "lessonSectionId": "no-parking-zones"
+    },
+    {
+      "officialId": "0222",
+      "topicId": "parking",
+      "sourceRowId": 1732,
+      "sourcePublishedAt": "2011-09-11T10:44:54",
+      "category": "חוקי התנועה",
+      "licenseClasses": ["C1", "C", "D", "1", "B"],
+      "question": "באילו תנאים מותר להעמיד רכב שלא במקביל למדרכה (חנייה זוויתית)?",
+      "options": [
+        "מותר בדרך עירונית ורק בסופי שבוע.",
+        "אם יש סימון זוויתי על הכביש ובהתאם לסימון.",
+        "אסור בשום תנאי.",
+        "מותר בדרך עירונית בלבד."
+      ],
+      "correctOptionIndex": 1,
+      "imageUrls": [],
+      "explanation": "בהיעדר סימון מעמידים רכב במקביל לשפת הכביש. חנייה בזווית מותרת רק כשיש על הכביש סימון זוויתי, ולפי הסימון.",
+      "explanationSource": "course-authored",
+      "sourceIds": ["bank"],
+      "lessonReferenceKind": "explanation",
+      "lessonSectionId": "parking-position"
+    },
+    {
+      "officialId": "1736",
+      "topicId": "parking",
+      "sourceRowId": 1513,
+      "sourcePublishedAt": "2011-09-11T10:44:49",
+      "category": "חוקי התנועה",
+      "licenseClasses": ["C1", "C", "D", "A", "1", "B"],
+      "question": "על מי תחול האחריות לרכב החונה במקום האסור לחנייה?",
+      "options": [
+        "על חברת ההשכרה, אם הרכב הושכר ממנה.",
+        "על מי שיצא אחרון מהרכב החונה.",
+        "על בעל הרכב הרשום ברישיון הרכב, אלא אם כן הוא הוכיח שלא הוא הנהג ויצביע על הנהג שביצע את העבירה.",
+        "על בעל הרכב הרשום ברישיון הרכב."
+      ],
+      "correctOptionIndex": 2,
+      "imageUrls": [],
+      "explanation": "הדוח מגיע לבעל הרכב הרשום ברישיון הרכב. הוא יכול להעביר את האחריות רק אם יוכיח שלא נהג בו ויצביע על מי שנהג.",
+      "explanationSource": "course-authored",
+      "sourceIds": ["bank"],
+      "lessonReferenceKind": "explanation",
+      "lessonSectionId": "parking-position"
     }
   ]
 }

@@ -1,0 +1,546 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 930 1076">
+  <defs>
+    <!-- Parked car (centered at 0,0; front is UP = -Y; width=44, length=88 -> x in [-22,22], y in [-44,44]) -->
+    <g id="parked-car">
+      <!-- Wheels -->
+      <rect x="-24" y="-32" width="4" height="14" rx="2" fill="#596568"/>
+      <rect x="20" y="-32" width="4" height="14" rx="2" fill="#596568"/>
+      <rect x="-24" y="18" width="4" height="14" rx="2" fill="#596568"/>
+      <rect x="20" y="18" width="4" height="14" rx="2" fill="#596568"/>
+      <!-- Body -->
+      <rect x="-22" y="-44" width="44" height="88" rx="9" fill="#c5cfe2" stroke="#75839c" stroke-width="2.5"/>
+      <!-- Side mirrors -->
+      <rect x="-26" y="-20" width="4" height="7" rx="1.5" fill="#c5cfe2" stroke="#75839c" stroke-width="1.5"/>
+      <rect x="22" y="-20" width="4" height="7" rx="1.5" fill="#c5cfe2" stroke="#75839c" stroke-width="1.5"/>
+      <!-- Front windshield -->
+      <path d="M -17 -26 L 17 -26 L 14 -12 L -14 -12 Z" fill="#ecf0fa" stroke="#75839c" stroke-width="1.5" stroke-linejoin="round"/>
+      <!-- Rear window -->
+      <path d="M -14 20 L 14 20 L 16 31 L -16 31 Z" fill="#ecf0fa" stroke="#75839c" stroke-width="1.5" stroke-linejoin="round"/>
+      <!-- Roof -->
+      <rect x="-14" y="-12" width="28" height="32" rx="3" fill="#d5deed" stroke="#75839c" stroke-width="1.2"/>
+      <!-- Front headlights -->
+      <rect x="-17" y="-43.5" width="9" height="3.5" rx="1.5" fill="#ffffff"/>
+      <rect x="8" y="-43.5" width="9" height="3.5" rx="1.5" fill="#ffffff"/>
+    </g>
+
+    <!-- Ghost (previous step reference) car -->
+    <g id="ghost-car" opacity="0.28">
+      <rect x="-22" y="-44" width="44" height="88" rx="9" fill="none" stroke="#264796" stroke-width="2" stroke-dasharray="5,4"/>
+      <path d="M -17 -26 L 17 -26 L 14 -12 L -14 -12 Z" fill="none" stroke="#264796" stroke-width="1.5" stroke-dasharray="4,3"/>
+    </g>
+  </defs>
+  <rect x="0" y="0" width="930" height="1076" fill="#ffffff"/>
+  <!-- Panel Step 1 -->
+  <g>
+    <clipPath id="clip-par-1">
+      <rect x="628" y="16" width="286" height="512" rx="14"/>
+    </clipPath>
+    <rect x="628" y="16" width="286" height="512" rx="14" fill="#ffffff" stroke="#dfe5f0" stroke-width="2.5"/>
+    <g clip-path="url(#clip-par-1)">
+      <!-- Road background -->
+      <rect x="628" y="16" width="286" height="394" fill="#dee5f3"/>
+      <!-- Lane center dashed line on left -->
+      <line x1="680" y1="16" x2="680" y2="410" stroke="#ffffff" stroke-width="2.5" stroke-dasharray="14,12" opacity="0.85"/>
+      <!-- Right sidewalk & curb -->
+      <rect x="866" y="16" width="48" height="394" fill="#ecf0fa"/>
+      <line x1="866" y1="16" x2="866" y2="410" stroke="#596568" stroke-width="4"/>
+      <!-- Parking bay markings (white #ffffff on road) -->
+      <path d="M 864 48 L 808 48 M 864 156 L 808 156" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+      <path d="M 864 298 L 808 298 M 864 404 L 808 404" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+      <line x1="808" y1="156" x2="808" y2="298" stroke="#ffffff" stroke-width="2.5" stroke-dasharray="6,6"/>
+      <!-- Front parked car -->
+      <use href="#parked-car" x="836" y="102"/>
+      <!-- Rear parked car -->
+      <use href="#parked-car" x="836" y="352"/>
+      <g transform="translate(762.0, 102.0) rotate(0.0)">
+        <!-- Front wheels (steerable) -->
+        <g transform="translate(-22, -25) rotate(0)">
+          <rect x="-2.5" y="-7.5" width="5" height="15" rx="2" fill="#131d1f"/>
+        </g>
+        <g transform="translate(22, -25) rotate(0)">
+          <rect x="-2.5" y="-7.5" width="5" height="15" rx="2" fill="#131d1f"/>
+        </g>
+        <!-- Rear wheels -->
+        <rect x="-24.5" y="18" width="5" height="15" rx="2" fill="#131d1f"/>
+        <rect x="19.5" y="18" width="5" height="15" rx="2" fill="#131d1f"/>
+        <!-- Car body -->
+        <rect x="-22" y="-44" width="44" height="88" rx="9" fill="#264796" stroke="#1e3978" stroke-width="2.5"/>
+        <!-- Side mirrors -->
+        <rect x="-26.5" y="-20" width="4.5" height="7" rx="1.5" fill="#264796" stroke="#1e3978" stroke-width="1.5"/>
+        <rect x="22" y="-20" width="4.5" height="7" rx="1.5" fill="#264796" stroke="#1e3978" stroke-width="1.5"/>
+        <!-- Hood crease lines -->
+        <line x1="-13" y1="-41" x2="-15" y2="-27" stroke="#4267bd" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="13" y1="-41" x2="15" y2="-27" stroke="#4267bd" stroke-width="1.5" stroke-linecap="round"/>
+        <!-- Front windshield (light so front is obvious) -->
+        <path d="M -17 -26 L 17 -26 L 14 -11 L -14 -11 Z" fill="#c5cfe2" stroke="#1e3978" stroke-width="1.5" stroke-linejoin="round"/>
+        <!-- Rear window -->
+        <path d="M -14 21 L 14 21 L 16 32 L -16 32 Z" fill="#75839c" stroke="#1e3978" stroke-width="1.5" stroke-linejoin="round"/>
+        <!-- Roof -->
+        <rect x="-14" y="-11" width="28" height="32" rx="3" fill="#3158b8" stroke="#1e3978" stroke-width="1.2"/>
+        <!-- Front headlights -->
+        <rect x="-17" y="-44" width="10" height="4.5" rx="1.8" fill="#ffffff" stroke="#1e3978" stroke-width="0.8"/>
+        <rect x="7" y="-44" width="10" height="4.5" rx="1.8" fill="#ffffff" stroke="#1e3978" stroke-width="0.8"/>
+        <!-- Rear tail lights -->
+        <rect x="-16" y="40.5" width="8" height="3" rx="1.2" fill="#75839c"/>
+        <rect x="8" y="40.5" width="8" height="3" rx="1.2" fill="#75839c"/>
+      <!-- Right-turn signal indicator -->
+      <circle cx="21" cy="-41" r="4.5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.2"/>
+      <path d="M 28 -45 L 35 -49 M 29 -40 L 37 -40 M 28 -35 L 35 -31" stroke="#f59e0b" stroke-width="2.4" stroke-linecap="round"/>
+      <circle cx="21" cy="41" r="4" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+      </g>
+      <g transform="translate(628, 16)">
+        <g>
+          <path d="M 134 166 L 134 98" fill="none" stroke="#705d00" stroke-width="4.5" stroke-linecap="round"/>
+          <g transform="translate(134.0, 98.0) rotate(0.0)">
+            <path d="M -8.5 10.5 L 0 -3 L 8.5 10.5" fill="none" stroke="#705d00" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+        </g>
+      </g>
+    </g>
+    <rect x="628" y="16" width="286" height="512" rx="14" fill="none" stroke="#dfe5f0" stroke-width="2.5"/>
+    <!-- Step number badge -->
+    <circle cx="664" cy="52" r="24" fill="#264796" stroke="#ffffff" stroke-width="2.5"/>
+    <text x="664" y="61" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="27" font-weight="800" fill="#ffffff">1</text>
+    <!-- Bottom HUD bar -->
+    <rect x="640" y="412" width="262" height="106" rx="12" fill="#ffffff" stroke="#dfe5f0" stroke-width="2.5"/>
+    <g>
+      <g transform="translate(728, 472) rotate(0)">
+        <!-- Steering wheel rim -->
+        <circle cx="0" cy="0" r="31" fill="none" stroke="#131d1f" stroke-width="6"/>
+        <!-- Spokes (3-spoke T-bar) -->
+        <line x1="-29" y1="3" x2="29" y2="3" stroke="#131d1f" stroke-width="5.5" stroke-linecap="round"/>
+        <line x1="0" y1="3" x2="0" y2="29" stroke="#131d1f" stroke-width="5.5" stroke-linecap="round"/>
+        <!-- Center hub -->
+        <circle cx="0" cy="3" r="7" fill="#131d1f"/>
+        <!-- Top-center reference marker on rim -->
+        <rect x="-4" y="-35" width="8" height="8" rx="2" fill="#264796"/>
+      </g>
+    </g>
+    <!-- Direction icon: Forward (up arrow relative to car) -->
+    <g transform="translate(836, 468)">
+      <rect x="-36" y="-36" width="72" height="72" rx="12" fill="#ecf0fa" stroke="#dfe5f0" stroke-width="2"/>
+      <!-- Mini car icon -->
+      <g transform="translate(-14, 4)">
+        <rect x="-9" y="-17" width="18" height="34" rx="4.5" fill="#264796" stroke="#1e3978" stroke-width="1.4"/>
+        <path d="M -7 -10 L 7 -10 L 5.5 -3 L -5.5 -3 Z" fill="#c5cfe2"/>
+        <rect x="-6.5" y="-17" width="4.5" height="2.2" rx="0.8" fill="#ffffff"/>
+        <rect x="2" y="-17" width="4.5" height="2.2" rx="0.8" fill="#ffffff"/>
+      </g>
+      <!-- Up arrow (Forward) -->
+      <g transform="translate(15, 0)">
+        <line x1="0" y1="22" x2="0" y2="-20" stroke="#705d00" stroke-width="5" stroke-linecap="round"/>
+        <path d="M -9.5 -9 L 0 -22 L 9.5 -9" fill="none" stroke="#705d00" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+    </g>
+  </g>
+  <!-- Panel Step 2 -->
+  <g>
+    <clipPath id="clip-par-2">
+      <rect x="322" y="16" width="286" height="512" rx="14"/>
+    </clipPath>
+    <rect x="322" y="16" width="286" height="512" rx="14" fill="#ffffff" stroke="#dfe5f0" stroke-width="2.5"/>
+    <g clip-path="url(#clip-par-2)">
+      <!-- Road background -->
+      <rect x="322" y="16" width="286" height="394" fill="#dee5f3"/>
+      <!-- Lane center dashed line on left -->
+      <line x1="374" y1="16" x2="374" y2="410" stroke="#ffffff" stroke-width="2.5" stroke-dasharray="14,12" opacity="0.85"/>
+      <!-- Right sidewalk & curb -->
+      <rect x="560" y="16" width="48" height="394" fill="#ecf0fa"/>
+      <line x1="560" y1="16" x2="560" y2="410" stroke="#596568" stroke-width="4"/>
+      <!-- Parking bay markings (white #ffffff on road) -->
+      <path d="M 558 48 L 502 48 M 558 156 L 502 156" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+      <path d="M 558 298 L 502 298 M 558 404 L 502 404" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+      <line x1="502" y1="156" x2="502" y2="298" stroke="#ffffff" stroke-width="2.5" stroke-dasharray="6,6"/>
+      <!-- Front parked car -->
+      <use href="#parked-car" x="530" y="102"/>
+      <!-- Rear parked car -->
+      <use href="#parked-car" x="530" y="352"/>
+      <use href="#ghost-car" transform="translate(456, 102) rotate(0)"/>
+      <g transform="translate(478.0, 154.0) rotate(-45.0)">
+        <!-- Front wheels (steerable) -->
+        <g transform="translate(-22, -25) rotate(32)">
+          <rect x="-2.5" y="-7.5" width="5" height="15" rx="2" fill="#131d1f"/>
+        </g>
+        <g transform="translate(22, -25) rotate(32)">
+          <rect x="-2.5" y="-7.5" width="5" height="15" rx="2" fill="#131d1f"/>
+        </g>
+        <!-- Rear wheels -->
+        <rect x="-24.5" y="18" width="5" height="15" rx="2" fill="#131d1f"/>
+        <rect x="19.5" y="18" width="5" height="15" rx="2" fill="#131d1f"/>
+        <!-- Car body -->
+        <rect x="-22" y="-44" width="44" height="88" rx="9" fill="#264796" stroke="#1e3978" stroke-width="2.5"/>
+        <!-- Side mirrors -->
+        <rect x="-26.5" y="-20" width="4.5" height="7" rx="1.5" fill="#264796" stroke="#1e3978" stroke-width="1.5"/>
+        <rect x="22" y="-20" width="4.5" height="7" rx="1.5" fill="#264796" stroke="#1e3978" stroke-width="1.5"/>
+        <!-- Hood crease lines -->
+        <line x1="-13" y1="-41" x2="-15" y2="-27" stroke="#4267bd" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="13" y1="-41" x2="15" y2="-27" stroke="#4267bd" stroke-width="1.5" stroke-linecap="round"/>
+        <!-- Front windshield (light so front is obvious) -->
+        <path d="M -17 -26 L 17 -26 L 14 -11 L -14 -11 Z" fill="#c5cfe2" stroke="#1e3978" stroke-width="1.5" stroke-linejoin="round"/>
+        <!-- Rear window -->
+        <path d="M -14 21 L 14 21 L 16 32 L -16 32 Z" fill="#75839c" stroke="#1e3978" stroke-width="1.5" stroke-linejoin="round"/>
+        <!-- Roof -->
+        <rect x="-14" y="-11" width="28" height="32" rx="3" fill="#3158b8" stroke="#1e3978" stroke-width="1.2"/>
+        <!-- Front headlights -->
+        <rect x="-17" y="-44" width="10" height="4.5" rx="1.8" fill="#ffffff" stroke="#1e3978" stroke-width="0.8"/>
+        <rect x="7" y="-44" width="10" height="4.5" rx="1.8" fill="#ffffff" stroke="#1e3978" stroke-width="0.8"/>
+        <!-- Rear tail lights -->
+        <rect x="-16" y="40.5" width="8" height="3" rx="1.2" fill="#75839c"/>
+        <rect x="8" y="40.5" width="8" height="3" rx="1.2" fill="#75839c"/>
+      </g>
+      <g transform="translate(322, 16)">
+        <g>
+          <path d="M 134 86 Q 138 118 174 156" fill="none" stroke="#705d00" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="8,6"/>
+          <g transform="translate(174.0, 156.0) rotate(135.0)">
+            <path d="M -8.5 10.5 L 0 -3 L 8.5 10.5" fill="none" stroke="#705d00" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+        </g>
+      </g>
+    </g>
+    <rect x="322" y="16" width="286" height="512" rx="14" fill="none" stroke="#dfe5f0" stroke-width="2.5"/>
+    <!-- Step number badge -->
+    <circle cx="358" cy="52" r="24" fill="#264796" stroke="#ffffff" stroke-width="2.5"/>
+    <text x="358" y="61" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="27" font-weight="800" fill="#ffffff">2</text>
+    <!-- Bottom HUD bar -->
+    <rect x="334" y="412" width="262" height="106" rx="12" fill="#ffffff" stroke="#dfe5f0" stroke-width="2.5"/>
+    <g>
+      <!-- Clockwise rotation arrow (full right lock) -->
+      <path d="M 385.1 446.2 A 45 45 0 0 1 458.9 446.2" fill="none" stroke="#264796" stroke-width="4.5" stroke-linecap="round"/>
+      <g transform="translate(458.9, 446.2) rotate(145)">
+        <path d="M -7 9 L 0 -2 L 7 9" fill="none" stroke="#264796" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <g transform="translate(422, 472) rotate(145)">
+        <!-- Steering wheel rim -->
+        <circle cx="0" cy="0" r="31" fill="none" stroke="#131d1f" stroke-width="6"/>
+        <!-- Spokes (3-spoke T-bar) -->
+        <line x1="-29" y1="3" x2="29" y2="3" stroke="#131d1f" stroke-width="5.5" stroke-linecap="round"/>
+        <line x1="0" y1="3" x2="0" y2="29" stroke="#131d1f" stroke-width="5.5" stroke-linecap="round"/>
+        <!-- Center hub -->
+        <circle cx="0" cy="3" r="7" fill="#131d1f"/>
+        <!-- Top-center reference marker on rim -->
+        <rect x="-4" y="-35" width="8" height="8" rx="2" fill="#264796"/>
+      </g>
+    </g>
+    <!-- Direction icon: Reverse (down arrow relative to car) -->
+    <g transform="translate(530, 468)">
+      <rect x="-36" y="-36" width="72" height="72" rx="12" fill="#ecf0fa" stroke="#dfe5f0" stroke-width="2"/>
+      <!-- Mini car icon -->
+      <g transform="translate(-14, -4)">
+        <rect x="-9" y="-17" width="18" height="34" rx="4.5" fill="#264796" stroke="#1e3978" stroke-width="1.4"/>
+        <path d="M -7 -10 L 7 -10 L 5.5 -3 L -5.5 -3 Z" fill="#c5cfe2"/>
+        <rect x="-6.5" y="-17" width="4.5" height="2.2" rx="0.8" fill="#ffffff"/>
+        <rect x="2" y="-17" width="4.5" height="2.2" rx="0.8" fill="#ffffff"/>
+      </g>
+      <!-- Down arrow (Reverse, dashed stem) -->
+      <g transform="translate(15, 0)">
+        <line x1="0" y1="-22" x2="0" y2="18" stroke="#705d00" stroke-width="5" stroke-linecap="round" stroke-dasharray="6,4.5"/>
+        <path d="M -9.5 9 L 0 22 L 9.5 9" fill="none" stroke="#705d00" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+    </g>
+  </g>
+  <!-- Panel Step 3 -->
+  <g>
+    <clipPath id="clip-par-3">
+      <rect x="16" y="16" width="286" height="512" rx="14"/>
+    </clipPath>
+    <rect x="16" y="16" width="286" height="512" rx="14" fill="#ffffff" stroke="#dfe5f0" stroke-width="2.5"/>
+    <g clip-path="url(#clip-par-3)">
+      <!-- Road background -->
+      <rect x="16" y="16" width="286" height="394" fill="#dee5f3"/>
+      <!-- Lane center dashed line on left -->
+      <line x1="68" y1="16" x2="68" y2="410" stroke="#ffffff" stroke-width="2.5" stroke-dasharray="14,12" opacity="0.85"/>
+      <!-- Right sidewalk & curb -->
+      <rect x="254" y="16" width="48" height="394" fill="#ecf0fa"/>
+      <line x1="254" y1="16" x2="254" y2="410" stroke="#596568" stroke-width="4"/>
+      <!-- Parking bay markings (white #ffffff on road) -->
+      <path d="M 252 48 L 196 48 M 252 156 L 196 156" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+      <path d="M 252 298 L 196 298 M 252 404 L 196 404" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+      <line x1="196" y1="156" x2="196" y2="298" stroke="#ffffff" stroke-width="2.5" stroke-dasharray="6,6"/>
+      <!-- Front parked car -->
+      <use href="#parked-car" x="224" y="102"/>
+      <!-- Rear parked car -->
+      <use href="#parked-car" x="224" y="352"/>
+      <use href="#ghost-car" transform="translate(172, 154) rotate(-45)"/>
+      <g transform="translate(200.0, 198.0) rotate(-45.0)">
+        <!-- Front wheels (steerable) -->
+        <g transform="translate(-22, -25) rotate(0)">
+          <rect x="-2.5" y="-7.5" width="5" height="15" rx="2" fill="#131d1f"/>
+        </g>
+        <g transform="translate(22, -25) rotate(0)">
+          <rect x="-2.5" y="-7.5" width="5" height="15" rx="2" fill="#131d1f"/>
+        </g>
+        <!-- Rear wheels -->
+        <rect x="-24.5" y="18" width="5" height="15" rx="2" fill="#131d1f"/>
+        <rect x="19.5" y="18" width="5" height="15" rx="2" fill="#131d1f"/>
+        <!-- Car body -->
+        <rect x="-22" y="-44" width="44" height="88" rx="9" fill="#264796" stroke="#1e3978" stroke-width="2.5"/>
+        <!-- Side mirrors -->
+        <rect x="-26.5" y="-20" width="4.5" height="7" rx="1.5" fill="#264796" stroke="#1e3978" stroke-width="1.5"/>
+        <rect x="22" y="-20" width="4.5" height="7" rx="1.5" fill="#264796" stroke="#1e3978" stroke-width="1.5"/>
+        <!-- Hood crease lines -->
+        <line x1="-13" y1="-41" x2="-15" y2="-27" stroke="#4267bd" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="13" y1="-41" x2="15" y2="-27" stroke="#4267bd" stroke-width="1.5" stroke-linecap="round"/>
+        <!-- Front windshield (light so front is obvious) -->
+        <path d="M -17 -26 L 17 -26 L 14 -11 L -14 -11 Z" fill="#c5cfe2" stroke="#1e3978" stroke-width="1.5" stroke-linejoin="round"/>
+        <!-- Rear window -->
+        <path d="M -14 21 L 14 21 L 16 32 L -16 32 Z" fill="#75839c" stroke="#1e3978" stroke-width="1.5" stroke-linejoin="round"/>
+        <!-- Roof -->
+        <rect x="-14" y="-11" width="28" height="32" rx="3" fill="#3158b8" stroke="#1e3978" stroke-width="1.2"/>
+        <!-- Front headlights -->
+        <rect x="-17" y="-44" width="10" height="4.5" rx="1.8" fill="#ffffff" stroke="#1e3978" stroke-width="0.8"/>
+        <rect x="7" y="-44" width="10" height="4.5" rx="1.8" fill="#ffffff" stroke="#1e3978" stroke-width="0.8"/>
+        <!-- Rear tail lights -->
+        <rect x="-16" y="40.5" width="8" height="3" rx="1.2" fill="#75839c"/>
+        <rect x="8" y="40.5" width="8" height="3" rx="1.2" fill="#75839c"/>
+      </g>
+      <g transform="translate(16, 16)">
+        <g>
+          <path d="M 152 134 L 200 198" fill="none" stroke="#705d00" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="8,6"/>
+          <g transform="translate(200.0, 198.0) rotate(142.0)">
+            <path d="M -8.5 10.5 L 0 -3 L 8.5 10.5" fill="none" stroke="#705d00" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+        </g>
+      </g>
+    </g>
+    <rect x="16" y="16" width="286" height="512" rx="14" fill="none" stroke="#dfe5f0" stroke-width="2.5"/>
+    <!-- Step number badge -->
+    <circle cx="52" cy="52" r="24" fill="#264796" stroke="#ffffff" stroke-width="2.5"/>
+    <text x="52" y="61" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="27" font-weight="800" fill="#ffffff">3</text>
+    <!-- Bottom HUD bar -->
+    <rect x="28" y="412" width="262" height="106" rx="12" fill="#ffffff" stroke="#dfe5f0" stroke-width="2.5"/>
+    <g>
+      <g transform="translate(116, 472) rotate(0)">
+        <!-- Steering wheel rim -->
+        <circle cx="0" cy="0" r="31" fill="none" stroke="#131d1f" stroke-width="6"/>
+        <!-- Spokes (3-spoke T-bar) -->
+        <line x1="-29" y1="3" x2="29" y2="3" stroke="#131d1f" stroke-width="5.5" stroke-linecap="round"/>
+        <line x1="0" y1="3" x2="0" y2="29" stroke="#131d1f" stroke-width="5.5" stroke-linecap="round"/>
+        <!-- Center hub -->
+        <circle cx="0" cy="3" r="7" fill="#131d1f"/>
+        <!-- Top-center reference marker on rim -->
+        <rect x="-4" y="-35" width="8" height="8" rx="2" fill="#264796"/>
+      </g>
+    </g>
+    <!-- Direction icon: Reverse (down arrow relative to car) -->
+    <g transform="translate(224, 468)">
+      <rect x="-36" y="-36" width="72" height="72" rx="12" fill="#ecf0fa" stroke="#dfe5f0" stroke-width="2"/>
+      <!-- Mini car icon -->
+      <g transform="translate(-14, -4)">
+        <rect x="-9" y="-17" width="18" height="34" rx="4.5" fill="#264796" stroke="#1e3978" stroke-width="1.4"/>
+        <path d="M -7 -10 L 7 -10 L 5.5 -3 L -5.5 -3 Z" fill="#c5cfe2"/>
+        <rect x="-6.5" y="-17" width="4.5" height="2.2" rx="0.8" fill="#ffffff"/>
+        <rect x="2" y="-17" width="4.5" height="2.2" rx="0.8" fill="#ffffff"/>
+      </g>
+      <!-- Down arrow (Reverse, dashed stem) -->
+      <g transform="translate(15, 0)">
+        <line x1="0" y1="-22" x2="0" y2="18" stroke="#705d00" stroke-width="5" stroke-linecap="round" stroke-dasharray="6,4.5"/>
+        <path d="M -9.5 9 L 0 22 L 9.5 9" fill="none" stroke="#705d00" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+    </g>
+  </g>
+  <!-- Panel Step 4 -->
+  <g>
+    <clipPath id="clip-par-4">
+      <rect x="628" y="548" width="286" height="512" rx="14"/>
+    </clipPath>
+    <rect x="628" y="548" width="286" height="512" rx="14" fill="#ffffff" stroke="#dfe5f0" stroke-width="2.5"/>
+    <g clip-path="url(#clip-par-4)">
+      <!-- Road background -->
+      <rect x="628" y="548" width="286" height="394" fill="#dee5f3"/>
+      <!-- Lane center dashed line on left -->
+      <line x1="680" y1="548" x2="680" y2="942" stroke="#ffffff" stroke-width="2.5" stroke-dasharray="14,12" opacity="0.85"/>
+      <!-- Right sidewalk & curb -->
+      <rect x="866" y="548" width="48" height="394" fill="#ecf0fa"/>
+      <line x1="866" y1="548" x2="866" y2="942" stroke="#596568" stroke-width="4"/>
+      <!-- Parking bay markings (white #ffffff on road) -->
+      <path d="M 864 580 L 808 580 M 864 688 L 808 688" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+      <path d="M 864 830 L 808 830 M 864 936 L 808 936" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+      <line x1="808" y1="688" x2="808" y2="830" stroke="#ffffff" stroke-width="2.5" stroke-dasharray="6,6"/>
+      <!-- Front parked car -->
+      <use href="#parked-car" x="836" y="634"/>
+      <!-- Rear parked car -->
+      <use href="#parked-car" x="836" y="884"/>
+      <use href="#ghost-car" transform="translate(812, 730) rotate(-45)"/>
+      <g transform="translate(836.0, 780.0) rotate(0.0)">
+        <!-- Front wheels (steerable) -->
+        <g transform="translate(-22, -25) rotate(-32)">
+          <rect x="-2.5" y="-7.5" width="5" height="15" rx="2" fill="#131d1f"/>
+        </g>
+        <g transform="translate(22, -25) rotate(-32)">
+          <rect x="-2.5" y="-7.5" width="5" height="15" rx="2" fill="#131d1f"/>
+        </g>
+        <!-- Rear wheels -->
+        <rect x="-24.5" y="18" width="5" height="15" rx="2" fill="#131d1f"/>
+        <rect x="19.5" y="18" width="5" height="15" rx="2" fill="#131d1f"/>
+        <!-- Car body -->
+        <rect x="-22" y="-44" width="44" height="88" rx="9" fill="#264796" stroke="#1e3978" stroke-width="2.5"/>
+        <!-- Side mirrors -->
+        <rect x="-26.5" y="-20" width="4.5" height="7" rx="1.5" fill="#264796" stroke="#1e3978" stroke-width="1.5"/>
+        <rect x="22" y="-20" width="4.5" height="7" rx="1.5" fill="#264796" stroke="#1e3978" stroke-width="1.5"/>
+        <!-- Hood crease lines -->
+        <line x1="-13" y1="-41" x2="-15" y2="-27" stroke="#4267bd" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="13" y1="-41" x2="15" y2="-27" stroke="#4267bd" stroke-width="1.5" stroke-linecap="round"/>
+        <!-- Front windshield (light so front is obvious) -->
+        <path d="M -17 -26 L 17 -26 L 14 -11 L -14 -11 Z" fill="#c5cfe2" stroke="#1e3978" stroke-width="1.5" stroke-linejoin="round"/>
+        <!-- Rear window -->
+        <path d="M -14 21 L 14 21 L 16 32 L -16 32 Z" fill="#75839c" stroke="#1e3978" stroke-width="1.5" stroke-linejoin="round"/>
+        <!-- Roof -->
+        <rect x="-14" y="-11" width="28" height="32" rx="3" fill="#3158b8" stroke="#1e3978" stroke-width="1.2"/>
+        <!-- Front headlights -->
+        <rect x="-17" y="-44" width="10" height="4.5" rx="1.8" fill="#ffffff" stroke="#1e3978" stroke-width="0.8"/>
+        <rect x="7" y="-44" width="10" height="4.5" rx="1.8" fill="#ffffff" stroke="#1e3978" stroke-width="0.8"/>
+        <!-- Rear tail lights -->
+        <rect x="-16" y="40.5" width="8" height="3" rx="1.2" fill="#75839c"/>
+        <rect x="8" y="40.5" width="8" height="3" rx="1.2" fill="#75839c"/>
+      </g>
+      <g transform="translate(628, 548)">
+        <g>
+          <path d="M 184 182 Q 207 210 208 252" fill="none" stroke="#705d00" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="8,6"/>
+          <g transform="translate(208.0, 252.0) rotate(180.0)">
+            <path d="M -8.5 10.5 L 0 -3 L 8.5 10.5" fill="none" stroke="#705d00" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+        </g>
+      </g>
+    </g>
+    <rect x="628" y="548" width="286" height="512" rx="14" fill="none" stroke="#dfe5f0" stroke-width="2.5"/>
+    <!-- Step number badge -->
+    <circle cx="664" cy="584" r="24" fill="#264796" stroke="#ffffff" stroke-width="2.5"/>
+    <text x="664" y="593" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="27" font-weight="800" fill="#ffffff">4</text>
+    <!-- Bottom HUD bar -->
+    <rect x="640" y="944" width="262" height="106" rx="12" fill="#ffffff" stroke="#dfe5f0" stroke-width="2.5"/>
+    <g>
+      <!-- Counter-clockwise rotation arrow (full left lock) -->
+      <path d="M 764.9 978.2 A 45 45 0 0 0 691.1 978.2" fill="none" stroke="#264796" stroke-width="4.5" stroke-linecap="round"/>
+      <g transform="translate(691.1, 978.2) rotate(-145)">
+        <path d="M -7 9 L 0 -2 L 7 9" fill="none" stroke="#264796" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <g transform="translate(728, 1004) rotate(-145)">
+        <!-- Steering wheel rim -->
+        <circle cx="0" cy="0" r="31" fill="none" stroke="#131d1f" stroke-width="6"/>
+        <!-- Spokes (3-spoke T-bar) -->
+        <line x1="-29" y1="3" x2="29" y2="3" stroke="#131d1f" stroke-width="5.5" stroke-linecap="round"/>
+        <line x1="0" y1="3" x2="0" y2="29" stroke="#131d1f" stroke-width="5.5" stroke-linecap="round"/>
+        <!-- Center hub -->
+        <circle cx="0" cy="3" r="7" fill="#131d1f"/>
+        <!-- Top-center reference marker on rim -->
+        <rect x="-4" y="-35" width="8" height="8" rx="2" fill="#264796"/>
+      </g>
+    </g>
+    <!-- Direction icon: Reverse (down arrow relative to car) -->
+    <g transform="translate(836, 1000)">
+      <rect x="-36" y="-36" width="72" height="72" rx="12" fill="#ecf0fa" stroke="#dfe5f0" stroke-width="2"/>
+      <!-- Mini car icon -->
+      <g transform="translate(-14, -4)">
+        <rect x="-9" y="-17" width="18" height="34" rx="4.5" fill="#264796" stroke="#1e3978" stroke-width="1.4"/>
+        <path d="M -7 -10 L 7 -10 L 5.5 -3 L -5.5 -3 Z" fill="#c5cfe2"/>
+        <rect x="-6.5" y="-17" width="4.5" height="2.2" rx="0.8" fill="#ffffff"/>
+        <rect x="2" y="-17" width="4.5" height="2.2" rx="0.8" fill="#ffffff"/>
+      </g>
+      <!-- Down arrow (Reverse, dashed stem) -->
+      <g transform="translate(15, 0)">
+        <line x1="0" y1="-22" x2="0" y2="18" stroke="#705d00" stroke-width="5" stroke-linecap="round" stroke-dasharray="6,4.5"/>
+        <path d="M -9.5 9 L 0 22 L 9.5 9" fill="none" stroke="#705d00" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+    </g>
+  </g>
+  <!-- Panel Step 5 -->
+  <g>
+    <clipPath id="clip-par-5">
+      <rect x="322" y="548" width="286" height="512" rx="14"/>
+    </clipPath>
+    <rect x="322" y="548" width="286" height="512" rx="14" fill="#ffffff" stroke="#dfe5f0" stroke-width="2.5"/>
+    <g clip-path="url(#clip-par-5)">
+      <!-- Road background -->
+      <rect x="322" y="548" width="286" height="394" fill="#dee5f3"/>
+      <!-- Lane center dashed line on left -->
+      <line x1="374" y1="548" x2="374" y2="942" stroke="#ffffff" stroke-width="2.5" stroke-dasharray="14,12" opacity="0.85"/>
+      <!-- Right sidewalk & curb -->
+      <rect x="560" y="548" width="48" height="394" fill="#ecf0fa"/>
+      <line x1="560" y1="548" x2="560" y2="942" stroke="#596568" stroke-width="4"/>
+      <!-- Parking bay markings (white #ffffff on road) -->
+      <path d="M 558 580 L 502 580 M 558 688 L 502 688" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+      <path d="M 558 830 L 502 830 M 558 936 L 502 936" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+      <line x1="502" y1="688" x2="502" y2="830" stroke="#ffffff" stroke-width="2.5" stroke-dasharray="6,6"/>
+      <!-- Front parked car -->
+      <use href="#parked-car" x="530" y="634"/>
+      <!-- Rear parked car -->
+      <use href="#parked-car" x="530" y="884"/>
+      <use href="#ghost-car" transform="translate(530, 780) rotate(0)"/>
+      <g transform="translate(530.0, 759.0) rotate(0.0)">
+        <!-- Front wheels (steerable) -->
+        <g transform="translate(-22, -25) rotate(0)">
+          <rect x="-2.5" y="-7.5" width="5" height="15" rx="2" fill="#131d1f"/>
+        </g>
+        <g transform="translate(22, -25) rotate(0)">
+          <rect x="-2.5" y="-7.5" width="5" height="15" rx="2" fill="#131d1f"/>
+        </g>
+        <!-- Rear wheels -->
+        <rect x="-24.5" y="18" width="5" height="15" rx="2" fill="#131d1f"/>
+        <rect x="19.5" y="18" width="5" height="15" rx="2" fill="#131d1f"/>
+        <!-- Car body -->
+        <rect x="-22" y="-44" width="44" height="88" rx="9" fill="#264796" stroke="#1e3978" stroke-width="2.5"/>
+        <!-- Side mirrors -->
+        <rect x="-26.5" y="-20" width="4.5" height="7" rx="1.5" fill="#264796" stroke="#1e3978" stroke-width="1.5"/>
+        <rect x="22" y="-20" width="4.5" height="7" rx="1.5" fill="#264796" stroke="#1e3978" stroke-width="1.5"/>
+        <!-- Hood crease lines -->
+        <line x1="-13" y1="-41" x2="-15" y2="-27" stroke="#4267bd" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="13" y1="-41" x2="15" y2="-27" stroke="#4267bd" stroke-width="1.5" stroke-linecap="round"/>
+        <!-- Front windshield (light so front is obvious) -->
+        <path d="M -17 -26 L 17 -26 L 14 -11 L -14 -11 Z" fill="#c5cfe2" stroke="#1e3978" stroke-width="1.5" stroke-linejoin="round"/>
+        <!-- Rear window -->
+        <path d="M -14 21 L 14 21 L 16 32 L -16 32 Z" fill="#75839c" stroke="#1e3978" stroke-width="1.5" stroke-linejoin="round"/>
+        <!-- Roof -->
+        <rect x="-14" y="-11" width="28" height="32" rx="3" fill="#3158b8" stroke="#1e3978" stroke-width="1.2"/>
+        <!-- Front headlights -->
+        <rect x="-17" y="-44" width="10" height="4.5" rx="1.8" fill="#ffffff" stroke="#1e3978" stroke-width="0.8"/>
+        <rect x="7" y="-44" width="10" height="4.5" rx="1.8" fill="#ffffff" stroke="#1e3978" stroke-width="0.8"/>
+        <!-- Rear tail lights -->
+        <rect x="-16" y="40.5" width="8" height="3" rx="1.2" fill="#75839c"/>
+        <rect x="8" y="40.5" width="8" height="3" rx="1.2" fill="#75839c"/>
+      </g>
+      <g transform="translate(322, 548)">
+        <g>
+          <path d="M 208 246 L 208 192" fill="none" stroke="#705d00" stroke-width="4.5" stroke-linecap="round"/>
+          <g transform="translate(208.0, 192.0) rotate(0.0)">
+            <path d="M -8.5 10.5 L 0 -3 L 8.5 10.5" fill="none" stroke="#705d00" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+        </g>
+      </g>
+    </g>
+    <rect x="322" y="548" width="286" height="512" rx="14" fill="none" stroke="#dfe5f0" stroke-width="2.5"/>
+    <!-- Step number badge -->
+    <circle cx="358" cy="584" r="24" fill="#264796" stroke="#ffffff" stroke-width="2.5"/>
+    <text x="358" y="593" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="27" font-weight="800" fill="#ffffff">5</text>
+    <!-- Bottom HUD bar -->
+    <rect x="334" y="944" width="262" height="106" rx="12" fill="#ffffff" stroke="#dfe5f0" stroke-width="2.5"/>
+    <g>
+      <g transform="translate(422, 1004) rotate(0)">
+        <!-- Steering wheel rim -->
+        <circle cx="0" cy="0" r="31" fill="none" stroke="#131d1f" stroke-width="6"/>
+        <!-- Spokes (3-spoke T-bar) -->
+        <line x1="-29" y1="3" x2="29" y2="3" stroke="#131d1f" stroke-width="5.5" stroke-linecap="round"/>
+        <line x1="0" y1="3" x2="0" y2="29" stroke="#131d1f" stroke-width="5.5" stroke-linecap="round"/>
+        <!-- Center hub -->
+        <circle cx="0" cy="3" r="7" fill="#131d1f"/>
+        <!-- Top-center reference marker on rim -->
+        <rect x="-4" y="-35" width="8" height="8" rx="2" fill="#264796"/>
+      </g>
+    </g>
+    <!-- Direction icon: Forward (up arrow relative to car) -->
+    <g transform="translate(530, 1000)">
+      <rect x="-36" y="-36" width="72" height="72" rx="12" fill="#ecf0fa" stroke="#dfe5f0" stroke-width="2"/>
+      <!-- Mini car icon -->
+      <g transform="translate(-14, 4)">
+        <rect x="-9" y="-17" width="18" height="34" rx="4.5" fill="#264796" stroke="#1e3978" stroke-width="1.4"/>
+        <path d="M -7 -10 L 7 -10 L 5.5 -3 L -5.5 -3 Z" fill="#c5cfe2"/>
+        <rect x="-6.5" y="-17" width="4.5" height="2.2" rx="0.8" fill="#ffffff"/>
+        <rect x="2" y="-17" width="4.5" height="2.2" rx="0.8" fill="#ffffff"/>
+      </g>
+      <!-- Up arrow (Forward) -->
+      <g transform="translate(15, 0)">
+        <line x1="0" y1="22" x2="0" y2="-20" stroke="#705d00" stroke-width="5" stroke-linecap="round"/>
+        <path d="M -9.5 -9 L 0 -22 L 9.5 -9" fill="none" stroke="#705d00" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+    </g>
+  </g>
+</svg>
