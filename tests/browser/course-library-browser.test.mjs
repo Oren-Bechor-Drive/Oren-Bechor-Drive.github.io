@@ -17,6 +17,7 @@ const topicIds = [
   "roundabouts",
   "overtaking",
   "trip-planning",
+  "parking",
   "driving-test",
   "licensing-and-points",
 ];
@@ -163,18 +164,18 @@ test("course headers link to the public library and retain the account fallback"
 
 for (const mode of modes) {
   test(
-    `topic grid uses rows of 4, 4 and 2 on desktop and 2 per row on mobile with ${mode} JavaScript`,
+    `topic grid uses rows of 4, 4 and 3 on desktop and 2 per row on mobile with ${mode} JavaScript`,
     { timeout: 20_000 },
     async (t) => {
       const browser = await chromium.launch();
       t.after(() => browser.close());
       for (const [width, counts] of [
-        [1440, [4, 4, 2]],
-        [1024, [4, 4, 2]],
-        [768, [4, 4, 2]],
-        [767, [2, 2, 2, 2, 2]],
-        [390, [2, 2, 2, 2, 2]],
-        [320, [2, 2, 2, 2, 2]],
+        [1440, [4, 4, 3]],
+        [1024, [4, 4, 3]],
+        [768, [4, 4, 3]],
+        [767, [2, 2, 2, 2, 2, 1]],
+        [390, [2, 2, 2, 2, 2, 1]],
+        [320, [2, 2, 2, 2, 2, 1]],
       ]) {
         const page = await openLibrary(browser, mode, width);
         const { rows, grid } = await gridRows(page);

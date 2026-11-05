@@ -26,7 +26,7 @@ test("mobile disclosures animate pointer input without delaying keyboard or focu
   await page.goto("http://gallery.test/");
   assert.equal(
     await page.locator("[data-topic-summaries] h3 a:visible").count(),
-    10,
+    11,
   );
 
   for (const [triggerSelector, surfaceSelector] of [

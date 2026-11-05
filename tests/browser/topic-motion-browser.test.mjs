@@ -142,7 +142,7 @@ test("phone topics stay complete and static for pointer and keyboard users", asy
     await page.goto("http://gallery.test/");
     assert.equal(
       await page.locator("[data-topic-summaries] h3 a:visible").count(),
-      10,
+      11,
     );
     assert.equal(
       await page.locator(".topic-card:visible, .topic-panel:visible").count(),

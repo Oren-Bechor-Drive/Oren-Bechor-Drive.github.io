@@ -79,6 +79,56 @@
       "alt": "שני רמזורים זה לצד זה. בתחתית הרמזור השמאלי חץ ירוק הפונה שמאלה, ובתחתית הרמזור הימני חץ ירוק הפונה ימינה. יתר האורות כבויים.",
       "bytes": 11230,
       "sha256": "48a072f642a6942cbf1dae905e71f906dc02b114e09d2bdec48452b7574ad5b4"
+    },
+    {
+      "officialIds": ["0609"],
+      "sourceUrl": "https://www.gov.il/BlobFolder/generalpage/tq_pic_02/he/TQ_PIC_3609.jpg",
+      "path": "assets/images/theory/originals/TQ_PIC_3609.jpg",
+      "width": 350,
+      "height": 230,
+      "alt": "אבני שפה בצד כביש אפור, צבועות לסירוגין באדום ובצהוב.",
+      "bytes": 7508,
+      "sha256": "820777231051cb627ea221162241f88968f0c6689c3b9dd3f77c86b0f2195fe8"
+    },
+    {
+      "officialIds": ["0657"],
+      "sourceUrl": "https://www.gov.il/BlobFolder/generalpage/tq_pic_02/he/TQ_PIC_3657.jpg",
+      "path": "assets/images/theory/originals/TQ_PIC_3657.jpg",
+      "width": 350,
+      "height": 150,
+      "alt": "אבני שפה בצד כביש אפור, צבועות לסירוגין בכחול ובלבן.",
+      "bytes": 4992,
+      "sha256": "92aa7f0b0f0901572647441ddd7d879d9be36b19130169411f514d146a3ebbb1"
+    },
+    {
+      "officialIds": ["0214"],
+      "sourceUrl": "https://www.gov.il/BlobFolder/generalpage/tq_pic_01/he/TQ_PIC_3214.jpg",
+      "path": "assets/images/theory/originals/TQ_PIC_3214.jpg",
+      "width": 350,
+      "height": 230,
+      "alt": "שרטוט צומת במבט מלמעלה. לאורך המדרכות שליד הצומת מוצבים מעקות בטיחות להולכי רגל, ורכב לבן עומד בכביש לצד המעקה. לידו סימן שאלה אדום.",
+      "bytes": 13644,
+      "sha256": "c014952a32692d886c6874f9361081afee0456105079a4f4a5cedc3d2de022d7"
+    },
+    {
+      "officialIds": ["0210"],
+      "sourceUrl": "https://www.gov.il/BlobFolder/generalpage/tq_pic_01/he/TQ_PIC_3210.jpg",
+      "path": "assets/images/theory/originals/TQ_PIC_3210.jpg",
+      "width": 350,
+      "height": 230,
+      "alt": "שני רכבים עומדים זה לצד זה בצד כביש עירוני: אחד ליד שפת הכביש, והשני לצדו בטור שני.",
+      "bytes": 27895,
+      "sha256": "3fce7316d737ca30aa423d6dd230c4a2693d693f2a6f927244ab674f2a16f945"
+    },
+    {
+      "officialIds": ["0211"],
+      "sourceUrl": "https://www.gov.il/BlobFolder/generalpage/tq_pic_01/he/TQ_PIC_3211.jpg",
+      "path": "assets/images/theory/originals/TQ_PIC_3211.jpg",
+      "width": 350,
+      "height": 230,
+      "alt": "רכב כסוף נוסע על גשר צר בדרך פתוחה. משני צדי הכביש מעקות בטון נמוכים.",
+      "bytes": 18209,
+      "sha256": "501b27b2b88f1b1614f69f46f0da5a919696a569437dfc604fbd96a8e045674d"
     }
   ]
 }

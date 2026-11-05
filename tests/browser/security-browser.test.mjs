@@ -43,7 +43,7 @@ test(
         );
         assert.equal(
           await page.locator("[data-topic-summaries] h3 a:visible").count(),
-          10,
+          11,
         );
         assert.equal(await page.locator(".topic-select").count(), 0);
       } else {

@@ -268,7 +268,7 @@ test("root-scoped publication preserves reviewed source fidelity, escaping, medi
   question.lessonSectionId = "new-driver";
   await f.write(contentFile, JSON.stringify(f.bank));
   const result = await publish(f.root);
-  assert.equal(result.questionCount, 140);
+  assert.equal(result.questionCount, 155);
   assert.equal(
     result.topics.find((topic) => topic.id === "learning-foundations")
       .questionCount,
@@ -293,10 +293,10 @@ test("root-scoped publication preserves reviewed source fidelity, escaping, medi
   const published = quizzes.flatMap((quiz) =>
     quiz.questions.map((question) => ({ ...question, file: quiz.file })),
   );
-  assert.equal(published.length, 140);
+  assert.equal(published.length, 155);
   assert.equal(
     new Set(published.map((question) => question.officialId)).size,
-    140,
+    155,
   );
   const normalize = (text) => text.replace(/\s+/g, " ").trim();
   for (const source of f.bank.questions) {

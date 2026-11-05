@@ -164,10 +164,10 @@ test("topic controls keep their native button semantics", async () => {
     );
   }
   assert.equal(document.querySelector(".topic-rail").hidden, true);
-  assert.equal(controls.length, 10, "all library topics have desktop controls");
+  assert.equal(controls.length, 11, "all library topics have desktop controls");
   assert.equal(
     document.querySelectorAll("[data-topic-summaries] h3 a").length,
-    10,
+    11,
   );
   assert.equal(document.querySelector("[data-topic-summaries]").hidden, false);
 });

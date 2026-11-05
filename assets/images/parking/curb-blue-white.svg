@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+  <defs>
+    <clipPath id="card-clip">
+      <rect x="8" y="8" width="584" height="384" rx="18"/>
+    </clipPath>
+  </defs>
+  <!-- Background -->
+  <rect x="0" y="0" width="600" height="400" fill="#ffffff"/>
+  <g clip-path="url(#card-clip)">
+    <!-- Sidewalk surface -->
+    <polygon points="-200,-200 800,-200 700,-94 -68,290" fill="#ecf0fa"/>
+    <!-- Sidewalk paving tile lines -->
+    <g>
+      <line x1="-208" y1="294" x2="752" y2="-186" stroke="#dfe5f0" stroke-width="2.5"/>
+      <line x1="-252" y1="250" x2="708" y2="-230" stroke="#dfe5f0" stroke-width="2.5"/>
+      <line x1="-296" y1="206" x2="664" y2="-274" stroke="#dfe5f0" stroke-width="2.5"/>
+      <line x1="-340" y1="162" x2="620" y2="-318" stroke="#dfe5f0" stroke-width="2.5"/>
+      <line x1="-116.0" y1="314.0" x2="-336.0" y2="94.0" stroke="#dfe5f0" stroke-width="2.5"/>
+      <line x1="-68.0" y1="290.0" x2="-288.0" y2="70.0" stroke="#dfe5f0" stroke-width="2.5"/>
+      <line x1="-20.0" y1="266.0" x2="-240.0" y2="46.0" stroke="#dfe5f0" stroke-width="2.5"/>
+      <line x1="28.0" y1="242.0" x2="-192.0" y2="22.0" stroke="#dfe5f0" stroke-width="2.5"/>
+      <line x1="76.0" y1="218.0" x2="-144.0" y2="-2.0" stroke="#dfe5f0" stroke-width="2.5"/>
+      <line x1="124.0" y1="194.0" x2="-96.0" y2="-26.0" stroke="#dfe5f0" stroke-width="2.5"/>
+      <line x1="172.0" y1="170.0" x2="-48.0" y2="-50.0" stroke="#dfe5f0" stroke-width="2.5"/>
+      <line x1="220.0" y1="146.0" x2="0.0" y2="-74.0" stroke="#dfe5f0" stroke-width="2.5"/>
+      <line x1="268.0" y1="122.0" x2="48.0" y2="-98.0" stroke="#dfe5f0" stroke-width="2.5"/>
+      <line x1="316.0" y1="98.0" x2="96.0" y2="-122.0" stroke="#dfe5f0" stroke-width="2.5"/>
+      <line x1="364.0" y1="74.0" x2="144.0" y2="-146.0" stroke="#dfe5f0" stroke-width="2.5"/>
+      <line x1="412.0" y1="50.0" x2="192.0" y2="-170.0" stroke="#dfe5f0" stroke-width="2.5"/>
+      <line x1="460.0" y1="26.0" x2="240.0" y2="-194.0" stroke="#dfe5f0" stroke-width="2.5"/>
+      <line x1="508.0" y1="2.0" x2="288.0" y2="-218.0" stroke="#dfe5f0" stroke-width="2.5"/>
+      <line x1="556.0" y1="-22.0" x2="336.0" y2="-242.0" stroke="#dfe5f0" stroke-width="2.5"/>
+      <line x1="604.0" y1="-46.0" x2="384.0" y2="-266.0" stroke="#dfe5f0" stroke-width="2.5"/>
+      <line x1="652.0" y1="-70.0" x2="432.0" y2="-290.0" stroke="#dfe5f0" stroke-width="2.5"/>
+      <line x1="700.0" y1="-94.0" x2="480.0" y2="-314.0" stroke="#dfe5f0" stroke-width="2.5"/>
+      <line x1="748.0" y1="-118.0" x2="528.0" y2="-338.0" stroke="#dfe5f0" stroke-width="2.5"/>
+    </g>
+    <!-- Road surface -->
+    <polygon points="-26,372 742,-12 800,600 -200,600" fill="#dee5f3"/>
+    <!-- Road darker edge strip -->
+    <polygon points="-122,420 838,-60 864,-34 -96,446" fill="#c5cfe2"/>
+    <!-- Curb top faces -->
+    <g>
+      <polygon points="-68,290 28,242 70,284 -26,332" fill="#1f5fbf"/>
+      <polygon points="28,242 124,194 166,236 70,284" fill="#ffffff"/>
+      <polygon points="124,194 220,146 262,188 166,236" fill="#1f5fbf"/>
+      <polygon points="220,146 316,98 358,140 262,188" fill="#ffffff"/>
+      <polygon points="316,98 412,50 454,92 358,140" fill="#1f5fbf"/>
+      <polygon points="412,50 508,2 550,44 454,92" fill="#ffffff"/>
+      <polygon points="508,2 604,-46 646,-4 550,44" fill="#1f5fbf"/>
+      <polygon points="604,-46 700,-94 742,-52 646,-4" fill="#ffffff"/>
+    </g>
+    <!-- Curb road-facing side faces -->
+    <g>
+      <polygon points="-26,332 70,284 70,324 -26,372" fill="#174994"/>
+      <polygon points="70,284 166,236 166,276 70,324" fill="#dfe5f0"/>
+      <polygon points="166,236 262,188 262,228 166,276" fill="#174994"/>
+      <polygon points="262,188 358,140 358,180 262,228" fill="#dfe5f0"/>
+      <polygon points="358,140 454,92 454,132 358,180" fill="#174994"/>
+      <polygon points="454,92 550,44 550,84 454,132" fill="#dfe5f0"/>
+      <polygon points="550,44 646,-4 646,36 550,84" fill="#174994"/>
+      <polygon points="646,-4 742,-52 742,-12 646,36" fill="#dfe5f0"/>
+    </g>
+    <!-- Segment joints -->
+    <g>
+      <polyline points="28,242 70,284 70,324" fill="none" stroke="#596568" stroke-width="3" stroke-linejoin="round"/>
+      <polyline points="124,194 166,236 166,276" fill="none" stroke="#596568" stroke-width="3" stroke-linejoin="round"/>
+      <polyline points="220,146 262,188 262,228" fill="none" stroke="#596568" stroke-width="3" stroke-linejoin="round"/>
+      <polyline points="316,98 358,140 358,180" fill="none" stroke="#596568" stroke-width="3" stroke-linejoin="round"/>
+      <polyline points="412,50 454,92 454,132" fill="none" stroke="#596568" stroke-width="3" stroke-linejoin="round"/>
+      <polyline points="508,2 550,44 550,84" fill="none" stroke="#596568" stroke-width="3" stroke-linejoin="round"/>
+      <polyline points="604,-46 646,-4 646,36" fill="none" stroke="#596568" stroke-width="3" stroke-linejoin="round"/>
+    </g>
+    <!-- Curb longitudinal outlines (back edge, front crest, road base) -->
+    <line x1="-68" y1="290" x2="700" y2="-94" stroke="#596568" stroke-width="3.5"/>
+    <line x1="-26" y1="332" x2="742" y2="-52" stroke="#596568" stroke-width="3"/>
+    <line x1="-26" y1="372" x2="742" y2="-12" stroke="#596568" stroke-width="3.5"/>
+  </g>
+  <!-- Card border -->
+  <rect x="8" y="8" width="584" height="384" rx="18" fill="none" stroke="#dfe5f0" stroke-width="3"/>
+</svg>

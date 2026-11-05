@@ -200,7 +200,7 @@ No owner decision needed.
 - [x] P1: Redesign the lesson ending. Make the quiz block a full-width featured card with the button beside the text, add "הנושא הבא: ..." and a "לכל הנושאים" text link. Today the label and button sit about 800px apart.
 - [x] P1: Show position and effort: reading time in the intro, a "חזרה לתוכן העניינים" link after each mobile section, and optionally a `:target` highlight in the contents list.
 - [ ] P2 [decision]: Add official sign images inline to the signs lesson. Still outstanding: suitable approved sign assets and placement. Preserve the eight supplied Ministry diagrams and their provenance.
-- [x] P2: Add one "מצב מהכביש" scenario and one or two native `details` self-checks per section.
+- [x] P2: Add one "מצב מהכביש" scenario and one or two native `details` self-checks per section. The owner removed the self-checks on 2026-11-05; the scenarios remain.
 - [x] P2: Present the foundations definitions as a `dl` with a plain one-line meaning before the formal wording.
 - [x] P2: Number the priority-hierarchy levels 1-4, and drop the contents list on single-section lessons (priority-hierarchy, overtaking).
 - [x] P2: Make contents labels match section headings (roundabouts, licensing, trip-planning, driving-test, roads-and-lanes).

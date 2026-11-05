@@ -342,7 +342,7 @@ test(
     await page.goto("http://gallery.test/");
     assert.equal(
       await page.locator("[data-topic-summaries] h3 a:visible").count(),
-      10,
+      11,
     );
     assert.equal(
       await page.locator(".footer-social img").count(),

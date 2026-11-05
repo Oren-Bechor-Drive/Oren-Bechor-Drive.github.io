@@ -1,6 +1,6 @@
 # Public teaching placement and review navigation draft - 2026-10-08
 
-This is a local comparison of all 140 reviewed quiz questions with the current 25 public reading sections. It is an editorial draft for Oren's review. It does not approve teaching, independently verify current law, add official-bank questions, or authorize publishing any proposed copy.
+This is a local comparison of all 155 reviewed quiz questions with the current 28 public reading sections. The stopping and parking topic and its 15 questions were added on 2026-11-05; see [the parking source review](parking-sources-2026-11-05.md). It is an editorial draft for Oren's review. It does not approve teaching, independently verify current law, add official-bank questions, or authorize publishing any proposed copy.
 
 The inputs are [the reviewed question source](theory-quiz-content.json), [question review and adaptations](theory-quiz-review-2026-09-25.md), [supplied PDF coverage](course-topic-coverage.md), [dated lesson-source review](israeli-lesson-sources-2026-09-25.md), [the supplied PDF](the-idea.pdf), and [original media provenance](theory-media-2026-09-25.md). Question explanations are course-authored. The bank provides keys, not explanations. The existing publication review records access and evidence limits.
 
@@ -8,10 +8,10 @@ The inputs are [the reviewed question source](theory-quiz-content.json), [questi
 
 - Covered: the originally assessed section in the assigned quiz topic teaches the proposition needed for the keyed answer. This is a teaching-placement assessment, not legal approval.
 - Partial: the originally assessed section teaches the broad idea, but an answer-critical condition or distinction is absent.
-- Elsewhere: another existing reading section teaches the proposition. Review links now reach that teaching, including ten links to other topics. The label still records the missing teaching at the originally assessed placement; correcting navigation does not approve new teaching or fill that placement gap.
+- Elsewhere: another existing reading section teaches the proposition. Review links now reach that teaching, including 13 links to other topics. The label still records the missing teaching at the originally assessed placement; correcting navigation does not approve new teaching or fill that placement gap.
 - Gap: the required proposition is absent. The nearest assessed section remains an editorial placement, while public review returns to the learning topic.
 
-A question's `lessonSectionId` and optional `lessonTopicId` retain its assessed teaching destination, not paragraph coverage. Its `lessonReferenceKind` records public navigation intent, not instructor approval. The 48 Covered and 11 Elsewhere questions use `explanation` links to their reviewed sections, labeled `חזרה להסבר בנושא`. The 25 Partial and 56 Gap questions use `topic` links to their own learning topic's `#topic` anchor, labeled `חזרה לנושא הלימוד`. These 81 neutral links do not fill or approve the missing teaching. The figures below use the current HTML, including the new source-derived scenarios and self-checks, but those repetitions do not fill unrelated quiz gaps.
+A question's `lessonSectionId` and optional `lessonTopicId` retain its assessed teaching destination, not paragraph coverage. Its `lessonReferenceKind` records public navigation intent, not instructor approval. The 63 Covered and 14 Elsewhere questions use `explanation` links to their reviewed sections, labeled `חזרה להסבר בנושא`. The 25 Partial and 53 Gap questions use `topic` links to their own learning topic's `#topic` anchor, labeled `חזרה לנושא הלימוד`. These 78 neutral links do not fill or approve the missing teaching. The figures below use the current HTML, including the new source-derived scenarios, but those repetitions do not fill unrelated quiz gaps.
 
 | Topic | Questions | Covered | Partial | Elsewhere | Gap |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -23,15 +23,16 @@ A question's `lessonSectionId` and optional `lessonTopicId` retain its assessed 
 | מעגלי תנועה וצמתים | 12 | 9 | 0 | 0 | 3 |
 | עקיפה ואיסורי עקיפה | 17 | 6 | 4 | 1 | 6 |
 | תכנון נסיעה | 11 | 1 | 3 | 1 | 6 |
-| טעויות נפוצות בטסט המעשי | 14 | 0 | 4 | 2 | 8 |
+| עצירה וחנייה | 15 | 15 | 0 | 0 | 0 |
+| טעויות נפוצות בטסט המעשי | 14 | 0 | 4 | 5 | 5 |
 | נהג חדש, רישוי ושיטת הניקוד | 17 | 9 | 3 | 0 | 5 |
-| Total | 140 | 48 | 25 | 11 | 56 |
+| Total | 155 | 63 | 25 | 14 | 53 |
 
 The exact question IDs requiring missing facts or qualifications appear below. No numerical point allocations or penalties were introduced. Existing speed defaults and ordinary accompaniment figures already appear in the current lesson; the old critique's blanket claim that those pages defer all figures is stale.
 
 ## Question-to-section placement assessment
 
-Each question ID links to its current public quiz. The assessed-destination column names the section retained in the maintenance source, including placements that public review now reaches only through neutral topic navigation. The eleven Elsewhere destinations still reach existing teaching; question ownership and coverage totals are unchanged. Assessment text retains the comparison with the originally assessed own-topic placement, using that question's reviewed explanation.
+Each question ID links to its current public quiz. The assessed-destination column names the section retained in the maintenance source, including placements that public review now reaches only through neutral topic navigation. The fourteen Elsewhere destinations still reach existing teaching; question ownership and coverage totals are unchanged. Assessment text retains the comparison with the originally assessed own-topic placement, using that question's reviewed explanation.
 
 ### learning-foundations
 
@@ -182,12 +183,32 @@ Each question ID links to its current public quiz. The assessed-destination colu
 | [1383](../../course/trip-planning/quiz/#question-1383) | [signs-and-speed/speed](../../course/signs-and-speed/#speed) | Elsewhere | Speed appropriate to limited visibility is taught in signs/speed, not trip planning. See [speed](../../course/signs-and-speed/#speed). |
 | [1492](../../course/trip-planning/quiz/#question-1492) | [junction](../../course/trip-planning/#junction) | Gap | Anticipating the left movement of a signalling vehicle ahead is absent. |
 
+### parking
+
+| Question | Assessed teaching destination | Coverage | Required proposition or missing distinction |
+| --- | --- | --- | --- |
+| [0609](../../course/parking/quiz/#question-0609) | [curb-markings](../../course/parking/#curb-markings) | Covered | אדום-צהוב שמור לסוג הרכב שהתמרור במקום מתיר, בדרך כלל תחבורה ציבורית. כל רכב אחר לא עוצר שם, גם לא לרגע. |
+| [0657](../../course/parking/quiz/#question-0657) | [curb-markings](../../course/parking/#curb-markings) | Covered | כחול-לבן מסמן חנייה מותרת לפי ההסדר של הרשות המקומית, למשל תשלום או תו אזורי. בודקים את השלט שבמקום. |
+| [1403](../../course/parking/quiz/#question-1403) | [curb-markings](../../course/parking/#curb-markings) | Covered | התמרור בתחנה קובע אם ומתי מותר לחנות בה. כשרשום שהחנייה מותרת בשבתות ובחגים, ההיתר הוא לרכב פרטי בלבד. |
+| [0203](../../course/parking/quiz/#question-0203) | [no-parking-zones](../../course/parking/#no-parking-zones) | Covered | ליד צומת רכב עומד מסתיר את התנועה ואת הולכי הרגל. לכן אסור להעמיד רכב בתחום 12 מטרים מהצומת, אלא אם תמרור או סימון מתירים זאת. |
+| [1766](../../course/parking/quiz/#question-1766) | [no-parking-zones](../../course/parking/#no-parking-zones) | Covered | רכב שעומד לפני מעבר חצייה מסתיר הולכי רגל מהנהגים שמתקרבים. האיסור חל על המעבר עצמו ועל 12 המטרים שלפניו. |
+| [0206](../../course/parking/quiz/#question-0206) | [no-parking-zones](../../course/parking/#no-parking-zones) | Covered | האיסור הוא על המעבר ועל 12 המטרים שלפניו. אחרי המעבר מותר להעמיד רכב אם אין איסור אחר במקום. |
+| [0212](../../course/parking/quiz/#question-0212) | [no-parking-zones](../../course/parking/#no-parking-zones) | Covered | האוטובוס צריך מקום להיכנס לתחנה ולצאת ממנה. לכן אסור להעמיד רכב 20 מטרים לפני תמרור התחנה ועד 20 מטרים אחריו, אלא אם סומן אחרת. |
+| [0213](../../course/parking/quiz/#question-0213) | [no-parking-zones](../../course/parking/#no-parking-zones) | Covered | מול תחנה צריך להשאיר מקום לאוטובוס לעבור. מותר להעמיד שם רכב רק כשרוחב הכביש 12 מטרים או יותר. |
+| [0204](../../course/parking/quiz/#question-0204) | [no-parking-zones](../../course/parking/#no-parking-zones) | Covered | כבאים צריכים גישה מיידית לברז. אסור להעמיד רכב בתחום של שני מטרים ממנו. |
+| [0214](../../course/parking/quiz/#question-0214) | [no-parking-zones](../../course/parking/#no-parking-zones) | Covered | מעקה בטיחות מכוון הולכי רגל למקום חצייה בטוח. רכב שעומד לצדו חוסם את הראייה ואת המעבר, ולכן הדבר אסור אלא אם תמרור מתיר. |
+| [0210](../../course/parking/quiz/#question-0210) | [no-parking-zones](../../course/parking/#no-parking-zones) | Covered | רכב שעומד לצד רכב חונה, בטור שני, חוסם את הנתיב ומסכן את מי שעוקף אותו. הדבר אסור לחלוטין. |
+| [0211](../../course/parking/quiz/#question-0211) | [no-parking-zones](../../course/parking/#no-parking-zones) | Covered | על גשר או בתוך מנהרה אין שוליים ואין מקום לעקוף בבטחה רכב שעומד. לכן אסור להעמיד שם רכב. |
+| [1398](../../course/parking/quiz/#question-1398) | [no-parking-zones](../../course/parking/#no-parking-zones) | Covered | בדרך מהירה התנועה מהירה ואין מקום לעצירה בטוחה. עוצרים רק בשול, וזאת רק כשהרכב התקלקל ואי אפשר להמשיך. |
+| [0222](../../course/parking/quiz/#question-0222) | [parking-position](../../course/parking/#parking-position) | Covered | בהיעדר סימון מעמידים רכב במקביל לשפת הכביש. חנייה בזווית מותרת רק כשיש על הכביש סימון זוויתי, ולפי הסימון. |
+| [1736](../../course/parking/quiz/#question-1736) | [parking-position](../../course/parking/#parking-position) | Covered | הדוח מגיע לבעל הרכב הרשום ברישיון הרכב. הוא יכול להעביר את האחריות רק אם יוכיח שלא נהג בו ויצביע על מי שנהג. |
+
 ### driving-test
 
 | Question | Assessed teaching destination | Coverage | Required proposition or missing distinction |
 | --- | --- | --- | --- |
-| [0221](../../course/driving-test/quiz/#question-0221) | [control](../../course/driving-test/#control) | Gap | Parallel parking versus a marked alternative arrangement is absent. |
-| [0223](../../course/driving-test/quiz/#question-0223) | [control](../../course/driving-test/#control) | Gap | 40cm parking limit and measurement from the nearest wheels are absent. |
+| [0221](../../course/driving-test/quiz/#question-0221) | [parking/parking-position](../../course/parking/#parking-position) | Elsewhere | Parallel parking versus a marked arrangement is taught in the parking topic, not this control section. See [parking-position](../../course/parking/#parking-position). |
+| [0223](../../course/driving-test/quiz/#question-0223) | [parking/parking-position](../../course/parking/#parking-position) | Elsewhere | The 40cm limit, measured from the nearest wheels, is taught in the parking topic. See [parking-position](../../course/parking/#parking-position). |
 | [0733](../../course/driving-test/quiz/#question-0733) | [observation](../../course/driving-test/#observation) | Partial | Mirrors and the emergency exception are taught; the full routine easing-off/brake-or-gear sequence is not. |
 | [0738](../../course/driving-test/quiz/#question-0738) | [control](../../course/driving-test/#control) | Gap | Footbrake before moving the automatic selector is absent. |
 | [0739](../../course/driving-test/quiz/#question-0739) | [control](../../course/driving-test/#control) | Gap | Footbrake before releasing an automatic vehicle parking brake is absent. |
@@ -197,7 +218,7 @@ Each question ID links to its current public quiz. The assessed-destination colu
 | [0801](../../course/driving-test/quiz/#question-0801) | [control](../../course/driving-test/#control) | Partial | Surroundings and direction changes are checked; continuous observation and slow reverse speed are not explicit. |
 | [0872](../../course/driving-test/quiz/#question-0872) | [control](../../course/driving-test/#control) | Gap | Steering grip and precise steering are absent. |
 | [0903](../../course/driving-test/quiz/#question-0903) | [priority-hierarchy/priority](../../course/priority-hierarchy/#priority) | Elsewhere | Priority does not promise a clear path is taught in the hierarchy takeaway. See [priority](../../course/priority-hierarchy/#priority). |
-| [0951](../../course/driving-test/quiz/#question-0951) | [control](../../course/driving-test/#control) | Gap | Checking before opening a door/exiting a parked vehicle is absent; approaching parked-car hazards is a different viewpoint. |
+| [0951](../../course/driving-test/quiz/#question-0951) | [parking/parking-position](../../course/parking/#parking-position) | Elsewhere | Checking before opening a door or leaving a parked vehicle is taught in the parking topic. See [parking-position](../../course/parking/#parking-position). |
 | [1045](../../course/driving-test/quiz/#question-1045) | [control](../../course/driving-test/#control) | Gap | Parking-brake purpose is absent. |
 | [1765](../../course/driving-test/quiz/#question-1765) | [control](../../course/driving-test/#control) | Gap | Head-restraint top aligned with the top of the head is absent. |
 
@@ -397,7 +418,7 @@ Review boundary: Preserve the separate Ministry medical-fitness service evidence
 
 ## Scenario and self-check derivation
 
-The 25 new scenarios and native self-checks repeat existing lesson propositions. They are plain reading checks, not new official quiz items, keys, grading or evidence that the gaps above were closed. Each source pointer identifies the existing paragraph/list item and heading used for the adaptation.
+The owner removed every lesson self-check on 2026-11-05; the scenarios remain. The prompts below are kept as provenance only. The 25 new scenarios and native self-checks repeat existing lesson propositions. They are plain reading checks, not new official quiz items, keys, grading or evidence that the gaps above were closed. Each source pointer identifies the existing paragraph/list item and heading used for the adaptation.
 
 | Section | Existing heading and paragraph pointer | Self-check prompt | Source provenance |
 | --- | --- | --- | --- |

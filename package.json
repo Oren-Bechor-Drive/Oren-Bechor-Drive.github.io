@@ -39,7 +39,7 @@
     "prettier": "^3.9.10",
     "sharp": "^0.35.5",
     "supabase": "2.117.0",
-    "wrangler": "4.143.1"
+    "wrangler": "4.158.0"
   },
   "allowScripts": {
     "@embedded-postgres/linux-x64@17.10.0-beta.17": true

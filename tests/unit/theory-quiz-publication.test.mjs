@@ -66,7 +66,7 @@ test("every selected theory question is published once in its assigned topic wit
   }
 });
 
-test("review link intent transcribes the assessed coverage of all 140 questions", async () => {
+test("review link intent transcribes the assessed coverage of all 155 questions", async () => {
   const bank = await load("theory-quiz-content.json");
   const coverage = await readFile(
     "docs/reference/design-teaching-coverage.md",
@@ -80,8 +80,8 @@ test("review link intent transcribes the assessed coverage of all 140 questions"
   const byId = new Map(
     assessments.map(([, id, assessment]) => [id, assessment]),
   );
-  assert.equal(assessments.length, 140);
-  assert.equal(byId.size, 140);
+  assert.equal(assessments.length, 155);
+  assert.equal(byId.size, 155);
   const counts = { Covered: 0, Partial: 0, Elsewhere: 0, Gap: 0 };
   for (const question of bank.questions) {
     const assessment = byId.get(question.officialId);
@@ -96,10 +96,10 @@ test("review link intent transcribes the assessed coverage of all 140 questions"
     );
   }
   assert.deepEqual(counts, {
-    Covered: 48,
+    Covered: 63,
     Partial: 25,
-    Elsewhere: 11,
-    Gap: 56,
+    Elsewhere: 14,
+    Gap: 53,
   });
 });
 

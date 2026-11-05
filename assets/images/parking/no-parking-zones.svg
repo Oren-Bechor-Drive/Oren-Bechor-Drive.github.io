@@ -1,0 +1,278 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 1052">
+  <defs>
+    <!-- Clip path for outer rounded card -->
+    <clipPath id="street-clip">
+      <rect x="12" y="16" width="376" height="1020" rx="14"/>
+    </clipPath>
+
+    <!-- Diagonal red hatching for forbidden stretches -->
+    <pattern id="red-hatch" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="10" stroke="#d42a2a" stroke-width="2.2" stroke-opacity="0.65"/>
+    </pattern>
+
+    <!-- Parked car (4.5 m = 36 px long, 19 px wide; centered at 0,0; front is UP = -Y) -->
+    <g id="parked-car">
+      <!-- Wheels -->
+      <rect x="-10.8" y="-13.5" width="2.2" height="6" rx="1" fill="#596568"/>
+      <rect x="8.6" y="-13.5" width="2.2" height="6" rx="1" fill="#596568"/>
+      <rect x="-10.8" y="7.5" width="2.2" height="6" rx="1" fill="#596568"/>
+      <rect x="8.6" y="7.5" width="2.2" height="6" rx="1" fill="#596568"/>
+      <!-- Body -->
+      <rect x="-9.5" y="-18" width="19" height="36" rx="4.2" fill="#c5cfe2" stroke="#75839c" stroke-width="1.6"/>
+      <!-- Side mirrors -->
+      <rect x="-11.5" y="-8.5" width="2" height="3.2" rx="0.8" fill="#c5cfe2" stroke="#75839c" stroke-width="1.1"/>
+      <rect x="9.5" y="-8.5" width="2" height="3.2" rx="0.8" fill="#c5cfe2" stroke="#75839c" stroke-width="1.1"/>
+      <!-- Front windshield -->
+      <path d="M -7.2 -10.8 L 7.2 -10.8 L 6 -5 L -6 -5 Z" fill="#ecf0fa" stroke="#75839c" stroke-width="1.1" stroke-linejoin="round"/>
+      <!-- Rear window -->
+      <path d="M -6 8.2 L 6 8.2 L 6.8 13 L -6.8 13 Z" fill="#ecf0fa" stroke="#75839c" stroke-width="1.1" stroke-linejoin="round"/>
+      <!-- Roof -->
+      <rect x="-6" y="-5" width="12" height="13.2" rx="1.5" fill="#d5deed" stroke="#75839c" stroke-width="1"/>
+      <!-- Front headlights -->
+      <rect x="-7.2" y="-17.6" width="4" height="1.8" rx="0.8" fill="#ffffff"/>
+      <rect x="3.2" y="-17.6" width="4" height="1.8" rx="0.8" fill="#ffffff"/>
+    </g>
+
+    <!-- Lane direction arrow (centered at 0,0; points UP = -Y) -->
+    <g id="lane-arrow-up">
+      <line x1="0" y1="18" x2="0" y2="-14" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round"/>
+      <path d="M -8 -6 L 0 -17 L 8 -6" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </defs>
+
+  <!-- White canvas background -->
+  <rect x="0" y="0" width="400" height="1052" fill="#ffffff"/>
+
+  <g clip-path="url(#street-clip)">
+    <!-- Road surface (full area, sidewalks will overlay left and right) -->
+    <rect x="12" y="16" width="376" height="1020" fill="#dee5f3"/>
+
+    <!-- Left sidewalk (plain, no zones and no cars) -->
+    <rect x="12" y="16" width="52" height="1020" fill="#ecf0fa"/>
+      <line x1="38" y1="16" x2="38" y2="1036" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="40" x2="62" y2="40" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="72" x2="62" y2="72" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="104" x2="62" y2="104" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="136" x2="62" y2="136" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="168" x2="62" y2="168" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="200" x2="62" y2="200" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="232" x2="62" y2="232" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="264" x2="62" y2="264" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="296" x2="62" y2="296" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="328" x2="62" y2="328" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="360" x2="62" y2="360" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="392" x2="62" y2="392" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="424" x2="62" y2="424" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="456" x2="62" y2="456" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="488" x2="62" y2="488" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="520" x2="62" y2="520" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="552" x2="62" y2="552" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="584" x2="62" y2="584" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="616" x2="62" y2="616" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="648" x2="62" y2="648" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="680" x2="62" y2="680" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="712" x2="62" y2="712" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="744" x2="62" y2="744" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="776" x2="62" y2="776" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="808" x2="62" y2="808" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="840" x2="62" y2="840" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="872" x2="62" y2="872" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="904" x2="62" y2="904" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="936" x2="62" y2="936" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="968" x2="62" y2="968" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="1000" x2="62" y2="1000" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="12" y1="1032" x2="62" y2="1032" stroke="#dfe5f0" stroke-width="1.8"/>
+    <line x1="64" y1="16" x2="64" y2="1036" stroke="#596568" stroke-width="4"/>
+
+    <!-- Right sidewalk: top segment (above T-junction, y = 16..128) -->
+    <rect x="284" y="16" width="104" height="112" fill="#ecf0fa"/>
+    <!-- Right sidewalk: bottom segment (below T-junction, y = 196..1036) -->
+    <rect x="284" y="196" width="104" height="840" fill="#ecf0fa"/>
+      <line x1="336" y1="16" x2="336" y2="126" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="40" x2="388" y2="40" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="72" x2="388" y2="72" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="104" x2="388" y2="104" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="336" y1="198" x2="336" y2="1036" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="224" x2="388" y2="224" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="256" x2="388" y2="256" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="288" x2="388" y2="288" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="320" x2="388" y2="320" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="352" x2="388" y2="352" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="384" x2="388" y2="384" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="416" x2="388" y2="416" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="448" x2="388" y2="448" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="480" x2="388" y2="480" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="512" x2="388" y2="512" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="544" x2="388" y2="544" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="576" x2="388" y2="576" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="608" x2="388" y2="608" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="640" x2="388" y2="640" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="672" x2="388" y2="672" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="704" x2="388" y2="704" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="736" x2="388" y2="736" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="768" x2="388" y2="768" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="800" x2="388" y2="800" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="832" x2="388" y2="832" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="864" x2="388" y2="864" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="896" x2="388" y2="896" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="928" x2="388" y2="928" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="960" x2="388" y2="960" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="992" x2="388" y2="992" stroke="#dfe5f0" stroke-width="1.8"/>
+      <line x1="286" y1="1024" x2="388" y2="1024" stroke="#dfe5f0" stroke-width="1.8"/>
+
+    <!-- Right curb edge: top segment and corner into T-junction -->
+    <path d="M 284 16 L 284 128 L 388 128" fill="none" stroke="#596568" stroke-width="4" stroke-linejoin="round"/>
+    <!-- Right curb edge: bottom segment and corner out of T-junction -->
+    <path d="M 388 196 L 284 196 L 284 1036" fill="none" stroke="#596568" stroke-width="4" stroke-linejoin="round"/>
+
+    <!-- Main street dashed center line -->
+    <line x1="152" y1="16" x2="152" y2="1036" stroke="#ffffff" stroke-width="3" stroke-dasharray="14,12" opacity="0.9"/>
+
+    <!-- T-junction side street dashed center line -->
+    <line x1="292" y1="162" x2="388" y2="162" stroke="#ffffff" stroke-width="2.5" stroke-dasharray="10,9" opacity="0.9"/>
+
+    <!-- Direction arrows in lanes (Right lane UP, Left lane DOWN) -->
+    <use href="#lane-arrow-up" transform="translate(188, 320)"/>
+    <use href="#lane-arrow-up" transform="translate(108, 320) rotate(180)"/>
+    <use href="#lane-arrow-up" transform="translate(188, 874)"/>
+    <use href="#lane-arrow-up" transform="translate(108, 874) rotate(180)"/>
+
+    <!-- 4. Zebra pedestrian crossing stripes (y = 720..752) -->
+    <g fill="#ffffff">
+      <rect x="72" y="723" width="12" height="26" rx="1.5"/>
+      <rect x="94" y="723" width="12" height="26" rx="1.5"/>
+      <rect x="116" y="723" width="12" height="26" rx="1.5"/>
+      <rect x="138" y="723" width="12" height="26" rx="1.5"/>
+      <rect x="160" y="723" width="12" height="26" rx="1.5"/>
+      <rect x="182" y="723" width="12" height="26" rx="1.5"/>
+      <rect x="204" y="723" width="12" height="26" rx="1.5"/>
+      <rect x="226" y="723" width="12" height="26" rx="1.5"/>
+      <rect x="248" y="723" width="12" height="26" rx="1.5"/>
+      <rect x="270" y="723" width="10" height="26" rx="1.5"/>
+    </g>
+
+    <!-- FORBIDDEN STRETCHES (Red translucent bands + diagonal red hatching) -->
+    <!-- 7a. 12 m after T-junction (y = 32..128) -->
+      <rect x="250" y="32" width="32" height="96" fill="#d42a2a" fill-opacity="0.25"/>
+      <rect x="250" y="32" width="32" height="96" fill="url(#red-hatch)" stroke="#d42a2a" stroke-width="1.2" stroke-opacity="0.75"/>
+    <!-- 7b. 12 m before T-junction (y = 196..292) -->
+      <rect x="250" y="196" width="32" height="96" fill="#d42a2a" fill-opacity="0.25"/>
+      <rect x="250" y="196" width="32" height="96" fill="url(#red-hatch)" stroke="#d42a2a" stroke-width="1.2" stroke-opacity="0.75"/>
+    <!-- 5a. 20 m after bus-stop sign (y = 348..508) -->
+      <rect x="250" y="348" width="32" height="160" fill="#d42a2a" fill-opacity="0.25"/>
+      <rect x="250" y="348" width="32" height="160" fill="url(#red-hatch)" stroke="#d42a2a" stroke-width="1.2" stroke-opacity="0.75"/>
+    <!-- 5b. 20 m before bus-stop sign (y = 508..668) -->
+      <rect x="250" y="508" width="32" height="160" fill="#d42a2a" fill-opacity="0.25"/>
+      <rect x="250" y="508" width="32" height="160" fill="url(#red-hatch)" stroke="#d42a2a" stroke-width="1.2" stroke-opacity="0.75"/>
+    <!-- 4. Pedestrian crossing + 12 m before it (y = 720..848) -->
+      <rect x="250" y="720" width="32" height="128" fill="#d42a2a" fill-opacity="0.25"/>
+      <rect x="250" y="720" width="32" height="128" fill="url(#red-hatch)" stroke="#d42a2a" stroke-width="1.2" stroke-opacity="0.75"/>
+    <!-- 2. Fire hydrant: 2 m before and 2 m after (y = 900..940) -->
+      <rect x="250" y="900" width="32" height="40" fill="#d42a2a" fill-opacity="0.25"/>
+      <rect x="250" y="900" width="32" height="40" fill="url(#red-hatch)" stroke="#d42a2a" stroke-width="1.2" stroke-opacity="0.75"/>
+
+    <!-- ALLOWED STRETCHES: Gray parked cars along right curb (x = 266) -->
+    <!-- 6. Allowed stretch between bus stop and T-junction -->
+    <use href="#parked-car" x="266" y="320"/>
+    <!-- 4 (after). Allowed stretch directly AFTER (above) pedestrian crossing -->
+    <use href="#parked-car" x="266" y="696"/>
+    <!-- 3. Allowed stretch between hydrant and pedestrian crossing -->
+    <use href="#parked-car" x="266" y="874"/>
+    <!-- 1. Allowed stretch at bottom (2 parked cars) -->
+    <use href="#parked-car" x="266" y="965"/>
+    <use href="#parked-car" x="266" y="1008"/>
+
+    <!-- DIMENSION LINES AND NUMBER LABELS -->
+    <!-- 7a. 12 m after T-junction -->
+      <line x1="230" y1="32" x2="230" y2="128" stroke="#131d1f" stroke-width="2" stroke-linecap="round"/>
+      <line x1="223" y1="32" x2="248" y2="32" stroke="#131d1f" stroke-width="2" stroke-linecap="round"/>
+      <line x1="223" y1="128" x2="248" y2="128" stroke="#131d1f" stroke-width="2" stroke-linecap="round"/>
+      <rect x="212.0" y="68.0" width="36" height="24" rx="7" fill="#ffffff" stroke="#131d1f" stroke-width="2"/>
+      <text x="230" y="86.0" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="17" font-weight="800" fill="#131d1f">12</text>
+    <!-- 7b. 12 m before T-junction -->
+      <line x1="230" y1="196" x2="230" y2="292" stroke="#131d1f" stroke-width="2" stroke-linecap="round"/>
+      <line x1="223" y1="196" x2="248" y2="196" stroke="#131d1f" stroke-width="2" stroke-linecap="round"/>
+      <line x1="223" y1="292" x2="248" y2="292" stroke="#131d1f" stroke-width="2" stroke-linecap="round"/>
+      <rect x="212.0" y="232.0" width="36" height="24" rx="7" fill="#ffffff" stroke="#131d1f" stroke-width="2"/>
+      <text x="230" y="250.0" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="17" font-weight="800" fill="#131d1f">12</text>
+    <!-- 5a. 20 m after bus-stop sign -->
+      <line x1="230" y1="348" x2="230" y2="508" stroke="#131d1f" stroke-width="2" stroke-linecap="round"/>
+      <line x1="223" y1="348" x2="248" y2="348" stroke="#131d1f" stroke-width="2" stroke-linecap="round"/>
+      <line x1="223" y1="508" x2="248" y2="508" stroke="#131d1f" stroke-width="2" stroke-linecap="round"/>
+      <rect x="212.0" y="416.0" width="36" height="24" rx="7" fill="#ffffff" stroke="#131d1f" stroke-width="2"/>
+      <text x="230" y="434.0" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="17" font-weight="800" fill="#131d1f">20</text>
+    <!-- 5b. 20 m before bus-stop sign -->
+      <line x1="230" y1="508" x2="230" y2="668" stroke="#131d1f" stroke-width="2" stroke-linecap="round"/>
+      <line x1="223" y1="508" x2="248" y2="508" stroke="#131d1f" stroke-width="2" stroke-linecap="round"/>
+      <line x1="223" y1="668" x2="248" y2="668" stroke="#131d1f" stroke-width="2" stroke-linecap="round"/>
+      <rect x="212.0" y="576.0" width="36" height="24" rx="7" fill="#ffffff" stroke="#131d1f" stroke-width="2"/>
+      <text x="230" y="594.0" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="17" font-weight="800" fill="#131d1f">20</text>
+    <!-- 4. 12 m before pedestrian crossing + crossing itself -->
+      <line x1="230" y1="720" x2="230" y2="848" stroke="#131d1f" stroke-width="2" stroke-linecap="round"/>
+      <line x1="223" y1="720" x2="248" y2="720" stroke="#131d1f" stroke-width="2" stroke-linecap="round"/>
+      <line x1="223" y1="848" x2="248" y2="848" stroke="#131d1f" stroke-width="2" stroke-linecap="round"/>
+      <line x1="223" y1="752" x2="248" y2="752" stroke="#131d1f" stroke-width="2" stroke-linecap="round"/>
+      <rect x="212.0" y="788.0" width="36" height="24" rx="7" fill="#ffffff" stroke="#131d1f" stroke-width="2"/>
+      <text x="230" y="806.0" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="17" font-weight="800" fill="#131d1f">12</text>
+    <!-- 2. 2 m on each side of fire hydrant -->
+      <line x1="230" y1="900" x2="230" y2="940" stroke="#131d1f" stroke-width="2" stroke-linecap="round"/>
+      <line x1="223" y1="900" x2="248" y2="900" stroke="#131d1f" stroke-width="2" stroke-linecap="round"/>
+      <line x1="223" y1="940" x2="248" y2="940" stroke="#131d1f" stroke-width="2" stroke-linecap="round"/>
+      <line x1="223" y1="920" x2="248" y2="920" stroke="#131d1f" stroke-width="2" stroke-linecap="round"/>
+      <rect x="217.0" y="909.0" width="26" height="22" rx="7" fill="#ffffff" stroke="#131d1f" stroke-width="2"/>
+      <text x="230" y="926.0" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="17" font-weight="800" fill="#131d1f">2</text>
+
+    <!-- SIDEWALK FIXTURES (Bus stop at y = 508, Fire hydrant at y = 920) -->
+    <!-- 5. Bus stop sign post and shelter at y = 508 -->
+    <g>
+      <!-- Alignment tick on curb at sign post base position (y = 508) -->
+      <line x1="282" y1="508" x2="300" y2="508" stroke="#596568" stroke-width="2" stroke-dasharray="3,2"/>
+      <!-- Small bus shelter on sidewalk beside sign -->
+      <rect x="338" y="478" width="28" height="60" rx="4" fill="#c5cfe2" stroke="#75839c" stroke-width="2"/>
+      <rect x="342" y="482" width="20" height="52" rx="2" fill="#d5deed" stroke="#75839c" stroke-width="1"/>
+      <!-- Bench inside shelter -->
+      <rect x="353" y="490" width="6" height="36" rx="1.5" fill="#596568"/>
+      <!-- Upright bus-stop sign post (#596568) anchored at (308, 508) with sign plate (#264796) -->
+      <ellipse cx="308" cy="508" rx="6.5" ry="3" fill="#596568" stroke="#131d1f" stroke-width="1.4"/>
+      <line x1="308" y1="508" x2="308" y2="486" stroke="#596568" stroke-width="4" stroke-linecap="round"/>
+      <rect x="294" y="460" width="28" height="26" rx="5" fill="#264796" stroke="#131d1f" stroke-width="1.8"/>
+      <!-- Simple bus icon on sign plate (white, no text) -->
+      <rect x="301" y="465" width="14" height="14" rx="2.5" fill="#ffffff"/>
+      <rect x="303" y="467" width="10" height="4.5" rx="1" fill="#264796"/>
+      <circle cx="304" cy="476.5" r="1.3" fill="#264796"/>
+      <circle cx="312" cy="476.5" r="1.3" fill="#264796"/>
+      <rect x="302.5" y="479" width="2.5" height="2" rx="0.5" fill="#ffffff"/>
+      <rect x="311" y="479" width="2.5" height="2" rx="0.5" fill="#ffffff"/>
+    </g>
+
+    <!-- 2. Fire hydrant on sidewalk at curb at y = 920 -->
+    <g transform="translate(308, 920)">
+      <!-- Alignment tick to curb -->
+      <line x1="-24" y1="0" x2="-12" y2="0" stroke="#596568" stroke-width="2" stroke-dasharray="3,2"/>
+      <!-- Hydrant base flange -->
+      <ellipse cx="0" cy="11" rx="10" ry="3.5" fill="#ad1f1f" stroke="#131d1f" stroke-width="1.5"/>
+      <!-- Side hose nozzles -->
+      <rect x="-13" y="-4" width="26" height="6" rx="2" fill="#d42a2a" stroke="#131d1f" stroke-width="1.5"/>
+      <!-- Main vertical barrel (#d42a2a) -->
+      <rect x="-8" y="-9" width="16" height="20" rx="3" fill="#d42a2a" stroke="#131d1f" stroke-width="1.6"/>
+      <!-- Center front nozzle cap -->
+      <circle cx="0" cy="0" r="3.2" fill="#ad1f1f" stroke="#131d1f" stroke-width="1.2"/>
+      <!-- Darker top dome cap (#ad1f1f) -->
+      <path d="M -9 -8 C -9 -15, 9 -15, 9 -8 Z" fill="#ad1f1f" stroke="#131d1f" stroke-width="1.6" stroke-linejoin="round"/>
+      <rect x="-9.5" y="-9.5" width="19" height="3" rx="1.2" fill="#ad1f1f" stroke="#131d1f" stroke-width="1.4"/>
+      <!-- Top operating nut -->
+      <rect x="-2.5" y="-17" width="5" height="3.5" rx="1" fill="#ad1f1f" stroke="#131d1f" stroke-width="1.3"/>
+    </g>
+  </g>
+
+  <!-- Place labels -->
+  <g>
+    <text x="340" y="150" direction="rtl" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#131d1f" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" paint-order="stroke">צומת</text>
+    <text x="334" y="560" direction="rtl" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#131d1f" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" paint-order="stroke">תחנת אוטובוס</text>
+    <text x="338" y="741" direction="rtl" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#131d1f" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" paint-order="stroke">מעבר חצייה</text>
+    <text x="354" y="925" direction="rtl" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#131d1f" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" paint-order="stroke">ברז כיבוי</text>
+  </g>
+
+  <!-- Outer card border -->
+  <rect x="12" y="16" width="376" height="1020" rx="14" fill="none" stroke="#dfe5f0" stroke-width="2.5"/>
+</svg>

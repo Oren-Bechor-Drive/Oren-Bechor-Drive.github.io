@@ -156,7 +156,7 @@ async function exerciseMobileJourney(browser) {
   await page.locator('.site-menu a[href="#about"]').click();
   assert.equal(
     await page.locator("[data-topic-summaries] section").count(),
-    10,
+    11,
   );
   assert.equal(await page.locator("[data-topic-summaries]").isVisible(), true);
   assert.equal(await page.locator(".topic-select").count(), 0);
@@ -216,7 +216,7 @@ async function exerciseFallback(browser, mode) {
   assert.equal(new URL(page.url()).hash, "#about");
 
   await openPage(page, "/course/");
-  assert.equal(await page.locator(".topic-grid a").count(), 10);
+  assert.equal(await page.locator(".topic-grid a").count(), 11);
   await page.locator("#priority-hierarchy").click();
   await page.waitForURL("**/course/priority-hierarchy/", { waitUntil: "load" });
   assert.equal(await page.locator("#priority").isVisible(), true);
