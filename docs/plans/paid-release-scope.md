@@ -8,12 +8,12 @@ The first paid release accepts real payments and serves anyone learning to drive
 
 Oren approves all instructional text, media, questions, answer keys and explanations. The owner records approvals and subsequent corrections. The owner and their agents handle learner support, billing/refunds and content publication. No launch date or usage forecast has been set. The current infrastructure budget permits free plans that restrict service instead of charging overages, with annual domain registration as the exception.
 
-Before the paid release, the owner wants three days of hosted testing for the owner and Oren, followed by public registration only after the owner's explicit go-ahead. Both Google and email/password registration are required. Public registrants receive only approved free basic material while billing remains disabled. The free-material draft still needs Oren's review. This testing period is separate from the paid-content trial below. See [current recommendations and owner decisions](../recommendation.md).
+Before the paid release, the owner wants three days of hosted testing for the owner and Oren, followed by public registration only after the owner's explicit go-ahead. Both Google and email/password registration are required. On 2026-11-06 the owner dropped the free tier: public registrants receive no course content until they start a trial or subscribe. This testing period is separate from the paid-content trial below. See [current recommendations and owner decisions](../recommendation.md).
 
 ## Access and billing
 
-- The welcome page and topic descriptions remain public. A free account permits only basic information such as definitions of laws.
-- Lessons, explanations, images, diagrams, videos and quizzes require paid access or an active trial. Topics can be studied in any order.
+- The welcome page, its topic descriptions and the FAQ remain public. Since 2026-11-06 a free account opens no teaching content; the earlier free basic-definitions tier is dropped.
+- Lessons, explanations, images, diagrams, videos and quizzes require paid access or an active trial. This includes the public theory-practice questions. The public `course/` preview is removed from the site when the paid service ships. Topics can be studied in any order.
 - Offer a standard automatically renewing monthly subscription in ILS. The owner set the monthly price to ILS 150.00 on 2026-09-25. Billing remains disabled by their subsequent instruction.
 - Each learner gets one three-day trial with all paid content. Payment details are required before the trial starts. Billing starts automatically after the trial unless canceled.
 - Trial cancellation preserves access through the trial end and incurs no subscription charge afterward. Paid cancellation stops renewal and preserves access through the paid period.

@@ -25,7 +25,7 @@ test("mobile disclosures animate pointer input without delaying keyboard or focu
   await page.route("**/*", serveRoadMedia);
   await page.goto("http://gallery.test/");
   assert.equal(
-    await page.locator("[data-topic-summaries] h3 a:visible").count(),
+    await page.locator("[data-topic-summaries] h3:visible").count(),
     11,
   );
 
@@ -181,7 +181,7 @@ test("mobile disclosures animate pointer input without delaying keyboard or focu
   assert.equal(await page.locator(".site-menu").isVisible(), false);
 });
 
-test("touch menu cancellation releases feedback and mobile topics use native links", async (t) => {
+test("touch menu cancellation releases feedback and mobile topics stay plain headings", async (t) => {
   const browser = await chromium.launch();
   t.after(() => browser.close());
   const page = await browser.newPage({
@@ -201,12 +201,9 @@ test("touch menu cancellation releases feedback and mobile topics use native lin
   await trigger.dispatchEvent("pointercancel", { pointerType: "touch" });
   assert.equal(await trigger.getAttribute("data-pressed"), null);
   assert.equal(await page.locator(".topic-select, .topic-options").count(), 0);
-  const topic = page.locator("[data-topic-summaries] h3 a").first();
-  const destination = await topic.getAttribute("href");
-  await topic.tap();
-  await page.waitForURL("**/course/learning-foundations/");
   assert.equal(
-    new URL(page.url()).pathname,
-    new URL(destination, "http://gallery.test/").pathname,
+    await page.locator("[data-topic-summaries] h3:visible").count(),
+    11,
   );
+  assert.equal(await page.locator("[data-topic-summaries] a").count(), 0);
 });

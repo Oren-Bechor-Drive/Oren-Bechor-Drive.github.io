@@ -341,7 +341,7 @@ test(
     await page.route("**/*", serveRoadMedia);
     await page.goto("http://gallery.test/");
     assert.equal(
-      await page.locator("[data-topic-summaries] h3 a:visible").count(),
+      await page.locator("[data-topic-summaries] h3:visible").count(),
       11,
     );
     assert.equal(
@@ -459,7 +459,7 @@ test(
         }
         const focused = await page.evaluate(() => {
           const control = document.querySelector(
-            innerWidth < 640 ? "[data-topic-summaries] h3 a" : ".topic-card",
+            innerWidth < 640 ? "#topics" : ".topic-card",
           );
           control.focus({ preventScroll: true });
           return control === document.activeElement;

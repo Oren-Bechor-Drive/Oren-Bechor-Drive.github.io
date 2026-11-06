@@ -36,7 +36,7 @@
 
 ## Accounts and protected content
 
-- Public course HTML and theory answer keys are intentionally public. Keep restricted teaching content, private quiz keys, and private media outside public HTML, JavaScript, assets, and Worker static output. Serve them through authorized APIs and private storage.
+- The whole course is paid, including quizzes, with no free-account content (owner decision, 2026-11-06). The public `course/` preview and its theory answer keys stay live only until the paid service ships, and anything added there is public. Don't link it from the welcome page, `404.html` or `llms.txt`. Keep restricted teaching content, private quiz keys, and private media outside public HTML, JavaScript, assets, and Worker static output. Serve them through authorized APIs and private storage.
 - Keep provider credentials, access/refresh tokens, and PKCE verifiers on the server. The browser receives an opaque session cookie and CSRF value. Preserve origin checks, session validation, learner-scoped authorization, and private-response cache controls.
 - Keep protected grading, entitlement checks, and progress ownership in the server/database boundary. Public practice results do not grant saved progress or topic completion. Billing remains disabled under the owner's recorded decision.
 - Preserve the public-file allowlist when changing either server entry or Worker packaging. GitHub Pages publication does not deploy the gateway, apply database migrations, or configure Auth and cleanup jobs.

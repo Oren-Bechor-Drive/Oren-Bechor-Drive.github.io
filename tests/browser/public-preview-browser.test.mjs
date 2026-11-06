@@ -5,7 +5,7 @@ import { serveRoadMedia } from "../helpers/road-media.mjs";
 
 for (const width of [1440, 390]) {
   for (const mode of ["enhanced", "disabled", "blocked"]) {
-    test(`welcome links open public reading and practice at ${width}px with ${mode} JavaScript`, async (t) => {
+    test(`welcome actions stay on the topic preview at ${width}px with ${mode} JavaScript`, async (t) => {
       const browser = await chromium.launch();
       t.after(() => browser.close());
       const page = await browser.newPage({
@@ -33,21 +33,18 @@ for (const width of [1440, 390]) {
       );
       if (width < 769 && mode === "enhanced")
         await page.locator("[data-menu-toggle]").click();
+      assert.equal(
+        await page.locator('a[href*="course/"]').count(),
+        0,
+        "the welcome page no longer links the course preview",
+      );
       const navigation = page.locator(".nav-action");
       await navigation.click();
-      await page.waitForURL("http://gallery.test/course/");
-      await page.locator("#learning-foundations").click();
-      await page.waitForURL("http://gallery.test/course/learning-foundations/");
-      assert.ok((await page.locator(".lesson-section").count()) > 0);
-      await page.locator(".lesson-quiz-link").click();
-      await page.waitForURL(
-        "http://gallery.test/course/learning-foundations/quiz/",
-      );
-      assert.ok((await page.locator(".quiz-question").count()) > 0);
+      await page.waitForURL("http://gallery.test/#topics");
       await page.goto("http://gallery.test/");
       assert.equal(await page.locator("#start p").count(), 0);
       await page.locator("#start .button").click();
-      await page.waitForURL("http://gallery.test/course/");
+      await page.waitForURL("http://gallery.test/#topics");
       assert.equal(
         await page.evaluate(
           () => document.documentElement.scrollWidth <= innerWidth,

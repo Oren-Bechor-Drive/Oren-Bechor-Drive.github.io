@@ -90,7 +90,7 @@ for (const javaScriptEnabled of [true, false]) {
       assert.ok(Object.values(layout).every(Boolean), JSON.stringify(layout));
       assert.equal(await page.locator("#start p").count(), 0);
       const action = page.getByRole("link", {
-        name: "לנושאי הלימוד ולתרגול",
+        name: "לנושאי הקורס",
         exact: true,
       });
       const actionLayout = await action.evaluate((link) => {
@@ -121,7 +121,7 @@ for (const javaScriptEnabled of [true, false]) {
         true,
       );
       await action.click();
-      await page.waitForURL("**/course/");
+      await page.waitForURL("**/#topics");
       await page.close();
     }
   });

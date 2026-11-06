@@ -65,7 +65,7 @@ const gridRows = (page) =>
 test("library learning content has contextual validation diagnostics", () =>
   assert.deepEqual(issues, []));
 
-test("course library links every welcome-page topic in order without search", async () => {
+test("course library lists every welcome-page topic in order without search", async () => {
   const read = async (path) =>
     new JSDOM(await readFile(new URL(`../../${path}`, import.meta.url), "utf8"))
       .window.document;
@@ -74,16 +74,10 @@ test("course library links every welcome-page topic in order without search", as
   const welcome = await read("index.html");
   const course = await read("course/index.html");
   const welcomeTopics = [
-    ...welcome.querySelectorAll("[data-topic-summaries] h3 a"),
-  ].map((link) => [visibleText(link), link.getAttribute("href")]);
+    ...welcome.querySelectorAll("[data-topic-summaries] h3"),
+  ].map(visibleText);
   const links = [...course.querySelectorAll(".topic-grid > li > a")];
-  assert.deepEqual(
-    links.map((link) => [
-      visibleText(link),
-      `course/${link.getAttribute("href")}`,
-    ]),
-    welcomeTopics,
-  );
+  assert.deepEqual(links.map(visibleText), welcomeTopics);
   assert.deepEqual(
     links.map((link) => link.getAttribute("href")),
     topicIds.map((id) => `${id}/`),

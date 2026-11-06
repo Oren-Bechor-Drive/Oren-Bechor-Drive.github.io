@@ -36,14 +36,16 @@ test("page introduces the instructor before the combined learning section", asyn
   assert.deepEqual(navigationTargets, ["#instructor", "#about", "#faq"]);
 });
 
-test("course actions preserve the public destination and footer contains only labeled social icons", async () => {
+test("course actions stay on the welcome page and footer contains only labeled social icons", async () => {
   const document = new JSDOM(await read("index.html")).window.document;
   assert.equal(document.querySelector('a[href="#"]'), null);
+  // The public course preview is no longer linked; it moves behind the paywall.
+  assert.equal(document.querySelector('a[href*="course/"]'), null);
   for (const selector of [".nav-action", "#start .button"]) {
     const action = document.querySelector(selector);
     assert.equal(action.tagName, "A");
-    assert.equal(action.getAttribute("href"), "course/");
-    assert.match(action.textContent, /נושאי הלימוד/);
+    assert.equal(action.getAttribute("href"), "#topics");
+    assert.match(action.textContent, /נושאי ה(?:לימוד|קורס)/);
   }
   assert.equal(document.querySelector("#start p"), null);
   assert.equal(
@@ -166,8 +168,9 @@ test("topic controls keep their native button semantics", async () => {
   assert.equal(document.querySelector(".topic-rail").hidden, true);
   assert.equal(controls.length, 11, "all library topics have desktop controls");
   assert.equal(
-    document.querySelectorAll("[data-topic-summaries] h3 a").length,
+    document.querySelectorAll("[data-topic-summaries] h3").length,
     11,
   );
+  assert.equal(document.querySelectorAll("[data-topic-summaries] a").length, 0);
   assert.equal(document.querySelector("[data-topic-summaries]").hidden, false);
 });

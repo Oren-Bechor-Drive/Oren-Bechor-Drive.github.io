@@ -124,7 +124,7 @@ test("forced colors preserve home masks, action boundaries and keyboard FAQ focu
       if (width === 390) {
         assert.equal(await page.locator(".topic-select").count(), 0);
         assert.equal(
-          await page.locator("[data-topic-summaries] h3 a:visible").count(),
+          await page.locator("[data-topic-summaries] h3:visible").count(),
           11,
         );
       }
@@ -460,6 +460,7 @@ test("320px pages reflow with 200 percent browser root text", async (t) => {
       ["/account/login.html", ".account-intro"],
       ["/account/register.html", ".account-intro"],
       ["/account/recovery.html", ".account-intro"],
+      ["/account/subscribe.html", ".subscribe-benefits li"],
       ["/404.html", ".error-explanation"],
     ]) {
       await t.test(

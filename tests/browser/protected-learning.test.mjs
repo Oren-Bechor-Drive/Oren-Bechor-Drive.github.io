@@ -152,18 +152,14 @@ for (const width of [1440, 390]) {
     });
     await page
       .locator("[data-learning-status]")
-      .filter({ hasText: "החשבון החינמי" })
+      .filter({ hasText: "עדיין אין מנוי" })
       .waitFor();
     assert.equal(
       await page.locator("[data-retention]").isVisible(),
       true,
       "previously paid learners retain the retention guidance after access expires",
     );
-    assert.ok(
-      await page
-        .getByRole("link", { name: "לנושאי הלימוד ולתרגול החינמי" })
-        .isVisible(),
-    );
+    assert.ok(await page.getByRole("link", { name: "פרטי המנוי" }).isVisible());
     assert.match(await page.locator("[data-topics]").textContent(), /הושלם/);
   });
 }

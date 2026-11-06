@@ -198,7 +198,7 @@ async function loadTopics(request) {
   topics.replaceChildren();
   status.textContent = data.paidAccess
     ? "בחרו חומר קריאה או נושא לתרגול."
-    : "החשבון החינמי מאפשר לקרוא חומרי בסיס שפורסמו כאן. אפשר גם ללמוד ולתרגל ללא מנוי בנושאי הלימוד. הגישה לתרגולים השמורים בחשבון עדיין אינה זמינה בחשבון שלכם.";
+    : "לחשבון שלכם עדיין אין מנוי. המנוי פותח את כל ההסברים, הסרטונים והתרגולים בקורס.";
   if (!data.topics.length)
     status.textContent += " תרגולים לחשבון עדיין לא פורסמו.";
   for (const topic of data.topics) {
