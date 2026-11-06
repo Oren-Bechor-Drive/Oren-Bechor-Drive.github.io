@@ -19,6 +19,17 @@ for (const javaScriptEnabled of [true, false]) {
         });
         await page.route("**/*", serveRoadMedia);
         await page.goto("http://gallery.test/course/right-of-way/");
+        // A late font swap reflows the lesson mid-scroll and the scroll lands short.
+        const fontDeadline = Date.now() + 5000;
+        while (
+          Date.now() < fontDeadline &&
+          !(await page.evaluate(
+            () =>
+              document.fonts.status === "loaded" &&
+              document.fonts.check('1rem "Fredoka"', "א"),
+          ))
+        )
+          await setTimeout(25);
         const offset =
           (await page.locator(".course-header").boundingBox()).height + 24;
         const link = page.locator('.lesson-contents a[href="#u-turn"]');
