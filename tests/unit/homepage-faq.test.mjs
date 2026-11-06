@@ -28,7 +28,7 @@ test("homepage FAQ answers course questions and current availability with native
         "איך לומדים בקורס?",
         "מה כוללים הסרטונים?",
         "איך עובדים שאלוני התרגול?",
-        "מתי הקורס המלא יהיה זמין?",
+        "מתי הקורס יהיה זמין?",
       ],
     );
     assert.equal(faq.querySelectorAll("details").length, 6);
@@ -36,10 +36,7 @@ test("homepage FAQ answers course questions and current availability with native
     assert.equal(faq.querySelectorAll("button").length, 0);
     assert.equal(faq.querySelectorAll("[role]").length, 0);
 
-    assert.equal(
-      faq.querySelector(".faq-item:last-child a").getAttribute("href"),
-      "course/",
-    );
+    assert.equal(faq.querySelector('a[href*="course/"]'), null);
     assert.match(
       faq
         .querySelector(".faq-item:last-child")
@@ -63,7 +60,7 @@ test("homepage FAQ answers course questions and current availability with native
     );
     assert.match(
       faq.querySelector(".faq-availability").textContent.replace(/\s+/g, " "),
-      /הסרטונים וההרשמה לקורס המלא עדיין אינם זמינים/,
+      /הקורס בהכנה\. ההרשמה אליו עדיין אינה זמינה/,
     );
     assert.ok(
       document.head.querySelector('link[rel="stylesheet"][href="css/faq.css"]'),

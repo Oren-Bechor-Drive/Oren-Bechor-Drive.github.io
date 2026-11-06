@@ -26,6 +26,11 @@ test("llms overview points to real public pages and sections", async () => {
       /\[[^\]]+\]\(https:\/\/oren-bechor-drive\.github\.io\/#faq\)/,
     );
     assert.doesNotMatch(overview, /\/help\//);
+    assert.doesNotMatch(
+      overview,
+      /\/course\//,
+      "the course preview is not advertised",
+    );
     assert.equal(
       pages.get("/course/").window.document.querySelector('meta[name="robots"]')
         .content,

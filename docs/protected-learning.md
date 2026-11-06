@@ -2,9 +2,11 @@
 
 The local gateway supports titled free definitions and paid lesson text, saved reading positions, protected media, server-graded topic quizzes, attempt history and manual topic completion. It uses plain checked-in HTML/CSS/JavaScript and the existing Supabase account/session boundary.
 
-Billing is disabled by the owner's instruction. The configured offer is ILS 150.00 per month with a three-day trial; `server/subscription-offer.mjs` records it and `/api/learning` returns it as read-only metadata. No endpoint creates checkout, collects a card, starts a trial or charges a learner. Development grants remain the way to test paid access.
+Billing is disabled by the owner's instruction. The configured offer is ILS 150.00 per month with a three-day trial; `server/subscription-offer.mjs` records it and `/api/learning` returns it as read-only metadata. `account/subscribe.html` shows the trial offer statically without the price, at the owner's request, with its trial action disabled while `checkoutAvailable` is false. No endpoint creates checkout, collects a card, starts a trial or charges a learner. Development grants remain the way to test paid access.
 
-This is not a deployed paid service. The local launcher still refuses production mode because sessions and rate limits are process-local. No new migration, Cron job, instructional content or private media has been deployed to hosted Supabase by this change. The public `course/` preview remains publicly retrievable and contains public theory practice. Never put approved restricted texts, questions, answer keys or media into its HTML/JavaScript/assets.
+Under the owner's 2026-11-06 decision the whole course is paid. Publish the real course with null free text; every section and quiz needs paid or trial access. Free access remains only in the schema and synthetic fixtures.
+
+This is not a deployed paid service. The local launcher still refuses production mode because sessions and rate limits are process-local. No new migration, Cron job, instructional content or private media has been deployed to hosted Supabase by this change. The public `course/` preview remains publicly retrievable and contains public theory practice until the paid service ships. Never put approved restricted texts, questions, answer keys or media into its HTML/JavaScript/assets.
 
 ## Local use
 
@@ -28,7 +30,7 @@ Suspension saving is best effort. A server acknowledgement proves persistence, b
 
 Only a trusted publisher can call these public SECURITY INVOKER RPCs; their private implementations have restricted execution privileges. Learners cannot publish content or write answer keys, scores, entitlement rows or completion records directly.
 
-`publish_learning_section(p_section_id uuid, p_source_key text, p_expected_revision integer, p_title text, p_free_text text, p_paid_text text)` publishes an explicit Hebrew title and immutable text revision atomically. Expected revision 0 creates a section. Use null to omit an access level. Free text must contain only approved basic definitions; full explanations belong in paid text. Legacy `publish_section` stays compatible but new untitled legacy publications do not appear in the reader catalog. Republishing with the titled operation brings them into the catalog.
+`publish_learning_section(p_section_id uuid, p_source_key text, p_expected_revision integer, p_title text, p_free_text text, p_paid_text text)` publishes an explicit Hebrew title and immutable text revision atomically. Expected revision 0 creates a section. Use null to omit an access level. The real course publishes no free text. Legacy `publish_section` stays compatible but new untitled legacy publications do not appear in the reader catalog. Republishing with the titled operation brings them into the catalog.
 
 `publish_quiz(p_topic_key text, p_title text, p_questions jsonb, p_approval_reference text)` creates an immutable quiz version. The owner supplies the reference to Oren's recorded approval. A quiz must contain at least one question. Each question has these properties:
 

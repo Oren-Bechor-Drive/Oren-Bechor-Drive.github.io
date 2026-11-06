@@ -34,7 +34,7 @@ test("404 page offers an index-safe Hebrew recovery path from any URL depth", as
     const recoveryTargets = [
       ...document.querySelectorAll("[data-recovery-action]"),
     ].map((link) => link.getAttribute("href"));
-    assert.deepEqual(recoveryTargets, ["/", "/course/"]);
+    assert.deepEqual(recoveryTargets, ["/"]);
 
     for (const element of document.querySelectorAll(
       "link[href], script[src], img[src], a[href]",

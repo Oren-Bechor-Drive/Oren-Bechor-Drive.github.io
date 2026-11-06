@@ -1,6 +1,6 @@
 # Run and configure local accounts
 
-The Node gateway and Hebrew account pages run locally. The checked-in site still needs no build. GitHub Pages cannot run the gateway, so unavailable profile controls stay hidden there. Existing static lessons remain public.
+The Node gateway and Hebrew account pages run locally. The checked-in site still needs no build. GitHub Pages cannot run the gateway, so unavailable profile controls stay hidden there. Existing static lessons remain public until the paid service ships.
 
 ## Preview the screens
 

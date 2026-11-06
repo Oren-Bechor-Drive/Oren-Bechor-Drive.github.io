@@ -102,19 +102,9 @@ body {
     color: var(--on-primary);
 }
 
-.recovery-secondary {
-    background: var(--white);
-    box-shadow: inset 0 0 0 1px var(--primary);
-    color: var(--primary);
-}
-
 @media (hover: hover) and (pointer: fine) {
     .recovery-primary:hover {
         background: var(--primary-hover);
-    }
-
-    .recovery-secondary:hover {
-        background: var(--primary-wash);
     }
 }
 

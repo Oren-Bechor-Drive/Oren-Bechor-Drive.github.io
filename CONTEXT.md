@@ -13,7 +13,7 @@ The welcome-page explanation of who the driving course is for, what it covers, a
 _Avoid_: Enrollment flow, lesson player, instructor introduction
 
 **Learner account**:
-A verified identity used to enter the learning service. Creating an account is free and does not purchase a paid subscription.
+A verified identity used to enter the learning service. Creating an account is free and does not purchase a paid subscription. An account alone opens no teaching content.
 _Avoid_: Paid membership, enrollment
 
 **Account recovery**:
@@ -37,7 +37,7 @@ A sub-subject within a learning topic, with its own explanations. Learners may s
 _Avoid_: Locked step, required stage
 
 **Practice quiz**:
-A set of multiple-choice questions covering one learning topic. Public theory practice uses the question count appropriate to the topic, requires all answers before scoring, and offers self-check answers and retries. It does not grant topic completion. Both public and protected practice require at least 85% correct to pass, rounding the required answer count up to a whole number. Passing a protected quiz enables optional topic completion.
+A set of multiple-choice questions covering one learning topic. Every practice quiz requires paid access or an active trial; the public theory practice is a temporary preview. Public theory practice uses the question count appropriate to the topic, requires all answers before scoring, and offers self-check answers and retries. It does not grant topic completion. Both public and protected practice require at least 85% correct to pass, rounding the required answer count up to a whole number. Passing a protected quiz enables optional topic completion.
 _Avoid_: Driving test, certification exam
 
 **Quiz attempt**:
@@ -81,8 +81,12 @@ A distinct way to introduce the course to a new learner, such as the Learning Jo
 _Avoid_: Theme, variant
 
 **Protected learning**:
-The account-based reader and practice quizzes delivered only after current learner and access checks. Its content is published into the database and private media storage; the public course preview is a separate presentation.
+The account-based reader and practice quizzes delivered only after current learner and access checks. Its content is published into the database and private media storage; the public course preview is a separate, temporary presentation that is removed when the paid service ships.
 _Avoid_: Hidden static page, client-side paywall
+
+**Subscription page**:
+The account page that explains the monthly subscription, its once-only trial and cancellation terms. Showing it grants nothing; the server enforces paid access.
+_Avoid_: Paywall gate, client-side paywall, checkout
 
 **Learning retention deadline**:
 Ten days after paid access ends without renewal. Earlier reading positions and attempts expire; explicitly completed topics remain. Renewal after the deadline starts fresh learning progress.

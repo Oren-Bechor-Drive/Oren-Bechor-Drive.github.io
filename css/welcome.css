@@ -629,18 +629,11 @@
     color: var(--primary);
     font-size: var(--font-small);
 }
-.topic-learn {
-    align-self: flex-start;
-    margin-block-start: var(--space-lg);
-}
 .topic-panel {
     text-align: start;
 }
 .topic-summaries[hidden] {
     display: none;
-}
-.topic-summaries h3 a {
-    color: var(--primary);
 }
 .topic-rail[hidden],
 .topic-panel[hidden] {

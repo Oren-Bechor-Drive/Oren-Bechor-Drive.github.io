@@ -42,7 +42,7 @@ test(
           "false",
         );
         assert.equal(
-          await page.locator("[data-topic-summaries] h3 a:visible").count(),
+          await page.locator("[data-topic-summaries] h3:visible").count(),
           11,
         );
         assert.equal(await page.locator(".topic-select").count(), 0);

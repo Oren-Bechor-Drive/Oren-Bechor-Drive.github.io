@@ -103,9 +103,7 @@ test("protected-page baselines show guidance and a public library link without i
     assert.equal(await page.locator("button:visible").count(), 0);
     assert.equal(await page.locator("h2:visible").count(), 0);
     assert.equal(
-      await page
-        .getByRole("link", { name: "לנושאי הלימוד ולתרגול החינמי" })
-        .isVisible(),
+      await page.getByRole("link", { name: "פרטי המנוי" }).isVisible(),
       true,
     );
     await page.close();

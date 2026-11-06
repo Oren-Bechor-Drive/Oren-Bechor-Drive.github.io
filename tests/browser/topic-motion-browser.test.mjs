@@ -141,21 +141,19 @@ test("phone topics stay complete and static for pointer and keyboard users", asy
     await page.route("**/*", serveRoadMedia);
     await page.goto("http://gallery.test/");
     assert.equal(
-      await page.locator("[data-topic-summaries] h3 a:visible").count(),
+      await page.locator("[data-topic-summaries] h3:visible").count(),
       11,
     );
     assert.equal(
       await page.locator(".topic-card:visible, .topic-panel:visible").count(),
       0,
     );
-    await page.locator("[data-topic-summaries] h3 a").first().focus();
-    await page.keyboard.press("Tab");
     assert.equal(
       await page
-        .locator("[data-topic-summaries] h3 a")
-        .nth(1)
-        .evaluate((element) => element === document.activeElement),
-      true,
+        .locator("[data-topic-summaries] a, [data-topic-summaries] [tabindex]")
+        .count(),
+      0,
+      "phone topics are plain text with no extra tab stops",
     );
     await page.close();
   }
@@ -165,58 +163,31 @@ test("topic focus follows its visible presentation when the viewport changes", a
   const browser = await chromium.launch();
   t.after(() => browser.close());
   const page = await browser.newPage({
-    viewport: { width: 390, height: 844 },
+    viewport: { width: 1440, height: 900 },
     reducedMotion: "reduce",
   });
   await page.route("**/*", serveRoadMedia);
   await page.goto("http://gallery.test/");
-  const link = page.locator("[data-topic-summaries] h3 a").nth(3);
   const card = page.locator(".topic-card").nth(3);
-  await page.locator("[data-topic-summaries] h3 a").nth(2).focus();
-  await page.keyboard.press("Tab");
-  assert.equal(
-    await link.evaluate((element) => element === document.activeElement),
-    true,
-  );
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await card.waitFor({ state: "visible" });
+  const explorer = page.locator("#topics");
+  await page.locator(".topic-card").first().focus();
+  for (let step = 0; step < 3; step += 1)
+    await page.keyboard.press("ArrowLeft");
   assert.equal(
     await card.evaluate((element) => element === document.activeElement),
     true,
   );
-  assert.equal(
-    await card.evaluate((element) => getComputedStyle(element).outlineStyle),
-    "solid",
-  );
   assert.equal(await card.getAttribute("aria-selected"), "true");
   assert.equal(
     await page.locator("[data-topic-panel-title]").textContent(),
-    (await link.textContent()).trim(),
-  );
-  assert.equal(
-    await page.locator("[data-topic-panel-link]").getAttribute("href"),
-    await link.evaluate((element) => element.href),
+    (await card.textContent()).trim(),
   );
   await page.setViewportSize({ width: 390, height: 844 });
-  await link.waitFor({ state: "visible" });
+  await page.locator("[data-topic-summaries]").waitFor({ state: "visible" });
   assert.equal(
-    await link.evaluate((element) => element === document.activeElement),
+    await explorer.evaluate((element) => element === document.activeElement),
     true,
-  );
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await card.waitFor({ state: "visible" });
-  await page.keyboard.press("Tab");
-  assert.equal(
-    await page
-      .locator("[data-topic-panel]")
-      .evaluate((element) => element === document.activeElement),
-    true,
-  );
-  await page.setViewportSize({ width: 390, height: 844 });
-  await link.waitFor({ state: "visible" });
-  assert.equal(
-    await link.evaluate((element) => element === document.activeElement),
-    true,
+    "hiding the focused tab keeps focus in the topic preview",
   );
   const brand = page.locator(".brand");
   await brand.focus();

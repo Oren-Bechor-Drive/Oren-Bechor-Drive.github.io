@@ -130,11 +130,7 @@ test("reader shell retains navigation when JavaScript is disabled or its module 
     assert.ok(
       await page.getByRole("link", { name: "חזרה ללמידה שלכם" }).isVisible(),
     );
-    assert.ok(
-      await page
-        .getByRole("link", { name: "לנושאי הלימוד ולתרגול החינמי" })
-        .isVisible(),
-    );
+    assert.ok(await page.getByRole("link", { name: "פרטי המנוי" }).isVisible());
     assert.equal(await page.locator("[data-reload]").isVisible(), false);
     assert.equal(await page.locator("[data-reading-body]").textContent(), "");
     assert.equal(

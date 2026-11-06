@@ -91,7 +91,7 @@ for (const width of [1440, 390]) {
     await page.reload();
     await page
       .locator("[data-learning-status]")
-      .filter({ hasText: "החשבון החינמי" })
+      .filter({ hasText: "עדיין אין מנוי" })
       .waitFor();
     assert.doesNotMatch(
       await page.locator("[data-topics]").textContent(),

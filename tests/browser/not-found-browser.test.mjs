@@ -55,11 +55,10 @@ test(
         0,
       );
       assert.equal(
-        await page
-          .locator('[data-recovery-action][href="/course/"]')
-          .isVisible(),
+        await page.locator('[data-recovery-action][href="/"]').isVisible(),
         true,
       );
+      assert.equal(await page.locator('a[href*="/course/"]').count(), 0);
 
       const layout = await page.evaluate(() => {
         const main = document.querySelector("main").getBoundingClientRect();
@@ -154,14 +153,9 @@ test(
         "solid",
         "keyboard focus remains visible",
       );
-      await page.keyboard.press("Tab");
-      assert.equal(
-        await page.evaluate(() => document.activeElement?.getAttribute("href")),
-        "/course/",
-      );
       await page.keyboard.press("Enter");
-      await page.waitForURL("http://gallery.test/course/");
-      assert.equal(await page.locator("h1").innerText(), "מה תרצו ללמוד היום?");
+      await page.waitForURL("http://gallery.test/");
+      assert.equal(await page.locator("#hero-title").count(), 1);
       await page.close();
     }
   },

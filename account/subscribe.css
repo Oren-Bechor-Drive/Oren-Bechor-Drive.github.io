@@ -1,0 +1,158 @@
+.subscribe-shell {
+    width: min(980px, 100%);
+}
+.subscribe {
+    display: grid;
+    gap: 32px;
+    margin-block-start: 16px;
+}
+.subscribe h1 {
+    margin: 0;
+    font-size: clamp(1.75rem, 3.2vw, 2.25rem);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+}
+.subscribe .account-intro {
+    margin-block-end: 28px;
+    font-size: 1.125rem;
+    line-height: 1.6;
+}
+.subscribe-subheading {
+    margin: 0 0 14px;
+    color: var(--text-muted);
+    font-size: var(--font-label);
+    letter-spacing: 0.01em;
+}
+.subscribe-benefits {
+    display: grid;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.subscribe-benefits li {
+    position: relative;
+    padding-inline-start: 36px;
+    line-height: 1.5;
+}
+/* Drawn checkmarks: the page CSP blocks data URIs and no check icon is hosted. */
+.subscribe-benefits li::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+    top: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--white);
+}
+.subscribe-benefits li::after {
+    content: "";
+    position: absolute;
+    inset-inline-start: 9px;
+    top: 5px;
+    width: 6px;
+    height: 11px;
+    border: solid var(--primary);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+.subscribe-plan {
+    overflow: hidden;
+    border: 1px solid var(--secondary-bright);
+    border-radius: var(--radius-card);
+    background: var(--white);
+    box-shadow: var(--shadow-two);
+}
+.subscribe-plan-header {
+    padding: 24px 24px 20px;
+    background: var(--secondary-wash);
+    border-block-end: 1px solid var(--border);
+}
+.subscribe-plan-body {
+    padding: 20px 24px 24px;
+}
+.subscribe-badge {
+    display: inline-flex;
+    margin: 0;
+    padding: 4px 12px;
+    border: 1px solid var(--secondary-bright);
+    border-radius: 9999px;
+    background: var(--white);
+    color: var(--secondary);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    line-height: 1.25;
+}
+.subscribe-plan h2 {
+    margin: 14px 0 0;
+    font-size: 1.75rem;
+    line-height: 1.25;
+}
+.subscribe-action {
+    min-height: 52px;
+}
+.subscribe-status {
+    margin: 10px 0 0;
+    color: var(--text-soft);
+    font-size: var(--font-small);
+    text-align: center;
+}
+.subscribe-plan h3 {
+    margin: 22px 0 12px;
+    padding-block-start: 20px;
+    border-block-start: 1px solid var(--border);
+    font-size: var(--font-body);
+}
+.subscribe-terms {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: term;
+    color: var(--text-soft);
+    font-size: var(--font-small);
+    line-height: 1.55;
+}
+.subscribe-terms li {
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    gap: 10px;
+    counter-increment: term;
+}
+.subscribe-terms li::before {
+    content: counter(term);
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--primary-wash);
+    color: var(--primary);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1;
+}
+.subscribe-plan-body > .account-hint {
+    margin-block-start: 16px;
+}
+@media (min-width: 860px) {
+    .subscribe {
+        grid-template-columns: 7fr 5fr;
+        align-items: start;
+        gap: 48px;
+    }
+}
+@media (max-width: 480px) {
+    .subscribe-plan-header,
+    .subscribe-plan-body {
+        padding-inline: 18px;
+    }
+}
+@media (forced-colors: active) {
+    .subscribe-benefits li::after {
+        border-color: CanvasText;
+    }
+}

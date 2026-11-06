@@ -40,7 +40,7 @@ for (const failure of ["disabled", "module unavailable"]) {
           "nonfunctional topic buttons are not offered",
         );
         assert.equal(
-          await page.locator("[data-topic-summaries] h3 a:visible").count(),
+          await page.locator("[data-topic-summaries] h3:visible").count(),
           11,
         );
         const dividers = await page
@@ -121,7 +121,7 @@ test(
       await page.locator('.site-menu a[href="#about"]').click();
       if (width < 640) {
         assert.equal(
-          await page.locator("[data-topic-summaries] h3 a:visible").count(),
+          await page.locator("[data-topic-summaries] h3:visible").count(),
           11,
         );
         assert.equal(
@@ -134,14 +134,7 @@ test(
           await page.locator(".topic-select, .topic-options").count(),
           0,
         );
-        const topicLink = page.locator("[data-topic-summaries] h3 a").last();
-        await topicLink.focus();
-        await page.keyboard.press("Enter");
-        await page.waitForURL("**/course/licensing-and-points/");
-        assert.equal(
-          new URL(page.url()).pathname,
-          "/course/licensing-and-points/",
-        );
+        assert.equal(await page.locator("[data-topic-summaries] a").count(), 0);
       } else {
         const tabs = page.getByRole("tab");
         assert.equal(await tabs.count(), 11);
